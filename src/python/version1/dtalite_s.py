@@ -5,9 +5,11 @@ max_number_of_node=10000
 _MAX_LABEL_COST = 10000
 
 g_number_of_assgnment_iterations=1
-g_number_of_simulation_time=1440     #min
+g_number_of_simulation_time=90    #min
 g_number_of_seconds_per_interval = 6;  #0.2 seconds for 300 intervals per min
+g_number_of_interval_per_min=int(60/g_number_of_seconds_per_interval)
 g_number_of_simulation_intervals=int(g_number_of_simulation_time*60/g_number_of_seconds_per_interval)
+g_number_of_simulation_horizon_in_min = (int)(g_number_of_simulation_intervals / g_number_of_interval_per_min +1);
 g_Simulation_StartTimeInMin = 9999
 g_Simulation_EndTimeInMin = 0
 g_start_simu_interval_no=0
@@ -28,7 +30,7 @@ g_line_list=list()
 
 
 g_internal_node_seq_no_dict=dict()
-g_internal_node_seq_no_to_node_id_dict=dict()
+g_external_node_id_dict=dict()
 g_link_key_to_seq_no_dict=dict()
 g_map_agent_id_to_agent_seq_no=dict()
 g_agent_TD_list_dict=dict()     #key:simulation time interval   value:agents(list) need to be activated
@@ -50,7 +52,7 @@ class Node:
         global g_number_of_nodes
         self.node_seq_no=g_number_of_nodes
         g_internal_node_seq_no_dict[int(self.external_node_id)]=self.node_seq_no
-        g_internal_node_seq_no_to_node_id_dict[int(self.node_seq_no)]=self.external_node_id
+        g_external_node_id_dict[int(self.node_seq_no)]=self.external_node_id
         g_number_of_nodes+=1
         
 
@@ -62,7 +64,7 @@ class Link:
         self.extern_from_node=int(from_node)
         self.extern_to_node=int(to_node)
         self.type=int(link_type) # 1:one direction 2:both way
-        
+        self.number_of_lanes=int(number_of_lanes)
         self.BRP_alpha=float(BPR_alpha_term)
         self.BRP_beta=float(BPR_beta_term)
         self.flow_volume=0
@@ -73,10 +75,11 @@ class Link:
     
         self.cost = self.length / int(speed_limit) * 60
       
-        self.m_LinkOutFlowCapacity=[self.link_capacity]*(g_number_of_simulation_intervals+1)
+        self.m_LinkOutFlowCapacity=[int(self.link_capacity/g_number_of_simulation_time)]*(g_number_of_simulation_intervals+1)
         self.m_LinkCumulativeArrival=[0]*(g_number_of_simulation_intervals+1)
         self.m_LinkCumulativeDeparture=[0]*(g_number_of_simulation_intervals+1)
         self.m_LinkCumulativeVirtualDelay=[0]*(g_number_of_simulation_intervals+1)
+        self.m_LinkTDWaitingTime=[0]*(g_number_of_simulation_horizon_in_min+1)
         
         self.Entrance_queue=list() # link-in queue  of each link
         self.Exit_queue=list() # link-out queue  of each link
@@ -87,8 +90,7 @@ class Link:
     def Initialization(self):
         global g_number_of_links
         self.link_seq_no=g_number_of_links
-        self.travel_time = self.free_flow_travel_time_in_min*(1 + self.BRP_alpha*pow(self.flow_volume / max(0.00001, self.link_capacity), self.BRP_beta))
-        self.cost=self.travel_time
+        self.cost=self.length
         self.free_flow_travel_time_in_simu_interval = int(self.free_flow_travel_time_in_min*60.0 / g_number_of_seconds_per_interval + 0.5)
         link_key=self.from_node_seq_no*max_number_of_node+self.to_node_seq_no
         g_link_key_to_seq_no_dict[link_key]=self.link_seq_no
@@ -144,6 +146,8 @@ class Agent():
 #g_convert_abs_simu_interval_to_relative_simu_interval
 def g_A2R_simu_interval(abslute_time):
     return (abslute_time-g_start_simu_interval_no)
+def g_R2A_simu_interval(relative_time):
+    return (relative_time+g_start_simu_interval_no)
 
 def g_ReadInputData():
     global g_node_list
@@ -169,8 +173,8 @@ def g_ReadInputData():
         for line in reader:
             link=Link(line['from_node_id'],line['to_node_id'],
                       line['length'],line['lanes'],line['free_speed'],
-                      line['capacity'],line['link_type'],line['BPR_alpha_term'],
-                      line['BPR_beta_term'])
+                      line['capacity'],line['link_type'],line['VDF_alpha1'],
+                      line['VDF_beta1'])
             g_node_list[link.from_node_seq_no].m_outgoing_link_list.append(link)
             g_node_list[link.to_node_seq_no].m_incoming_link_list.append(link)
 
@@ -178,7 +182,7 @@ def g_ReadInputData():
     print('the number of links is',g_number_of_links)
 
     #read input_agent
-    with open('input_agent.csv','r',encoding='utf-8') as fp:
+    with open('demand.csv','r',encoding='utf-8') as fp:
         reader=csv.DictReader(fp)
         for line in reader:
             agent=Agent(line['agent_id'],line["agent_type"],line['o_node_id'],
@@ -306,8 +310,9 @@ class Network:
                     g_agent_list[i].path_node_seq_no_list.append(current_node_seq_no)
 
                 current_node_seq_no = self.node_predecessor[current_node_seq_no]
-        g_agent_list[i].path_node_seq_no_list.reverse()
-        g_agent_list[i].path_link_seq_no_list.reverse()
+            g_agent_list[i].path_node_seq_no_list.reverse()
+            g_agent_list[i].path_link_seq_no_list.reverse()
+         
         #step 2:  scan the shortest path to compute the link volume, 
         
         for i in range(len(g_agent_list)):
@@ -361,10 +366,16 @@ def g_TrafficSimulation():
     for t in range(g_start_simu_interval_no,g_end_simu_interval_no,1):
         number_of_simu_interval_per_min = 60 / g_number_of_seconds_per_interval;
         if(t%number_of_simu_interval_per_min==0):
-            print("simu time= ",int(t / number_of_simu_interval_per_min),"min, with TBL= ",len(g_active_agent_list),
-                  ", CA=",g_TotalCumulative_Arrival_Count,", CD=",g_TotalCumulative_Departure_Count)
+            print("simu time= ",int(t / number_of_simu_interval_per_min),"min, ", "CA=",g_TotalCumulative_Arrival_Count,", CD=",g_TotalCumulative_Departure_Count)
 
-        relative_t = g_A2R_simu_interval(t);
+        relative_t = g_A2R_simu_interval(t)
+        for li in range(0,len(g_link_list)):
+            link=g_link_list[li]
+            if (relative_t >= 1):
+                g_link_list[link.link_seq_no].m_LinkCumulativeDeparture[relative_t]=g_link_list[link.link_seq_no].m_LinkCumulativeDeparture[relative_t-1]
+                g_link_list[link.link_seq_no].m_LinkCumulativeArrival[relative_t] =g_link_list[link.link_seq_no].m_LinkCumulativeArrival[relative_t-1]
+	
+      
   
         if(t in g_agent_TD_list_dict.keys()):  #activate the agent 
             for j in range(0,len(g_agent_TD_list_dict[t])):
@@ -416,9 +427,17 @@ def g_TrafficSimulation():
                         g_link_list[next_link_seq].Entrance_queue.append(agent_no)
                         g_agent_list[agent_no].m_Veh_LinkDepartureTime_in_simu_interval[g_agent_list[agent_no].m_current_link_seq_no]=t
                         g_agent_list[agent_no].m_Veh_LinkArrivalTime_in_simu_interval[g_agent_list[agent_no].m_current_link_seq_no+1]=t
+                        
+                        travel_time = t - g_agent_list[agent_no].m_Veh_LinkArrivalTime_in_simu_interval[g_agent_list[agent_no].m_current_link_seq_no]
+			#for each waited vehicle
+                        waiting_time = travel_time - g_link_list[link_seq_no].travel_time
+                        temp_relative_time=g_A2R_simu_interval(g_agent_list[agent_no].m_Veh_LinkArrivalTime_in_simu_interval[g_agent_list[agent_no].m_current_link_seq_no])
+                        time_in_min=int(temp_relative_time/g_number_of_interval_per_min)
+                  
+                        g_link_list[link_seq_no].m_LinkTDWaitingTime[time_in_min] += waiting_time
                         g_link_list[link_seq_no].m_LinkCumulativeDeparture[relative_t] += 1
                         g_link_list[next_link_seq].m_LinkCumulativeArrival[relative_t] += 1
-               
+                    
                     g_agent_list[agent_no].m_current_link_seq_no+=1
                     g_link_list[link_seq_no].m_LinkOutFlowCapacity[relative_t]-=1 
         
@@ -426,21 +445,60 @@ def g_TrafficSimulation():
 def g_OutputFiles():
     with open ('link_performance.csv','w',newline='') as fp:
         writer=csv.writer(fp)
-        line=["o_node_id","d_node_id","cumulative_arrival_count","cumulative_departure_count",
-              "travel_time_in_min"]
+        line=["link_id","from_node_id","to_node_id","time_period","volume","CA","CD","density","queue","travel_time","waiting_time_in_sec","speed"]
         writer.writerow(line)
-        for t in range( int(g_Simulation_StartTimeInMin),int(g_Simulation_EndTimeInMin),1):
-            time_in_simu_interval = int(t * 60 / g_number_of_seconds_per_interval)
-            relative_time_interval=g_A2R_simu_interval(time_in_simu_interval)
-            for link in g_link_list:
-                line=[link.extern_from_node,link.extern_to_node,link.m_LinkCumulativeArrival[relative_time_interval],
-                      link.m_LinkCumulativeDeparture[relative_time_interval],link.travel_time]
+        sampling_time_interval=60
+        
+        for link in g_link_list:
+            for relative_t in range(0,g_number_of_simulation_intervals,1):
+                abs_t = g_R2A_simu_interval(relative_t)
+                
+##                if(relative_t%(sampling_time_interval/g_number_of_seconds_per_interval)==0):
+                time_in_min =  int(relative_t / (60 / g_number_of_seconds_per_interval))
+                abs_t_in_min= int(abs_t / (60 / g_number_of_seconds_per_interval))
+            
+                volume = 0
+                queue = 0
+                waiting_time_in_sec = 0
+                arrival_rate = 0
+                avg_waiting_time_in_sec = 0
+                travel_time =float(link.travel_time + avg_waiting_time_in_sec/60.0)
+                speed = link.length /(link.free_flow_travel_time_in_min/60.0) 
+                virtual_arrival = 0
+                if (time_in_min >= 1):
+                
+                    volume = link.m_LinkCumulativeDeparture[relative_t] - link.m_LinkCumulativeDeparture[relative_t - int(sampling_time_interval / g_number_of_seconds_per_interval)]
+
+                    if (relative_t- link.travel_time>= 0):  
+                        virtual_arrival = link.m_LinkCumulativeArrival[int(relative_t - link.travel_time)]
+                                                                            
+                    queue = virtual_arrival - link.m_LinkCumulativeDeparture[relative_t]
+                                                    
+
+                    waiting_time_count = 0
+
+                    waiting_time_in_sec = link.m_LinkTDWaitingTime[time_in_min] * g_number_of_seconds_per_interval 
+                    if(relative_t + int(sampling_time_interval / g_number_of_seconds_per_interval)<g_number_of_simulation_intervals):
+                        arrival_rate = link.m_LinkCumulativeArrival[relative_t + int(sampling_time_interval / g_number_of_seconds_per_interval)] - link.m_LinkCumulativeArrival[relative_t]
+                    avg_waiting_time_in_sec = waiting_time_in_sec / max(1, arrival_rate)
+
+                    travel_time = link.travel_time+ avg_waiting_time_in_sec/60.0
+                    speed = link.length / (max(0.00001,travel_time) / sampling_time_interval)
+                    
+                density = (link.m_LinkCumulativeArrival[relative_t] - link.m_LinkCumulativeDeparture[relative_t]) / (link.length * link.number_of_lanes);
+
+                line=[link.link_seq_no+1,link.extern_from_node,link.extern_to_node,time_stamp_to_HHMMSS(abs_t_in_min)+"_"+time_stamp_to_HHMMSS(abs_t_in_min+1),
+                      volume,link.m_LinkCumulativeArrival[relative_t],link.m_LinkCumulativeDeparture[relative_t],
+                      density,queue,travel_time,waiting_time_in_sec,speed]
+                
                 writer.writerow(line)
     with open("agent.csv","w",newline='') as fp:
         writer=csv.writer(fp)
         line=["agent_id","agent_type","o_node_id","d_node_id","o_zone_id","d_zone_id","travel_time",
               "node_sequence","time_sequence"]
         writer.writerow(line)
+        abs_satrt_time_in_min=int(g_start_simu_interval_no/g_number_of_interval_per_min )
+        
         for agent in g_agent_list:
             if(agent.find_path_flag==False):
                 continue
@@ -451,11 +509,12 @@ def g_OutputFiles():
                 TA_in_min=agent.m_Veh_LinkArrivalTime_in_simu_interval[i]* g_number_of_seconds_per_interval / 60.0
                 TD_in_min=agent.m_Veh_LinkDepartureTime_in_simu_interval[i]* g_number_of_seconds_per_interval / 60.0
                 if(i==0):
+                    
                     path_time_list.extend([time_stamp_to_HHMMSS(TA_in_min),time_stamp_to_HHMMSS(TD_in_min)])
                 else:
                     path_time_list.append(time_stamp_to_HHMMSS(TD_in_min))
                 path_time_sequence=';'.join(path_time_list)
-            path_node_str=';'.join([str(i) for i in agent.path_node_seq_no_list])
+            path_node_str=';'.join([str(g_external_node_id_dict[i]) for i in agent.path_node_seq_no_list])
             line=[agent.agent_id,agent.agent_service_type,agent.from_origin_node_id,
                   agent.to_destination_node_id,agent.from_origin_node_id,
                   agent.to_destination_node_id,cost,
