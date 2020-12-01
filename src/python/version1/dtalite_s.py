@@ -39,6 +39,27 @@ g_internal_node_seq_no_dict=dict() #key: external node id   value:internal node 
 g_external_node_id_dict=dict()  #key: internal node id   value:external node id
 g_agent_td_list_dict=dict()     #td:time-dependent    key:simulation time interval   value:agents(list) need to be activated
 
+# data conversion utility functions
+def time_stamp_to_HHMMSS(time_in_minutes):
+    hours=int(time_in_minutes/60)
+    minutes=int(time_in_minutes-hours*60)
+    seconds=int((time_in_minutes-hours*60-minutes)*60)
+    return time_int_to_str(hours)+time_int_to_str(minutes)+":"+time_int_to_str(seconds)
+
+def time_int_to_str(time_int):
+    if time_int<10:
+        return "0"+str(time_int)
+    else:
+        return str(time_int)
+    
+# convert absolute simulation interval to relative simulation interval
+# A2R:absolute 24_hour_world clock time in simulation interval to relative time in simulation interval from 0
+def g_A2R_simu_interval(abslute_time_in_simu_intetrval_no):
+    return (abslute_time_in_simu_intetrval_no-g_start_simu_interval_no)
+# convert relative simulation interval to absolute simulation interval
+# R2A:relative time in simulation interval from 0 to absolute 24_hour_world clock time in simulation interval
+def g_R2A_simu_interval(relative_time_in_simu_intetrval_no):
+    return (relative_time_in_simu_intetrval_no+g_start_simu_interval_no)
 
 # comments: external_node_id: the id of node
 #           node_seq_no: the index of the node and we call the node by its index
@@ -76,7 +97,7 @@ class Link:
         self.free_flow_travel_time_in_min=self.length / max(0.001,int(free_speed)) * 60  # length:km   free_speed: km/h
         self.cost=self.free_flow_travel_time_in_min
         #the capacity of discharging for each link,  td is time-dependent, to used in traffic signal control or work zone scheduling applications 
-        self.td_link_out_flow_capacity=[int(self.link_capacity/(60*g_number_of_simu_intervals_per_min))]*(g_length_of_simulation_time_horizon_in_interval+1) # self.link_capacity/g_number_of_simulation_time) should be per interval capacity 
+        self.td_link_outflow_capacity=[int(self.link_capacity/(60*g_number_of_simu_intervals_per_min))]*(g_length_of_simulation_time_horizon_in_interval+1) # self.link_capacity/g_number_of_simulation_time) should be per interval capacity 
 
         #count the cumulative arrival and departure of links each simulation interval, td is time-dependent
         self.td_link_cumulative_arrival=[0]*(g_length_of_simulation_time_horizon_in_interval+1) # [0] is setting up zero as the default 
@@ -139,14 +160,8 @@ class Agent():
         else:
             self.feasible_path_exist_flag=False
 
-# convert absolute simulation interval to relative simulation interval
-def g_A2R_simu_interval(abslute_time_in_simu_intetrval_no): # absolute 24_hour_world clock time in simulation interval to relative time in simulation interval from 0
-    return (abslute_time_in_simu_intetrval_no-g_start_simu_interval_no)
-# convert relative simulation interval to absolute simulation interval
-def g_R2A_simu_interval(relative_time_in_simu_intetrval_no):# relative time in simulation interval from 0 to absolute 24_hour_world clock time in simulation interval
-    return (relative_time_in_simu_intetrval_no+g_start_simu_interval_no)
 
-def g_ReadInputData():
+def g_read_input_data():
     global g_node_list
     global g_link_list
     global g_agent_list
@@ -288,10 +303,12 @@ class Network:
             self.link_volume_array[s] = 0
 
         #step 1: find shortest path if needed 
+        # MSA: only 1/k agents will swtich to the shortest path; (k-1)/K will not have changes to select shortest path, stay on the current path
         for i in range(len(g_agent_list)):
             residual = i % (iteration_no + 1)
             if (residual != 0):  #no need to compute a new path at this iteration
                 continue         #that is, it will reuse the path from the previous iteration, stored at p_agent->path_link_seq_no_list.
+                
             #else move to the next line for finding the shortest path 
             g_agent_list[i].path_link_seq_no_list = []
             g_agent_list[i].path_node_seq_no_list = []
@@ -328,7 +345,8 @@ class Network:
             for j in range(len(g_agent_list[i].path_link_seq_no_list)):#for each link in the path of this agent
                 link_seq_no = g_agent_list[i].path_link_seq_no_list[j]
                 self.link_volume_array[link_seq_no] += g_agent_list[i].PCE_factor 
-def g_TrafficAssignment():
+
+def g_traffic_assignment():
     global g_link_list
     
     network = Network()
@@ -336,31 +354,24 @@ def g_TrafficAssignment():
 
     print('Finding shortest path for all agents......')
 
-    for i in range(g_number_of_assignment_iterations):
+    for i in range(g_number_of_assignment_iterations): # perform traffic assignment to reach a UE or SO criterion with given number of iterations 
         print('iteration_no',i,'......')
         for l in range(g_number_of_links):
-            g_link_list[l].CalculateBPRFunction()
-            network.link_cost_array[l] = g_link_list[l].cost
+            g_link_list[l].CalculateBPRFunction()  # use the link volume from previous iteration to calculate the link travel time for each link 
+            network.link_cost_array[l] = g_link_list[l].cost # use link travel time as cost for shortest path calculation 
 
-            network.find_path_for_agents(i)     
+            network.find_path_for_agents(i) # find the paths for all agents, we do have a MSA rule being applied to select which agents will update the shortest path     
                         
-            for k in range(g_number_of_links):
-                g_link_list[k].flow_volume = 0.0
-                g_link_list[k].flow_volume += network.link_volume_array[k]
-def time_stamp_to_HHMMSS(time_in_minutes):
-    hours=int(time_in_minutes/60)
-    minutes=int(time_in_minutes-hours*60)
-    seconds=int((time_in_minutes-hours*60-minutes)*60)
-    return time_int_to_str(hours)+time_int_to_str(minutes)+":"+time_int_to_str(seconds)
-def time_int_to_str(time_int):
-    if time_int<10:
-        return "0"+str(time_int)
-    else:
-        return str(time_int)
-def g_TrafficSimulation():
+            for k in range(g_number_of_links): # tally link volume 
+                g_link_list[k].flow_volume = network.link_volume_array[k]
+        
+        
+        
+def g_traffic_simulation():
     global g_cumulative_arrival_count
     global g_cumulative_departure_count
-
+     
+    #step 1 initialization 
     #initialization for each link
     for li in range(len(g_link_list)):
         g_link_list[li].ResetMOE()
@@ -371,29 +382,31 @@ def g_TrafficSimulation():
     g_active_agent_list=list()
     current_active_agent_id = 0
     
+    #step 2 time-based loop for simulation 
     for t in range(g_start_simu_interval_no,g_end_simu_interval_no,1):
         number_of_simu_interval_per_min = 60 / g_number_of_seconds_per_simu_interval;
         if(t%number_of_simu_interval_per_min==0):
             print("simu time= ",int(t / number_of_simu_interval_per_min),"min, ", "CA=",g_cumulative_arrival_count,", CD=",g_cumulative_departure_count)
 
-        relative_t = g_A2R_simu_interval(t)
-        for li in range(0,len(g_link_list)):
+        relative_t = g_A2R_simu_interval(t) # obtain relative time index from global absolute time stamp
+        for li in range(0,len(g_link_list)):# step 2.1. carry the cumulative count statistics from the previous time step
             link=g_link_list[li]
             if (relative_t >= 1):
                 g_link_list[link.link_seq_no].td_link_cumulative_departure[relative_t]=g_link_list[link.link_seq_no].td_link_cumulative_departure[relative_t-1]
                 g_link_list[link.link_seq_no].td_link_cumulative_arrival[relative_t] =g_link_list[link.link_seq_no].td_link_cumulative_arrival[relative_t-1]
   
+        #step 2.2. transfer active agents to the first link of their paths
         if(t in g_agent_td_list_dict.keys()):  #activate the agent td: time dependent
             for j in range(0,len(g_agent_td_list_dict[t])):
                 agent_no=g_agent_td_list_dict[t][j]
                 agent=g_agent_list[agent_no]
-                if(agent.feasible_path_exist_flag==True):
+                if(agent.feasible_path_exist_flag==True):  # we only consider the agents with feasible paths
                     agent.b_generated=True
                     first_link_seq=agent.path_link_seq_no_list[0]
                     g_link_list[first_link_seq].td_link_cumulative_arrival[relative_t]+=1
-                    g_link_list[first_link_seq].entrance_queue.append(agent.agent_seq_no)
+                    g_link_list[first_link_seq].entrance_queue.append(agent.agent_seq_no) # put active agent to the entrance queue of the first link 
                     g_cumulative_arrival_count+=1
-                
+        #step 2.3 link transfer process of moving vehicles from entrance queue to the exit queue of a link         
         for li in range(0,len(g_link_list)):
             link=g_link_list[li]
             while(len(link.entrance_queue)>0):  #there are agents in the entrance_queue
@@ -402,7 +415,7 @@ def g_TrafficSimulation():
                 link.exit_queue.append(agent_seq)
                 g_agent_list[agent_seq].veh_link_departure_time_in_simu_interval[g_agent_list[agent_seq].current_link_seq_no_in_path]=\
                     g_agent_list[agent_seq].veh_link_arrival_time_in_simu_interval[g_agent_list[agent_seq].current_link_seq_no_in_path]+link.general_travel_time_in_simu_interval
-
+        #step 2.4 node transfer process of moving vehicles from exit queue to the entrance queue of a link  
         for no in range(0,len(g_node_list)):
             node=g_node_list[no]
             for l in range(0,len(node.incoming_link_list)):
@@ -415,18 +428,20 @@ def g_TrafficSimulation():
 
                 #check if the current link has sufficient capacity
                 #check if there are agents in exit queue
-             
-                while (g_link_list[link_seq_no].td_link_out_flow_capacity[relative_t]>=1 and len(g_link_list[link_seq_no].exit_queue)>=1):
+                #step 2.4.1 check condition of outflow capacity
+                while (g_link_list[link_seq_no].td_link_outflow_capacity[relative_t]>=1 and len(g_link_list[link_seq_no].exit_queue)>=1):
                     agent_no=node.incoming_link_list[incoming_link_index].exit_queue[0]
                    
                     if(g_agent_list[agent_no].veh_link_departure_time_in_simu_interval[g_agent_list[agent_no].current_link_seq_no_in_path]>t):
                         break        #the future departure time on this link is later than the current time
                
+                    #step 2.4.2 end of path checking 
                     if(g_agent_list[agent_no].current_link_seq_no_in_path==len(g_agent_list[agent_no].path_link_seq_no_list)-1): # end of the path
                         node.incoming_link_list[incoming_link_index].exit_queue.pop(0)
                         g_agent_list[agent_no].b_complete_trip = True
                         g_link_list[link_seq_no].td_link_cumulative_departure[relative_t] += 1
                         g_cumulative_departure_count += 1
+                    #step 2.4.3 move from exit queue to the entrace queue
                     else:  #  not complete the trip. move to the next link's entrance queue
                         next_link_seq=g_agent_list[agent_no].path_link_seq_no_list[g_agent_list[agent_no].current_link_seq_no_in_path+1]
                         node.incoming_link_list[incoming_link_index].exit_queue.pop(0)
@@ -435,7 +450,7 @@ def g_TrafficSimulation():
                         g_agent_list[agent_no].veh_link_arrival_time_in_simu_interval[g_agent_list[agent_no].current_link_seq_no_in_path+1]=t
                         
                         actual_travel_time = t - g_agent_list[agent_no].veh_link_arrival_time_in_simu_interval[g_agent_list[agent_no].current_link_seq_no_in_path]
-			#for each waiting vehicle
+			#step 2.4.4 handling waiting vehicles in the queue 
                         waiting_time = actual_travel_time - g_link_list[link_seq_no].general_travel_time_in_min
                         temp_relative_time=g_A2R_simu_interval(g_agent_list[agent_no].veh_link_arrival_time_in_simu_interval[g_agent_list[agent_no].current_link_seq_no_in_path])
                         time_in_min=int(temp_relative_time/g_number_of_simu_intervals_per_min)
@@ -445,10 +460,11 @@ def g_TrafficSimulation():
                         g_link_list[next_link_seq].td_link_cumulative_arrival[relative_t] += 1
                     
                     g_agent_list[agent_no].current_link_seq_no_in_path+=1
-                    g_link_list[link_seq_no].td_link_out_flow_capacity[relative_t]-=1 
+                    #step 2.4.5 update time dependent link out flow capacity
+                    g_link_list[link_seq_no].td_link_outflow_capacity[relative_t]-=1 
         
         
-def g_OutputFiles():
+def g_output_files():
     with open ('link_performance.csv','w',newline='') as fp:
         writer=csv.writer(fp)
         line=["link_id","from_node_id","to_node_id","time_period","volume","CA","CD","density","queue","travel_time","waiting_time_in_sec","speed"]
@@ -513,8 +529,7 @@ def g_OutputFiles():
             for i in range(0,len(agent.path_link_seq_no_list),1):
                 TA_in_min=agent.veh_link_arrival_time_in_simu_interval[i]* g_number_of_seconds_per_simu_interval / 60.0
                 TD_in_min=agent.veh_link_departure_time_in_simu_interval[i]* g_number_of_seconds_per_simu_interval / 60.0
-                if(i==0):
-                    
+                if(i==0):    
                     path_time_list.extend([time_stamp_to_HHMMSS(TA_in_min),time_stamp_to_HHMMSS(TD_in_min)])
                 else:
                     path_time_list.append(time_stamp_to_HHMMSS(TD_in_min))
@@ -535,12 +550,12 @@ def g_OutputFiles():
 if __name__=="__main__":
 
     begin_time=time()
-    g_ReadInputData()
-    g_TrafficAssignment()
-    g_TrafficSimulation()
+    g_read_input_data()  
+    g_traffic_assignment()
+    g_traffic_simulation()
 
     end_time=time()
-    g_OutputFiles()
+    g_output_files()
     
 
     
