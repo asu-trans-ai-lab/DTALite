@@ -1,4 +1,11 @@
+//#ifdef _WIN64
 #include "pch.h"
+//#endif
+
+#ifndef _WIN64  //linux
+#define NULL 0
+#endif
+
 #include "MathLibrary.h"
 
 double add_c(int a, int b)  // for testing

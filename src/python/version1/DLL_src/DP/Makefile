@@ -3,11 +3,11 @@ LIB := libstalite.so
 
 all: $(LIB)
 
-main_api.o : main_api.cpp
-	$(CC) -c -fopenmp -fpic main_api.cpp
+MathLibrary.o: MathLibrary.cpp
+	$(CC) -c -fopenmp -fpic MathLibrary.cpp
 
-$(LIB): main_api.o
-	$(CC) -shared -o $(LIB) main_api.o
+$(LIB): MathLibrary.o
+	$(CC) -shared -o $(LIB) MathLibrary.o
 
 clean:
 	rm -f *.o *.so
