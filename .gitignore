@@ -1,0 +1,9 @@
+# untrack useless visual studio configures
+*.vcxproj.filters
+*.vcxproj.user
+# untrack object files during compiling 
+*.o
+# untrack output files in test folder
+test/link_performance.csv
+test/agent.csv
+test/solution.csv
