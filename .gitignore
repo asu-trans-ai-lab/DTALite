@@ -1,6 +1,9 @@
 # untrack useless visual studio configures
 *.vcxproj.filters
 *.vcxproj.user
+# untrack useless visual studio folders
+*/x64
+*.vs/
 # untrack object files during compiling 
 *.o
 # untrack output files in test folder
