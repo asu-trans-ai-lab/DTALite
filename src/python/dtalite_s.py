@@ -5,6 +5,8 @@ import operator
 from random import choice
 import ctypes
 import collections
+import SimpleDequeC
+import heapq
 
 
 # =========================
@@ -306,7 +308,7 @@ class Network:
             node_OutgoingLinkSize[ self.link_list[j].from_node_seq_no] += 1  
 
                
-    def optimal_label_correcting(self, origin_node, destination_node, departure_time, sp_algm='FIFO'):
+    def optimal_label_correcting(self, origin_node, destination_node, departure_time, sp_algm='fifo'):
         """ input : origin_node, destination_node, departure_time
             output : the shortest path
         """
@@ -325,7 +327,7 @@ class Network:
         self.node_label_cost[origin_node] = departure_time
         status = [0] * self.node_size
 
-        if sp_algm == 'FIFO':
+        if sp_algm == 'fifo':
             # scan eligible list
             SEList = []  
             SEList.append(origin_node)
@@ -348,7 +350,8 @@ class Network:
                             SEList.append(to_node)
                             status[to_node] = 1
         elif sp_algm == 'deque':
-            SEList = collections.deque()
+            # SEList = collections.deque()
+            SEList = SimpleDequeC.deque(self.node_size)
             SEList.append(origin_node)
 
             while SEList:
@@ -372,7 +375,25 @@ class Network:
                                 SEList.append(to_node)
                             status[to_node] = 1
         elif sp_algm == 'dijkstra':
-            print('dijkstra')
+            # scan eligible list
+            SEList = []
+            heapq.heapify(SEList)
+            heapq.heappush(SEList, (self.node_label_cost[origin_node], origin_node))
+
+            while SEList:
+                (label_cost, from_node) = heapq.heappop(SEList)
+                for k in range(len(self.node_list[from_node].outgoing_link_list)):
+                    to_node = self.node_list[from_node].outgoing_link_list[k].to_node_seq_no 
+                    new_to_node_cost = label_cost + self.link_cost_array[self.node_list[from_node].outgoing_link_list[k].link_seq_no]
+                    # we only compare cost at the downstream node ToID at the new arrival time t
+                    if new_to_node_cost < self.node_label_cost[to_node]:
+                        # update cost label and node/time predecessor
+                        self.node_label_cost[to_node] = new_to_node_cost
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.node_predecessor[to_node] = from_node 
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
+                        heapq.heappush(SEList, (self.node_label_cost[to_node], to_node))
         
         if (destination_node >= 0 and self.node_label_cost[destination_node] < MAX_LABEL_COST_IN_SHORTEST_PATH):
             return 1
@@ -487,7 +508,7 @@ class Network:
                 self.agent_list[i].o_node_id, 
                 self.agent_list[i].d_node_id,
                 self.agent_list[i].departure_time_in_min,
-                'deque'
+                'fifo'
             )
            
             # step 3 update path
@@ -560,8 +581,8 @@ def g_TrafficAssignment(network):
             network.link_list[j].CalculateBPRFunction()
             network.link_cost_array[j] = network.link_list[j].cost
 
-        network.find_path_for_agents_withoutCAPI(i)     
-        # network.find_path_for_agents_CAPI(i)     
+        # network.find_path_for_agents_withoutCAPI(i)     
+        network.find_path_for_agents_CAPI(i)     
                         
         for k in range(g_number_of_links):
             network.link_list[k].flow_volume = 0.0
