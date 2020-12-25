@@ -2,7 +2,7 @@
 *.vcxproj.filters
 *.vcxproj.user
 # untrack useless visual studio folders
-*/x64
+*x64/
 *.vs/
 # untrack object files during compiling 
 *.o

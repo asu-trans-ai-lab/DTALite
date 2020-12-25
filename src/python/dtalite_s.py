@@ -3,7 +3,9 @@ import time
 import numpy 
 import operator
 from random import choice
-import ctypes 
+import ctypes
+import collections
+
 
 # =========================
 # -*- data block define -*- 
@@ -304,7 +306,7 @@ class Network:
             node_OutgoingLinkSize[ self.link_list[j].from_node_seq_no] += 1  
 
                
-    def optimal_label_correcting(self, origin_node, destination_node, departure_time):
+    def optimal_label_correcting(self, origin_node, destination_node, departure_time, sp_algm='FIFO'):
         """ input : origin_node, destination_node, departure_time
             output : the shortest path
         """
@@ -321,25 +323,57 @@ class Network:
         self.link_predecessor = [-1 for i in range(g_number_of_nodes)]
         
         self.node_label_cost[origin_node] = departure_time
-        # scan eligible list
-        SEList = []  
-        SEList.append(origin_node)
+        status = [0] * self.node_size
 
-        while SEList:
-            from_node = SEList.pop(0)
-            for k in range(len(self.node_list[from_node].outgoing_link_list)):
-                to_node = self.node_list[from_node].outgoing_link_list[k].to_node_seq_no 
-                new_to_node_cost = self.node_label_cost[from_node] + self.link_cost_array[self.node_list[from_node].outgoing_link_list[k].link_seq_no]
-                # we only compare cost at the downstream node ToID at the new arrival time t
-                if new_to_node_cost < self.node_label_cost[to_node]:
-                    # update cost label and node/time predecessor
-                    self.node_label_cost[to_node] = new_to_node_cost
-                    # pointer to previous physical node index from the current label at current node and time
-                    self.node_predecessor[to_node] = from_node 
-                    # pointer to previous physical node index from the current label at current node and time
-                    self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
-                    SEList.append(to_node)
-                                        
+        if sp_algm == 'FIFO':
+            # scan eligible list
+            SEList = []  
+            SEList.append(origin_node)
+
+            while SEList:
+                from_node = SEList.pop(0)
+                status[from_node] = 0
+                for k in range(len(self.node_list[from_node].outgoing_link_list)):
+                    to_node = self.node_list[from_node].outgoing_link_list[k].to_node_seq_no 
+                    new_to_node_cost = self.node_label_cost[from_node] + self.link_cost_array[self.node_list[from_node].outgoing_link_list[k].link_seq_no]
+                    # we only compare cost at the downstream node ToID at the new arrival time t
+                    if new_to_node_cost < self.node_label_cost[to_node]:
+                        # update cost label and node/time predecessor
+                        self.node_label_cost[to_node] = new_to_node_cost
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.node_predecessor[to_node] = from_node 
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
+                        if not status[to_node]:
+                            SEList.append(to_node)
+                            status[to_node] = 1
+        elif sp_algm == 'deque':
+            SEList = collections.deque()
+            SEList.append(origin_node)
+
+            while SEList:
+                from_node = SEList.popleft()
+                status[from_node] = 2
+                for k in range(len(self.node_list[from_node].outgoing_link_list)):
+                    to_node = self.node_list[from_node].outgoing_link_list[k].to_node_seq_no 
+                    new_to_node_cost = self.node_label_cost[from_node] + self.link_cost_array[self.node_list[from_node].outgoing_link_list[k].link_seq_no]
+                    # we only compare cost at the downstream node ToID at the new arrival time t
+                    if new_to_node_cost < self.node_label_cost[to_node]:
+                        # update cost label and node/time predecessor
+                        self.node_label_cost[to_node] = new_to_node_cost
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.node_predecessor[to_node] = from_node 
+                        # pointer to previous physical node index from the current label at current node and time
+                        self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
+                        if status[to_node] != 1:
+                            if status[to_node] == 2:
+                                SEList.appendleft(to_node)
+                            else:
+                                SEList.append(to_node)
+                            status[to_node] = 1
+        elif sp_algm == 'dijkstra':
+            print('dijkstra')
+        
         if (destination_node >= 0 and self.node_label_cost[destination_node] < MAX_LABEL_COST_IN_SHORTEST_PATH):
             return 1
         else: 
@@ -452,7 +486,8 @@ class Network:
             return_value = self.optimal_label_correcting(
                 self.agent_list[i].o_node_id, 
                 self.agent_list[i].d_node_id,
-                self.agent_list[i].departure_time_in_min
+                self.agent_list[i].departure_time_in_min,
+                'deque'
             )
            
             # step 3 update path
