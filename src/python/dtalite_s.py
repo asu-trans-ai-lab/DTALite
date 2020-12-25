@@ -5,7 +5,6 @@ import operator
 from random import choice
 import ctypes
 import collections
-import SimpleDequeC
 import heapq
 
 
@@ -155,6 +154,7 @@ class Agent:
         self.d_zone_id = int(d_zone_id)
         self.o_node_id = 0
         self.d_node_id = 0
+        self.agent_seq_no = 0
         self.path_node_seq_no_list = list()
         self.path_link_seq_no_list = list()
         self.current_link_seq_no_in_path = 0 
@@ -164,14 +164,14 @@ class Agent:
         self.path_cost = 0
         self.b_generated = False
         self.b_complete_trip = False
-        self.departure_time_in_simu_interval = int(self.departure_time_in_min*60.0/NUMBER_OF_SECONDS_PER_SIMU_INTERVAL + 0.5)
+        self.departure_time_in_simu_interval = int(self.departure_time_in_min*60/NUMBER_OF_SECONDS_PER_SIMU_INTERVAL + 0.5)
         self.feasible_path_exist_flag = False
         
-    def Initialization(self): 
-        """ update the number of agents """
-        global g_number_of_agents
-        self.agent_seq_no = g_number_of_agents
-        g_number_of_agents += 1
+    # def Initialization(self): 
+    #     """ update the number of agents """
+    #     global g_number_of_agents
+    #     self.agent_seq_no = g_number_of_agents
+    #     g_number_of_agents += 1
         
     def Initialize_for_simulation(self): 
         if self.path_node_seq_no_list:
@@ -206,7 +206,6 @@ class Network:
 
     def allocate(self):
         """ initialization for traffic assignment """ 
-
         # set up the return type and argument types for the shortest path 
         # function in dll.
         self.cdll = ctypes.cdll.LoadLibrary(r"../../lib/libstalite.dll")
@@ -233,7 +232,7 @@ class Network:
             [-1]*self.link_size, 
             dtype=numpy.float64
         )
-        self.link_volume_array = [0.0]*self.link_size
+        self.link_volume_array = [0]*self.link_size
         self.node_predecessor = numpy.array(
             [-1]*self.node_size, 
             dtype=numpy.int32
@@ -317,11 +316,11 @@ class Network:
             return 0
         
         # Initialization for all nodes
-        self.node_label_cost = [MAX_LABEL_COST_IN_SHORTEST_PATH for i in range(g_number_of_nodes)]
+        self.node_label_cost = [MAX_LABEL_COST_IN_SHORTEST_PATH] * self.node_size
         # pointer to previous node index from the current label at current node
-        self.node_predecessor = [-1 for i in range(g_number_of_nodes)]
+        self.node_predecessor = [-1] * self.node_size
         # pointer to previous node index from the current label at current node
-        self.link_predecessor = [-1 for i in range(g_number_of_nodes)]
+        self.link_predecessor = [-1] * self.node_size
         
         self.node_label_cost[origin_node] = departure_time
         status = [0] * self.node_size
@@ -348,9 +347,9 @@ class Network:
                         if not status[to_node]:
                             SEList.append(to_node)
                             status[to_node] = 1
+
         elif sp_algm == 'deque':
-            # SEList = collections.deque()
-            SEList = SimpleDequeC.deque(self.node_size)
+            SEList = collections.deque()
             SEList.append(origin_node)
 
             while SEList:
@@ -373,6 +372,7 @@ class Network:
                             else:
                                 SEList.append(to_node)
                             status[to_node] = 1
+
         elif sp_algm == 'dijkstra':
             # scan eligible list
             SEList = []
@@ -393,6 +393,7 @@ class Network:
                         # pointer to previous physical node index from the current label at current node and time
                         self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
                         heapq.heappush(SEList, (self.node_label_cost[to_node], to_node))
+        # end of sp_algm == 'fifo':
         
         if (destination_node >= 0 and self.node_label_cost[destination_node] < MAX_LABEL_COST_IN_SHORTEST_PATH):
             return 1
@@ -584,7 +585,7 @@ def g_TrafficAssignment(network):
         network.find_path_for_agents_CAPI(i)     
                         
         for k in range(g_number_of_links):
-            network.link_list[k].flow_volume = 0.0
+            network.link_list[k].flow_volume = 0
             network.link_list[k].flow_volume += network.link_volume_array[k]
 
 
@@ -592,8 +593,9 @@ def g_TrafficSimulation(node_list, link_list, agent_list, agent_td_list_dict):
     global g_cumulative_arrival_count
     global g_cumulative_departure_count
 
+    link_list_size = len(link_list)
     #initialization for each link
-    for li in range(len(link_list)):
+    for li in range(link_list_size):
         link_list[li].ResetMOE()
     #initialization for each agent
     for agent_no in range(len(agent_list)):
@@ -612,7 +614,7 @@ def g_TrafficSimulation(node_list, link_list, agent_list, agent_td_list_dict):
             )
 
         relative_t = g_A2R_simu_interval(t)
-        for li in range(len(link_list)):
+        for li in range(link_list_size):
             link = link_list[li]
             if relative_t >= 1:
                 link_list[link.link_seq_no].td_link_cumulative_departure[relative_t] = link_list[link.link_seq_no].td_link_cumulative_departure[relative_t-1]
@@ -630,7 +632,7 @@ def g_TrafficSimulation(node_list, link_list, agent_list, agent_td_list_dict):
                     link_list[first_link_seq].entrance_queue.append(agent.agent_seq_no)
                     g_cumulative_arrival_count += 1
                 
-        for li in range(len(link_list)):
+        for li in range(link_list_size):
             link = link_list[li]
             # there are agents in the entrance_queue
             while link.entrance_queue:  
@@ -644,8 +646,9 @@ def g_TrafficSimulation(node_list, link_list, agent_list, agent_td_list_dict):
 
         for no in range(len(node_list)):
             node = node_list[no]
-            for i in range(len(node.incoming_link_list)):
-                incoming_link_index = (i + t) % (len(node.incoming_link_list)) 
+            incoming_link_list_size = len(node.incoming_link_list)
+            for i in range(incoming_link_list_size):
+                incoming_link_index = (i + t) % (incoming_link_list_size) 
                 # we will start with different first link from the incoming 
                 # link list, equal change, regardless of # of lanes 
                 # or main line vs. ramp, but one can use service arc, 
@@ -711,13 +714,14 @@ def g_ReadInputData(node_list,
     global g_end_simu_interval_no
     global g_number_of_nodes
     global g_number_of_links
+    global g_number_of_agents
 
     #step 1: read input_node
     with open('../../test/node.csv', 'r', encoding='utf-8') as fp:
         reader = csv.DictReader(fp)
         node_seq_no = 0
         for line in reader:
-            node = Node(node_seq_no,line['node_id'],line['zone_id'])
+            node = Node(node_seq_no, line['node_id'], line['zone_id'])
             node_list.append(node)
             internal_node_seq_no_dict[node.external_node_id] = node_seq_no
             external_node_id_dict[node_seq_no] = node.external_node_id
@@ -784,7 +788,7 @@ def g_ReadInputData(node_list,
                 agent.d_node_id = choice(zone_to_nodes_dict[agent.d_zone_id])
                 
                 # step 3.2 the initialization of the agent
-                agent.Initialization()
+                # agent.Initialization()
 
                 # step 3.3: update the g_simulation_start_time_in_min and 
                 # g_simulation_end_time_in_min 
@@ -801,14 +805,16 @@ def g_ReadInputData(node_list,
                     agent_td_list_dict[agent.departure_time_in_simu_interval].append(agent.agent_seq_no)
                 agent_list.append(agent)
 
-    print('the number of agents is', g_number_of_agents)
-
     #step 3.6:sort agents by the departure time
     sort_fun = operator.attrgetter("departure_time_in_min")
     agent_list.sort(key=sort_fun)
+    g_number_of_agents = len(agent_list)
+    
+    print('the number of agents is', g_number_of_agents)
 
-    for agent_no in range(len(agent_list)):
+    for agent_no in range(g_number_of_agents):
         agent_list[agent_no].agent_seq_no = agent_no
+    
         
     #step 3.7:start simulation interval and end simulation interval
     g_start_simu_interval_no = int(g_simulation_start_time_in_min * 60 / NUMBER_OF_SECONDS_PER_SIMU_INTERVAL)
@@ -839,8 +845,8 @@ def g_OutputFiles(link_list, agent_list, external_node_id_dict):
                     waiting_time_in_sec = 0
                     arrival_rate = 0
                     avg_waiting_time_in_sec = 0
-                    avg_travel_time_in_min = float(link.general_travel_time_in_min + avg_waiting_time_in_sec/60.0)
-                    speed = link.length / (max(0.00001, avg_travel_time_in_min/60.0))
+                    avg_travel_time_in_min = float(link.general_travel_time_in_min + avg_waiting_time_in_sec/60)
+                    speed = link.length / (max(0.00001, avg_travel_time_in_min/60))
                     virtual_arrival = 0
 
                     if time_in_min >= 1:
@@ -855,7 +861,7 @@ def g_OutputFiles(link_list, agent_list, external_node_id_dict):
                         if (relative_t + int(60 / NUMBER_OF_SECONDS_PER_SIMU_INTERVAL) < LENGTH_OF_SIMULATION_TIME_HORIZON_IN_INTERVAL):
                             arrival_rate = link.td_link_cumulative_arrival[relative_t + int(60 / NUMBER_OF_SECONDS_PER_SIMU_INTERVAL)] - link.td_link_cumulative_arrival[relative_t]
                         avg_waiting_time_in_sec = waiting_time_in_sec / max(1, arrival_rate)
-                        avg_travel_time_in_min = link.general_travel_time_in_min + avg_waiting_time_in_sec/60.0
+                        avg_travel_time_in_min = link.general_travel_time_in_min + avg_waiting_time_in_sec/60
                         speed = link.length / (max(0.00001, avg_travel_time_in_min) / 60)
                     # end of if ime_in_min >= 1:
 
@@ -902,10 +908,10 @@ def g_OutputFiles(link_list, agent_list, external_node_id_dict):
             if g_modeling_method == 2:
                 path_time_list = list()
                 cost = (agent.veh_link_departure_time_in_simu_interval[-1]-agent.veh_link_arrival_time_in_simu_interval[0])\
-                        * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60.0
+                        * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60
                 for i in range(len(agent.path_link_seq_no_list)):
-                    TA_in_min = agent.veh_link_arrival_time_in_simu_interval[i] * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60.0
-                    TD_in_min = agent.veh_link_departure_time_in_simu_interval[i] * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60.0
+                    TA_in_min = agent.veh_link_arrival_time_in_simu_interval[i] * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60
+                    TD_in_min = agent.veh_link_departure_time_in_simu_interval[i] * NUMBER_OF_SECONDS_PER_SIMU_INTERVAL / 60
                     if i == 0:
                         path_time_list.extend([time_stamp_to_HHMMSS(TA_in_min), 
                                                time_stamp_to_HHMMSS(TD_in_min)])
