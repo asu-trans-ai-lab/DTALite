@@ -209,8 +209,7 @@ class Network:
 
         # set up the return type and argument types for the shortest path 
         # function in dll.
-        self.cdll = ctypes.cdll.LoadLibrary(r"../../lib/libstalite_base.dll")
-        self.cdll.shortest_path.restype = ctypes.c_double
+        self.cdll = ctypes.cdll.LoadLibrary(r"../../lib/libstalite.dll")
         self.cdll.shortest_path.argtypes = [
                 ctypes.c_int, ctypes.c_int, 
                 numpy.ctypeslib.ndpointer(dtype=numpy.int32),
