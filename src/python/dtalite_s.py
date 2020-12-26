@@ -145,16 +145,17 @@ class Agent:
     agent_seq_no: the index of the agent and we call the agent by its index
     """
     
-    def __init__(self, agent_id, agent_type, o_zone_id, d_zone_id):
+    def __init__(self, agent_id, agent_seq_no, agent_type, 
+                 o_zone_id, d_zone_id):
         """ the attribute of agent """ 
         self.agent_id = agent_id
+        self.agent_seq_no = agent_seq_no
         # vehicle 
         self.agent_type = agent_type  
         self.o_zone_id = int(o_zone_id) 
         self.d_zone_id = int(d_zone_id)
         self.o_node_id = 0
         self.d_node_id = 0
-        self.agent_seq_no = 0
         self.path_node_seq_no_list = list()
         self.path_link_seq_no_list = list()
         self.current_link_seq_no_in_path = 0 
@@ -166,12 +167,6 @@ class Agent:
         self.b_complete_trip = False
         self.departure_time_in_simu_interval = int(self.departure_time_in_min*60/NUMBER_OF_SECONDS_PER_SIMU_INTERVAL + 0.5)
         self.feasible_path_exist_flag = False
-        
-    # def Initialization(self): 
-    #     """ update the number of agents """
-    #     global g_number_of_agents
-    #     self.agent_seq_no = g_number_of_agents
-    #     g_number_of_agents += 1
         
     def Initialize_for_simulation(self): 
         if self.path_node_seq_no_list:
@@ -306,9 +301,18 @@ class Network:
             node_OutgoingLinkSize[ self.link_list[j].from_node_seq_no] += 1  
 
                
-    def optimal_label_correcting(self, origin_node, destination_node, departure_time, sp_algm='fifo'):
-        """ input : origin_node, destination_node, departure_time
-            output : the shortest path
+    def optimal_label_correcting(self, origin_node, destination_node, 
+                                 departure_time, sp_algm='fifo'):
+        """ find shorest path between origin_node and destination_node
+
+        input : origin_node, destination_node, departure_time
+        output: the shortest path
+
+        sp_algm: please choose one of the following three, fifo, deque, and
+        dijkstra.
+
+        The implementations are adopted from 
+        https://github.com/jdlph/shortest-path-algorithms
         """
         origin_node = self.internal_node_seq_no_dict[origin_node]
         destination_node = self.internal_node_seq_no_dict[destination_node]
@@ -325,7 +329,7 @@ class Network:
         self.node_label_cost[origin_node] = departure_time
         status = [0] * self.node_size
 
-        if sp_algm == 'fifo':
+        if sp_algm.lower() == 'fifo':
             # scan eligible list
             SEList = []  
             SEList.append(origin_node)
@@ -348,7 +352,7 @@ class Network:
                             SEList.append(to_node)
                             status[to_node] = 1
 
-        elif sp_algm == 'deque':
+        elif sp_algm.lower() == 'deque':
             SEList = collections.deque()
             SEList.append(origin_node)
 
@@ -373,7 +377,7 @@ class Network:
                                 SEList.append(to_node)
                             status[to_node] = 1
 
-        elif sp_algm == 'dijkstra':
+        elif sp_algm.lower() == 'dijkstra':
             # scan eligible list
             SEList = []
             heapq.heapify(SEList)
@@ -393,6 +397,10 @@ class Network:
                         # pointer to previous physical node index from the current label at current node and time
                         self.link_predecessor[to_node] = self.node_list[from_node].outgoing_link_list[k].link_seq_no  
                         heapq.heappush(SEList, (self.node_label_cost[to_node], to_node))
+        
+        else:
+            raise Exception('Please choose correct shortest path algorithm: '
+                            +'fifo or deque or dijkstra')
         # end of sp_algm == 'fifo':
         
         if (destination_node >= 0 and self.node_label_cost[destination_node] < MAX_LABEL_COST_IN_SHORTEST_PATH):
@@ -427,7 +435,6 @@ class Network:
     
         #print('shortest path')
         #print("path cost is {}".format(node_label_cost[d_node_no]))
-        
         if (o_node_no >= 0 and self.node_label_cost[o_node_no] < MAX_LABEL_COST_IN_SHORTEST_PATH):
             return {
                 "path_flag": 1,
@@ -508,7 +515,7 @@ class Network:
                 self.agent_list[i].o_node_id, 
                 self.agent_list[i].d_node_id,
                 self.agent_list[i].departure_time_in_min,
-                'fifo'
+                'deque'
             )
            
             # step 3 update path
@@ -581,8 +588,8 @@ def g_TrafficAssignment(network):
             network.link_list[j].CalculateBPRFunction()
             network.link_cost_array[j] = network.link_list[j].cost
 
-        # network.find_path_for_agents_withoutCAPI(i)     
-        network.find_path_for_agents_CAPI(i)     
+        network.find_path_for_agents_withoutCAPI(i)     
+        # network.find_path_for_agents_CAPI(i)     
                         
         for k in range(g_number_of_links):
             network.link_list[k].flow_volume = 0
@@ -765,6 +772,7 @@ def g_ReadInputData(node_list,
         reader = csv.DictReader(fp)
         agent_id = 1
         agent_type = 'v'
+        agent_seq_no = 0
         for line in reader:
             volume = line['volume']
             volume_agent_size = int(float(volume) + 1)
@@ -774,7 +782,11 @@ def g_ReadInputData(node_list,
                 break 
     
             for i in range(volume_agent_size):
-                agent = Agent(agent_id,agent_type,line['o_zone_id'], line['d_zone_id'])
+                agent = Agent(agent_id,
+                              agent_seq_no,
+                              agent_type,
+                              line['o_zone_id'], 
+                              line['d_zone_id'])
 
                 # step 3.1 generate o_node_id and d_node_id randomly according 
                 # to o_zone_id and d_zone_id 
@@ -782,13 +794,13 @@ def g_ReadInputData(node_list,
                      continue
                 if zone_to_nodes_dict.get(agent.d_zone_id, -1) == -1 : 
                      continue 
-
-                agent_id = agent_id + 1
+                
                 agent.o_node_id = choice(zone_to_nodes_dict[agent.o_zone_id])
                 agent.d_node_id = choice(zone_to_nodes_dict[agent.d_zone_id])
                 
-                # step 3.2 the initialization of the agent
-                # agent.Initialization()
+                # step 3.2 update agent_id and agent_seq_no
+                agent_id += 1
+                agent_seq_no += 1 
 
                 # step 3.3: update the g_simulation_start_time_in_min and 
                 # g_simulation_end_time_in_min 
@@ -805,17 +817,15 @@ def g_ReadInputData(node_list,
                     agent_td_list_dict[agent.departure_time_in_simu_interval].append(agent.agent_seq_no)
                 agent_list.append(agent)
 
+    g_number_of_agents = len(agent_list)
+    print('the number of agents is', g_number_of_agents)
+
     #step 3.6:sort agents by the departure time
     sort_fun = operator.attrgetter("departure_time_in_min")
     agent_list.sort(key=sort_fun)
-    g_number_of_agents = len(agent_list)
-    
-    print('the number of agents is', g_number_of_agents)
-
     for agent_no in range(g_number_of_agents):
         agent_list[agent_no].agent_seq_no = agent_no
     
-        
     #step 3.7:start simulation interval and end simulation interval
     g_start_simu_interval_no = int(g_simulation_start_time_in_min * 60 / NUMBER_OF_SECONDS_PER_SIMU_INTERVAL)
     g_end_simu_interval_no = g_start_simu_interval_no + LENGTH_OF_SIMULATION_TIME_HORIZON_IN_INTERVAL
@@ -884,6 +894,8 @@ def g_OutputFiles(link_list, agent_list, external_node_id_dict):
                 # end of for relative_t in ...
                 writer.writerow(line)
             # end of link in link_list:
+        # end of with open ...
+    # end of if g_modeling_method == 2:
         
     with open("../../test/agent.csv", "w", newline='') as fp:
         writer = csv.writer(fp)
@@ -942,7 +954,6 @@ def g_OutputFiles(link_list, agent_list, external_node_id_dict):
 
          
 if __name__=="__main__":
-
     network = Network()
     g_ReadInputData(network.node_list, 
                     network.link_list, 
@@ -964,7 +975,6 @@ if __name__=="__main__":
     g_OutputFiles(network.link_list, 
                   network.agent_list, 
                   network.external_node_id_dict)
-        
-    # print('end time: {0: .2f}'.format(end_time))
+
     print('shortest path processing time: {0: .2f}'.format(end_time-begin_time) 
           + 's')
