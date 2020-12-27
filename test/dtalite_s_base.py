@@ -163,7 +163,7 @@ class Network:
         self.link_cost_array = numpy.array([-1]*len(self.link_list),dtype=numpy.float64)
         self.link_volume_array = [0.0]*len(self.link_list)
         
-        self.cdll = ctypes.cdll.LoadLibrary(r"../lib/libstalite_base.dll")
+        self.cdll = ctypes.cdll.LoadLibrary(r"libstalite_base.dll")
       
         self.cdll.shortest_path.restype = ctypes.c_double
         self.cdll.shortest_path.argtypes = [ctypes.c_int, ctypes.c_int, 

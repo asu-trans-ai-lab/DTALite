@@ -19,11 +19,13 @@ void shortest_path(int node_size, int link_size,
 	Similar implementation can be also found at DYNASMART system design by Dr. Hani Mahmassani and original code in DTALite by Dr. Xuesong Zhou
 	*/
 
+	// construct and initialize the following three on the first call
+	static const int INVALID = -1, SEList_WAS_IN_QUEUE_Flag = -7;
+	// used t filter out the TAZ based centriods
+	static const int FirstThruNode = 0;  
+
 	int node_indiex, current_node, NewNode;
-	int INVALID = -1;
-	int SEList_WAS_IN_QUEUE_Flag = -7;
 	int SEList_queue_first, SEList_queue_last;
-	int FirstThruNode = 0;  // used t filter out the TAZ based centriods
 
 	//SEList_queue_next_vector is the implementation of scan eligible list for active nodes in label correcting 
 	for (node_indiex = 0; node_indiex < node_size; ++node_indiex)
