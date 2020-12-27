@@ -1,9 +1,9 @@
 import csv
 import time
-import numpy 
 import operator
 from random import choice
 import ctypes
+import numpy 
 import collections
 import heapq
 
@@ -223,59 +223,41 @@ class Network:
         self.node_size = len(self.node_list)
         self.link_size = len(self.link_list)
         self.agenet_size = len(self.agent_list)
-        self.link_cost_array = numpy.array(
-            [-1]*self.link_size, 
-            dtype=numpy.float64
-        )
-        self.link_volume_array = [0]*self.link_size
-        self.node_predecessor = numpy.array(
-            [-1]*self.node_size, 
-            dtype=numpy.int32
-        )
-        self.node_label_cost = numpy.array(
-            [MAX_LABEL_COST_IN_SHORTEST_PATH]*self.node_size,
-            dtype=numpy.float64
-        )
-        self.link_predecessor = numpy.array(
-            [-1]*self.node_size,
-            dtype=numpy.int32
-        )
-        self.queue_next = numpy.array(
-            [0]*self.node_size,
-            dtype=numpy.int32
-        )
-        self.from_node_no_array = numpy.array(
-            [-1]*self.link_size,
-            dtype=numpy.int32
-        )
-        self.to_node_no_array = numpy.array(
-            [-1]*self.link_size,
-            dtype=numpy.int32
-        )
-        self.FirstLinkFrom =numpy.array(
-            [-1]*self.node_size,
-            dtype=numpy.int32
-        )
-        self.LastLinkFrom = numpy.array(
-            [-1]*self.node_size,
-            dtype=numpy.int32
-        )
-        self.sorted_link_no_vector = numpy.array(
-            [-1]*self.link_size,
-            dtype=numpy.int32
-        )
-  
-        for j in range(self.link_size):
-            self.from_node_no_array[j] = self.link_list[j].from_node_seq_no
-            self.to_node_no_array [j] = self.link_list[j].to_node_seq_no
-            self.link_cost_array[j] = self.link_list[j].cost
-                
-        node_OutgoingLinkSize = numpy.array(
-            [0]*self.node_size,
-            dtype=numpy.int32
-        )
+
+        # initialize link_volume_array using list comprehension
+        self.link_volume_array = [0] * self.link_size
+
+        # initialize from_node_no_array, to_node_no_array, and link_cost_array
+        self.from_node_no_array = [
+            self.link_list[j].from_node_seq_no for j in range(self.link_size)
+        ]
+        self.to_node_no_array = [
+            self.link_list[j].to_node_seq_no for j in range(self.link_size)
+        ]
+        self.link_cost_array = [
+            self.link_list[j].cost for j in range(self.link_size)
+        ]
+        # convert the above three into numpy array to be passed as 
+        # pointers to dll
+        self.from_node_no_array = numpy.array(self.from_node_no_array, 
+                                              numpy.int32)
+        self.to_node_no_array = numpy.array(self.to_node_no_array, numpy.int32)
+        self.link_cost_array = numpy.array(self.link_cost_array, numpy.float64)
+        
+        # initialize others as numpy arrays directly
+        self.node_predecessor = numpy.full(self.node_size, -1, numpy.int32)
+        self.node_label_cost = numpy.full(self.node_size, 
+                                          MAX_LABEL_COST_IN_SHORTEST_PATH,
+                                          numpy.float64)
+        self.link_predecessor = numpy.full(self.node_size, -1, numpy.int32)
+        self.queue_next = numpy.full(self.node_size, 0, numpy.int32)
+        self.FirstLinkFrom = numpy.full(self.node_size, -1, numpy.int32)
+        self.LastLinkFrom = numpy.full(self.node_size, -1, numpy.int32)
+        self.sorted_link_no_vector = numpy.full(self.link_size, -1, 
+                                                numpy.int32)
 
         # count the size of outgoing links for each node
+        node_OutgoingLinkSize = [0] * self.node_size
         for j in range(self.link_size):
             node_OutgoingLinkSize[self.link_list[j].from_node_seq_no] += 1
 
@@ -283,7 +265,7 @@ class Network:
         for i in range(self.node_size):
             self.FirstLinkFrom[i] = cumulative_count
             self.LastLinkFrom[i] = self.FirstLinkFrom[i] + node_OutgoingLinkSize[i]
-            cumulative_count +=  node_OutgoingLinkSize[i]
+            cumulative_count += node_OutgoingLinkSize[i]
 
         # reset the counter # need to construct sorted_link_no_vector
         # we are converting a 2 dimensional dynamic array to a fixed size 
@@ -296,9 +278,11 @@ class Network:
             # fetch the curent from node seq no of this link
             from_node_seq_no = self.link_list[j].from_node_seq_no
             # j is the link sequence no in the original link block
-            self.sorted_link_no_vector[self.FirstLinkFrom[from_node_seq_no]+node_OutgoingLinkSize[from_node_seq_no]] = j
+            k = (self.FirstLinkFrom[from_node_seq_no] 
+                 + node_OutgoingLinkSize[from_node_seq_no])
+            self.sorted_link_no_vector[k] = j
             # continue to count, increase by 1
-            node_OutgoingLinkSize[ self.link_list[j].from_node_seq_no] += 1  
+            node_OutgoingLinkSize[self.link_list[j].from_node_seq_no] += 1  
 
                
     def optimal_label_correcting(self, origin_node, destination_node, 
@@ -588,8 +572,8 @@ def g_TrafficAssignment(network):
             network.link_list[j].CalculateBPRFunction()
             network.link_cost_array[j] = network.link_list[j].cost
 
-        network.find_path_for_agents_withoutCAPI(i)     
-        # network.find_path_for_agents_CAPI(i)     
+        # network.find_path_for_agents_withoutCAPI(i)     
+        network.find_path_for_agents_CAPI(i)     
                         
         for k in range(g_number_of_links):
             network.link_list[k].flow_volume = 0
@@ -832,7 +816,6 @@ def g_ReadInputData(node_list,
 
         
 def g_OutputFiles(link_list, agent_list, external_node_id_dict):
-    
     if g_modeling_method == 2:
         with open ('../../test/link_performance.csv', 'w', newline='') as fp:
             writer = csv.writer(fp)
