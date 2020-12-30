@@ -1581,8 +1581,8 @@ double SignalAPI(int iteration_number, int MainSigModual_mode, int signal_updati
 							int end_min = global_end_time_in_sec / 60 - end_hour * 60;
 							int end_sec = global_end_time_in_sec % 60;
 
-							int from_node_id = MainSigModual.m_sig_node_vector[MainSigModual.m_sig_link_vector[sn.movement_Array[m].LinkSeqNo].from_node_seq_no].node_id;
-							int to_node_id = MainSigModual.m_sig_node_vector[MainSigModual.m_sig_link_vector[sn.movement_Array[m].LinkSeqNo].to_node_seq_no].node_id;
+							string from_node_id = MainSigModual.m_sig_node_vector[MainSigModual.m_sig_link_vector[sn.movement_Array[m].LinkSeqNo].from_node_seq_no].node_id;
+							string to_node_id = MainSigModual.m_sig_node_vector[MainSigModual.m_sig_link_vector[sn.movement_Array[m].LinkSeqNo].to_node_seq_no].node_id;
 							//						float capacity = sn.green_Time_Stage_Array[StageNo] * sn.saturation_Flow_Rate_Matrix[StageNo][m] / 3600.0;
 							float capacity = sn.green_Time_Stage_Array[StageNo] * 1800.0 / 3600.0;
 							//float capacity = sn.capacity_by_Stage_and_Movement_Matrix[StageNo][m]/60;

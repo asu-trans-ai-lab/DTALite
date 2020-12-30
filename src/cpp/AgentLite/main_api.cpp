@@ -1153,8 +1153,8 @@ public:
 	int g_reassignment_tau0;
 
 	int b_debug_detail_flag;
-	std::map<int, int> g_node_id_to_seq_no_map;  // hash table, map external node number to internal node sequence no. 
-	std::map<int, int> g_zoneid_to_zone_seq_no_mapping;// from integer to integer map zone_id to zone_seq_no
+	std::map<string, int> g_node_id_to_seq_no_map;  // hash table, map external node number to internal node sequence no. 
+	std::map<string, int> g_zoneid_to_zone_seq_no_mapping;// from integer to integer map zone_id to zone_seq_no
 	std::map<string, int> g_link_id_map;
 
 
@@ -1318,16 +1318,18 @@ public:
 
 		volume = max(0, volume);  // take nonnegative values
 
-		if (volume > 1.0)
-		{
-			int debug = 1;
-		}
+
+		
+	
 		VOC = volume / max(0.00001f, capacity);
 		avg_travel_time = FFTT + FFTT * alpha * pow(volume / max(0.00001f, capacity), beta);
 
 		marginal_base = FFTT * alpha * beta*pow(volume / max(0.00001f, capacity), beta - 1);
 
-
+		if (volume > 1.0)
+		{
+			int debug = 1;
+		}
 	return avg_travel_time;
 
 		// volume --> avg_traveltime
@@ -1622,9 +1624,9 @@ public:
 	//int accessible_node_count;
 
 	int node_seq_no;  // sequence number 
-	int node_id;      //external node number 
-	int zone_id;
-	int zone_org_id;  // original zone id for non-centriod nodes
+	string node_id;      //external node number 
+	string zone_id;
+	string zone_org_id;  // original zone id for non-centriod nodes
 
 	double x;
 	double y;
@@ -1663,7 +1665,7 @@ public:
 
 	}
 	int zone_seq_no;  // 0, 1, 
-	int zone_id;  // external zone id // this is origin zone
+	string zone_id;  // external zone id // this is origin zone
 	int node_seq_no;
 
 	float obs_production;
@@ -1683,7 +1685,7 @@ public:
 };
 
 extern std::vector<COZone> g_zone_vector;
-extern std::map<int, int> g_zoneid_to_zone_seq_no_mapping;
+extern std::map<string, int> g_zoneid_to_zone_seq_no_mapping;
 
 class CAGBMAgent
 {
@@ -1943,7 +1945,7 @@ public:
 
 			for (int i = 0; i < g_node_vector.size(); i++)
 			{
-				if (g_node_vector[i].zone_org_id > 0) // for each physical node
+				if (g_node_vector[i].zone_org_id.size() == 0) // for each physical node
 				{ // we need to make sure we only create two way connectors between nodes and zones 
 					log_out << "node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
 						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << endl;
@@ -2264,7 +2266,7 @@ public:
 				for (int i = 0; i < p_assignment->g_number_of_nodes; i++) //Initialization for all non-origin nodes
 				{
 					int node_pred_no = m_node_predecessor[i];
-					int node_pred_id = -1;
+					string node_pred_id;
 					if (node_pred_no >= 0)
 						node_pred_id = g_node_vector[node_pred_no].node_id;
 
@@ -2678,12 +2680,12 @@ void g_ProgramStop()
 
 
 
-int g_ParserIntSequence(std::string str, std::vector<int>& vect)
+int g_ParserIntSequence(std::string str, std::vector<string>& vect)
 {
 
 	std::stringstream ss(str);
 
-	int i;
+	string i;
 
 	while (ss >> i)
 	{
@@ -2718,139 +2720,128 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 		while (parser.ReadRecord_Section())
 		{
 
-			if(parser.SectionName == "[demand_file_list]")
+			if (parser.SectionName == "[demand_file_list]")
 			{
-			int file_sequence_no = 1;
-			string file_name;
-			string format_type = "null";
+				int file_sequence_no = 1;
+				string file_name;
+				string format_type = "null";
 
-			string demand_period, agent_type;
+				string demand_period, agent_type;
 
-			int demand_format_flag = 0;
+				int demand_format_flag = 0;
 
-			if (parser.GetValueByFieldName("file_sequence_no", file_sequence_no) == false)
-				break;
+				if (parser.GetValueByFieldName("file_sequence_no", file_sequence_no) == false)
+					break;
 
-			if (file_sequence_no <= -1)  // skip negative sequence no 
-				continue;
+				if (file_sequence_no <= -1)  // skip negative sequence no 
+					continue;
 
-			parser.GetValueByFieldName("file_name", file_name);
+				parser.GetValueByFieldName("file_name", file_name);
 
-			parser.GetValueByFieldName("demand_period", demand_period);
-
-
-			parser.GetValueByFieldName("format_type", format_type);
-			if (format_type.find("null") != string::npos)  // skip negative sequence no 
-			{
-				log_out << "Please provide format_type in section [demand_file_list.]" << endl;
-				g_ProgramStop();
-			}
+				parser.GetValueByFieldName("demand_period", demand_period);
 
 
-			double total_ratio = 0;
-
-			parser.GetValueByFieldName("agent_type", agent_type);
-
-
-			int agent_type_no = 0;
-			int demand_period_no = 0;
-
-			if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
-			{
-				demand_period_no = assignment.demand_period_to_seqno_mapping[demand_period];
-
-			}
-			else
-			{
-				log_out << "Error: demand period in section [demand_file_list]" << demand_period << "cannot be found." << endl;
-				g_ProgramStop();
-
-			}
-
-			bool b_multi_agent_list = false;
-
-			if (agent_type == "multi_agent_list")
-			{
-				b_multi_agent_list = true;
-			}else
-			{ 
-
-				if (assignment.agent_type_2_seqno_mapping.find(agent_type) != assignment.agent_type_2_seqno_mapping.end())
+				parser.GetValueByFieldName("format_type", format_type);
+				if (format_type.find("null") != string::npos)  // skip negative sequence no 
 				{
-					agent_type_no = assignment.agent_type_2_seqno_mapping[agent_type];
+					log_out << "Please provide format_type in section [demand_file_list.]" << endl;
+					g_ProgramStop();
+				}
+
+
+				double total_ratio = 0;
+
+				parser.GetValueByFieldName("agent_type", agent_type);
+
+
+				int agent_type_no = 0;
+				int demand_period_no = 0;
+
+				if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
+				{
+					demand_period_no = assignment.demand_period_to_seqno_mapping[demand_period];
 
 				}
 				else
 				{
-					log_out << "Error: agent_type in agent_type " << agent_type << "cannot be found." << endl;
+					log_out << "Error: demand period in section [demand_file_list]" << demand_period << "cannot be found." << endl;
 					g_ProgramStop();
+
 				}
-			}
 
-			if (demand_period_no > _MAX_TIMEPERIODS)
-			{
-				log_out << "demand_period_no should be less than settings in demand_period section. Please change the parameter settings in the source code." << endl;
-				g_ProgramStop();
-			}
+				bool b_multi_agent_list = false;
 
-			if (format_type.find("column") != string::npos)  // or muliti-column
-			{
-
-				bool bFileReady = false;
-				
-				FILE* st;
-				// read the file formaly after the test. 
-
-				int error_count = 0;
-				fopen_ss(&st, file_name.c_str(), "r");
-				if (st != NULL)
+				if (agent_type == "multi_agent_list")
+				{
+					b_multi_agent_list = true;
+				}
+				else
 				{
 
-					bFileReady = true;
-					int line_no = 0;
-
-					while (true)
+					if (assignment.agent_type_2_seqno_mapping.find(agent_type) != assignment.agent_type_2_seqno_mapping.end())
 					{
-						int origin_zone = (int) (g_read_float(st));
-						int destination_zone =(int) g_read_float(st);
-						float demand_value = g_read_float(st);
+						agent_type_no = assignment.agent_type_2_seqno_mapping[agent_type];
 
-						if (origin_zone <= -1)
+					}
+					else
+					{
+						log_out << "Error: agent_type in agent_type " << agent_type << "cannot be found." << endl;
+						g_ProgramStop();
+					}
+				}
+
+				if (demand_period_no > _MAX_TIMEPERIODS)
+				{
+					log_out << "demand_period_no should be less than settings in demand_period section. Please change the parameter settings in the source code." << endl;
+					g_ProgramStop();
+				}
+
+				if (format_type.find("column") != string::npos)  // or muliti-column
+				{
+
+					CCSVParser parser_demand;
+
+					log_out << "Reading demand .. " << endl;
+					if (parser_demand.OpenCSVFile(file_name.c_str(), true))
+					{
+						int line_no = 0;
+						int error_count = 0;
+						while (parser_demand.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 						{
+							string o_zone_id;
+							string d_zone_id;
+							float demand_value = 0;
+							if (parser_demand.GetValueByFieldName("o_zone_id", o_zone_id) == false)
+								continue;
+							if (parser_demand.GetValueByFieldName("d_zone_id", d_zone_id) == false)
+								continue;
+							if (parser_demand.GetValueByFieldName("volume", demand_value) == false)
+								continue;
 
-							if (line_no == 1 && !feof(st))  // read only one line, but has not reached the end of the line
+							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(o_zone_id) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
 							{
-								log_out << endl << "Error: Only one line has been read from file. Are there multiple columns of demand type in file " << file_name << " per line?" << endl;
-								g_ProgramStop();
+								if (error_count < 10)
+									log_out << endl << "Warning: origin zone " << o_zone_id << "  has not been defined in node.csv" << endl;
 
+								error_count++;
+								continue; // origin zone  has not been defined, skipped. 
 							}
-							break;
-						}
-
-						if (assignment.g_zoneid_to_zone_seq_no_mapping.find(origin_zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-						{
-							if(error_count < 10)
-								log_out << endl << "Warning: origin zone " << origin_zone << "  has not been defined in node.csv" << endl;
-
-							error_count++;
-							continue; // origin zone  has not been defined, skipped. 
-						}
 
 
 
-						if (assignment.g_zoneid_to_zone_seq_no_mapping.find(destination_zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-						{
-							if (error_count < 10)
-								log_out << endl << "Warning: destination zone " << destination_zone << "  has not been defined in node.csv" << endl;
+							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(d_zone_id) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
+							{
+								if (error_count < 10)
+									log_out << endl << "Warning: destination zone " << d_zone_id << "  has not been defined in node.csv" << endl;
 
-							error_count++;
-							continue; // destination zone  has not been defined, skipped. 
-						}
+								error_count++;
+								continue; // destination zone  has not been defined, skipped. 
+							}
 
-						int from_zone_seq_no = 0;
-						int to_zone_seq_no = 0;
-						from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[origin_zone];
-						to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[destination_zone];
+							int from_zone_seq_no = 0;
+							int to_zone_seq_no = 0;
+							from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[o_zone_id];
+							to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[d_zone_id];
 
 							if (demand_value < -99) // encounter return 
 							{
@@ -2864,210 +2855,202 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 							// we generate vehicles here for each OD data line
 							if (line_no <= 5)  // read only one line, but has not reached the end of the line
-								log_out << "o_zone_id:" << origin_zone << ", d_zone_id: " << destination_zone << ", value = " << demand_value << endl;
+								log_out << "o_zone_id:" << o_zone_id.c_str() << ", d_zone_id: " << d_zone_id.c_str() << ", value = " << demand_value << endl;
 
 
-						line_no++;
-					}  // scan lines
+							line_no++;
+						}  // scan lines
+
+						parser_demand.CloseCSVFile();
+					}
 
 
-					fclose(st);
-
-					log_out << "total_demand_volume is " << assignment.total_demand_volume << endl << endl;
-				}
-				else  //open file
-				{
-					log_out << "Error: File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
-					g_ProgramStop();
-
-				}
-			}
-
-			else if (format_type.compare("agent_csv") == 0 || format_type.compare("routing_policy") == 0)
-			{
-
-				CCSVParser parser;
-
-				if (parser.OpenCSVFile(file_name, false))
-				{
-					int total_demand_in_demand_file = 0;
-
-
-					// read agent file line by line,
-
-					int agent_id, o_zone_id, d_zone_id;
-					string agent_type, demand_period;
-					
-					std::vector <int> node_sequence;
-
-					while (parser.ReadRecord())
+					if (format_type.compare("agent_csv") == 0 || format_type.compare("routing_policy") == 0)
 					{
-						total_demand_in_demand_file++;
 
-						if (total_demand_in_demand_file % 1000 == 0)
-							log_out << "demand_volume is " << total_demand_in_demand_file << endl;
+						CCSVParser parser;
 
-						parser.GetValueByFieldName("agent_id", agent_id);
-
-						parser.GetValueByFieldName("o_zone_id", o_zone_id);
-						parser.GetValueByFieldName("d_zone_id", d_zone_id);
-
-						CAgentPath agent_path_element;
-
-						int o_node_id;
-						int d_node_id;
-						float routing_ratio = 0;
-
-						parser.GetValueByFieldName("path_id", agent_path_element.path_id);
-						parser.GetValueByFieldName("o_node_id", o_node_id);
-						parser.GetValueByFieldName("d_node_id", d_node_id);
-
-						agent_path_element.o_node_no = assignment.g_node_id_to_seq_no_map[o_node_id];
-						agent_path_element.d_node_no = assignment.g_node_id_to_seq_no_map[d_node_id];
-
-
-						int from_zone_seq_no = 0;
-						int to_zone_seq_no = 0;
-						from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[o_zone_id];
-						to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[d_zone_id];
-
-
-						if (format_type.compare("agent_csv") == 0)
+						if (parser.OpenCSVFile(file_name, false))
 						{
-							parser.GetValueByFieldName("volume", agent_path_element.volume);
-
-							assignment.total_demand[agent_type_no][demand_period_no] += agent_path_element.volume;
-							assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].od_volume += agent_path_element.volume;
-							assignment.total_demand_volume += agent_path_element.volume;
-							assignment.g_origin_demand_array[from_zone_seq_no][agent_type_no][demand_period_no] += agent_path_element.volume;
+							int total_demand_in_demand_file = 0;
 
 
-						}
+							// read agent file line by line,
 
-						if(format_type.compare("routing_policy") == 0)
-						{
-						parser.GetValueByFieldName("ratio", routing_ratio);
+							int agent_id;
+							string o_zone_id, d_zone_id;
+							string agent_type, demand_period;
 
-						float ODDemandVolume = assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].od_volume;
+							std::vector <int> node_sequence;
 
-						if (ODDemandVolume <= 0.001)
-						{
-							log_out << "ODDemandVolume <= 0.001 for OD pair" << o_zone_id << "->" << d_zone_id  << "in routing policy file " << file_name.c_str() << ". Please check" <<  endl;
-							g_ProgramStop();
-						}
-						agent_path_element.volume = routing_ratio * ODDemandVolume;
-						//assignment.g_origin_demand_array[from_zone_seq_no][agent_type_no][demand_period_no] should be loaded first
-						}
-
-						assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].bfixed_route = true;  //apply for both agent csv and routing policy
-
-							bool bValid = true;
-
-
-							std::string path_node_sequence;
-							parser.GetValueByFieldName("node_sequence", path_node_sequence);
-
-							std::vector<int> node_id_sequence;
-
-							g_ParserIntSequence(path_node_sequence, node_id_sequence);
-
-							std::vector<int> node_no_sequence;
-							std::vector<int> link_no_sequence;
-
-
-							int node_sum = 0;
-							for (int i = 0; i < node_id_sequence.size(); i++)
+							while (parser.ReadRecord())
 							{
+								total_demand_in_demand_file++;
 
-								if (assignment.g_node_id_to_seq_no_map.find(node_id_sequence[i]) == assignment.g_node_id_to_seq_no_map.end())
+								if (total_demand_in_demand_file % 1000 == 0)
+									log_out << "demand_volume is " << total_demand_in_demand_file << endl;
+
+								parser.GetValueByFieldName("agent_id", agent_id);
+
+								parser.GetValueByFieldName("o_zone_id", o_zone_id);
+								parser.GetValueByFieldName("d_zone_id", d_zone_id);
+
+								CAgentPath agent_path_element;
+
+								string o_node_id;
+								string d_node_id;
+								float routing_ratio = 0;
+
+								parser.GetValueByFieldName("path_id", agent_path_element.path_id);
+								parser.GetValueByFieldName("o_node_id", o_node_id);
+								parser.GetValueByFieldName("d_node_id", d_node_id);
+
+								agent_path_element.o_node_no = assignment.g_node_id_to_seq_no_map[o_node_id];
+								agent_path_element.d_node_no = assignment.g_node_id_to_seq_no_map[d_node_id];
+
+
+								int from_zone_seq_no = 0;
+								int to_zone_seq_no = 0;
+								from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[o_zone_id];
+								to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[d_zone_id];
+
+
+								if (format_type.compare("agent_csv") == 0)
 								{
-									bValid = false;
-									continue; //has not been defined
+									parser.GetValueByFieldName("volume", agent_path_element.volume);
 
-									// warning
+									assignment.total_demand[agent_type_no][demand_period_no] += agent_path_element.volume;
+									assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].od_volume += agent_path_element.volume;
+									assignment.total_demand_volume += agent_path_element.volume;
+									assignment.g_origin_demand_array[from_zone_seq_no][agent_type_no][demand_period_no] += agent_path_element.volume;
+
+
 								}
 
-								int internal_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i]];  // map external node number to internal node seq no. 
-								node_no_sequence.push_back(internal_node_seq_no);
+								if (format_type.compare("routing_policy") == 0)
+								{
+									parser.GetValueByFieldName("ratio", routing_ratio);
 
-								node_sum += internal_node_seq_no;
-								if (i >= 1)
-								{ // check if a link exists
+									float ODDemandVolume = assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].od_volume;
 
-									int link_seq_no = -1;
-									int prev_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i - 1]];  // map external node number to internal node seq no. 
-
-									int current_node_no = node_no_sequence[i];
-									if (g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.find(current_node_no) != g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.end())
+									if (ODDemandVolume <= 0.001)
 									{
-										link_seq_no = g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map[node_no_sequence[i]];
-
-										link_no_sequence.push_back(link_seq_no);
+										log_out << "ODDemandVolume <= 0.001 for OD pair" << o_zone_id << "->" << d_zone_id << "in routing policy file " << file_name.c_str() << ". Please check" << endl;
+										g_ProgramStop();
 									}
-									else
+									agent_path_element.volume = routing_ratio * ODDemandVolume;
+									//assignment.g_origin_demand_array[from_zone_seq_no][agent_type_no][demand_period_no] should be loaded first
+								}
+
+								assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no].bfixed_route = true;  //apply for both agent csv and routing policy
+
+								bool bValid = true;
+
+
+								std::string path_node_sequence;
+								parser.GetValueByFieldName("node_sequence", path_node_sequence);
+
+								std::vector<string> node_id_sequence;
+
+								g_ParserIntSequence(path_node_sequence, node_id_sequence);
+
+								std::vector<int> node_no_sequence;
+								std::vector<int> link_no_sequence;
+
+
+								int node_sum = 0;
+								for (int i = 0; i < node_id_sequence.size(); i++)
+								{
+
+									if (assignment.g_node_id_to_seq_no_map.find(node_id_sequence[i]) == assignment.g_node_id_to_seq_no_map.end())
 									{
 										bValid = false;
+										continue; //has not been defined
+
+										// warning
 									}
 
+									int internal_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i]];  // map external node number to internal node seq no. 
+									node_no_sequence.push_back(internal_node_seq_no);
+
+									node_sum += internal_node_seq_no;
+									if (i >= 1)
+									{ // check if a link exists
+
+										int link_seq_no = -1;
+										int prev_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i - 1]];  // map external node number to internal node seq no. 
+
+										int current_node_no = node_no_sequence[i];
+										if (g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.find(current_node_no) != g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.end())
+										{
+											link_seq_no = g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map[node_no_sequence[i]];
+
+											link_no_sequence.push_back(link_seq_no);
+										}
+										else
+										{
+											bValid = false;
+										}
+
+
+									}
 
 								}
 
-							}
 
-
-							if (bValid == true)
-							{
-								agent_path_element.node_sum = node_sum; // pointer to the node sum based path node sequence;
-								agent_path_element.path_link_sequence = link_no_sequence;
-
-								CColumnVector* pColumnVector = &(assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no]);
-
-								if (pColumnVector->path_node_sequence_map.find(node_sum) == pColumnVector->path_node_sequence_map.end())
-									// we cannot find a path with the same node sum, so we need to add this path into the map, 
+								if (bValid == true)
 								{
-									// add this unique path
-									int path_count = pColumnVector->path_node_sequence_map.size();
-									pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
-									pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
-									//assignment.g_column_pool[m_origin_zone_seq_no][destination_zone_seq_no][agent_type][tau].time = m_label_time_array[i];
-									//assignment.g_column_pool[m_origin_zone_seq_no][destination_zone_seq_no][agent_type][tau].path_node_sequence_map[node_sum].path_distance = m_label_distance_array[i];
-									pColumnVector->path_node_sequence_map[node_sum].path_toll = 0;
+									agent_path_element.node_sum = node_sum; // pointer to the node sum based path node sequence;
+									agent_path_element.path_link_sequence = link_no_sequence;
 
-									pColumnVector->path_node_sequence_map[node_sum].AllocateVector(node_no_sequence,link_no_sequence,false);
+									CColumnVector* pColumnVector = &(assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][agent_type_no][demand_period_no]);
+
+									if (pColumnVector->path_node_sequence_map.find(node_sum) == pColumnVector->path_node_sequence_map.end())
+										// we cannot find a path with the same node sum, so we need to add this path into the map, 
+									{
+										// add this unique path
+										int path_count = pColumnVector->path_node_sequence_map.size();
+										pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
+										pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
+										//assignment.g_column_pool[m_origin_zone_seq_no][destination_zone_seq_no][agent_type][tau].time = m_label_time_array[i];
+										//assignment.g_column_pool[m_origin_zone_seq_no][destination_zone_seq_no][agent_type][tau].path_node_sequence_map[node_sum].path_distance = m_label_distance_array[i];
+										pColumnVector->path_node_sequence_map[node_sum].path_toll = 0;
+
+										pColumnVector->path_node_sequence_map[node_sum].AllocateVector(node_no_sequence, link_no_sequence, false);
+
+
+									}
+
+									pColumnVector->path_node_sequence_map[node_sum].path_volume += agent_path_element.volume;
 
 
 								}
 
-								pColumnVector->path_node_sequence_map[node_sum].path_volume += agent_path_element.volume;
-
 
 							}
 
-						
+
+
+						}
+						else  //open file
+						{
+							log_out << "Error: File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
+							g_ProgramStop();
+
+						}
+
 					}
-					
 
-
-				}
-				else  //open file
-				{
-					log_out << "Error: File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
-					g_ProgramStop();
-
-				}
-
-			}
-
-			else
-			{
-				log_out << "Error: format_type = " << format_type << " is not supported. Currently STALite supports format such as column and agent_csv." << endl;
-				g_ProgramStop();
-			}
+					//else
+					//{
+					//	log_out << "Error: format_type = " << format_type << " is not supported. Currently STALite supports format such as column and agent_csv." << endl;
+					//	g_ProgramStop();
+					//}
 				}
 			}
 
+		}
 	}
-
 }
 
 
@@ -3359,11 +3342,11 @@ void g_ReadInputData(Assignment& assignment)
 	int internal_node_seq_no = 0;
 	// step 3: read node file 
 
-	std::map<int, int> zone_id_to_centriod_node_id_mapping;  // this is an one-to-one mapping
-	std::map<int, int> zone_id_mapping;  // this is used to mark if this zone_id has been identified or not
+	std::map<string, string> zone_id_to_centriod_node_id_mapping;  // this is an one-to-one mapping
+	std::map<string, int> zone_id_mapping;  // this is used to mark if this zone_id has been identified or not
 
-	std::map<int, int> zone_id_production; 
-	std::map<int, int> zone_id_attraction; 
+	std::map<string, int> zone_id_production; 
+	std::map<string, int> zone_id_attraction; 
 
 	CCSVParser parser;
 	log_out << "Step 1.4: Reading node data in node.csv..."<< endl;
@@ -3372,7 +3355,7 @@ void g_ReadInputData(Assignment& assignment)
 		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 		{
 
-			int node_id;
+			string node_id;
 
 			if (parser.GetValueByFieldName("node_id", node_id) == false)
 				continue;
@@ -3389,13 +3372,13 @@ void g_ReadInputData(Assignment& assignment)
 			node.node_id = node_id;
 			node.node_seq_no = internal_node_seq_no;
 
-			int zone_id = -1;
+			string zone_id;
 			parser.GetValueByFieldName("zone_id", zone_id);
 
 			parser.GetValueByFieldName("x_coord", node.x,true,false);
 			parser.GetValueByFieldName("y_coord", node.y,true, false);
 
-			if(zone_id>=1)  // this is an activity node // we do not allow zone id of zero
+			if(zone_id.size () >=1)  // this is an activity node // we do not allow zone id of zero
 			{ 
 
 				
@@ -3404,7 +3387,7 @@ void g_ReadInputData(Assignment& assignment)
 				if (zone_id_mapping.find(zone_id) == zone_id_mapping.end())
 				{
 					//create zone 
-					zone_id_mapping[zone_id] = node_id;
+					zone_id_mapping[zone_id] = internal_node_seq_no;
 				}
 
 				if (assignment.assignment_mode == 5)
@@ -3441,7 +3424,7 @@ void g_ReadInputData(Assignment& assignment)
 	// initialize zone vector
 	log_out << "Step 1.5: Initializing O-D zone vector..." << endl;
 
-	std::map<int, int>::iterator it;
+	std::map<string, int>::iterator it;
 
 
 	for (it = zone_id_mapping.begin(); it != zone_id_mapping.end(); it++)
@@ -3458,7 +3441,7 @@ void g_ReadInputData(Assignment& assignment)
 
 	// create a centriod
 			CNode node;  
-			node.node_id = -1* ozone.zone_id;  // very large number as a special id
+			node.node_id = ozone.zone_id;  // very large number as a special id
 			node.node_seq_no = g_node_vector.size(); 
 			assignment.g_node_id_to_seq_no_map[node.node_id] = node.node_seq_no;
 			node.zone_id = ozone.zone_id;
@@ -3535,8 +3518,8 @@ void g_ReadInputData(Assignment& assignment)
 	{
 		while (parser_link.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 		{
-			int from_node_id;
-			int to_node_id;
+			string from_node_id;
+			string to_node_id;
 			if (parser_link.GetValueByFieldName("from_node_id", from_node_id) == false)
 				continue;
 			if (parser_link.GetValueByFieldName("to_node_id", to_node_id) == false)
@@ -3545,6 +3528,7 @@ void g_ReadInputData(Assignment& assignment)
 			string linkID;
 			parser_link.GetValueByFieldName("link_id", linkID);
 			// add the to node id into the outbound (adjacent) node list
+
 
 			if (assignment.g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
@@ -3613,7 +3597,7 @@ void g_ReadInputData(Assignment& assignment)
 
 			
 
-			if (assignment.g_LinkTypeMap[link.link_type].type_code == "c" && g_node_vector[internal_from_node_seq_no].zone_id >=0)
+			if (assignment.g_LinkTypeMap[link.link_type].type_code == "c" && g_node_vector[internal_from_node_seq_no].zone_id.size() >0)
 			{
 				if(assignment.g_zoneid_to_zone_seq_no_mapping.find(g_node_vector[internal_from_node_seq_no].zone_id) != assignment.g_zoneid_to_zone_seq_no_mapping.end())
 				link.zone_seq_no_for_outgoing_connector = assignment.g_zoneid_to_zone_seq_no_mapping [g_node_vector[internal_from_node_seq_no].zone_id];
@@ -3753,13 +3737,17 @@ void g_ReadInputData(Assignment& assignment)
 	// we create virtual connectors
 	for (int i = 0; i < g_node_vector.size(); i++)
 	{
-		if (g_node_vector[i].zone_org_id >= 0) // for each physical node
+		if (g_node_vector[i].zone_org_id.size() > 0) // for each physical node
 		{ // we need to make sure we only create two way connectors between nodes and zones 
 
 			int internal_from_node_seq_no, internal_to_node_seq_no, zone_seq_no;
 
 			internal_from_node_seq_no = g_node_vector[i].node_seq_no;
-			int node_id = zone_id_to_centriod_node_id_mapping[g_node_vector[i].zone_org_id];
+
+			if (zone_id_to_centriod_node_id_mapping.find(g_node_vector[i].zone_org_id) == zone_id_to_centriod_node_id_mapping.end()) //skip invalid zone id numbers, including empty character
+				continue; 
+
+			string node_id = zone_id_to_centriod_node_id_mapping[g_node_vector[i].zone_org_id];
 			internal_to_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id];
 			zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[g_node_vector[i].zone_org_id];
 
@@ -3777,7 +3765,7 @@ void g_ReadInputData(Assignment& assignment)
 	{
 		for (int i = 0; i < g_node_vector.size(); i++)
 		{
-			if (g_node_vector[i].zone_org_id > 0) // for each physical node
+			if (g_node_vector[i].zone_org_id.size() > 0) // for each physical node
 			{ // we need to make sure we only create two way connectors between nodes and zones 
 				log_out << "node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
 					<< g_node_vector[i].m_outgoing_link_seq_no_vector.size() << " outgoing links." << endl;
@@ -3816,7 +3804,7 @@ void g_ReadInputData(Assignment& assignment)
 		while (parser_movement.ReadRecord())
 		{
 			string ib_link_id;
-			int node_id = 0;
+			string node_id;
 			string ob_link_id;
 			int prohibited_flag  = 0;
 
@@ -3863,7 +3851,7 @@ void g_ReadInputData(Assignment& assignment)
 
 
 		}
-		log_out << "Step XX: Reading movement.csv data with " << prohibited_count << " prohibited records." << endl;
+		log_out << "Step : Reading movement.csv data with " << prohibited_count << " prohibited records." << endl;
 
 		parser_movement.CloseCSVFile();
 	}
@@ -3880,8 +3868,8 @@ void g_reload_service_arc_data(Assignment& assignment)
 		{
 			while (parser_service_arc.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 			{
-				int from_node_id = 0;
-				int to_node_id = 0;
+				string from_node_id;
+				string to_node_id;
 				if (parser_service_arc.GetValueByFieldName("from_node_id", from_node_id) == false)
 				{
 					log_out << "Error: from_node_id in file timing.csv is not defined." << endl;
@@ -4017,8 +4005,8 @@ void g_reload_service_arc_data(Assignment& assignment)
 
 				if (parser.SectionName == "[capacity_scenario]")
 				{
-					int from_node_id = 0;
-					int to_node_id = 0;
+					string from_node_id;
+					string to_node_id;
 					if (parser.GetValueByFieldName("from_node_id", from_node_id) == false)
 					{
 						log_out << "Error: from_node_id in file timing.csv is not defined." << endl;
@@ -4685,7 +4673,7 @@ void g_output_simulation_result(Assignment& assignment)
 		if(assignment.assignment_mode <=1 || assignment.assignment_mode == 3)  //ODME
 		{
 		// Option 2: BPR-X function
-		fprintf(g_pFileLinkMOE, "link_id,from_node_id,to_node_id,time_period,volume,travel_time,speed,VOC,geometry,");
+		fprintf(g_pFileLinkMOE, "link_id,from_node_id,to_node_id,time_period,volume,capacity,travel_time,speed,VOC,geometry,");
 
 		if (assignment.assignment_mode == 3) //ODME
 			fprintf(g_pFileLinkMOE, "obs_count,dev,");
@@ -4704,15 +4692,18 @@ void g_output_simulation_result(Assignment& assignment)
 					continue;
 
 				float speed = g_link_vector[l].length / (max(0.001, g_link_vector[l].VDF_period[tau].avg_travel_time) / 60.0);
-				fprintf(g_pFileLinkMOE, "%s,%d,%d,%s,%.3f,%.3f,%.3f,%.3f,\"%s\",",
+				fprintf(g_pFileLinkMOE, "%s,%s,%s,%s,%.3f,%.3f,%.3f,%.3f,%.3f,\"%s\",",
 					g_link_vector[l].link_id.c_str(),
 
-					g_node_vector[g_link_vector[l].from_node_seq_no].node_id,
-					g_node_vector[g_link_vector[l].to_node_seq_no].node_id,
+					g_node_vector[g_link_vector[l].from_node_seq_no].node_id.c_str(),
+					g_node_vector[g_link_vector[l].to_node_seq_no].node_id.c_str(),
 
 					assignment.g_DemandPeriodVector[tau].time_period.c_str(),
 					g_link_vector[l].flow_volume_per_period[tau],
+					g_link_vector[l].VDF_period[tau].capacity,
 					g_link_vector[l].VDF_period[tau].avg_travel_time,
+
+
 					speed,  /* 60.0 is used to convert min to hour */
 					g_link_vector[l].VDF_period[tau].VOC,
 					g_link_vector[l].geometry.c_str());
@@ -4905,7 +4896,7 @@ void g_output_simulation_result(Assignment& assignment)
 
 		for (o = 0; o < zone_size; o++)
 		{ 
-			if(g_zone_vector[o].zone_id %100 ==0)
+			if(o %100 ==0)
 			log_out << "o zone id =  " << g_zone_vector[o].zone_id << endl;
 
 			for (at = 0; at < agent_type_size; at++)
@@ -4962,10 +4953,10 @@ void g_output_simulation_result(Assignment& assignment)
 					{
 
 								buffer_len = 0;
-								buffer_len = sprintf(str_buffer, "%d,%d,%d,%d,%s,%s,%.2f,%.1f,%.4f,%.4f,",
+								buffer_len = sprintf(str_buffer, "%d,%s,%s,%d,%s,%s,%.2f,%.1f,%.4f,%.4f,",
 									count,
-									g_zone_vector[o].zone_id,
-									g_zone_vector[d].zone_id,
+									g_zone_vector[o].zone_id.c_str(),
+									g_zone_vector[d].zone_id.c_str(),
 									it->second.path_seq_no,
 									assignment.g_AgentTypeVector[at].agent_type.c_str(),
 									assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
@@ -4980,7 +4971,7 @@ void g_output_simulation_result(Assignment& assignment)
 
 								for (int ni = 0+ virtual_link_delta; ni <it->second.m_node_size- virtual_link_delta; ni ++)
 								{
-									buffer_len += sprintf(str_buffer + buffer_len, "%d;", g_node_vector[it->second.path_node_vector[ni]].node_id);
+									buffer_len += sprintf(str_buffer + buffer_len, "%s;", g_node_vector[it->second.path_node_vector[ni]].node_id.c_str());
 								}
 
 								buffer_len += sprintf(str_buffer+ buffer_len, ",");
@@ -5045,10 +5036,10 @@ void g_output_simulation_result(Assignment& assignment)
 						for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); vi++)
 						{
 							buffer_len = 0;
-							buffer_len = sprintf(str_buffer, "%d,%d,%d,%d,%s,%s,1,%.1f,%.4f,%.4f,",
+							buffer_len = sprintf(str_buffer, "%d,%s,%s,%d,%s,%s,1,%.1f,%.4f,%.4f,",
 								count,
-								g_zone_vector[o].zone_id,
-								g_zone_vector[d].zone_id,
+								g_zone_vector[o].zone_id.c_str(),
+								g_zone_vector[d].zone_id.c_str(),
 								it->second.path_seq_no,
 								assignment.g_AgentTypeVector[at].agent_type.c_str(),
 								assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
@@ -5061,7 +5052,7 @@ void g_output_simulation_result(Assignment& assignment)
 
 							for (int ni = 0 + virtual_link_delta; ni < it->second.m_node_size - virtual_link_delta; ni++)
 							{
-								buffer_len += sprintf(str_buffer + buffer_len, "%d;", g_node_vector[it->second.path_node_vector[ni]].node_id);
+								buffer_len += sprintf(str_buffer + buffer_len, "%s;", g_node_vector[it->second.path_node_vector[ni]].node_id.c_str());
 							}
 
 							buffer_len += sprintf(str_buffer + buffer_len, ",");
@@ -5508,7 +5499,7 @@ void NetworkForSP::backtrace_shortest_path_tree(Assignment& assignment, int iter
 		for (int i = 0; i < number_of_nodes; i++)
 		{
 
-			if (g_node_vector[i].zone_id >= 1)
+			if (g_node_vector[i].zone_id.size() >= 1)
 			{
 
 				if (i == origin_node) // no within zone demand
@@ -6177,10 +6168,6 @@ void Assignment::STTrafficSimulation()
 				CLink* pLink = &(g_link_vector[link]);
 					/*	check if the current link has sufficient capacity*/
 
-				if (g_node_vector[node].node_id == 31 && t >= 6000)
-				{
-					TRACE("");
-				}
 
 						while ( m_LinkOutFlowCapacity[link][t] >= 1	&& pLink->ExitQueue.size() >=1)   // most critical and time-consuming task, check link outflow capacity
 						{
@@ -6283,8 +6270,8 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 			if (measurement_type == "link")
 			{
-				int from_node_id;
-				int to_node_id;
+				string from_node_id;
+				string to_node_id;
 				if (parser_measurement.GetValueByFieldName("from_node_id", from_node_id) == false)
 					continue;
 				if (parser_measurement.GetValueByFieldName("to_node_id", to_node_id) == false)
@@ -6325,7 +6312,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 			}
 			if (measurement_type == "production")
 			{
-				int o_zone_id;
+				string o_zone_id;
 
 				if (parser_measurement.GetValueByFieldName("o_zone_id", o_zone_id) == false)
 					continue;
@@ -6343,7 +6330,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 			if (measurement_type == "attraction")
 			{
-				int o_zone_id;
+				string o_zone_id;
 
 				if (parser_measurement.GetValueByFieldName("d_zone_id", o_zone_id) == false)
 					continue;
