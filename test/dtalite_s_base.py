@@ -163,7 +163,7 @@ class Network:
         self.link_cost_array = numpy.array([-1]*len(self.link_list),dtype=numpy.float64)
         self.link_volume_array = [0.0]*len(self.link_list)
         
-        self.cdll = ctypes.cdll.LoadLibrary(r"../lib/libstalite_base.dll")
+        self.cdll = ctypes.cdll.LoadLibrary(r"C:\GitHub\asu\DTALite\lib\libstalite_base.dll")
       
         self.cdll.shortest_path.restype = ctypes.c_double
         self.cdll.shortest_path.argtypes = [ctypes.c_int, ctypes.c_int, 
@@ -429,8 +429,8 @@ def g_TrafficAssignment(network):
             network.link_list[j].CalculateBPRFunction()
             network.link_cost_array[j] = network.link_list[j].cost
 
-        network.find_path_for_agents_withoutCAPI(i)     
-#        network.find_path_for_agents_CAPI(i)     
+#        network.find_path_for_agents_withoutCAPI(i)     
+        network.find_path_for_agents_CAPI(i)     
                         
         for k in range(g_number_of_links):
             network.link_list[k].flow_volume = 0.0
