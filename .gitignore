@@ -12,3 +12,4 @@
 test/link_performance.csv
 test/agent.csv
 test/solution.csv
+build/
