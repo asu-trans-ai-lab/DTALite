@@ -27,6 +27,8 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include "MathLibrary.h"
+#include <cstring>
 using namespace std;
 using std::string;
 using std::ifstream;
@@ -1328,7 +1330,7 @@ public:
 		float lambda = hourly_per_lane_volume;
 		float mu = _default_saturation_flow_rate; //default saturation flow rates
 		float s_bar = 1.0 / 60.0 * red * red / (2*cycle_length); // 60.0 is used to convert sec to min
-		float uniform_delay = s_bar / max(1 - lambda / mu, 0.1) ;  
+		float uniform_delay = s_bar / max(1 - lambda / mu, 0.1f) ;  
 		return uniform_delay;
 
 
@@ -1337,7 +1339,7 @@ public:
 	float  PerformBPR(float volume)
 	{
 
-		volume = max(0, volume);  // take nonnegative values
+		volume = max(0.0f, volume);  // take nonnegative values
 
 		if (volume > 1.0)
 		{
@@ -1398,8 +1400,8 @@ public:
 			congestion_period_P = volume / PHF / mu;  // unit: hour  // volume / PHF  is D, D/mu = congestion period
 			P = congestion_period_P * 4; //unit: 15 time slot
 
-			t0 = max(0, mid_time_slot_no - P / 2.0);
-			t3 = min(_MAX_TIMESLOT_PerPeriod-1, mid_time_slot_no + P / 2.0);
+			t0 = max(0.0, mid_time_slot_no - P / 2.0);
+			t3 = min((double)_MAX_TIMESLOT_PerPeriod-1, mid_time_slot_no + P / 2.0);
 			// we need to recalculate gamma coefficient based on D/C ratio. based on assumption of beta = 4;
 			//average waiting time based on eq. (32)
 			//https://www.researchgate.net/publication/348488643_Introduction_to_connection_between_point_queue_model_and_BPR
@@ -3558,7 +3560,7 @@ void g_ReadInputData(Assignment& assignment)
 					{
 						if (g_zone_vector[d].obs_attraction > 0)
 						{ 
-							float value = g_zone_vector[o].obs_production * g_zone_vector[d].obs_attraction / max(0.0001, total_attraction);
+							float value = g_zone_vector[o].obs_production * g_zone_vector[d].obs_attraction / max(0.0001f, total_attraction);
 						fprintf(g_pFileODMatrix, "%d,%d,%.4f,\n", g_zone_vector[o].zone_id, g_zone_vector[d].zone_id, value);
 
 						g_fout << "o= " << g_zone_vector[o].zone_id << " d= " << g_zone_vector[d].zone_id << ":" <<  value << endl;
@@ -3685,7 +3687,7 @@ void g_ReadInputData(Assignment& assignment)
 			parser_link.GetValueByFieldName("free_speed", free_speed);
 
 
-			free_speed = max(0.1, free_speed);
+			free_speed = max(0.1f, free_speed);
 
 			int number_of_lanes = 1;
 			parser_link.GetValueByFieldName("lanes", number_of_lanes);
@@ -3697,7 +3699,7 @@ void g_ReadInputData(Assignment& assignment)
 
 			if (link.traffic_flow_code >= 2)    //spatial queue and kinematic wave
 			{
-				link.spatial_capacity_in_vehicles = max(1,length * number_of_lanes * k_jam);
+				link.spatial_capacity_in_vehicles = max(1.0f,length * number_of_lanes * k_jam);
 			}
 
 
@@ -4020,19 +4022,19 @@ void g_reload_service_arc_data(Assignment& assignment)
 				float time_interval = 0;
 
 				parser_service_arc.GetValueByFieldName("time_interval", time_interval, false, false);
-				service_arc.time_interval_no = max(1, time_interval * 60.0 / number_of_seconds_per_interval);
+				service_arc.time_interval_no = max(1.0, time_interval * 60.0 / number_of_seconds_per_interval);
 
 
 				int travel_time_delta_in_min = 0;
 				parser_service_arc.GetValueByFieldName("travel_time_delta", travel_time_delta_in_min, false, false);
 				service_arc.travel_time_delta =
-					max(g_link_vector[service_arc.link_seq_no].free_flow_travel_time_in_min * 60 / number_of_seconds_per_interval,
+					max((int) g_link_vector[service_arc.link_seq_no].free_flow_travel_time_in_min * 60 / number_of_seconds_per_interval,
 					travel_time_delta_in_min * 60 / number_of_seconds_per_interval);
 
 				service_arc.travel_time_delta = max(1, service_arc.travel_time_delta);
 				float capacity = 1;
 				parser_service_arc.GetValueByFieldName("capacity", capacity);  // capacity in the space time arcs
-				service_arc.capacity = max(0, capacity);
+				service_arc.capacity = max(0.0f, capacity);
 
 				parser_service_arc.GetValueByFieldName("cycle_length", service_arc.cycle_length);  // capacity in the space time arcs
 
@@ -4157,19 +4159,19 @@ void g_reload_service_arc_data(Assignment& assignment)
 					float time_interval = 0;
 
 					parser.GetValueByFieldName("time_interval", time_interval, false, false);
-					service_arc.time_interval_no = max(1, time_interval * 60.0 / number_of_seconds_per_interval);
+					service_arc.time_interval_no = max(1.0, time_interval * 60.0 / number_of_seconds_per_interval);
 
 
 					int travel_time_delta_in_min = 0;
 					parser.GetValueByFieldName("travel_time_delta", travel_time_delta_in_min, false, false);
 					service_arc.travel_time_delta =
-						max(g_link_vector[service_arc.link_seq_no].free_flow_travel_time_in_min * 60 / number_of_seconds_per_interval,
+						max((int)g_link_vector[service_arc.link_seq_no].free_flow_travel_time_in_min * 60 / number_of_seconds_per_interval,
 							travel_time_delta_in_min * 60 / number_of_seconds_per_interval);
 
 					service_arc.travel_time_delta = max(1, service_arc.travel_time_delta);
 					float capacity = 1;
 					parser.GetValueByFieldName("capacity", capacity);  // capacity in the space time arcs
-					service_arc.capacity = max(0, capacity);
+					service_arc.capacity = max(0.0f, capacity);
 
 					g_service_arc_vector.push_back(service_arc);
 					assignment.g_number_of_timing_arcs++;
@@ -4656,7 +4658,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 								{
 
 									it->second.path_gradient_cost_difference = it->second.path_gradient_cost - least_gradient_cost;
-									it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001, least_gradient_cost);
+									it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001f, least_gradient_cost);
 
 									total_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
 									total_gap_count += (it->second.path_gradient_cost * it->second.path_volume);
@@ -4668,7 +4670,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 									//recall that it->second.path_gradient_cost_difference >=0 
 									// step 3.1: shift flow from nonshortest path to shortest path
-									it->second.path_volume = max(0, it->second.path_volume - step_size * it->second.path_gradient_cost_relative_difference);
+									it->second.path_volume = max(0.0f, it->second.path_volume - step_size * it->second.path_gradient_cost_relative_difference);
 
 
 									//we use min(step_size to ensure a path is not switching more than 1/n proportion of flow 
@@ -4754,7 +4756,7 @@ void g_output_simulation_result(Assignment& assignment)
 
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; tau++)
 				{
-					float speed = g_link_vector[l].length / (max(0.001, g_link_vector[l].VDF_period[tau].avg_travel_time) / 60.0);
+					float speed = g_link_vector[l].length / (max(0.001f, g_link_vector[l].VDF_period[tau].avg_travel_time) / 60.0);
 					fprintf(g_pFileLinkMOE, "%s,%d,%d,%s,%.3f,%.3f,%.3f,%.3f,0,0,\"%s\",",
 						g_link_vector[l].link_id.c_str(),
 
@@ -4791,10 +4793,10 @@ void g_output_simulation_result(Assignment& assignment)
 					{
 						int time = tt * MIN_PER_TIMESLOT;  // 15 min per interval
 
-						float speed = g_link_vector[l].length / (max(0.001, g_link_vector[l].VDF_period[tau].travel_time[tt]));
+						float speed = g_link_vector[l].length / (max(0.001f, g_link_vector[l].VDF_period[tau].travel_time[tt]));
 						float V_mu_over_V_f_ratio = 0.5; // to be calibrated. 
 						float physical_queue = g_link_vector[l].VDF_period[tau].Queue[tt] / (1 - V_mu_over_V_f_ratio);  // per lane
-						float density = g_link_vector[l].VDF_period[tau].discharge_rate[tt] / max(0.001, speed);
+						float density = g_link_vector[l].VDF_period[tau].discharge_rate[tt] / max(0.001f, speed);
 						if (density > 150)  // 150 as kjam.
 							density = 150;
 
@@ -4867,7 +4869,7 @@ void g_output_simulation_result(Assignment& assignment)
 							avg_waiting_time_in_sec = waiting_time_in_sec / max(1, arrival_rate);
 
 							travel_time = (float)(assignment.m_LinkTDTravelTime[l][t / number_of_interval_per_min]) * number_of_seconds_per_interval / sampling_time_interval + avg_waiting_time_in_sec / 60.0;
-							speed = g_link_vector[l].length / (max(0.00001, travel_time) / sampling_time_interval);
+							speed = g_link_vector[l].length / (max(0.00001f, travel_time) / sampling_time_interval);
 
 						}
 
@@ -5259,7 +5261,7 @@ void g_output_simulation_result_for_signal_api(Assignment& assignment)
 					if (g_link_vector[l].movement_str.length() >= 1)
 					{
 
-						float speed = g_link_vector[l].length / (max(0.001, g_link_vector[l].VDF_period[tau].avg_travel_time) / 60.0);
+						float speed = g_link_vector[l].length / (max(0.001f, g_link_vector[l].VDF_period[tau].avg_travel_time) / 60.0);
 						fprintf(g_pFileLinkMOE, "%s,%d,%d,%s,%s,%s,%d,%d,%.3f,%.3f,%.3f,%.3f,",
 							g_link_vector[l].link_id.c_str(),
 
@@ -5344,7 +5346,7 @@ void g_output_simulation_result_for_signal_api(Assignment& assignment)
 							}
 
 							travel_time = (float)(assignment.m_LinkTDTravelTime[l][t/ number_of_interval_per_min]) * number_of_seconds_per_interval / 60.0 + avg_waiting_time_in_sec / 60.0;
-							speed = g_link_vector[l].length / (max(0.00001, travel_time) / 60.0);
+							speed = g_link_vector[l].length / (max(0.00001f, travel_time) / 60.0);
 						}
 
 						fprintf(g_pFileLinkMOE, "%s,%d,%d,%s_%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
@@ -5712,7 +5714,7 @@ void  CLink::CalculateTD_VDFunction()
 		if (this->movement_str.length() > 1 && /*signalized*/
 			VDF_period[tau].red_time > 1)
 		{  // arterial streets with the data from sigal API
-			float hourly_per_lane_volume = flow_volume_per_period[tau] / (max(1, (ending_time_slot_no - starting_time_slot_no)) * 15 / 60 / number_of_lanes);
+			float hourly_per_lane_volume = flow_volume_per_period[tau] / (max(1.0f, (ending_time_slot_no - starting_time_slot_no)) * 15 / 60 / number_of_lanes);
 			float red_time = VDF_period[tau].red_time;
 			float cycle_length = VDF_period[tau].cycle_length;
 			//we dynamically update cycle length, and green time/red time, so we have dynamically allocated capacity and average delay
@@ -6573,7 +6575,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 								if (change > change_upper_bound)
 									change = change_upper_bound;  // reset
 
-								it->second.path_volume = max(1, it->second.path_volume - change);
+								it->second.path_volume = max(1.0f, it->second.path_volume - change);
 
 								if (g_log_odme == 1)
 								{ 
