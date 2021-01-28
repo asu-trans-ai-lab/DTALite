@@ -1,4 +1,4 @@
-#include "pch.h"
+// #include "pch.h"
 #include "MathLibrary.h"
 
 
@@ -15,4 +15,4 @@ double add_c(int a, int b)
 	return c;
 }
 
-#include "main_api.cpp"
+// #include "main_api.cpp"
