@@ -3183,7 +3183,6 @@ void g_ReadInputData(Assignment& assignment)
 	parser_demand_period.IsFirstLineHeader = false;
 	if (parser_demand_period.OpenCSVFile("settings.csv", false))
 	{
-
 		while (parser_demand_period.ReadRecord_Section())
 		{
 			if (parser_demand_period.SectionName == "[demand_period]")
@@ -3924,7 +3923,8 @@ void g_ReadInputData(Assignment& assignment)
 		parser_movement.CloseCSVFile();
 	}
 
-
+	// for testing
+	cout << "g_ReadInputData" <<endl;
 
 };
 
@@ -5744,6 +5744,9 @@ void  CLink::CalculateTD_VDFunction()
 
 double network_assignment(int iteration_number, int assignment_mode, int column_updating_iterations)
 {
+	// for testing
+	cout << "network assignment" << endl;
+
 	int signal_updating_iterations = 0;
 
 	assignment.g_number_of_column_generation_iterations = iteration_number; // k iterations for column generation

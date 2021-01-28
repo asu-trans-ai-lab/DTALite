@@ -15,20 +15,17 @@ column_generation_number = 20
 
 def perform_DTA():
 
-        
-# =============================================================================
-# 	if platform.startswith('win32'):
-# 		_dll_file = 'DP.dll'
-# 	elif platform.startswith('linux'):
-# 		_dll_file = 'DTALite.so'
-# 	elif platform.startswith('darwin'):
-# 		_dll_file = 'DTALite.dylib'
-# 	else:
-# 		raise Exception('Please build the shared library compatible to your OS\
-# 						using source files in engine_cpp!')
-# =============================================================================
+    cwd_ = os.path.abspath(__file__)
+
+    if platform.startswith('win32'):
+        dll_file = os.path.join(os.path.dirname(cwd_), 'DTALite.dll')
+    elif platform.startswith('linux'):
+        dll_file = os.path.join(os.path.dirname(cwd_), 'DTALite.so')
+    else:
+        raise Exception('Please build the shared library compatible to your OS\
+                        using source files')
                     
-    cdll = ctypes.cdll.LoadLibrary("C:\SourceCode\DTALite_DLL\DTALite_DLL\DTALite_DLL_test\DTALite.DLL")
+    cdll = ctypes.cdll.LoadLibrary(dll_file)
 
     time_start = time.time()
 
@@ -37,7 +34,6 @@ def perform_DTA():
     network_compu.restype = ctypes.c_double
     d = network_compu(iteration_number,assignment_mode, column_generation_number)
 
-
     time_end = time.time()
     print('DTALite')
     print('total time: {}'.format(time_end-time_start))
@@ -45,11 +41,3 @@ def perform_DTA():
 
 if __name__ == "__main__":
     perform_DTA()
-    
-
-
-
-
-
-
-

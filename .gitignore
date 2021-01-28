@@ -12,3 +12,10 @@
 test/link_performance.csv
 test/agent.csv
 test/solution.csv
+# untrack output files in DTALite_DLL_test folder
+DTALite_DLL_test/link_performance.csv
+DTALite_DLL_test/agent.csv
+DTALite_DLL_test/solution.csv
+DTALite_DLL_test/log.txt
+# untrack build folder for building shared libraries
+build/
