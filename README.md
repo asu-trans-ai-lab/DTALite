@@ -16,6 +16,9 @@ https://www.youtube.com/channel/UCUHlqojCQ4f7VvqroUhbaFA
 # Step 3: Mini-lesson on the internal algorithmic details thorugh python coding 
 https://youtu.be/rorZAhNNOf0
 (What is the best way to learn dynamic traffic simulation and network assignment for a beginner? Do you want to integrate a powerful traffic simulator in your deep learning framework? We would like to offer a collaborative learning experience through 500 lines of python codes and real-life data sets. This is part of our mini-lessons through teaching dialog.) 
+
 Python source codes: https://github.com/asu-trans-ai-lab/DTALite/blob/main/src/python/dtalite_s.py 
+
 C++ source codes: https://github.com/asu-trans-ai-lab/DTALite/blob/main/src/v2/Exe_src/AgentLite/main_api.cpp 
+
 Python DLL testing environment: https://github.com/asu-trans-ai-lab/DTALite/tree/main/DTALite_DLL_test
