@@ -3922,10 +3922,6 @@ void g_ReadInputData(Assignment& assignment)
 
 		parser_movement.CloseCSVFile();
 	}
-
-	// for testing
-	cout << "g_ReadInputData" <<endl;
-
 };
 
 void g_reload_service_arc_data(Assignment& assignment)
