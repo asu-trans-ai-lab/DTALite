@@ -9,8 +9,7 @@
 
 #include "stdafx.h"
 
-
-#include "C:\SourceCode\DTALite_DLL\DTALite\src\Exe_src\AgentLite\main_api.cpp"
+#include "main_api.cpp"
 
 
 int main(int argc, TCHAR* argv[], TCHAR* envp[])

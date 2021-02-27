@@ -18,14 +18,11 @@
 #include <functional>
 #include <stdio.h>   
 #include <math.h>
-
-
 #include <stack>
 #include <string>
 #include <vector>
 #include <map>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
 using namespace std;
 using std::string;
@@ -34,7 +31,6 @@ using std::vector;
 using std::map;
 using std::istringstream;
 using std::max;
-template <typename T>
 
 // some basic parameters setting
 

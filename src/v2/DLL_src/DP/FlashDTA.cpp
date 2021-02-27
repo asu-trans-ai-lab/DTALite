@@ -88,8 +88,8 @@ typedef basic_teestream<char> teestream;
 
 extern teestream log_out;
 extern double SignalAPI(int iteration_number, int MainSigModual_mode, int signal_updating_output);
-#include "..\AgentLite\main_api.cpp";
-#include "..\AgentLite\signal_api.cpp";
+#include "main_api.cpp";
+#include "signal_api.cpp";
 
 std::ofstream file("log.csv");
 teestream log_out(std::cout, file);
