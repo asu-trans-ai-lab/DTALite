@@ -19,5 +19,4 @@ int main(int argc, TCHAR* argv[], TCHAR* envp[])
 	int iteration_number = 20;
 	int column_updating_iterations = 20;
 	network_assignment(iteration_number, assignment_mode, column_updating_iterations);
-
 }
