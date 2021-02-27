@@ -4,6 +4,7 @@
 # untrack useless visual studio folders
 *x64/
 *.vs/
+debug/
 # untrack vs code configure folder
 *.vscode/
 # untrack object files during compiling 
