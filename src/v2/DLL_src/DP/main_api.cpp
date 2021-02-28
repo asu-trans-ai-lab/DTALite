@@ -18,14 +18,11 @@
 #include <functional>
 #include <stdio.h>   
 #include <math.h>
-
-
 #include <stack>
 #include <string>
 #include <vector>
 #include <map>
 #include <sstream>
-#include <iostream>
 #include <iomanip>
 #include "MathLibrary.h"
 #include <cstring>
@@ -36,7 +33,6 @@ using std::vector;
 using std::map;
 using std::istringstream;
 using std::max;
-template <typename T>
 
 // some basic parameters setting
 
@@ -3922,10 +3918,6 @@ void g_ReadInputData(Assignment& assignment)
 
 		parser_movement.CloseCSVFile();
 	}
-
-	// for testing
-	cout << "g_ReadInputData" <<endl;
-
 };
 
 void g_reload_service_arc_data(Assignment& assignment)

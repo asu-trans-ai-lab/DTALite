@@ -9,8 +9,7 @@
 
 #include "stdafx.h"
 
-
-#include "C:\SourceCode\DTALite_DLL\DTALite\src\Exe_src\AgentLite\main_api.cpp"
+#include "main_api.cpp"
 
 
 int main(int argc, TCHAR* argv[], TCHAR* envp[])
@@ -19,5 +18,4 @@ int main(int argc, TCHAR* argv[], TCHAR* envp[])
 	int iteration_number = 20;
 	int column_updating_iterations = 20;
 	network_assignment(iteration_number, assignment_mode, column_updating_iterations);
-
 }
