@@ -8,7 +8,7 @@
  * http://www.gnu.org/licenses/gpl-howto.html 
  */
 
-#include "pch.h"
+// #include "pch.h"
 
 #pragma warning(disable: 4305 4267 4018) 
 #pragma warning(disable: 4244)  // stop warning: "conversion from 'int' to 'float', possible loss of data"
@@ -3721,22 +3721,22 @@ void g_ReadInputData(Assignment& assignment)
 
 
 				int demand_period_id = assignment.g_DemandPeriodVector[tau].demand_period_id;
-				sprintf_s (VDF_field_name, "VDF_fftt%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_fftt%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].FFTT,false,false);  // FFTT should be per min
 
-				sprintf_s (VDF_field_name, "VDF_cap%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_cap%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].capacity, false, false);  // capacity should be per period per link (include all lanes)
 
-				sprintf_s (VDF_field_name, "VDF_alpha%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_alpha%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].alpha, false, false);
 
-				sprintf_s (VDF_field_name, "VDF_beta%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_beta%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].beta, false, false);
 
-				sprintf_s(VDF_field_name, "VDF_PHF%d", demand_period_id);
+				sprintf(VDF_field_name, "VDF_PHF%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].PHF, false, false); 
 
-				sprintf_s (VDF_field_name, "VDF_mu%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_mu%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].mu, false, false);  // mu should be per hour per link, so that we can calculate congestion duration and D/mu in BPR-X
 
 				//sprintf_s (VDF_field_name, "VDF_gamma%d", demand_period_id);  // remove gamma
