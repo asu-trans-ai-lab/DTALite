@@ -21,7 +21,7 @@ endif()
 set(CMAKE_BUILD_TYPE  "Release")
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
-add_library(DTALite_DLL SHARED MathLibrary.cpp main_api.cpp)
+add_library(DTALite_DLL SHARED main_api.cpp)
 
 # using OpenMP, the second command is only needed for macOS
 find_package(OpenMP REQUIRED)
