@@ -8,6 +8,11 @@ elseif(UNIX)
     message("Building so or dylib file on ${CMAKE_SYSTEM_NAME}")
 endif()
 
+# specify the C++ standard
+# C++11 is necessary as teestream.h requires C++11 to be complied
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 # enable OpenMP
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp")
