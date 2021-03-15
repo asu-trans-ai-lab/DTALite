@@ -8,7 +8,7 @@
  * http://www.gnu.org/licenses/gpl-howto.html 
  */
 
-// #include "pch.h"
+ //#include "pch.h"
 
 #pragma warning(disable: 4305 4267 4018) 
 #pragma warning(disable: 4244)  // stop warning: "conversion from 'int' to 'float', possible loss of data"
@@ -70,8 +70,8 @@ using std::max;
 
 
 FILE* g_pFileOutputLog = NULL;
-std::ofstream file("log.csv");
-teestream g_fout(std::cout, file);
+ofstream g_fout("log.txt");
+//teestream g_fout(std::cout, file);
 
 int g_debug_level  = 0;
 int g_log_odme = 0;
@@ -5731,7 +5731,7 @@ void  CLink::CalculateTD_VDFunction()
 }
 
 
-double network_assignment(int iteration_number, int assignment_mode, int column_updating_iterations)
+double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations)
 {
 	// for testing
 	cout << "network assignment" << endl;

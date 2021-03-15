@@ -6,6 +6,6 @@
 #define MATHLIBRARY_API
 #endif
 
-extern "C" MATHLIBRARY_API double network_assignment(int iteration_number, int assignment_mode, int column_updating_iterations);
+extern "C" MATHLIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations);
 
 #endif
