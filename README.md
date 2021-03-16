@@ -1,4 +1,4 @@
-# DTALite
+# PythonDTALite
 
 # Step 1: White paper and application papers: 
 Zhou, Xuesong, and Jeffrey Taylor. "DTALite: A queue-based mesoscopic traffic simulator for fast model evaluation and calibration." Cogent Engineering 1.1 (2014): 961345.
