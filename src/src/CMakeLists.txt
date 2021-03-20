@@ -1,11 +1,15 @@
 cmake_minimum_required (VERSION 3.8)
 
-project ("DTALite_DLL")
+project ("DTALite")
 
-if(WIN32)
-    message("Building dll file on Windows")
-elseif(UNIX)
-    message("Building so or dylib file on ${CMAKE_SYSTEM_NAME}")
+option(BUILD_EXE "BUILD Executable or not" ON)
+
+configure_file(config.h.in config.h)
+
+if(BUILD_EXE)
+    message("Building executable on ${CMAKE_SYSTEM_NAME}")
+elseif()
+    message("Building shared library on ${CMAKE_SYSTEM_NAME}")
 endif()
 
 # specify the C++ standard
@@ -15,7 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # enable OpenMP
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp")
+    set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp fpic")
 elseif()
     set(CMAKE_CXX_FLAGS "-fopenmp -fpic")
 endif()
@@ -26,8 +30,14 @@ endif()
 set(CMAKE_BUILD_TYPE  "Release")
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
-add_library(DTALite_DLL SHARED main_api.cpp)
+if(BUILD_EXE)
+    add_executable(DTALite flash_dta.cpp main_api.cpp)
+elseif()
+    add_library(DTALite SHARED main_api.cpp)
+endif()
 
 # using OpenMP, the second command is only needed for macOS
 find_package(OpenMP REQUIRED)
-target_link_libraries(DTALite_DLL PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(DTALite PRIVATE OpenMP::OpenMP_CXX)
+
+target_include_directories(DTALite PUBLIC "${PROJECT_BINARY_DIR}")
