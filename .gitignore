@@ -18,5 +18,7 @@ test_dll/link_performance.csv
 test_dll/agent.csv
 test_dll/solution.csv
 test_dll/log.txt
+test_dll/log.csv
 # untrack build folder for building shared libraries
 build/
+.DS_Store

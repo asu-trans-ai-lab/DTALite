@@ -1,14 +1,17 @@
+/* Portions Copyright 2019 Xuesong Zhou
+ *
+ * If you help write or modify the code, please also list your names here.
+ * The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL
+ * and further prevent a violation of the GPL.
+ *
+ * More about "How to use GNU licenses for your own software"
+ * http://www.gnu.org/licenses/gpl-howto.html 
+ */
 
-//  Portions Copyright 2019
-// Xuesong (Simon) Zhou
-//   If you help write or modify the code, please also list your names here.
-//   The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL 
-//   and further prevent a violation of the GPL.
+ //#include "pch.h"
 
-// More about "How to use GNU licenses for your own software"
-// http://www.gnu.org/licenses/gpl-howto.html
-
-#pragma warning( disable : 4305 4267 4018) 
+#pragma warning(disable: 4305 4267 4018) 
+#pragma warning(disable: 4244)  // stop warning: "conversion from 'int' to 'float', possible loss of data"
 #include <iostream>
 #include <fstream>
 #include <list> 
@@ -24,8 +27,10 @@
 #include <map>
 #include <sstream>
 #include <iomanip>
-#include "MathLibrary.h"
 #include <cstring>
+#include "MathLibrary.h"
+#include "teestream.h"
+
 using namespace std;
 using std::string;
 using std::ifstream;
@@ -58,19 +63,16 @@ using std::max;
 
 /* number_of_seconds_per_interval should satisify the ratio of 60/number_of_seconds_per_interval is an integer*/
 
-
-
 // Linear congruential generator 
 #define LCG_a 17364
 #define LCG_c 0
 #define LCG_M 65521  // it should be 2^32, but we use a small 16-bit number to save memory
 
 
-
-#define sprintf_s sprintf
-
 FILE* g_pFileOutputLog = NULL;
 ofstream g_fout("log.txt");
+//teestream g_fout(std::cout, file);
+
 int g_debug_level  = 0;
 int g_log_odme = 0;
 int g_log_path = 0;
@@ -82,15 +84,10 @@ void fopen_ss(FILE **file, const char *fileName, const char *mode)
 	*file = fopen(fileName, mode);
 }
 
-
 void g_ProgramStop();
-
 
 //below shows where the functions used in Agentlite.cpp come from!
 //Utility.cpp
-
-#pragma warning(disable: 4244)  // stop warning: "conversion from 'int' to 'float', possible loss of data"
-
 
 class CCSVParser
 {
@@ -3558,7 +3555,7 @@ void g_ReadInputData(Assignment& assignment)
 							float value = g_zone_vector[o].obs_production * g_zone_vector[d].obs_attraction / max(0.0001f, total_attraction);
 						fprintf(g_pFileODMatrix, "%d,%d,%.4f,\n", g_zone_vector[o].zone_id, g_zone_vector[d].zone_id, value);
 
-						g_fout << "o= " << g_zone_vector[o].zone_id << " d= " << g_zone_vector[d].zone_id << ":" <<  value << endl;
+						// g_fout << "o= " << g_zone_vector[o].zone_id << " d= " << g_zone_vector[d].zone_id << ":" <<  value << endl;
 						}
 
 					}
@@ -3724,23 +3721,23 @@ void g_ReadInputData(Assignment& assignment)
 
 
 				int demand_period_id = assignment.g_DemandPeriodVector[tau].demand_period_id;
-				sprintf_s (VDF_field_name, "VDF_fftt%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_fftt%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].FFTT,false,false);  // FFTT should be per min
 
-				sprintf_s (VDF_field_name, "VDF_cap%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_cap%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].capacity, false, false);  // capacity should be per period per link (include all lanes)
 
-				sprintf_s (VDF_field_name, "VDF_alpha%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_alpha%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].alpha, false, false);
 
-				sprintf_s (VDF_field_name, "VDF_beta%d", demand_period_id);
+				sprintf (VDF_field_name, "VDF_beta%d", demand_period_id);
 				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].beta, false, false);
 
-				sprintf_s(VDF_field_name, "VDF_PHF%d", demand_period_id);
-				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].PHF); 
+				sprintf(VDF_field_name, "VDF_PHF%d", demand_period_id);
+				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].PHF, false, false); 
 
-				sprintf_s (VDF_field_name, "VDF_mu%d", demand_period_id);
-				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].mu);  // mu should be per hour per link, so that we can calculate congestion duration and D/mu in BPR-X
+				sprintf (VDF_field_name, "VDF_mu%d", demand_period_id);
+				parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].mu, false, false);  // mu should be per hour per link, so that we can calculate congestion duration and D/mu in BPR-X
 
 				//sprintf_s (VDF_field_name, "VDF_gamma%d", demand_period_id);  // remove gamma
 				//parser_link.GetValueByFieldName(VDF_field_name, link.VDF_period[tau].gamma);
@@ -5734,7 +5731,7 @@ void  CLink::CalculateTD_VDFunction()
 }
 
 
-double network_assignment(int iteration_number, int assignment_mode, int column_updating_iterations)
+double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations)
 {
 	// for testing
 	cout << "network assignment" << endl;
