@@ -1,0 +1,20 @@
+section,sub_index,parameter,value,optional_values,remarks
+assignment,,assignment_mode,ue,ue;dta;odme,"assignment_mode can be ue, dta or odme"
+assignment,,number_of_iterations,2,1;20,# of iterations for path generation
+assignment,,column_updating_iterations,3,0; 20,
+assignment,,length_conversion_factor,0.001,"1 for km as length, 0.001 for meter as length",
+agent_type,1,agent_type,auto,,agent_type is used in allowed_uses in link.csv; if the field allowed_uses does not exist; all agent types are allowed. One can create two agent_types; auto vs. walk to test
+agent_type,1,name,passenger,,
+agent_type,1,VOT,10,,"value of time, mainly used for field toll in link.csv"
+link_type,1,link_type_name,Highway/Expressway,,
+link_type,1,type_code,f,f;a,freeway type simulation using kinematic wave model; arterial type simulation using spatial queue model
+link_type,1,traffic_flow_code,0,0;1;2;3,0: BPR; 1: point queue; 2: spatial queue; 3: KW model
+link_type,2,link_type_name,Major arterial,,
+link_type,2,type_code,a,,
+link_type,2,traffic_flow_code,0,,
+demand_period,1,demand_period,AM,,used in defining the demand period in demand file list section
+demand_period,1,time_period,0700_0800,hhmm_hhmm format,
+demand_file_list,1,file_name,demand_p,,
+demand_file_list,1,format_type,column,column;accessibility;agent_csv,column
+demand_file_list,1,demand_period,AM,,index defined in demand period section
+demand_file_list,1,agent_type,auto,,

@@ -1,7 +1,0 @@
-agent_id,agent_type,o_node_id,d_node_id,o_zone_id,d_zone_id,departure_time_in_min,PCE
-1,v,1,12,1,12,1,1
-2,v,1,6,1,6,1,1
-3,v,1,6,1,6,10,1
-4,v,1,6,1,6,11,1
-5,v,1,6,1,6,12,1
-6,v,1,6,1,6,13,1

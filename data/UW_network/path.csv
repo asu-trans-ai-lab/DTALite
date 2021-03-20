@@ -1,0 +1,2 @@
+agent_id,o_zone_id,d_zone_id,path_id,o_node_id,d_node_id,agent_type,demand_period,ratio,node_sequence
+0,0,0,0,195,138,0,0,1,195;778;196;758;779;197;780;759;556;198;199;652;200;235;319;320;321;258;21;539;776;540;14;696;322;323;587;148;620;138;

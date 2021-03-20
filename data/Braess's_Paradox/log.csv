@@ -1,0 +1,128 @@
+STALite Log           
+Step 1: Reading input data
+Step 1.1: Reading section [demand_period] in setting.csv...
+number of demand periods = 1
+Step 1.2: Reading section [link_type] in setting.csv...
+important: traffic_flow_code on link type 1 is 0
+important: traffic_flow_code on link type 2 is 0
+number of link types = 3
+Step 1.3: Reading section [agent_type] in setting.csv...
+number of agent typess = 1
+Step 1.4: Reading node data in node.csv...
+number of nodes = 4
+Step 1.5: Initializing O-D zone vector...
+number of zones = 4
+Step 1.6: Reading link data in link.csv... 
+number of links = 4
+number of links =12
+Step 1.7: Reading service arc in timing.csv...
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+reading 1 capacity reduction scenario.. 
+number of timing records = 1
+
+allocating 4D memory for 0 zones
+allocating 3D memory for 0
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+o_zone_id:1, d_zone_id: 2, value = 4000.000000
+total_demand_volume is 4000.000000
+
+Step 2: Assigning computing tasks to memory blocks...
+There are 4 networks in memory.
+
+Step 3: Column Generation for Traffic Assignment...
+Total Column Generation iteration: 20
+
+Current iteration number:0
+Current CPU time: 0.005000 s
+
+Current iteration number:1
+Current CPU time: 0.014000 s
+
+Current iteration number:2
+Current CPU time: 0.018000 s
+
+Current iteration number:3
+Current CPU time: 0.021000 s
+
+Current iteration number:4
+Current CPU time: 0.028000 s
+
+Current iteration number:5
+Current CPU time: 0.032000 s
+
+Current iteration number:6
+Current CPU time: 0.040000 s
+
+Current iteration number:7
+Current CPU time: 0.051000 s
+
+Current iteration number:8
+Current CPU time: 0.055000 s
+
+Current iteration number:9
+Current CPU time: 0.060000 s
+
+Current iteration number:10
+Current CPU time: 0.064000 s
+
+Current iteration number:11
+Current CPU time: 0.070000 s
+
+Current iteration number:12
+Current CPU time: 0.073000 s
+
+Current iteration number:13
+Current CPU time: 0.076000 s
+
+Current iteration number:14
+Current CPU time: 0.082000 s
+
+Current iteration number:15
+Current CPU time: 0.086000 s
+
+Current iteration number:16
+Current CPU time: 0.091000 s
+
+Current iteration number:17
+Current CPU time: 0.095000 s
+
+Current iteration number:18
+Current CPU time: 0.100000 s
+
+Current iteration number:19
+Current CPU time: 0.102000 s
+
+Step 4: Column Pool Updating
+Total Column Pool Updating iteration: 20
+Current iteration number: 0
+Current iteration number: 1
+Current iteration number: 2
+Current iteration number: 3
+Current iteration number: 4
+Current iteration number: 5
+Current iteration number: 6
+Current iteration number: 7
+Current iteration number: 8
+Current iteration number: 9
+Current iteration number: 10
+Current iteration number: 11
+Current iteration number: 12
+Current iteration number: 13
+Current iteration number: 14
+Current iteration number: 15
+Current iteration number: 16
+Current iteration number: 17
+Current iteration number: 18
+Current iteration number: 19
+
+Done!
+CPU Running Time for column pool updating: 0.039000 s
+writing link_performance.csv..
+writing agent.csv..
+writing data for 4  zones 
+Output for assignment with 20 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 0.019000 s
+free memory..
+done.
