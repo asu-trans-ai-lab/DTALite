@@ -13,48 +13,48 @@ Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in
 
 Table of Contents
 
-[DTALite/DTALite Users Guide	1](#_Toc2525)
+[DTALite/DTALite Users Guide 1](#_Toc2525)
 
-[1. Introduction	2](#_Toc17997)
+[1. Introduction 2](#_Toc17997)
 
->   [1.1. Motivation	2](#_Toc26356)
+>   [1.1. Motivation 2](#_Toc26356)
 
->   [1.2  System Architecture	4](#_Toc21323)
+>   [1.2 System Architecture 4](#_Toc21323)
 
->   [1.3. 5 steps of performing traffic analysis using CSV files	6](#_Toc29392)
+>   [1.3. 5 steps of performing traffic analysis using CSV files 6](#_Toc29392)
 
-[2. Getting Started from NeXTA graphical user interface and running
-DTALite	7](#_Toc14421)
+[2. Getting Started from NeXTA graphical user interface and running DTALite
+7](#_Toc14421)
 
->   [Step 1: Download and locate the project folder, check CSV network
->   files.	7](#_Toc18037)
+>   [Step 1: Download and locate the project folder, check CSV network files.
+>   7](#_Toc18037)
 
->   [Step 2: Visualize and validate network in NeXTA using shortest path
->   finding	8](#_Toc24380)
+>   [Step 2: Visualize and validate network in NeXTA using shortest path finding
+>   8](#_Toc24380)
 
->   [Step 3. Run DTALite as a Windows console application from File
->   Explorer	10](#_Toc28132)
+>   [Step 3. Run DTALite as a Windows console application from File Explorer
+>   10](#_Toc28132)
 
-[3. Toy Examples for Computing Static User Equilibrium	11](#_Toc4001)
+[3. Toy Examples for Computing Static User Equilibrium 11](#_Toc4001)
 
->   [3.1 Two-corridor example	11](#_Toc30525)
+>   [3.1 Two-corridor example 11](#_Toc30525)
 
->   [3.2 Detailed data structure description	12](#_Toc30755)
+>   [3.2 Detailed data structure description 12](#_Toc30755)
 
-[4. Detailed data structure descriptions	15](#_Toc13232)
+[4. Detailed data structure descriptions 15](#_Toc13232)
 
->   [4.1 Input for network data	15](#_Toc22008)
+>   [4.1 Input for network data 15](#_Toc22008)
 
->   [4.2 Input for demand data	17](#_Toc322)
+>   [4.2 Input for demand data 17](#_Toc322)
 
->   [4.3 Assignment and simulation configuration file	17](#_Toc22066)
+>   [4.3 Assignment and simulation configuration file 17](#_Toc22066)
 
->   [4.4 Input for signal timing and service layer	19](#_Toc27504)
+>   [4.4 Input for signal timing and service layer 19](#_Toc27504)
 
->   [4.5 Output file	19](#_Toc26172)
+>   [4.5 Output file 19](#_Toc26172)
 
-[Appendix: From mathematical modeling to network-based assignment and
-simulation	21](#_Toc8757)
+[Appendix: From mathematical modeling to network-based assignment and simulation
+21](#_Toc8757)
 
 # Introduction
 
@@ -260,7 +260,7 @@ simulation	21](#_Toc8757)
 >   path display in the agent dialog. For dynamic assignment and simulation, one
 >   can use NeXTA to view time-dependent queue and density.
 
-# Getting Started from NeXTA graphical user interface and running DTALite 
+# Getting Started from NeXTA graphical user interface and running DTALite
 
 ## Step 1: Download and locate the project folder, check CSV network files.
 
@@ -298,7 +298,7 @@ origin and destination for the path.
 
 ![](media/c00bf65734373b589eeed8339f69ea19.png)
 
-## Step 3. Run DTALite as a Windows console application from File Explorer 
+## Step 3. Run DTALite as a Windows console application from File Explorer
 
 ![](media/967d55f2662b2c9c6515930777bd9e55.png)
 
@@ -312,7 +312,7 @@ origin and destination for the path.
 >   zone layers have geometric fields for importing from and exporting to GIS
 >   software.
 
-# Toy Examples for Computing Static User Equilibrium 
+# Toy Examples for Computing Static User Equilibrium
 
 ## 3.1 Two-corridor example
 
@@ -367,7 +367,7 @@ origin and destination for the path.
 
 >   c = link capacity
 
-## 3.2 Detailed data structure description 
+## 3.2 Detailed data structure description
 
 Generic network files used for DTALite include files for three layers: physical
 layer, service layer and demand layer.
@@ -559,25 +559,25 @@ Table 3.10 agent.csv
 
 **File 3: settings.csv**
 
-| **Section Name**  | **Field Name**             | **Description**                                     | **Sample Values**      |
-|-------------------|----------------------------|-----------------------------------------------------|------------------------|
-| assignment        | assignment_mode            | Assignment_mode can be ue, dta or odme              | 1                      |
-|                   | number_of_iterations       |                                                     | 40                     |
-|                   | column_updating_iterations |                                                     | 40                     |
-| agent_type        | agent_type_id              | Agent type identification number (type: integer)    | 1                      |
-|                   | agent_type                 | Abbreviation of the agent type (type, string)       | p                      |
-|                   | name                       | Full name of the agent type                         | Passengers or vehicles |
-|                   | VOT                        | Value of time for the agent                         | 10                     |
-|                   | PCE                        | Passenger Car Equivalent (PCE) of the agent         | 1                      |
-| link_type         | time_period                | Time period expressed by HHMM_HHMM                  | 0600_1200              |
-| demand_period     | demand_period_id           | Demand period identification number (type: integer) | 1                      |
-|                   | demand_period              | Name of the demand period (type: string)            | AM                     |
-|                   | time_period                | Time period expressed by HHMM_HHMM                  | 0600_1200              |
-| demand_file_list  | file_sequence_no           | Sequence number of reading the files                | 1                      |
-|                   | file_name                  | Name of the file to be read                         | demand                 |
-|                   | format_type                | column for three columns, agent_csv, routing policy | Column                 |
-|                   | demand_period              | Name of the demand period                           | AM                     |
-|                   | agent_type                 | Abbreviation of the agent type                      | p                      |
+| **Section Name** | **Field Name**             | **Description**                                     | **Sample Values**      |
+|------------------|----------------------------|-----------------------------------------------------|------------------------|
+| assignment       | assignment_mode            | Assignment_mode can be ue, dta or odme              | 1                      |
+|                  | number_of_iterations       |                                                     | 40                     |
+|                  | column_updating_iterations |                                                     | 40                     |
+| agent_type       | agent_type_id              | Agent type identification number (type: integer)    | 1                      |
+|                  | agent_type                 | Abbreviation of the agent type (type, string)       | p                      |
+|                  | name                       | Full name of the agent type                         | Passengers or vehicles |
+|                  | VOT                        | Value of time for the agent                         | 10                     |
+|                  | PCE                        | Passenger Car Equivalent (PCE) of the agent         | 1                      |
+| link_type        | time_period                | Time period expressed by HHMM_HHMM                  | 0600_1200              |
+| demand_period    | demand_period_id           | Demand period identification number (type: integer) | 1                      |
+|                  | demand_period              | Name of the demand period (type: string)            | AM                     |
+|                  | time_period                | Time period expressed by HHMM_HHMM                  | 0600_1200              |
+| demand_file_list | file_sequence_no           | Sequence number of reading the files                | 1                      |
+|                  | file_name                  | Name of the file to be read                         | demand                 |
+|                  | format_type                | column for three columns, agent_csv, routing policy | Column                 |
+|                  | demand_period              | Name of the demand period                           | AM                     |
+|                  | agent_type                 | Abbreviation of the agent type                      | p                      |
 
 ## 4.4 Input for signal timing and service layer
 
@@ -638,7 +638,7 @@ Table 3.10 agent.csv
 | time_sequence         | Time point through which agents pass in turn                                                                                        | 0730:00;0745:45;0801:31; |
 | time_decimal_sequence | The number of decimal times through which agents pass in turn                                                                       | 450.00;465.76;481.52;    |
 
-# Appendix: From mathematical modeling to network-based assignment and simulation
+# Mathematical modeling to network-based assignment and simulation
 
 1.  **Link volume-delay function in static traffic assignment**
 
@@ -655,15 +655,8 @@ Table 3.10 agent.csv
 
     TT = FFTT[1 + 0.15(v/c)4]
 
-    where:
-
-    TT = link travel time
-
-    FFTT= free-flow travel time of link
-
-    v = link flow
-
-    c = link capacity
+    where: TT = link travel time, FFTT= free-flow travel time of link; v = link
+    flow; c = link capacity
 
     [Remark: the link travel time function typically is only dependent on its
     own flow, while ignoring link volume on opposing or conflicting directions.
@@ -718,84 +711,8 @@ Table 3.10 agent.csv
     Dynamic User Equilibrium Problem” by Lu, Mahmassani and Zhou in (2009). One
     can consider the extended DTA formulation by adding a time index dimension.
 
-    Consider a network G = (*N*, *A*), where *N* is a finite set of nodes and
-    *A* is a finite set of directed links (*i*, *j*), *iN* and *jN*. Associated
-    with each link (*i*, *j*) is the link travel time *sij*(*t*) required to
-    traverse link (*i*, *j*) when departing at time interval *tS* from node *i*.
-    For simplicity and without loss of generality, *sij*(*t*) is regarded as
-    link travel time, though it can be generalized to include travel time,
-    out-of-pocket cost and other travel impedances that may incur when
-    traversing link (*i*, *j*) at time *t*. Travel time and cost are used
-    interchangeably in this paper. Other important notation and variables are
-    summarized below.
+    ![](media/5191d5aea460f89d8f91f2b011d6f6df.png)
 
-    *O* subset of origin nodes; *O*  *N*
+    ![](media/1234de5d752ff35b565a8f625feee789.png)
 
-    *D* subset of destination nodes; *D*  *N*.
-
-    *T* set of departure time intervals.
-
-    *o* subscript for an origin node, *oO*.
-
-    *d* subscript for a destination node, *dD*.
-
-    set of all feasible paths for a given triplet (*o*, *d*).
-
-    *p*  subscript for a path *p*.
-
-    number of trips departing from node *o* to node *d*.
-
-    number of trips departing from *o* to *d* and assigned to path *p*.
-
-    *r* path flow vector, *r* = {, *o O*, *d D*, and *p* }.
-
-    path travel cost (or time) for the travelers departing from *o* to *d* and
-    assigned to path *p*;, and is a function of the path flow vector *r*.
-
-    *c*(*r*) vector of path travel costs; *c*(*r*) = {, *o O*, *d D*, and *p* }.
-
-    The OD demand pattern for the entire planning horizon (i.e.,, *o*, *d* is
-    assumed to be known *a priori*. The key behavioral assumption for the path
-    choice decision is as follows: in a disutility-minimization framework, each
-    trip-maker is rational and chooses a path that minimizes the travel cost.
-    Specifically, for each trip-maker in, a path *p*\* will be selected if and
-    only if .
-
-    Given the assumptions above, the problem is to solve the UE traffic
-    assignment problem, with a given OD demand, to obtain a path flow pattern
-    satisfying the UE conditions. Specifically, the goal is to determine a UE
-    path flow vector (routing policies) over a vehicular network for each OD
-    pair and each departure time interval (i.e., *r\** {, *o*, *d*, and *p* }.
-
-    By the above UE definition, all trips in a network are equilibrated in terms
-    of actual experienced path costs, so it is necessary to determine the
-    experienced path costs *c*(*r*) for a given path flow vector *r*. To this
-    end, a simulation-based dynamic traffic (or network loading) model is used
-    to obtain the experienced path cost vector. It should be noted that the
-    algorithm is independent of the specific dynamic traffic model selected; any
-    (macroscopic, microscopic or mesoscopic) dynamic traffic model capable of
-    capturing complex traffic flow dynamics, in particular the effect of
-    physical queuing, as well as preventing violations of the first-in-first-out
-    property, can be embedded into the proposed solution algorithm.
-
-    With the introduction of the gap function *Gap*(*r*, ), the proposed
-    nonlinear minimization problem (NMP) is presented as the following.
-
-    (1)
-
-    Subject to , *o*, *d* (2)
-
-    , *o*, *d*, and *pP*(*o*, *d*) (3)
-
-    ,  *o*, *d*, and *pP*(*o*, *d*) (4)
-
-    In the above NMP reformulation, both  and *r* are *independent* decision
-    variables and hence the gap function is a function of both *r* and  (i.e.,
-    *Gap*(*r*, )), where  and *r* are connected with each other through
-    inequality constraint (3). *Gap*(*r*, ) provides a measure of the violation
-    of the UE conditions in terms of the difference between the total actual
-    experienced path travel cost and the total shortest path cost evaluated at
-    any given path flow pattern *r*. The difference vanishes when the path flow
-    vector *r*\* satisfies the UE conditions. Thus, solving the UE problem can
-    be viewed as a process of finding the path flow vector *r*\* and \* such
-    that *Gap*(*r\**, \*) = 0.
+    ![](media/ab8b90115491a5817f60ad154d999afb.png)
