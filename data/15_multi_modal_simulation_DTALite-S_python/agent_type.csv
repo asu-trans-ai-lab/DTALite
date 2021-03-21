@@ -1,0 +1,3 @@
+agent_type,name,VOT,flow_type
+p,passenger,10,0
+v,vehicles,20,1

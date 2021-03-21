@@ -1,0 +1,62 @@
+STALite Log           
+Step 1: Reading input data
+Step 1.1: Reading section [demand_period] in setting.csv...
+number of demand periods = 1
+Step 1.2: Reading section [link_type] in setting.csv...
+important: traffic_flow_code on link type 1 is 3
+important: traffic_flow_code on link type 2 is 2
+important: traffic_flow_code on link type 3 is 2
+important: traffic_flow_code on link type 4 is 2
+important: traffic_flow_code on link type 5 is 1
+important: traffic_flow_code on link type 20 is 1
+important: traffic_flow_code on link type 99 is 1
+number of link types = 8
+Step 1.3: Reading section [agent_type] in setting.csv...
+number of agent typess = 1
+Step 1.4: Reading node data in node.csv...
+number of nodes = 30
+Step 1.5: Initializing O-D zone vector...
+number of zones = 2
+Step 1.6: Reading link data in link.csv... 
+Error: link_id  has been defined more than once. Please check link.csv.
+number of links = 60
+number of links =64
+Step 1.7: Reading service arc in timing.csv...
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+number of timing records = 0
+
+allocating 4D memory for 0 zones
+allocating 3D memory for 0
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+o_zone_id:1, d_zone_id: 14, value = 10.000000
+total_demand_volume is 10.000000
+
+Step 2: Assigning computing tasks to memory blocks...
+There are 2 networks in memory.
+
+Step 3: Column Generation for Traffic Assignment...
+Total Column Generation iteration: 2
+
+Current iteration number:0
+Current CPU time: 0.003000 s
+
+Current iteration number:1
+Current CPU time: 0.006000 s
+writing link_performance_sig.csv..
+
+Step 4: Column Pool Updating
+Total Column Pool Updating iteration: 0
+
+Done!
+CPU Running Time for column pool updating: 0.000000 s
+writing link_performance.csv..
+writing agent.csv..
+writing data for 2  zones 
+o zone id =  1
+o zone id =  14
+Output for assignment with 2 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 0.020000 s
+free memory..
+done.

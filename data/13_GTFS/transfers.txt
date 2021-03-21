@@ -1,0 +1,5 @@
+from_stop_id,to_stop_id,transfer_type,min_transfer_time
+9005,SKTR1,2,300
+SKTR1,9005,2,300
+SKTR1,9033,2,300
+9033,SKTR1,2,300
