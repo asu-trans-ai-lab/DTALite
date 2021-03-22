@@ -1,10 +1,27 @@
 # DTALite
 
 This site mains the source code and Windows-based release for DTALite+NeXTA
-package.
+package. DTALite is an open-source AMS library for efficiently macroscopic and
+mesoscopic traffic assignment based on [General Modeling Network
+Specification](https://github.com/zephyr-data-specs/GMNS) (GMNS) format. NeXTA
+as a visualization tool for transportation Analysis, Modeling, and Simulation
+(AMS), developed through the support of a FHWA
+[study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
 
-For the Python version of DTALite and Path4GMNS package portable on Windows,
-Linux and MacOS, please go to <https://github.com/jdlph/Path4GMNS>.
+Remarks:
+
+1.  For the Python version of DTALite and Path4GMNS package portable on Windows,
+    Linux and MacOS, please go to <https://github.com/jdlph/Path4GMNS>.
+
+2.  Please download latest DTALite-NeXTA
+    [package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
+    which follows calendar versioning. Here are the user guides for
+    [NeXTA](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+    and
+    [NeXTA+QGIS](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+    using GMNS data format. We have prepared a number of self-learning
+    [documents](https://github.com/asu-trans-ai-lab/DTALite/tree/main/self_learning)
+    too.
 
 ## Step 1: White Paper and Application:
 
