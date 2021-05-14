@@ -4,11 +4,11 @@ project ("DTALite")
 
 option(BUILD_EXE "BUILD Executable or not" ON)
 
-configure_file(config.h.in config.h)
+configure_file(build_config.h.in build_config.h)
 
 if(BUILD_EXE)
     message("Building executable on ${CMAKE_SYSTEM_NAME}")
-elseif()
+else()
     message("Building shared library on ${CMAKE_SYSTEM_NAME}")
 endif()
 
@@ -18,10 +18,14 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # enable OpenMP
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp fpic")
-elseif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -fpic")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "-fopenmp -fpic")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # do nothing as MSVC does not support -fopenmp -fpic
+else()
+    message("Please set OpenMP flag compatible with your compiler")
 endif()
 
 # note CMAKE_BUILD_TYPE WILL BE INGNORED for IDE generators, like Visual Studio and Xcode
@@ -31,12 +35,12 @@ set(CMAKE_BUILD_TYPE  "Release")
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
 if(BUILD_EXE)
-    add_executable(DTALite flash_dta.cpp main_api.cpp)
-elseif()
-    add_library(DTALite SHARED main_api.cpp)
+    add_executable(DTALite utils.cpp flash_dta.cpp main_api.cpp)
+else()
+    add_library(DTALite SHARED utils.cpp main_api.cpp)
 endif()
 
-# using OpenMP, the second command is only needed for macOS
+# using OpenMP
 find_package(OpenMP REQUIRED)
 target_link_libraries(DTALite PRIVATE OpenMP::OpenMP_CXX)
 

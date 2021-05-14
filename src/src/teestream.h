@@ -1,11 +1,21 @@
-/* A class that simultaneously outputs to ostream and ofstream objects 
- * source: http://www.cplusplus.com/forum/general/64174/#msg347154 
- * 
+/* Portions Copyright 2019 Xuesong Zhou and Peiheng Li
+ *
+ * If you help write or modify the code, please also list your names here.
+ * The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL
+ * and further prevent a violation of the GPL.
+ *
+ * More about "How to use GNU licenses for your own software"
+ * http://www.gnu.org/licenses/gpl-howto.html
+ *
+ *
+ * A class that simultaneously outputs to ostream and ofstream objects
+ * source: http://www.cplusplus.com/forum/general/64174/#msg347154
+ *
  * Minor changes by Peiheng Li include,
  *  1. replacing typedef with using;
- *  2. removing the empty space between std::char_traits<C> and '>' in 
+ *  2. removing the empty space between std::char_traits<C> and '>' in
  *     template <typename C, typename T = std::char_traits<C>> as compliers
- *     complying C++11 and higer can differentiate the ending ">>" with the istream 
+ *     complying C++11 and higer can differentiate the ending ">>" with the istream
  *     operator ">>".
  */
 
@@ -49,7 +59,7 @@ private:
     streambuf_type* second;
 };
 
-template < typename C, typename T = std::char_traits<C>>
+template <typename C, typename T = std::char_traits<C>>
 struct basic_teestream : public std::basic_ostream<C, T>
 {
     // add more controls of the debug logs
@@ -71,7 +81,8 @@ struct basic_teestream : public std::basic_ostream<C, T>
 
     ~basic_teestream() { stmbuf.pubsync(); }
 
-private: streambuff_type stmbuf;
+private:
+    streambuff_type stmbuf;
 };
 
 using teebuf = basic_teebuf<char>;
