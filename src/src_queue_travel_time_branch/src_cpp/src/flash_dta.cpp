@@ -21,7 +21,7 @@
 int main()
 {
     // reset all the log files to defult 0: not output; if want to output these logs set to 1
-    dtalog.output() << "STALite Log" << std::fixed << std::setw(12) << '\n';
+    dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
     dtalog.debug_level() = 0;
     dtalog.log_sig() = 0;
     dtalog.log_odme() = 0;
@@ -31,7 +31,9 @@ int main()
 
     int iteration_number = 20;
     int column_updating_iterations = 40;
-    int signal_updating_iterations = -1;
+    int ODME_iterations = 20;
+	int number_of_memory_blocks = 8;
+
     int signal_updating_output = 0;
     // generate link performance and agent file
     int assignment_mode = 1;
@@ -50,6 +52,7 @@ int main()
                 std::string assignment_mode_str;
                 parser_settings.GetValueByFieldName("number_of_iterations", iteration_number, true, true);
                 parser_settings.GetValueByFieldName("assignment_mode", assignment_mode_str);
+
                 // these are the assignment modes
                 // two usually methods are ue (user equilibrium) and dta (dynamic traffic assignment)
                 // the main difference of these two methods are different output in link_performance.csv
@@ -71,9 +74,13 @@ int main()
 
                 // iteration number of reassignment
                 parser_settings.GetValueByFieldName("column_updating_iterations", column_updating_iterations, true, true);
+                parser_settings.GetValueByFieldName("ODME_iterations", ODME_iterations, true, true);
 
                 // the start interation of generating signals, if there is no signals set this number larger than the iteration number
-                parser_settings.GetValueByFieldName("signal_updating_iterations", signal_updating_iterations, true, false);
+                parser_settings.GetValueByFieldName("number_of_memory_blocks", number_of_memory_blocks, true, true);
+				dtalog.output() << "number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << std::endl;
+
+
 
                 // just one record
                 break;
@@ -92,7 +99,7 @@ int main()
         }
     }
     // obtain initial flow values
-    network_assignment(assignment_mode, iteration_number, column_updating_iterations);
+    network_assignment(assignment_mode, iteration_number, column_updating_iterations, ODME_iterations, number_of_memory_blocks);
 
     return 0;
 }

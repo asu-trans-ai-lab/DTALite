@@ -17,7 +17,7 @@
 #endif
 
 #ifdef BUILD_EXE
-    double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations);
+    double network_assignment(int assignment_mode, int iteration_number, int column_updating_iteration, int number_of_memory_blockss);
 #else
     #ifdef _WIN32
         #define DTALIBRARY_API __declspec(dllexport)
@@ -25,7 +25,7 @@
         #define DTALIBRARY_API
     #endif
 
-    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations);
+    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int number_of_memory_blocks);
 #endif
 
 #endif
