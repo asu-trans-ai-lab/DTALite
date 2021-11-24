@@ -27,7 +27,7 @@ using std::ostringstream;
 
 void g_ProgramStop()
 {
-    dtalog.output() << "STALite Program stops. Press any key to terminate. Thanks!" << endl;
+    dtalog.output() << "DTALite Program stops. Press any key to terminate. Thanks!" << endl;
     getchar();
     exit(0);
 }
@@ -116,6 +116,21 @@ vector<string> split(const string &s, const string &seperator)
     return result;
 }
 
+
+int g_dayofweek(int y, int m, int d)
+{
+    static int t[] = { 0, 3, 2, 5, 0, 3,
+                       5, 1, 4, 6, 2, 4 };
+    y -= m < 3;
+    return (y + y / 4 - y / 100 +
+        y / 400 + t[m - 1] + d) % 7;
+}
+
+int g_dayofyear(int y, int m, int d)
+{
+    return (m-1) * 31 + d-1;
+
+}
 vector<float> g_time_parser(string str)
 {
     vector<float> output_global_minute;
@@ -241,6 +256,111 @@ vector<float> g_time_parser(string str)
     return output_global_minute;
 }
 
+std::map<int, int> g_dayDataMap;
+
+float g_measurement_tstamp_parser(string str, int& day_of_week_flag, int& day_of_year)
+{
+
+    int string_lenghth = str.length();
+
+    //ASSERT(string_lenghth < 100);
+
+    const char* string_line = str.data(); //string to char*
+
+    int char_length = strlen(string_line);
+
+    char ch, buf_hh[32] = { 0 }, buf_mm[32] = { 0 }, buf_ss[32] = { 0 };
+    
+    int yyyy, month, day; 
+    char dd1, dd2, hh1, hh2, mm1, mm2;
+    float ddf1, ddf2, hhf1, hhf2, mmf1, mmf2;
+    float global_minute = 0;
+    float dd = 0, hh = 0, mm = 0;
+    int i = 11;  //2019-01-01 06:00:00,
+    int buffer_i = 0, buffer_k = 0, buffer_j = 0;
+    int num_of_colons = 0;
+    int num_of_underscore = 0;
+
+    int char_length_yymmdd = 10;
+    i = 0;
+    
+//    sscanf(string_line, "%d/%d/%d", &month, &day, &yyyy );
+    sscanf(string_line, "%d-%d-%d", &yyyy, &month, &day);
+
+
+
+    day_of_week_flag = g_dayofweek(yyyy, month, day);
+    day_of_year = g_dayofyear(yyyy, month, day);
+
+    g_dayDataMap[day_of_year] = month*100+day;
+
+
+    /// 
+    i = 11;
+
+    while (i < char_length)
+    {
+        ch = string_line[i++];
+
+        if (num_of_colons == 0 && ch != '_' && ch != ':') //input to buf_ddhhmm until we meet the colon
+        {
+            buf_hh[buffer_i++] = ch;
+        }
+        else if (num_of_colons == 1 && ch != ':') //start the Second "SS"
+        {
+            buf_mm[buffer_k++] = ch;
+        }
+        else if (num_of_colons == 2 && ch != ':') //start the Millisecond "sss"
+        {
+            buf_ss[buffer_j++] = ch;
+        }
+
+        if (i == char_length) //start a new time string
+        {
+                //HHMM, 0123
+                hh1 = buf_hh[0]; //read each first
+                hh2 = buf_hh[1];
+                mm1 = buf_mm[0];
+                mm2 = buf_mm[1];
+
+                hhf1 = ((float)hh1 - 48); //convert a char to a float
+                hhf2 = ((float)hh2 - 48);
+                mmf1 = ((float)mm1 - 48);
+                mmf2 = ((float)mm2 - 48);
+
+                dd = 0;
+                hh = hhf1 * 10 * 60 + hhf2 * 60;
+                mm = mmf1 * 10 + mmf2;
+
+            global_minute = dd + hh + mm;
+
+            //initialize the parameters
+            buffer_i = 0;
+            buffer_k = 0;
+            buffer_j = 0;
+            num_of_colons = 0;
+            break;
+        }
+
+        if (ch == ':')
+            num_of_colons += 1;
+    }
+
+    return global_minute;
+}
+
+string g_time_coding_HHMM(float time_stamp)
+{
+    int hour = static_cast<int>(time_stamp / 60);
+    int minute = static_cast<int>(time_stamp - hour * 60);
+
+    ostringstream strm;
+    strm.fill('0');
+    strm << std::setw(2) << hour << std::setw(2) << minute ;
+
+    return strm.str();
+}
+
 string g_time_coding(float time_stamp)
 {
     int hour = static_cast<int>(time_stamp / 60);
@@ -249,7 +369,7 @@ string g_time_coding(float time_stamp)
 
     ostringstream strm;
     strm.fill('0');
-    strm << std::setw(2) << hour << std::setw(2) << minute /*<< ":" << setw(2) << second*/;
+    strm << std::setw(2) << hour << std::setw(2) << minute << ":" << std::setw(2) << second;
 
     return strm.str();
 }

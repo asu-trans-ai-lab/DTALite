@@ -21,24 +21,25 @@
 int main()
 {
     // reset all the log files to defult 0: not output; if want to output these logs set to 1
-    dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
+    dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << std::setprecision(9) << '\n';
     dtalog.debug_level() = 0;
     dtalog.log_sig() = 0;
     dtalog.log_odme() = 0;
-    dtalog.log_path() = 0;
+    dtalog.path = 2;
     dtalog.log_dta() = 0;
     dtalog.log_ue() = 0;
 
     int iteration_number = 20;
     int column_updating_iterations = 40;
-    int ODME_iterations = 20;
 	int number_of_memory_blocks = 8;
+    
 
     int signal_updating_output = 0;
     // generate link performance and agent file
-    int assignment_mode = 1;
+    int assignment_mode = 10;
     bool flag_default = false;
     int default_volume = 1;
+
 
     CCSVParser parser_settings;
     parser_settings.IsFirstLineHeader = false;
@@ -66,6 +67,8 @@ int main()
                     assignment_mode = 2;
                 else if (assignment_mode_str == "odme")
                     assignment_mode = 3;
+                else if (assignment_mode_str == "qem")
+                    assignment_mode = 10;
                 else
                 {
                     dtalog.output() << "assignment_mode " << assignment_mode_str.c_str() << " in settings.csv is invalid." << std::endl;
@@ -74,12 +77,10 @@ int main()
 
                 // iteration number of reassignment
                 parser_settings.GetValueByFieldName("column_updating_iterations", column_updating_iterations, true, true);
-                parser_settings.GetValueByFieldName("ODME_iterations", ODME_iterations, true, true);
 
                 // the start interation of generating signals, if there is no signals set this number larger than the iteration number
-                parser_settings.GetValueByFieldName("number_of_memory_blocks", number_of_memory_blocks, true, true);
+                parser_settings.GetValueByFieldName("number_of_memory_blocks", number_of_memory_blocks, false, true);
 				dtalog.output() << "number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << std::endl;
-
 
 
                 // just one record
@@ -99,7 +100,7 @@ int main()
         }
     }
     // obtain initial flow values
-    network_assignment(assignment_mode, iteration_number, column_updating_iterations, ODME_iterations, number_of_memory_blocks);
+    network_assignment(assignment_mode, iteration_number, column_updating_iterations, number_of_memory_blocks);
 
     return 0;
 }

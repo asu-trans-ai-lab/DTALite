@@ -25,7 +25,7 @@
         #define DTALIBRARY_API
     #endif
 
-    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int number_of_memory_blocks);
+    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int number_of_memory_blocks);
 #endif
 
 #endif
