@@ -10,7 +10,7 @@
 
 #ifndef GUARD_UTILS_H
 #define GUARD_UTILS_H
-
+#define BUILD_EXE //self-use
 #include <vector>
 #include <map>
 #include <iostream>
@@ -34,7 +34,7 @@ int g_ParserIntSequence(std::string str, std::vector<int>& vect);
 
 std::vector<float> g_time_parser(std::string str);
 std::string g_time_coding(float time_stamp);
-
+bool g_read_a_line(FILE* f);
 // Peiheng, 04/01/21, this is just a temporary fix on logging in DTALite
 // it creates another global variable (i.e. dtalog right after class DTALog)
 // shared by all translation units, which is really bad. This is a common issue
@@ -83,6 +83,17 @@ DTALog(): logfile {"log.txt"}, ts {std::cout, logfile}
 };
 
 static DTALog dtalog;
+
+struct GDPoint //geometry data
+{
+    double x;
+    double y;
+};
+
+typedef struct
+{
+    double X, Y, Z;
+}CCoordinate;
 
 class CCSVParser{
 public:
@@ -142,7 +153,7 @@ bool CCSVParser::GetValueByFieldName(std::string field_name, T& value, bool requ
     {
         if (required_field)
         {
-            dtalog.output() << "Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << std::endl;
+            dtalog.output() << "Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
             g_ProgramStop();
         }
         return false;

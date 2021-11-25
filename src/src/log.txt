@@ -1,4 +1,5 @@
-STALite Program stops. Press any key to terminate. Thanks!
-d_period] in setting.csv...
+DTALite Log           
+ress any key to terminate. Thanks!
+ep 1.1: Reading section [demand_period] in setting.csv...
 Error: File settings.csv cannot be opened.
  It might be currently used and locked by EXCEL.
