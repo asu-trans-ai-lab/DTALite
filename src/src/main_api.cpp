@@ -1,5 +1,5 @@
 /* Portions Copyright 2019 Xuesong Zhou and Peiheng Li
- *
+ 
  * If you help write or modify the code, please also list your names here.
  * The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL
  * and further prevent a violation of the GPL.
@@ -720,7 +720,7 @@ public:
     void Demand_ODME(int OD_updating_iterations);
     void AllocateLinkMemory4Simulation();
     void UpdateRTPath(CAgent_Simu* pAgent);
-    bool RTSP_RealTimeShortestPathFinding(int time_slot_no);
+    bool RTSP_RealTimeShortestPathFinding(int time_slot_no, int simu_interval_t);
     void DeallocateLinkMemory4Simulation();
 
     double m_GridResolution;
@@ -1064,7 +1064,7 @@ public:
         BWTT_in_simulation_interval{ 100 }, zone_seq_no_for_outgoing_connector{ -1 }, number_of_lanes{ 1 }, lane_capacity{ 1999 },
         length{ 1 }, free_flow_travel_time_in_min{ 1 }, link_spatial_capacity{ 100 }, capacity_reduction_flag {0} ,
         timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, link_type{ 2 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
-        cell_type{ -1 }, saturation_flow_rate { 1800}
+        cell_type{ -1 }, saturation_flow_rate { 1800}, TD_link_reduction_start_time_slot_no {99999}
     {
         for (int tau = 0; tau < _MAX_TIMEPERIODS; ++tau)
         {
@@ -1079,6 +1079,13 @@ public:
 
             for(int at = 0; at < _MAX_AGNETTYPES; ++at)
                 volume_per_period_per_at[tau][at] = 0;
+        }
+
+        for (int tau = 0; tau < _MAX_TIMESLOT_PerPeriod; ++tau)
+        {
+            RT_travel_time_vector[tau] = -1;
+            RT_speed_vector[tau] = -1;
+
         }
     }
 
@@ -1139,6 +1146,8 @@ public:
     double saturation_flow_rate;
 
     float TD_link_capacity[_MAX_TIMESLOT_PerPeriod];
+    int TD_link_reduction_start_time_slot_no;
+    std::map <int, bool> TD_link_closure_map;
 
 	double length;
 	double free_flow_travel_time_in_min;
@@ -1212,6 +1221,10 @@ public:
 	double  queue_length_perslot[_MAX_TIMEPERIODS];  // # of vehicles in the vertical point queue
 	double travel_time_per_period[_MAX_TIMEPERIODS];
     double RT_travel_time;
+
+    float RT_travel_time_vector[_MAX_TIMESLOT_PerPeriod];  // for each 15 min time slot
+    float RT_speed_vector[_MAX_TIMESLOT_PerPeriod];  // for each 15 min time slot
+
 
 	double  travel_marginal_cost_per_period[_MAX_TIMEPERIODS][_MAX_AGNETTYPES];
 
@@ -2179,7 +2192,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
                                 break;
 
                             demand_value *= loading_scale_factor;
-                            if (demand_value >= 1)
+                            if (demand_value >= 5)
                             {
                                 critical_OD_volume += demand_value ;
                                 critical_OD_count += 1;
@@ -2213,11 +2226,11 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
                         int count_zone_demand = 0;
                         for (it = assignment.g_origin_demand_array.begin(); it != assignment.g_origin_demand_array.end(); ++it)
                         {
-                            if (it->second > 0.001)
-                            {
-                                dtalog.output() << "o_zone " << it->first << ", demand=," << it->second << endl;
-                                count_zone_demand++;
-                            }
+                            //if (it->second > 5)
+                            //{
+                            //    dtalog.output() << "o_zone " << it->first << ", d_zone=," << it->second << endl;
+                            //    count_zone_demand++;
+                            //}
                         }
                         dtalog.output() << "There are  " << count_zone_demand << " zones with positive demand" << endl;
 
@@ -4203,6 +4216,15 @@ void g_load_scenario_data(Assignment& assignment)
                 for (int s = global_minute_vector[0] / 15; s <= global_minute_vector[1] / 15; s++)
                 {
                     g_link_vector[timing_arc.link_seq_no].TD_link_capacity[s] = capacity;
+                    if (capacity < 1)
+                    {
+                        g_link_vector[timing_arc.link_seq_no].TD_link_closure_map[s] = true;
+                    }
+                    
+                    
+                    if (s < g_link_vector[timing_arc.link_seq_no].TD_link_reduction_start_time_slot_no)
+                        g_link_vector[timing_arc.link_seq_no].TD_link_reduction_start_time_slot_no = s;
+
                 }
 
 
@@ -4568,9 +4590,9 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 
 void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number)
 {
-    float total_gap = 0;
+    double total_system_cost_gap = 0;
     float total_relative_gap = 0;
-    float total_gap_count = 0;
+    double total_system_travel_cost = 0;
 
     // we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),
     // and use the newly generated path flow to add the additional 1/(k+1)
@@ -4618,12 +4640,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
                         // scan through the map with different node sum for different paths
                         /// step 1: update gradient cost for each column path
-                        //if (o = 7 && d == 15)
-                        //{
 
-                        //	if (assignment.g_pFileDebugLog != NULL)
-                        //		fprintf(assignment.g_pFileDebugLog, "CU: iteration %d: total_gap=, %f,total_relative_gap,%f,\n", inner_iteration_number, total_gap, total_gap / max(0.00001, total_gap_count));
-                        //}
                         least_gradient_cost = 999999;
                         least_gradient_cost_path_seq_no = -1;
                         least_gradient_cost_path_node_sum_index = -1;
@@ -4655,7 +4672,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
                             if (column_vector_size == 1)  // only one path
                             {
-                                total_gap_count += (it->second.path_gradient_cost * it->second.path_volume);
+                                total_system_travel_cost += (it->second.path_gradient_cost * it->second.path_volume);
                                 break;
                             }
 
@@ -4678,8 +4695,8 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
                                     it->second.path_gradient_cost_difference = it->second.path_gradient_cost - least_gradient_cost;
                                     it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001f, least_gradient_cost);
 
-                                    total_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
-                                    total_gap_count += (it->second.path_gradient_cost * it->second.path_volume);
+                                    total_system_cost_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
+                                    total_system_travel_cost += (it->second.path_gradient_cost * it->second.path_volume);
 
                                     step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume;
 
@@ -4699,7 +4716,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
                             if (least_gradient_cost_path_seq_no != -1)
                             {
                                 p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_volume += total_switched_out_path_volume;
-                                total_gap_count += (p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_gradient_cost *
+                                total_system_travel_cost += (p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_gradient_cost *
                                     p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_volume);
                             }
                         }
@@ -4708,6 +4725,10 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
             }
         }
     }
+
+    dtalog.output() << "column updating: iteration= " << inner_iteration_number << ", total_gap=" << total_system_cost_gap
+        << ",total_relative_gap=" << total_system_cost_gap / max(0.00001, total_system_travel_cost) << endl;
+
 }
 
 void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations)
@@ -4715,7 +4736,6 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
     // column_updating_iterations is internal numbers of column updating
     for (int n = 0; n < column_updating_iterations; ++n)
     {
-        dtalog.output() << "Current iteration number: " << n << endl;
         g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n);
 
         if(dtalog.debug_level() >=3)
@@ -5056,7 +5076,10 @@ void g_output_assignment_result(Assignment& assignment)
                             int information_type = 0;
 
                             if (assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end())
+                            {
                                 information_type = 1;
+                                continue; // too many output 
+                            }
 
                             time_stamp = (assignment.g_DemandPeriodVector[tau].starting_time_slot_no + assignment.g_DemandPeriodVector[tau].ending_time_slot_no) / 2.0 * MIN_PER_TIMESLOT;
 
@@ -5251,7 +5274,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
     {
 
         // Option 2: BPR-X function
-        fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,from_cell_code,lanes,length,free_speed,FFTT,time_period,volume,CA,CD,density,queue_length,discharge_rate,TD_free_flow_travel_time,waiting_time_in_sec,speed,geometry,");
+        fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,from_cell_code,lanes,length,free_speed,FFTT,time_period,volume,CA,CD,density,queue_length,discharge_rate,TD_free_flow_travel_time,waiting_time_in_sec,RT_speed,speed,geometry,");
         fprintf(g_pFileLinkMOE, "notes\n");
 
 
@@ -6680,32 +6703,67 @@ double network_assignment(int assignment_mode, int iteration_number, int column_
 
     return 1;
 }
-bool Assignment::RTSP_RealTimeShortestPathFinding(int time_slot_no)
+bool Assignment::RTSP_RealTimeShortestPathFinding(int time_slot_no, int simu_time_interval_t)
 {
 clock_t start_t_lc = clock();
 clock_t start_t_cp = clock();
 
 bool bRealTimeInformationActicvated = false;
-        for (int i = 0; i < g_link_vector.size(); ++i)
-        {
-            CLink* pLink = &(g_link_vector[i]);
-            int slot_no = time_slot_no;
-            float RT_capacity = pLink->TD_link_capacity[slot_no];
+for (int i = 0; i < g_link_vector.size(); ++i)
+{
+    CLink* pLink = &(g_link_vector[i]);
+    int slot_no = time_slot_no;
+    float RT_capacity = pLink->TD_link_capacity[slot_no];
 
-            if (pLink->link_type >=1 && (pLink->ExitQueue.size()>100 || fabs(RT_capacity - pLink->lane_capacity * pLink->number_of_lanes) >1))  // significantly different from the normal capacity
-            {
-                pLink->RT_travel_time = (pLink->ExitQueue.size()) / max(1,RT_capacity)*60; // hour to min
+    if (time_slot_no >= pLink->TD_link_reduction_start_time_slot_no)  // later than the earliest start time slot
+    {
+        bRealTimeInformationActicvated = true;
+    }
+}
+if (bRealTimeInformationActicvated == false)  // as long as there are incident activated
+return false;
 
-                if (RT_capacity < 1)  // closure
-                    pLink->RT_travel_time = 99999;
+for (int i = 0; i < g_link_vector.size(); ++i)
+{
+    CLink* pLink = &(g_link_vector[i]);
+    int slot_no = time_slot_no;
+    float RT_capacity = pLink->TD_link_capacity[slot_no];
+    if (pLink->link_type >= 0)  // do not need to be the cap reduced link
+           {
 
-                bRealTimeInformationActicvated = true;
-            }
+                    double total_waiting_time_in_min = 0;
 
-        }
+                    for (auto it = pLink->ExitQueue.begin(); it != pLink->ExitQueue.end(); ++it)
+                    {
+                        int agent_id = (*it);
+                        CAgent_Simu* p_agent = g_agent_simu_vector[agent_id];
 
-        if (bRealTimeInformationActicvated == false)
-            return false;
+
+                        int current_link_seq_no = p_agent->path_link_seq_no_vector[p_agent->m_current_link_seq_no];
+                        int arrival_time_in_t = p_agent->m_Veh_LinkArrivalTime_in_simu_interval[p_agent->m_current_link_seq_no];
+                        int waiting_time_in_t = simu_time_interval_t - arrival_time_in_t;
+                        total_waiting_time_in_min += waiting_time_in_t * number_of_seconds_per_interval / 60; // in min
+
+                    }
+                    pLink->RT_travel_time = total_waiting_time_in_min / max(1, pLink->ExitQueue.size());  // average travel time
+
+                    if (pLink->TD_link_closure_map.find(slot_no) != pLink->TD_link_closure_map.end())
+                    {
+                        pLink->RT_travel_time = 9999;
+                    }
+
+                    pLink->RT_speed_vector[time_slot_no] = pLink->length / max(0.00001, pLink->RT_travel_time / 60.0);  // mph                }
+
+
+
+                    pLink->RT_travel_time_vector[time_slot_no] = pLink->RT_travel_time;
+
+          }
+        
+
+}
+
+ 
 
 #pragma omp parallel for  // step 3: C++ open mp automatically create n threads., each thread has its own computing thread on a cpu core
         for (int blk = 0; blk < g_NetworkForRTSP_vector.size(); ++blk)
@@ -7207,7 +7265,7 @@ void Assignment::STTrafficSimulation()
         if (t % ( int(number_of_in_min_for_RTSP * 60/number_of_seconds_per_interval)) == 0)
         {
             int slot_no = (t * number_of_seconds_per_interval / 60 + g_LoadingStartTimeInMin) / 15;
-            if (RTSP_RealTimeShortestPathFinding(slot_no)==true)
+            if (RTSP_RealTimeShortestPathFinding(slot_no, t)==true)
                 bRealTimeInformationActivated = true;
         }
 
@@ -7714,7 +7772,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
     {
         float total_gap = 0;
         float total_relative_gap = 0;
-        float total_gap_count = 0;
+        float total_system_travel_cost = 0;
         //step 2.1
         // we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),
         // and use the newly generated path flow to add the additional 1/(k+1)
@@ -7906,5 +7964,5 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 
     //if (assignment.g_pFileDebugLog != NULL)
-    //	fprintf(assignment.g_pFileDebugLog, "CU: iteration %d: total_gap=, %f,total_relative_gap=, %f,\n", s, total_gap, total_gap / max(0.0001, total_gap_count));
+    //	fprintf(assignment.g_pFileDebugLog, "CU: iteration %d: total_gap=, %f,total_relative_gap=, %f,\n", s, total_gap, total_gap / max(0.0001, total_system_travel_cost));
 }
