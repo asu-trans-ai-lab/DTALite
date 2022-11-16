@@ -1,0 +1,5 @@
+node_id,node_no,node_type,#_of_outgoing_nodes,activity_node_flag,agent_type,zone_id,cell_id,cell_code,info_zone_flag,x_coord,y_coord
+1,0,,0,1,,1,-858993460,,0,0.017882,-0.125179
+2,1,,0,1,,2,-858993460,,0,40.253933,0.053648
+3,2,,0,0,,-1,-858993460,,0,19.778254,14.806867
+4,3,,0,0,,-1,-858993460,,0,19.688841,-9.692418

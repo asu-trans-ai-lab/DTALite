@@ -1,15 +1,15 @@
 # DTALite Users Guide
 
-Working Document Version 1.0
+Working Document Version 1.1
 
 Please feel free to send any questions, feedback, and corrections to Dr. Xuesong
-(Simon) Zhou (xzhou74\@asu.edu) by adding comments in this document.
+(Simon) Zhou (xzhou74@asu.edu) by adding comments in this document.
 
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
 Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included in
-[](http://www.gnu.org/licenses/fdl.html)[www.gnu.org/licenses/fdl.html](http://www.gnu.org/licenses/fdl.html)
+<http://www.gnu.org/licenses/fdl.html>[www.gnu.org/licenses/fdl.html](http://www.gnu.org/licenses/fdl.html)
 
 Table of Contents
 
@@ -80,7 +80,7 @@ Table of Contents
 1.  **Bridging the gap from macroscopic static assignment to mesoscopic dynamic
     assignment**
 
-    Planning practitioners have recognized the full potential of DTA modeling
+2.  Planning practitioners have recognized the full potential of DTA modeling
     methodologies that describe the propagation and dissipation of system
     congestion with time-dependent trip demands in a transportation network. In
     April 2009, the TRB Network Modeling Committee conducted a DTA user survey
@@ -108,15 +108,15 @@ Table of Contents
 
 1.  **Adopting open network standard of GMNS**
 
-    General Travel Network Format Specification is a product of Zephyr
+2.  General Travel Network Format Specification is a product of Zephyr
     Foundation, which aims to advance the field through flexible and efficient
     support, education, guidance, encouragement, and incubation. Further details
     can be found in
     <https://zephyrtransport.org/projects/2-network-standard-and-tools/>
 
-2.  **Integrated graphic user interface and analysis package**
+3.  **Integrated graphic user interface and analysis package**
 
-    NeXTA (Network eXplorer for Traffic Analysis) is another open-source graphic
+4.  NeXTA (Network eXplorer for Traffic Analysis) is another open-source graphic
     user interface (GUI) for transportation network analysis, while the
     lower-case “*e*” stands for education with broader impacts. With both
     open-source traffic assignment/simulation engine (as a simple Windows
@@ -136,24 +136,24 @@ Table of Contents
 
 1.  **parallel computing on shared memory multi-core computer**
 
-    Emerging multi-core computer processor techniques are offering unprecedented
+2.  Emerging multi-core computer processor techniques are offering unprecedented
     available parallel computing power, on most of laptops and desktops
     currently available in the market. To exploit this paradigm change in
     computing, we will require a new software architecture and algorithm design
     so as to facilitate the most efficient use of emergent parallel hardware.
 
-2.  **Integrated signal timing optimization (to be added)**
+3.  **Integrated signal timing optimization (to be added)**
 
-3.  **Integrated OD demand estimation through path flow estimator (to be
+4.  **Integrated OD demand estimation through path flow estimator (to be
     added)**
 
-    The latest software release can be downloaded at our Github website. The
+5.  The latest software release can be downloaded at our Github website. The
     source code can be downloaded at
     https://github.com/asu-trans-ai-lab/DTALite. Table 1 illustrates the
     contents of different folders at Github
     https://github.com/asu-trans-ai-lab/DTALite.
 
-    Table 1. contents of folders at Github.
+6.  Table 1. contents of folders at Github.
 
 | **Github Folder Name** | **Contents**                                                                                                                             |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
@@ -222,11 +222,15 @@ Table of Contents
 
 |                                 | Static Traffic Assignment                                                          | Dynamic Traffic Assignment + space-time simulation                  |
 |---------------------------------|------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-| Assignment_mode in settings.csv | UE                                                                                 | DTA                                                                 |
+| Assignment_mode in settings.csv | Link-based UE                                                                      | DTA                                                                 |
 | Travel time evaluation          | BPR function with volume/capacity ratio (soft capacity constraints)                | Space-time network based simulation with tight capacity constraints |
-| Demand input                    | OD demand                                                                          | OD demand or agent based                                            |
-| Output (1): link performance    | Static Link performance VOC, volume, delay                                         | Dynamic Link performance Queue, delay at time t                     |
-| Output (2): path/agent data     | Path flow for OD and k-paths, based on path pool based gradient projection methods | Individual agent trajectory with path sequence and time sequence    |
+| Demand input                    | OD demand                                                                          | OD demand agent based                                               |
+|                                 |                                                                                    |                                                                     |
+|                                 |                                                                                    |                                                                     |
+| Output (1): link performance    | Link performance VOC, volume, delay                                                | Dynamic Link performance ueue, delay at time t                      |
+|                                 |                                                                                    |                                                                     |
+| Output (): data                 | Path flow for OD and k-paths, based on path pool based gradient projection methods |                                                                     |
+|                                 |                                                                                    |                                                                     |
 
 ## 1.3. 5 steps of performing traffic analysis using CSV files
 
@@ -300,13 +304,13 @@ origin and destination for the path.
 
 ## Step 3. Run DTALite as a Windows console application from File Explorer
 
-![](media/967d55f2662b2c9c6515930777bd9e55.png)
+>   ![Graphical user interface Description automatically
+>   generated](media/a393fecd325797c78ed3adb1cad01cdc.png)The user now can check
+>   output files in Excel for the following two files:
 
->   The user now can check output files in Excel for the following two files:
+>   static_link performance.csv
 
->   link performance.csv
-
->   agent.csv
+>   path_flow.csv
 
 >   All DTALite **data files** are in CSV format. The files for node, link and
 >   zone layers have geometric fields for importing from and exporting to GIS
@@ -322,8 +326,6 @@ origin and destination for the path.
 >   20 minutes, and path 2 has a free-flow travel time of 30 minutes.
 
 ![](media/5e59e1210ffacc89b70fb2dcb887d802.png)
-
->   C:\\Users\\陈陈\\AppData\\Local\\Temp\\msohtmlclip1\\02\\clip_image001.png
 
 >   Figure 3.1 illustrative example of two-corridor network
 
@@ -384,10 +386,10 @@ layer, service layer and demand layer.
 |                          | Section of agent_type       | Define attributes of each type of agent, including VOT (unit: dollar per hour) and PCE.                                                                              |
 |                          | Section of link_type        | Define types of links in the network                                                                                                                                 |
 |                          | Section of demand_period    | Define demand period, which could be extracted by demand_file_list                                                                                                   |
+|                          |                             |                                                                                                                                                                      |
 |                          | Section of demand_file_list | Define demand type, period, and format type.                                                                                                                         |
-| Input for service layer  | 4: *timing.csv*             | Define space-time arcs for service based on the physical link with time window, time interval and travel time.                                                       |
-| Output file              | 5a: *link_performance.csv*  | Show the performance of each link, including the travel time, volume, and resource balance.                                                                          |
-|                          | 5b: *agent.csv*             | Show the results of the assignment, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence. |
+| Output file              | 4: *link_performance.csv*   | Show the performance of each link, including the travel time, volume, and resource balance.                                                                          |
+|                          | 5: *.csv*                   | Show the results of the assignment, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence. |
 
 >   The related files used in DTALite are listed below.
 
@@ -395,18 +397,18 @@ layer, service layer and demand layer.
 
 -   node.csv
 
-    Table 3.2 node.csv
+1.  Table 3.2 node.csv
 
 | **node_id** | **zone_id** | **x_coord** | **y_coord** |
 |-------------|-------------|-------------|-------------|
-| 1           | 1           | 0.017882    | \-0.12518   |
+| 1           | 1           | 0.017882    | -0.12518    |
 | 2           | 2           | 40.25393    | 0.053648    |
 | 3           |             | 19.77825    | 14.80687    |
-| 4           |             | 19.68884    | \-9.69242   |
+| 4           |             | 19.68884    | -9.69242    |
 
 -   link.csv
 
-    Table 3.3 link.csv
+1.  Table 3.3 link.csv
 
 | **link_id**  | **from_node_id** | **to_node_id** | **facility_type** | **dir_flag** | **length**     | **lanes**     |
 |--------------|------------------|----------------|-------------------|--------------|----------------|---------------|
@@ -422,7 +424,7 @@ layer, service layer and demand layer.
 
 -   demand.csv
 
-    Table 3.6 demand.csv
+1.  Table 3.6 demand.csv
 
 | **o_zone_id** | **d_zone_id** | **volume** |
 |---------------|---------------|------------|
@@ -464,7 +466,7 @@ Table 3.10 agent.csv
 >   travel time on this path is 30.3224 minutes, and distance of this path is
 >   20.
 
->   Table 3.11 link_performance.csv
+>   Table 3.11 static_link_performance.csv
 
 | **link_id** | **from_node_id** | **to_node_id** | **time_period** | **volume** | **travel_time** | **speed** | **VOC** | **notes**    |
 |-------------|------------------|----------------|-----------------|------------|-----------------|-----------|---------|--------------|
@@ -506,14 +508,14 @@ Table 3.10 agent.csv
 
 **File 1a: node.csv**
 
-| **Field Name** | **Description**                                                                                     | **Sample Value**            |
-|----------------|-----------------------------------------------------------------------------------------------------|-----------------------------|
-| name           | Optional for visualization only                                                                     | Main street \@ Highland Dr. |
-| node_id        | Node identification number                                                                          | 1001                        |
-| x_coord        | Longitude or horizontal coordinate in any arbitrary geographic coordinate system.                   | 100                         |
-| y_coord        | Latitude or vertical coordinate horizontal coordinate in any arbitrary geographic coordinate system | 200                         |
-| node_type      | Optional text label for visualization and identifies of node                                        | 1                           |
-| zone_id        | Indication of node’s physical location                                                              | 1                           |
+| **Field Name** | **Description**                                                                                     | **Sample Value**           |
+|----------------|-----------------------------------------------------------------------------------------------------|----------------------------|
+| name           | Optional for visualization only                                                                     | Main street @ Highland Dr. |
+| node_id        | Node identification number                                                                          | 1001                       |
+| x_coord        | Longitude or horizontal coordinate in any arbitrary geographic coordinate system.                   | 100                        |
+| y_coord        | Latitude or vertical coordinate horizontal coordinate in any arbitrary geographic coordinate system | 200                        |
+| node_type      | Optional text label for visualization and identifies of node                                        | 1                          |
+| zone_id        | Indication of node’s physical location                                                              | 1                          |
 
 **File 1b: link.csv**
 
@@ -589,21 +591,18 @@ Table 3.10 agent.csv
 -   Agents providing transport service in the network must use certain services
     arcs, which are predetermined.
 
-**File 4: timing.csv**
+**File 4: timing in link.csv**
 
-| **Field Name**    | **Description**                                                        | **Sample Values** |
-|-------------------|------------------------------------------------------------------------|-------------------|
-| name              | Optional name of the arc                                               | vehicle arc       |
-| from_node_id      | Upstream node number of the link, must already defined in *node.csv*   | 1                 |
-| to_node_id        | Downstream node number of the link, must already defined in *node.csv* | 3                 |
-| time_window       | Time period when the link is open for service                          | 0800_0900         |
-| time_interval     | Time interval of each vehicle on the link                              | 10                |
-| travel_time_delta | Free flow travel time on the link                                      | 25                |
-| capacity          | Capacity for the services during this time period                      | 1000              |
+| **Field Name**   | **Description**                                                        | **Sample Values** |
+|------------------|------------------------------------------------------------------------|-------------------|
+| mvmt_txt_id      | Optional name of the arc                                               | SBL               |
+| cycle_length     | Upstream node number of the link, must already defined in *node.csv*   | 120               |
+| start_green_time | Downstream node number of the link, must already defined in *node.csv* | 0                 |
+| end_green_time   | Time period when the link is open for service                          | 60                |
 
 ## 4.5 Output file
 
-**File 5a: link_performance.csv**
+**File 5a: static_link_performance.csv**
 
 | **Field Name** | **Description**                                                            | **Sample Values** |
 |----------------|----------------------------------------------------------------------------|-------------------|
@@ -617,7 +616,7 @@ Table 3.10 agent.csv
 | VOC            | Volume /capacity ratio                                                     | 0.4               |
 | notes          | Some explanatory text                                                      | period-based      |
 
-**File 5b: agent.csv**
+**File 5b: path_flow.csv**
 
 | **Field Name**        | **Description**                                                                                                                     | **Sample Value**         |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
@@ -642,7 +641,7 @@ Table 3.10 agent.csv
 
 1.  **Link volume-delay function in static traffic assignment**
 
-    There are a number of key components for the static traffic assignment
+2.  There are a number of key components for the static traffic assignment
     procedure.
 
 -   input trip table describes the flow per hour from each origin zone to each
@@ -653,17 +652,17 @@ Table 3.10 agent.csv
 -   volume-delay function such as BPR **(Bureau of Public Roads )** relationship
     that shows increased link travel time as an increase in link volume
 
-    TT = FFTT[1 + 0.15(v/c)4]
+1.  TT = FFTT[1 + 0.15(v/c)4]
 
-    where: TT = link travel time, FFTT= free-flow travel time of link; v = link
+2.  where: TT = link travel time, FFTT= free-flow travel time of link; v = link
     flow; c = link capacity
 
-    [Remark: the link travel time function typically is only dependent on its
+3.  [Remark: the link travel time function typically is only dependent on its
     own flow, while ignoring link volume on opposing or conflicting directions.
     The link capacity might not be a strict upper limit on flow, e.g. specified
     by highway capacity manual.]
 
-    As one of the simplest *c*ases of behavior, User Equilibrium (UE) Principle
+4.  As one of the simplest *c*ases of behavior, User Equilibrium (UE) Principle
     assumes users are “greedy” and are familiar with the system. E*quilibrium
     requires iteration* to reach the following two principles:
 
@@ -673,10 +672,10 @@ Table 3.10 agent.csv
 -   Principle B: All used routes between an O-D pair have equal and minimum
     costs
 
-    While all unused routes have greater or equal costs *(to the used path
+1.  While all unused routes have greater or equal costs *(to the used path
     costs)*.
 
-    Wardrop (1952) proposed the user equilibrium and system optimal principles
+2.  Wardrop (1952) proposed the user equilibrium and system optimal principles
     of route choice behavior in his seminal paper, and Beckman et al. (1956)
     formulated the static user equilibrium traffic assignment problem as an
     equivalent convex mathematical programming problem. Since their influential
@@ -685,34 +684,34 @@ Table 3.10 agent.csv
     books by Sheffi (1985) and Patriksson (1994) provide the most comprehensive
     coverage on the static traffic assignment problem and its variants.
 
-1.  **General mathematical descriptions of traffic assignment**
+3.  **General mathematical descriptions of traffic assignment**
 
-    Traffic assignment loads an origin-destination (OD) trip matrix onto links
+4.  Traffic assignment loads an origin-destination (OD) trip matrix onto links
     of a traffic network, while satisfying a certain route choice behavioral
     model, e.g., deterministic user equilibrium. Traffic assignment is used to
     predict/estimate how trip-makers may shift to other routes or departure
     times in response to a number of strategies such as road pricing, incidents,
     road capacity improvement and traffic signal re-timing.
 
-    For example, tolling typically lead to traffic diversion on alternative
+5.  For example, tolling typically lead to traffic diversion on alternative
     routes and/or other transportation modes, and many traffic congestion
     mitigation strategies should be developed to improve the capacity to which
     the traffic may be diverted, for example, signal optimization, traveler
     information provision, and transit operation.
 
-    The common time periods include morning peak, afternoon peak and off-peak,
+6.  The common time periods include morning peak, afternoon peak and off-peak,
     and we can use the time of day factor to calculate the trip in the peak hour
     (e.g., morning peak may be 11% of daily traffic) from a 24 hour demand
     volume.
 
-    By using a simplified static traffic assignment formulation, the following
+7.  By using a simplified static traffic assignment formulation, the following
     mathematic description adopts the related sections in the paper titled
     “Equivalent Gap Function-Based Reformulation and Solution Algorithm for the
     Dynamic User Equilibrium Problem” by Lu, Mahmassani and Zhou in (2009). One
     can consider the extended DTA formulation by adding a time index dimension.
 
-    ![](media/5191d5aea460f89d8f91f2b011d6f6df.png)
+8.  ![](media/5191d5aea460f89d8f91f2b011d6f6df.png)
 
-    ![](media/1234de5d752ff35b565a8f625feee789.png)
+9.  ![](media/1234de5d752ff35b565a8f625feee789.png)
 
-    ![](media/ab8b90115491a5817f60ad154d999afb.png)
+10. ![](media/ab8b90115491a5817f60ad154d999afb.png)
