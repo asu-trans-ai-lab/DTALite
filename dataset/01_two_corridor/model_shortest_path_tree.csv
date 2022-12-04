@@ -1,5 +1,0 @@
-iteration,agent_type,zone_id,node_id,pred,label_cost
-2,p,1,1,-1,0.000000,
-2,p,1,2,4,30.000000,
-2,p,1,3,1,24.068359,
-2,p,1,4,1,15.000000,

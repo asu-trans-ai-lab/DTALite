@@ -1,0 +1,2 @@
+tmc_corridor_name,demand_period,links,vol0,speed0,DoC0,max_P0,vol,speed,Doc,P,diff_vol,diff_spd,diff_Doc,diff_P,d%_vol,d%_spd,
+network_wide,AM,378,1272.63,17.3871,0.981359,13.1243,1272.63,17.3871,0.981359,13.1243,0,0,0,0,0,0,

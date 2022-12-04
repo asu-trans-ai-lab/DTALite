@@ -1,0 +1,132 @@
+LoadingStartTimeInMin = 840
+g_LoadingStartTimeInMin = 1080
+number_of_simulation_intervals = 72002
+number_of_simu intervals in sec = 18000
+allocate 2D dynamic memory LinkOutFlowCapacity...
+allocate 2D dynamic memory m_LinkCumulativeArrivalVector...
+allocate 2D dynamic memory m_LinkCumulativeDepartureVector...
+allocate 2D dynamic memory m_link_TD_waiting_time...
+initializing time dependent capacity data...
+End of initializing time dependent capacity data.
+system-wide information activation time = 99999 in min
+number of simulation zones:2
+generating 9 K agents
+simu time= 0 min, CA = 0 CD=0, speed=60, travel time = 0,CI=0,CR=0
+simu time= 10 min, CA = 208 CD=0, speed=60, travel time = 0,CI=0,CR=0
+simu time= 20 min, CA = 623 CD=131, speed=117.5, travel time = 11.83,CI=0,CR=0
+simu time= 30 min, CA = 1038 CD=546, speed=117.4, travel time = 11.85,CI=0,CR=0
+simu time= 40 min, CA = 1453 CD=962, speed=117.4, travel time = 11.85,CI=0,CR=0
+simu time= 50 min, CA = 1868 CD=1376, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 60 min, CA = 2284 CD=1792, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 70 min, CA = 2699 CD=2207, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 80 min, CA = 3114 CD=2623, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 90 min, CA = 3529 CD=3036, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 100 min, CA = 3944 CD=3452, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 110 min, CA = 4360 CD=3867, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 120 min, CA = 4775 CD=4283, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 130 min, CA = 5191 CD=4698, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 140 min, CA = 5606 CD=5114, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 150 min, CA = 6021 CD=5529, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 160 min, CA = 6436 CD=5944, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 170 min, CA = 6851 CD=6360, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 180 min, CA = 7267 CD=6775, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 190 min, CA = 7682 CD=7190, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 200 min, CA = 8097 CD=7604, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 210 min, CA = 8512 CD=8021, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 220 min, CA = 8927 CD=8435, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 230 min, CA = 9343 CD=8851, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 240 min, CA = 9758 CD=9265, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 250 min, CA = 9966 CD=9682, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 260 min, CA = 9966 CD=9966, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 270 min, CA = 9966 CD=9966, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 280 min, CA = 9966 CD=9966, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 290 min, CA = 9966 CD=9966, speed=117.3, travel time = 11.85,CI=0,CR=0
+simu time= 300 min, CA = 9966 CD=9966, speed=117.3, travel time = 11.85,CI=0,CR=0
+le no. 0, ratio at slot  208 (17:20) = 0.0033333,CR 0.83333
+cumulative profile no. 0, ratio at slot  209 (17:25) = 0.0033333,CR 0.85417
+cumulative profile no. 0, ratio at slot  210 (17:30) = 0.0033333,CR 0.875
+cumulative profile no. 0, ratio at slot  211 (17:35) = 0.0033333,CR 0.89583
+cumulative profile no. 0, ratio at slot  212 (17:40) = 0.0033333,CR 0.91667
+cumulative profile no. 0, ratio at slot  213 (17:45) = 0.0033333,CR 0.9375
+cumulative profile no. 0, ratio at slot  214 (17:50) = 0.0033333,CR 0.95833
+cumulative profile no. 0, ratio at slot  215 (17:55) = 0.0033333,CR 0.97917
+cumulative profile no. 0, ratio at slot  216 (18:0) = 0.0033333,CR 1
+final cumulative profile ratio = 0.97917
+number of demand periods = 1
+Step 1.2: Reading section [link_type] in setting.csv...
+important: traffic_flow_code on link type 1 is 1
+important: traffic_flow_code on link type 4 is 1
+important: traffic_flow_code on link type 5 is 1
+number of link types = 4
+Step 1.3: Reading section [agent_type] in setting.csv...
+number of agent typess = 1
+Step 1.3: Reading zone data in zone.csv...
+Step 1.4: Reading node data in node.csv...
+Reading node data at layer0
+number of nodes = 40
+number of multimodal activity nodes = 0
+number of zones = 2
+Step 1.5: Initializing O-D zone vector...
+number of zones = 2
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+Step 1.6: Reading link data in link.csv... 
+link layer= 0
+number of links =55
+number of links =55
+Step 1.91: Reading file section [real_time_info] in setting.csv...
+Step 1.9: Reading file section [output_file_configuration] in setting.csv...
+Step 2.1: Reading demand side scenario data...
+
+Step 1.8: Reading file section [departure_time_profile] in setting.csv...
+allocating 4D memory for 0 zones,nM=2,nX=2,nY=1,nZ=1
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+o_zone_id:1, d_zone_id: 2, value = 9966
+total demand volume is 9966
+crtical demand volume has 1 OD pairs in size,9966, , account for 100%%
+crtical OD zones volume has 1 OD pairs in size,9966, , account for 100%%
+Step 2.0: Reading supply side scenario data...
+Step 2: Assigning computing tasks to memory blocks...
+There are 1 SP networks in memory.
+There are 1 agent type*zones to be computed in CPU.
+
+Step 4: Column Generation for Traffic Assignment...
+Total Column Generation iteration: 1
+
+Current iteration number:0
+Current CPU time: 0.004 s
+iteration: 0,systemTT: 0
+iteration: 0,systemTT: 0, least system TT:1.168e+05,gap=-1
+writing od_accessibility.csv..
+writing data for 2  zones 
+, # of connected OD pairs = 1
+,# of column generation (shortest path finding) iterations=, 1
+
+Step 4.2: Column Pool Updating
+Total Column Pool Updating iteration: 2
+column updating: iteration= 0, avg travel time = 41.678(min), optimization obj = 0,Relative_gap=0 %
+column updating: iteration= 1, avg travel time = 41.678(min), optimization obj = 0,Relative_gap=0 %
+
+Step 5: Simulation for traffic assignment..
+writing agent.csv..
+writing data for 2  zones 
+CPU Running Time for traffic simulation: 0 s
+
+Done!
+CPU Running Time for the entire computing progcess: 14.793 s
+writing link_performance.csv..
+writing route_assignment.csv..
+writing link_background_volume.csv..
+writing data for 2  zones 
+writing TD_link_performance.csv..
+writing log_dynamic_link_state.txt..
+writing trajectory.csv..
+writing data for 2  zones 
+writing trace.csv..
+writing data for 2  zones 
+Output for assignment with 1 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 6.088 s
+free memory..
+CPU Running Time for Entire Process: 0 min 21 sec
+done.

@@ -1,0 +1,96 @@
+agent_type =, p, real time info flag = 0
+, number of activity nodes defined in node.csv=, 2
+, number of boundary activity nodes defined in node.csv=, 0
+Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,6
+,# of links =,4
+,# of zones =,2
+,summary by multi-modal and demand types,demand_period,agent_type,# of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,AM,p,4,60,96.5604,50,14000,3500,12500,
+,summary by road link type,link_type,link_type_name,# of links,avg_free_speed_mph,avg_free_speed_kmph,,total_length,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,-1,,0,0,0,0,0,0,0,
+,,1,,2,60,96.5604,20,8000,4000,10000,
+,,2,,2,60,96.5604,30,6000,3000,15000,
+[real_time_info] 
+,info_updating_freq_in_min= 5 min
+,visual_distance_in_cells= 5 cells
+, # of demand side records in demand_side_scenario.csv=,0,
+Step 2: read demand, defined in [demand_file_list] in settings.csv.
+,o_zone_id,d_zone_id,inside_flag_from,inside_flag_to,volume
+,file_sequence_no=,1,file_name =, demand.csv,demand_period =, AM,departure_time_profile_no=,0,cumulative demand =, 7000
+,total demand =, 7000
+,from_flag,to_flag,volume
+,from_flag,to_flag,volume
+,0=not related, 1=signficiantly related external but not in cutoff, 2= cut-off external, 3= inside
+,0,1,2,3,
+0,0,0,0,0
+1,0,0,0,0
+2,0,0,0,0
+3,0,0,0,7000
+,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,agent_type,departure_time,volume
+,,1,1,2,3,3,p,AM,7000
+, # of capacity records in supply_side_scenario.csv=,0,
+, # of sa records in supply_side_scenario.csv=,0,
+, # of incident records in supply_side_scenario.csv=,0,
+, # of dms records in supply_side_scenario.csv=,0,
+Step 3: check OD connectivity and accessibility in od_accessibility.csv
+, # of connected OD pairs =, 1
+, # of OD/agent_type/demand_type columns without paths =, 0
+Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
+0,0,7000,0,-100
+1,0,7000,0,-100
+2,0,7000,48.1371,60.455
+3,0,7000,48.1371,60.455
+4,0,7000,27.5878,7.94123
+5,0,7000,30.048,38.0954
+6,0,7000,27.5542,16.5235
+7,0,7000,27.5878,7.94122
+8,0,7000,28.343,3.72733
+9,0,7000,29.3076,1.39987
+10,0,7000,30.3033,0.0210117
+11,0,7000,31.2629,3.47227
+12,0,7000,32.1613,6.68473
+13,0,7000,29.3076,1.39987
+14,0,7000,27.9199,5.50192
+15,0,7000,28.343,3.72733
+16,0,7000,28.8142,2.4046
+17,0,7000,29.3076,1.39987
+18,0,7000,29.8072,0.625264
+19,0,7000,30.3033,0.0210117
+20,0,7000,30.7898,1.74285
+21,0,7000,31.2629,3.47227
+22,0,7000,29.7073,0.764952
+23,0,7000,28.6537,2.80475
+24,0,7000,28.9771,2.03943
+25,0,7000,29.3076,1.39987
+26,0,7000,29.6407,0.862028
+27,0,7000,29.9734,0.407279
+28,0,7000,30.3033,0.0210117
+29,0,7000,30.629,1.14721
+30,0,7000,30.9491,2.32881
+31,0,7000,29.8785,0.529648
+32,0,7000,29.0593,1.8688
+33,0,7000,29.3076,1.39987
+34,0,7000,29.5573,0.988049
+35,0,7000,29.8072,0.625264
+36,0,7000,30.0562,0.304791
+37,0,7000,30.3033,0.0210117
+38,0,7000,30.5481,0.845753
+39,0,7000,30.7898,1.74285
+Step 4: Column Generation for Traffic Assignment
+column updating
+column updating: iteration= 0, avg travel time = 29.3076(min), optimization obj = 2832.23,Relative_gap=1.34345 %
+column updating: iteration= 1, avg travel time = 30.3121(min), optimization obj = 24.442,Relative_gap=0.0115172 %
+Step 6: column pool-based flow updating for traffic assignment 
+,# of flow updating iterations=,2
+Output Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,96661.3,VKT=,155528
+,VHT=,3537.18
+,network vehicle speed (MPH) =,27.3272,,network vehicle speed (KPH) =,43.9695
+,PMT=,96661.3,PKT=,155528
+,PHT=,3537.18
+,network person speed (MPH) =,27.3272,,network person speed (KPH) =,43.9695
+,simple avg link volume=,3500
+,simple avg link speed=,49.471
+,simple avg link speed ratio=,0.824517

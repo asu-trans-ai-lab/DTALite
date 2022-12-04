@@ -1,2 +1,2 @@
-from_zone_id,to_zone_id,volume
+o_zone_id,d_zone_id,volume
 1,2,7000

@@ -1,4 +1,4 @@
-measurement_id,measurement_type,o_zone_id,d_zone_id,from_node_id,to_node_id,count,upper_bound_flag,note
+measurement_id,measurement_type,o_zone_id,d_zone_id,from_node_id,to_node_id,count1,upper_bound_flag1,note
 83,link,,,5216,5356,2267.8,,
 84,link,,,5356,5216,2267.8,,
 85,link,,,5214,11261,1685.5,,
