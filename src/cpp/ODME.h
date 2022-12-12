@@ -486,7 +486,14 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 								{
 									it->second.path_time_per_iteration_ODME_map[s] = path_travel_time;
 									it->second.path_volume_per_iteration_ODME_map[s] = it->second.path_volume;
+
+									if (s >= 1)  // always record- last iteration of ODME 
+									{
+										it->second.path_volume_after_ODME = it->second.path_volume;
+									}
 								}
+
+
 
 								//if (p_column_pool->m_passing_sensor_flag >= 1)
 								//    column_pool_with_sensor_counts++;

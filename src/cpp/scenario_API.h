@@ -156,6 +156,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 				g_link_vector[link_seq_no].VDF_period[tau].sa_lanes_change = lanes_changed;  // apply the change
 				g_link_vector[link_seq_no].VDF_period[tau].network_design_flag = -1;
+				g_link_vector[link_seq_no].link_code_str = "sa";
 				//
 				g_link_vector[link_seq_no].VDF_period[tau].scenario_code = "sa";
 				sa_capacity_count++;
@@ -166,6 +167,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			{
 				g_link_vector[link_seq_no].VDF_period[tau].network_design_flag = 2;
 				g_link_vector[link_seq_no].VDF_period[tau].scenario_code = "dms";
+				g_link_vector[link_seq_no].link_code_str = "dms";
 
 				if (assignment.node_seq_no_2_zone_id_mapping.find(g_link_vector[link_seq_no].to_node_seq_no) == assignment.node_seq_no_2_zone_id_mapping.end())
 				{

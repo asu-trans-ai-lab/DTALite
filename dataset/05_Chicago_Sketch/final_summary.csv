@@ -1,0 +1,156 @@
+agent_type =, p, real time info flag = 0
+, number of activity nodes defined in node.csv=, 387
+, number of boundary activity nodes defined in node.csv=, 0
+Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,1320
+,# of links =,2950
+,# of zones =,387
+,summary by multi-modal and demand types,demand_period,agent_type,# of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,AM,p,2950,60,96.5604,8.34617,4.6718e+07,15836.6,2.82921,
+,summary by road link type,link_type,link_type_name,# of links,avg_free_speed_mph,avg_free_speed_kmph,,total_length,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,-1,,0,0,0,0,0,0,0,
+,,1,,2950,60,96.5604,8.34617,4.6718e+07,15836.6,2.82921,
+,,2,,0,0,0,0,0,0,0,
+[real_time_info] 
+,info_updating_freq_in_min= 5 min
+,visual_distance_in_cells= 5 cells
+, # of demand side records in demand_side_scenario.csv=,0,
+Step 2: read demand, defined in [demand_file_list] in settings.csv.
+,o_zone_id,d_zone_id,inside_flag_from,inside_flag_to,volume
+,file_sequence_no=,1,file_name =, demand.csv,demand_period =, AM,departure_time_profile_no=,0,cumulative demand =, 1.13725e+06
+,total demand =, 1.13725e+06
+,from_flag,to_flag,volume
+,from_flag,to_flag,volume
+,0=not related, 1=signficiantly related external but not in cutoff, 2= cut-off external, 3= inside
+,0,1,2,3,
+0,0,0,0,0
+1,0,0,0,0
+2,0,0,0,0
+3,0,0,0,1.13725e+06
+,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,agent_type,departure_time,volume
+,,1,357,356,3,3,p,AM,5042.63
+,,2,5,17,3,3,p,AM,3059.89
+,,3,356,357,3,3,p,AM,2941.18
+,,4,358,357,3,3,p,AM,1694.31
+,,5,29,28,3,3,p,AM,1623.8
+,,6,359,356,3,3,p,AM,1583.31
+,,7,346,351,3,3,p,AM,1552.85
+,,8,5,18,3,3,p,AM,1505.47
+,,9,3,5,3,3,p,AM,1434.07
+,,10,360,357,3,3,p,AM,1363.12
+,,11,357,360,3,3,p,AM,1336.37
+,,12,14,5,3,3,p,AM,1309.8
+,,13,357,358,3,3,p,AM,1290.11
+,,14,14,17,3,3,p,AM,1249.3
+,,15,23,16,3,3,p,AM,1233.59
+,,16,5,16,3,3,p,AM,1232.86
+,,17,209,210,3,3,p,AM,1217.92
+,,18,3,17,3,3,p,AM,1200.94
+,,19,15,17,3,3,p,AM,1196.07
+,,20,351,346,3,3,p,AM,1143.37
+,,21,5,3,3,3,p,AM,1116.04
+,,22,5,14,3,3,p,AM,1094.16
+,,23,17,18,3,3,p,AM,1088.73
+,,24,14,16,3,3,p,AM,1074.72
+,,25,13,16,3,3,p,AM,1068.96
+,,26,15,16,3,3,p,AM,1052.77
+,,27,16,18,3,3,p,AM,1040.1
+,,28,29,23,3,3,p,AM,1024.56
+,,29,362,360,3,3,p,AM,1022.03
+,,30,18,17,3,3,p,AM,1018.5
+,,31,115,356,3,3,p,AM,1001.42
+,,32,4,5,3,3,p,AM,994.14
+,,33,35,29,3,3,p,AM,993.83
+,,34,39,41,3,3,p,AM,980.55
+,,35,356,115,3,3,p,AM,978.97
+,,36,356,36,3,3,p,AM,959.75
+,,37,110,356,3,3,p,AM,958.06
+,,38,10,14,3,3,p,AM,947.14
+,,39,17,5,3,3,p,AM,940.16
+,,40,16,17,3,3,p,AM,932.72
+,,41,31,29,3,3,p,AM,907.24
+,,42,27,23,3,3,p,AM,906.32
+,,43,26,23,3,3,p,AM,905.9
+,,44,18,16,3,3,p,AM,901.33
+,,45,358,360,3,3,p,AM,899.53
+,,46,28,23,3,3,p,AM,889.52
+,,47,148,147,3,3,p,AM,873.02
+,,48,34,29,3,3,p,AM,871.77
+,,49,17,16,3,3,p,AM,869.41
+,,50,85,13,3,3,p,AM,858.39
+,,51,80,78,3,3,p,AM,856.34
+,,52,359,357,3,3,p,AM,855.08
+,,53,28,29,3,3,p,AM,843.17
+,,54,85,16,3,3,p,AM,836.73
+,,55,7,14,3,3,p,AM,834.81
+,,56,14,10,3,3,p,AM,830.75
+,,57,5,4,3,3,p,AM,828.44
+,,58,287,288,3,3,p,AM,821.92
+,,59,359,360,3,3,p,AM,816.78
+,,60,4,17,3,3,p,AM,815.46
+,,61,14,7,3,3,p,AM,811.45
+,,62,14,15,3,3,p,AM,809.4
+,,63,98,91,3,3,p,AM,799.65
+,,64,3,4,3,3,p,AM,785.32
+,,65,29,17,3,3,p,AM,784.94
+,,66,23,18,3,3,p,AM,784.82
+,,67,158,148,3,3,p,AM,781.05
+,,68,190,191,3,3,p,AM,776.83
+,,69,29,18,3,3,p,AM,776.56
+,,70,288,287,3,3,p,AM,774.38
+,,71,23,28,3,3,p,AM,768.6
+,,72,41,58,3,3,p,AM,767.74
+,,73,26,91,3,3,p,AM,766.86
+,,74,198,376,3,3,p,AM,762.29
+,,75,145,147,3,3,p,AM,761.86
+,,76,4,3,3,3,p,AM,760.5
+,,77,36,356,3,3,p,AM,759.16
+,,78,10,7,3,3,p,AM,758.41
+,,79,146,148,3,3,p,AM,755.82
+,,80,220,210,3,3,p,AM,754.74
+,,81,80,81,3,3,p,AM,754.52
+,,82,27,26,3,3,p,AM,751.72
+,,83,39,44,3,3,p,AM,745.2
+,,84,30,26,3,3,p,AM,744.03
+,,85,32,97,3,3,p,AM,741.03
+,,86,59,58,3,3,p,AM,737.96
+,,87,2,72,3,3,p,AM,737.68
+,,88,29,35,3,3,p,AM,736.05
+,,89,157,147,3,3,p,AM,736.03
+,,90,72,73,3,3,p,AM,725.06
+,,91,69,64,3,3,p,AM,722.07
+,,92,381,387,3,3,p,AM,722
+,,93,210,220,3,3,p,AM,717.41
+,,94,85,82,3,3,p,AM,713.02
+,,95,114,356,3,3,p,AM,710.34
+,,96,23,17,3,3,p,AM,708.19
+,,97,62,64,3,3,p,AM,708.09
+,,98,356,359,3,3,p,AM,706.97
+,,99,356,110,3,3,p,AM,704.91
+,,100,26,24,3,3,p,AM,704.13
+, # of capacity records in supply_side_scenario.csv=,0,
+, # of sa records in supply_side_scenario.csv=,0,
+, # of incident records in supply_side_scenario.csv=,0,
+, # of dms records in supply_side_scenario.csv=,0,
+Step 3: check OD connectivity and accessibility in od_accessibility.csv
+, # of connected OD pairs =, 93135
+, # of OD/agent_type/demand_type columns without paths =, 0
+Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
+0,0,1.13725e+06,0,-100
+Step 4: Column Generation for Traffic Assignment
+column updating
+column updating: iteration= 0, avg travel time = 0.0471078(min), optimization obj = 0,Relative_gap=0 %
+column updating: iteration= 1, avg travel time = 0.0471078(min), optimization obj = 0,Relative_gap=0 %
+Step 6: column pool-based flow updating for traffic assignment 
+,# of flow updating iterations=,2
+Output Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,8777.53,VKT=,14123
+,VHT=,886.646
+,network vehicle speed (MPH) =,9.8997,,network vehicle speed (KPH) =,15.9286
+,PMT=,8777.53,PKT=,14123
+,PHT=,886.646
+,network person speed (MPH) =,9.8997,,network person speed (KPH) =,15.9286
+,simple avg link volume=,2307.39
+,simple avg link speed=,56.3661
+,simple avg link speed ratio=,0.939435

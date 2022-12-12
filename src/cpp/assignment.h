@@ -895,6 +895,16 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 								it->second.path_volume_per_iteration_map[inner_iteration_number] = it->second.path_volume;
 							else  //SA mode
 								it->second.path_volume_per_iteration_SA_map[inner_iteration_number] = it->second.path_volume;
+
+
+							if (b_sensitivity_analysis_flag == true)
+							{
+								if(inner_iteration_number == 0)
+								it->second.path_volume_before_sa = it->second.path_volume;
+
+								if (inner_iteration_number >= 1)
+								it->second.path_volume_after_sa = it->second.path_volume;
+							}
 						}
 
 
@@ -951,8 +961,8 @@ void g_classification_in_column_pool(Assignment& assignment)
 
 			for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //m
 			{
-				if (assignment.g_AgentTypeVector[at].real_time_information != 0)  // users with information, continue;
-					continue; 
+				//if (assignment.g_AgentTypeVector[at].real_time_information != 0)  // users with information, continue;
+				//	continue; 
 
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{

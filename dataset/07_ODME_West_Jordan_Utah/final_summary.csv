@@ -1,4 +1,4 @@
-agent_type =, p, real time info flag = 0
+agent_type =, p, real time info flag = 1
 , number of activity nodes defined in node.csv=, 41
 , number of boundary activity nodes defined in node.csv=, 0
 Step 1: read network node.csv, link.csv, zone.csv 
@@ -6,11 +6,11 @@ Step 1: read network node.csv, link.csv, zone.csv
 ,# of links =,378
 ,# of zones =,41
 ,summary by multi-modal and demand types,demand_period,agent_type,# of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
-,,AM,p,378,28.5026,45.8704,507.903,8.29724e+06,3526.78,1343.66,
+,,AM,p,378,45.8893,73.8514,507.903,8.29724e+06,3526.78,1343.66,
 ,summary by road link type,link_type,link_type_name,# of links,avg_free_speed_mph,avg_free_speed_kmph,,total_length,total_capacity,avg_lane_capacity,avg_length_in_meter,
 ,,-1,,0,0,0,0,0,0,0,
-,,1,,264,31.7955,51.1697,159.822,317242,731.523,605.385,
-,,2,,114,20.8772,33.5985,348.081,7.98e+06,10000,3053.34,
+,,1,,264,51.1907,82.3832,159.822,317242,731.523,605.385,
+,,2,,114,33.6123,54.0936,348.081,7.98e+06,10000,3053.34,
 ,,3,,0,0,0,0,0,0,0,
 ,,4,,0,0,0,0,0,0,0,
 ,,5,,0,0,0,0,0,0,0,
@@ -134,7 +134,7 @@ Step 2: read demand, defined in [demand_file_list] in settings.csv.
 ,,99,3,38,3,3,p,AM,55.5684
 ,,100,28,11,3,3,p,AM,55.4562
 , # of capacity records in supply_side_scenario.csv=,0,
-, # of sa records in supply_side_scenario.csv=,0,
+, # of sa records in supply_side_scenario.csv=,1,
 , # of incident records in supply_side_scenario.csv=,0,
 , # of dms records in supply_side_scenario.csv=,0,
 Step 3: check OD connectivity and accessibility in od_accessibility.csv
@@ -165,72 +165,18 @@ Step 4: Column Generation for Traffic Assignment
 column updating
 column updating: iteration= 0, avg travel time = 32.6767(min), optimization obj = 82730,Relative_gap=7.28053 %
 column updating: iteration= 1, avg travel time = 90.7429(min), optimization obj = 1.93615e+06,Relative_gap=76.8661 %
-column updating: iteration= 2, avg travel time = 370.349(min), optimization obj = 9.06989e+06,Relative_gap=94.4063 %
-column updating: iteration= 3, avg travel time = 463.185(min), optimization obj = 1.14329e+07,Relative_gap=95.6611 %
-column updating: iteration= 4, avg travel time = 490.38(min), optimization obj = 1.21079e+07,Relative_gap=95.7374 %
+column updating: iteration= 2, avg travel time = 483.122(min), optimization obj = 1.19215e+07,Relative_gap=95.6866 %
+column updating: iteration= 3, avg travel time = 642.012(min), optimization obj = 1.59547e+07,Relative_gap=96.8521 %
+column updating: iteration= 4, avg travel time = 615.705(min), optimization obj = 1.52768e+07,Relative_gap=96.5915 %
 Step 6: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,5
 ODME stage
 ODME stage: # of sensors =,0
-ODME #0, link MAE= 1324.62,link_MAPE: 88.6949%,system_MPE: 27.6046%,avg_tt = 492.146(min) ,UE gap =480.94(min) = (97.7229 %)
-ODME #1, link MAE= 1238.89,link_MAPE: 88.5918%,system_MPE: 62.2568%,avg_tt = 406.2(min) ,UE gap =395.011(min) = (97.2452 %)
-ODME #2, link MAE= 1104.11,link_MAPE: 79.1879%,system_MPE: 54.1739%,avg_tt = 470.649(min) ,UE gap =449.436(min) = (95.4928 %)
-ODME #3, link MAE= 983.75,link_MAPE: 70.8375%,system_MPE: 47.3599%,avg_tt = 412.014(min) ,UE gap =391.047(min) = (94.9109 %)
-ODME #4, link MAE= 869.792,link_MAPE: 63.04%,system_MPE: 41.5887%,avg_tt = 372.734(min) ,UE gap =351.753(min) = (94.3709 %)
-ODME #5, link MAE= 762.16,link_MAPE: 55.6764%,system_MPE: 36.5166%,avg_tt = 346.528(min) ,UE gap =325.304(min) = (93.8752 %)
-ODME #6, link MAE= 661.206,link_MAPE: 48.8288%,system_MPE: 32.2383%,avg_tt = 328.783(min) ,UE gap =307.144(min) = (93.4186 %)
-ODME #7, link MAE= 571.545,link_MAPE: 42.8208%,system_MPE: 28.5861%,avg_tt = 316.685(min) ,UE gap =294.478(min) = (92.9876 %)
-ODME #8, link MAE= 491.343,link_MAPE: 37.333%,system_MPE: 24.8122%,avg_tt = 308.482(min) ,UE gap =285.644(min) = (92.5969 %)
-ODME #9, link MAE= 420.84,link_MAPE: 32.6303%,system_MPE: 22.0529%,avg_tt = 302.226(min) ,UE gap =279.124(min) = (92.3561 %)
-ODME #10, link MAE= 357.042,link_MAPE: 28.3198%,system_MPE: 19.2988%,avg_tt = 298.539(min) ,UE gap =274.956(min) = (92.1005 %)
-ODME #11, link MAE= 297.994,link_MAPE: 24.33%,system_MPE: 17.0754%,avg_tt = 296.263(min) ,UE gap =272.168(min) = (91.8672 %)
-ODME #12, link MAE= 243.027,link_MAPE: 20.7003%,system_MPE: 15.6869%,avg_tt = 292.319(min) ,UE gap =268.274(min) = (91.7743 %)
-ODME #13, link MAE= 209.755,link_MAPE: 18.2896%,system_MPE: 13.0642%,avg_tt = 292.98(min) ,UE gap =267.978(min) = (91.4663 %)
-ODME #14, link MAE= 170.447,link_MAPE: 15.8739%,system_MPE: 13.0139%,avg_tt = 287.545(min) ,UE gap =263.193(min) = (91.531 %)
-ODME #15, link MAE= 153.021,link_MAPE: 14.4838%,system_MPE: 10.6742%,avg_tt = 290.395(min) ,UE gap =264.599(min) = (91.1168 %)
-ODME #16, link MAE= 141.145,link_MAPE: 13.3891%,system_MPE: 10.2956%,avg_tt = 287.785(min) ,UE gap =262.661(min) = (91.2699 %)
-ODME #17, link MAE= 142.783,link_MAPE: 13.3406%,system_MPE: 8.58619%,avg_tt = 288.676(min) ,UE gap =263.07(min) = (91.1298 %)
-ODME #18, link MAE= 140.755,link_MAPE: 12.8849%,system_MPE: 9.22478%,avg_tt = 287.722(min) ,UE gap =263.29(min) = (91.5086 %)
-ODME #19, link MAE= 144.799,link_MAPE: 13.197%,system_MPE: 6.86839%,avg_tt = 288.63(min) ,UE gap =263.333(min) = (91.2355 %)
-ODME #20, link MAE= 133.653,link_MAPE: 12.2366%,system_MPE: 8.64888%,avg_tt = 286.776(min) ,UE gap =263.015(min) = (91.7147 %)
-ODME #21, link MAE= 135.239,link_MAPE: 12.4002%,system_MPE: 6.33807%,avg_tt = 288.108(min) ,UE gap =263.135(min) = (91.3321 %)
-ODME #22, link MAE= 122.486,link_MAPE: 11.4495%,system_MPE: 8.75773%,avg_tt = 285.614(min) ,UE gap =262.164(min) = (91.7895 %)
-ODME #23, link MAE= 123.036,link_MAPE: 11.4742%,system_MPE: 6.24629%,avg_tt = 287.09(min) ,UE gap =262.299(min) = (91.3645 %)
-ODME #24, link MAE= 112.332,link_MAPE: 10.6679%,system_MPE: 8.54775%,avg_tt = 284.73(min) ,UE gap =261.487(min) = (91.8366 %)
-ODME #25, link MAE= 112.025,link_MAPE: 10.7024%,system_MPE: 6.16996%,avg_tt = 286.271(min) ,UE gap =261.651(min) = (91.3995 %)
-ODME #26, link MAE= 101.289,link_MAPE: 9.88724%,system_MPE: 8.4168%,avg_tt = 283.582(min) ,UE gap =260.462(min) = (91.8473 %)
-ODME #27, link MAE= 105.569,link_MAPE: 10.1975%,system_MPE: 5.89152%,avg_tt = 285.346(min) ,UE gap =260.818(min) = (91.4042 %)
-ODME #28, link MAE= 95.4201,link_MAPE: 9.41334%,system_MPE: 8.2012%,avg_tt = 282.763(min) ,UE gap =259.733(min) = (91.8553 %)
-ODME #29, link MAE= 104.065,link_MAPE: 10.0157%,system_MPE: 5.43481%,avg_tt = 284.816(min) ,UE gap =260.366(min) = (91.4153 %)
-ODME #30, link MAE= 92.0209,link_MAPE: 9.12043%,system_MPE: 8.1621%,avg_tt = 281.752(min) ,UE gap =258.873(min) = (91.8796 %)
-ODME #31, link MAE= 103.328,link_MAPE: 9.91218%,system_MPE: 5.12781%,avg_tt = 284.467(min) ,UE gap =260.065(min) = (91.4218 %)
-ODME #32, link MAE= 91.5483,link_MAPE: 9.08011%,system_MPE: 8.34068%,avg_tt = 280.834(min) ,UE gap =258.092(min) = (91.9018 %)
-ODME #33, link MAE= 103.428,link_MAPE: 9.90151%,system_MPE: 4.84275%,avg_tt = 284.436(min) ,UE gap =260.026(min) = (91.418 %)
-ODME #34, link MAE= 89.1177,link_MAPE: 8.91578%,system_MPE: 8.26673%,avg_tt = 280.395(min) ,UE gap =257.795(min) = (91.9397 %)
-ODME #35, link MAE= 102.622,link_MAPE: 9.84544%,system_MPE: 4.64988%,avg_tt = 284.433(min) ,UE gap =260.108(min) = (91.4481 %)
-ODME #36, link MAE= 88.1885,link_MAPE: 8.84716%,system_MPE: 8.26358%,avg_tt = 280.116(min) ,UE gap =257.631(min) = (91.9728 %)
-ODME #37, link MAE= 102,link_MAPE: 9.80061%,system_MPE: 4.57814%,avg_tt = 284.375(min) ,UE gap =260.123(min) = (91.472 %)
-ODME #38, link MAE= 88.9688,link_MAPE: 8.90589%,system_MPE: 8.35388%,avg_tt = 279.871(min) ,UE gap =257.469(min) = (91.9959 %)
-ODME #39, link MAE= 101.774,link_MAPE: 9.78908%,system_MPE: 4.49892%,avg_tt = 284.349(min) ,UE gap =260.139(min) = (91.4858 %)
-ODME #40, link MAE= 88.5866,link_MAPE: 8.85768%,system_MPE: 8.34705%,avg_tt = 279.6(min) ,UE gap =257.275(min) = (92.0156 %)
-ODME #41, link MAE= 105.642,link_MAPE: 9.95243%,system_MPE: 4.26502%,avg_tt = 284.935(min) ,UE gap =260.785(min) = (91.5243 %)
-ODME stage terminates with gap increase = 1.09476% at iteration = 41
-ODME #100, link MAE= 105.642,link_MAPE: 9.95243%,system_MPE: 4.26502%,avg_tt = 279.017(min) ,UE gap =257.011(min) = (92.1129 %)
-Step 4.3: OD estimation 
-,# of ODME_iterations=,100
-Sensitivity analysis stage
-,Iteration,Avg Travel Time(min)
-0,357.532,
-column updating
-Output Link Performance:
-,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,114619,VKT=,184423
-,VHT=,150677
-,network vehicle speed (MPH) =,0.760698,,network vehicle speed (KPH) =,1.22396
-,PMT=,114619,PKT=,184423
-,PHT=,150677
-,network person speed (MPH) =,0.760698,,network person speed (KPH) =,1.22396
-,simple avg link volume=,1328.88
-,simple avg link speed=,17.1501
-,simple avg link speed ratio=,0.645132
-, # of simulated agents in trajectory.csv=,1,avg # of nodes per agent=0
+ODME #0, link MAE= 1324.62,link_MAPE: 88.6949%,system_MPE: 27.6046%,avg_tt = 649.094(min) ,UE gap =640.74(min) = (98.713 %)
+ODME #1, link MAE= 1238.89,link_MAPE: 88.5918%,system_MPE: 62.2568%,avg_tt = 537.318(min) ,UE gap =529.422(min) = (98.5305 %)
+ODME #2, link MAE= 1104.11,link_MAPE: 79.1879%,system_MPE: 54.1739%,avg_tt = 619.25(min) ,UE gap =598.598(min) = (96.665 %)
+ODME #3, link MAE= 983.75,link_MAPE: 70.8375%,system_MPE: 47.3599%,avg_tt = 558.039(min) ,UE gap =539.754(min) = (96.7233 %)
+ODME #4, link MAE= 869.792,link_MAPE: 63.04%,system_MPE: 41.5887%,avg_tt = 519.924(min) ,UE gap =499.808(min) = (96.131 %)
+ODME #5, link MAE= 762.16,link_MAPE: 55.6764%,system_MPE: 36.5166%,avg_tt = 492.271(min) ,UE gap =474.374(min) = (96.3644 %)
+ODME #6, link MAE= 661.206,link_MAPE: 48.8288%,system_MPE: 32.2383%,avg_tt = 473.828(min) ,UE gap =452.533(min) = (95.5058 %)
+ODME #7, link MAE= 571.545,link_MAPE: 42.8208%,system_MPE: 28.5861%,avg_tt = 460.568(min) ,UE gap =438.908(min) = (95.2972 %)

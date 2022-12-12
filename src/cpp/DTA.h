@@ -518,7 +518,7 @@ public:
 class CColumnPath {
 public:
     CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
-        path_switch_volume{ 0 }, path_volume{ 0 }, path_volume_before_ODME{ -1 }, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
+        path_switch_volume{ 0 }, path_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{-1}, path_volume_before_sa{-1}, path_volume_after_sa {-1}, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
         path_gradient_cost{ 0 }, path_gradient_cost_difference{ 0 }, path_gradient_cost_relative_difference{ 0 }, subarea_output_flag{ 1 }, measurement_flag{ 0 }, impacted_path_flag{ 0 },
         network_design_detour_mode{ 0 }, global_path_no{ -1 }, b_sensitivity_analysis_flag { false}
     {
@@ -615,6 +615,9 @@ public:
     // path volume
     double path_volume;
     double path_volume_before_ODME;
+    double path_volume_after_ODME;
+    double path_volume_before_sa;
+    double path_volume_after_sa;
 
     std::vector<float> departure_time_in_min;
     int subarea_output_flag;

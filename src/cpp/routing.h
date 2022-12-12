@@ -616,7 +616,10 @@ public:
 									temp_path_link_vector, true);
 							}
 
-							pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
+							if (b_sensitivity_analysis_flag == false)
+							{
+								pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
+							}
 
 							if(b_sensitivity_analysis_flag == true)
 								pColumnVector->path_node_sequence_map[node_sum].b_sensitivity_analysis_flag = b_sensitivity_analysis_flag;
