@@ -587,7 +587,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	dtalog.output() << "Total Column Generation iteration: " << assignment.g_number_of_column_generation_iterations << endl;
 
 
-	for (int iteration_number = 0; iteration_number < assignment.g_number_of_column_generation_iterations; iteration_number++)
+	for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
 	{
 		dtalog.output() << endl;
 		dtalog.output() << "Current iteration number:" << iteration_number << endl;

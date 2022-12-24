@@ -651,6 +651,11 @@ public:
 
     int m_node_size;
     int m_link_size;
+
+    std::vector <int> path_sensor_link_vector;  // added with mustafa, 12/24/2022. only contains with the links with measurements
+
+    int m_sensor_link_size;
+   
     std::map <int, bool> diverted_vehicle_map;
 
     std::vector<int> agent_simu_id_vector;
@@ -940,6 +945,7 @@ public:
     //OD demand estimation estimation
     void GenerateDefaultMeasurementData();
     void Demand_ODME(int OD_updating_iterations, int sensitivity_analysis_iterations);
+    void Sensor_Vector_based_Demand_ODME(int OD_updating_iterations);
     void AllocateLinkMemory4Simulation();
     int update_real_time_info_path(CAgent_Simu* p_agent, int& impacted_flag_change, float updating_in_min);
     bool RTSP_real_time_travel_time_updating(int time_slot_no, int simu_interval_t);

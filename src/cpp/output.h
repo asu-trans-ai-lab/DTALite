@@ -605,8 +605,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 			}
 
-			if (scenario_code_count == 0 && total_vehicle_volume < 0.001 && g_link_vector.size() > 20000)
-				continue;
+			//if (scenario_code_count == 0 && total_vehicle_volume < 0.001 && g_link_vector.size() > 20000)
+			//	continue;
 
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
@@ -820,20 +820,20 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		return;
 
 	{
-		dtalog.output() << "writing route_assignment.csv.." << endl;
+		dtalog.output() << "writing route_performance.csv.." << endl;
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 		FILE* g_pFilePathMOE = nullptr;
-		fopen_ss(&g_pFilePathMOE, "route_assignment.csv", "w");
+		fopen_ss(&g_pFilePathMOE, "route_performance.csv", "w");
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File route_assignment.csv cannot be opened." << endl;
+			dtalog.output() << "File route_performance.csv cannot be opened." << endl;
 			g_program_stop();
 		}
 
 		fprintf(g_pFilePathMOE, "first_column,path_no,o_zone_id,d_zone_id,od_pair,o_sindex,d_sindex,within_OD_path_no,path_id,activity_zone_sequence,activity_agent_type_sequence,information_type,agent_type,demand_period,volume,volume_before_odme,volume_after_odme,volume_diff_odme,volume_before_sa,volume_after_sa,volume_diff_sa,simu_volume,subarea_flag,OD_impact_flag,at_OD_impact_flag,");
-		fprintf(g_pFilePathMOE, "path_impact_flag,toll,#_of_nodes,travel_time,VDF_travel_time,VDF_travel_time_without_access_link,distance_km,distance_mile,node_sequence,link_sequence, ");
+		fprintf(g_pFilePathMOE, "path_impact_flag,toll,#_of_nodes,#_of_sensor_links,travel_time,VDF_travel_time,VDF_travel_time_without_access_link,distance_km,distance_mile,node_sequence,link_sequence, ");
 
 		//// stage 1: column updating
 		//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_column_updating_iterations); iteration_number++)
@@ -1270,7 +1270,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									}
 
 									
-									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
+									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
 										count,
 										g_zone_vector[orig].zone_id,
 										g_zone_vector[dest].zone_id,
@@ -1299,6 +1299,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										impacted_path_flag,
 										path_toll,
 										it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta,
+										it->second.path_sensor_link_vector.size(),
 										final_path_travel_time,
 										path_travel_time,
 										path_travel_time_without_access_link,
@@ -1495,17 +1496,17 @@ void g_output_accessibility_result(Assignment& assignment)
 {
 
 		FILE* g_pFilePathMOE = nullptr;
-		fopen_ss(&g_pFilePathMOE, "od_accessibility.csv", "w");
+		fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
 
-		dtalog.output() << "writing od_accessibility.csv.." << endl;
+		dtalog.output() << "writing od_performance.csv.." << endl;
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
-		fopen_ss(&g_pFilePathMOE, "od_accessibility.csv", "w");
+		fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File od_accessibility.csv cannot be opened." << endl;
+			dtalog.output() << "File od_performance.csv cannot be opened." << endl;
 			g_program_stop();
 		}
 
@@ -1623,7 +1624,7 @@ void g_output_accessibility_result(Assignment& assignment)
 									}
 									if (subarea_output_flag == 0)
 									{
-										it->second.subarea_output_flag = 0;  // disable the output of this column into route_assignment.csv
+										it->second.subarea_output_flag = 0;  // disable the output of this column into route_performance.csv
 
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 										{
@@ -1914,7 +1915,7 @@ void g_output_accessibility_result(Assignment& assignment)
 			}
 		}
 		fclose(g_pFilePathMOE);
-		assignment.summary_file << "Step 3: check OD connectivity and accessibility in od_accessibility.csv" << endl;
+		assignment.summary_file << "Step 3: check OD connectivity and accessibility in od_performance.csv" << endl;
 
 		assignment.summary_file << ", # of connected OD pairs =, " << l_origin_destination_map.size() << endl;
 		assignment.summary_file << ", # of OD/agent_type/demand_type columns without paths =, " << l_origin_destination_disconnected_map.size() << endl;

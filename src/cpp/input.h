@@ -474,7 +474,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 				total_related_demand_from_internal += g_zone_vector[orig].preread_total_O_demand;
 
 				g_zone_vector[orig].origin_zone_impact_volume = g_zone_vector[orig].preread_total_O_demand;
-				g_zone_vector[orig].subarea_inside_flag = 3;  // zoom is inside the subarea
+				g_zone_vector[orig].subarea_inside_flag = 3;  // zone is inside the subarea
 				inside_zone_count++;
 				continue; //inside the subarea, keep the zone anyway
 			}
@@ -590,7 +590,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					if (g_zone_vector[orig].origin_zone_impact_volume < volume_cut_off_value)  // volume_cut_off_value is based on the value just established
 					{
 						g_zone_vector[orig].subarea_significance_flag = false; // set non significant
-						g_zone_vector[orig].subarea_inside_flag = 1;  // zone is set to boudary
+						g_zone_vector[orig].subarea_inside_flag = 1;  // zone is set to boundary
 //						related_zone_count++;
 					}
 					else
@@ -849,17 +849,16 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 			g_program_stop();
 		}
 
-		fprintf(g_pFileZone, "first_column,zone_id,x_coord,y_coord,internal_zone_id,analysis_district_id,demand,inside_flag\n");
+		fprintf(g_pFileZone, "first_column,zone_id,x_coord,y_coord,super_zone_id,analysis_district_id,demand,subarea_significance_flag,inside_flag\n");
 		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 		{
-			if (g_zone_vector[orig].subarea_significance_flag == true)  // no significant: skip
-			{
-				fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d\n", 
+				fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d,%d\n", 
 					g_zone_vector[orig].zone_id, g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y, 
 					g_zone_vector[orig].sindex,
 					g_zone_vector[orig].distrct_cluster_index,
-					g_zone_vector[orig].origin_zone_impact_volume, g_zone_vector[orig].subarea_inside_flag);
-			}
+					g_zone_vector[orig].origin_zone_impact_volume,
+					g_zone_vector[orig].subarea_significance_flag, 
+					g_zone_vector[orig].subarea_inside_flag);
 		}
 
 		fclose(g_pFileZone);
@@ -2328,10 +2327,10 @@ void g_detector_file_open_status(Assignment& assignment)
 		fclose(g_pFilePathMOE);
 	}
 
-	fopen_ss(&g_pFilePathMOE, "od_accessibility.csv", "w");
+	fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File od_accessibility.csv cannot be opened." << endl;
+		dtalog.output() << "File od_performance.csv cannot be opened." << endl;
 		g_program_stop();
 	}
 	else
@@ -2393,10 +2392,10 @@ void g_detector_file_open_status(Assignment& assignment)
 	}
 
 
-	fopen_ss(&g_pFilePathMOE, "route_assignment.csv", "w");
+	fopen_ss(&g_pFilePathMOE, "route_performance.csv", "w");
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File route_assignment.csv cannot be opened." << endl;
+		dtalog.output() << "File route_performance.csv cannot be opened." << endl;
 		g_program_stop();
 	}
 	else

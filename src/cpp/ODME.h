@@ -178,6 +178,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 							{
 								g_link_vector[link_seq_no].VDF_period[tau].obs_count = count;
 								g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag = upper_bound_flag;
+									sensor_count++;
 							}
 						}
 						else
@@ -231,6 +232,9 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 		// Pi
 		// Dj
 		// link l
+//		Sensor_Vector_based_Demand_ODME(OD_updating_iterations);
+//		return; 
+
 
 		// step 2: loop for adjusting OD demand
 		double prev_gap = 9999999;
@@ -312,9 +316,9 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 					if (to_zone_sindex == -1)
 						continue;
 
-					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //at
+					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //at agent type
 					{
-						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau, assginment period
 						{
 							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 							if (p_column_pool->od_volume > 0)
@@ -341,14 +345,24 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 									path_distance = 0;
 									path_travel_time = 0;
 
-									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
+									if (s == 0) // perform computing of path travel time for the first iteration 
 									{
-										link_seq_no = it->second.path_link_vector[nl];
-										path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
-										path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-										double link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
-										path_travel_time += link_travel_time;
-									}
+
+										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a along the path
+										{
+											link_seq_no = it->second.path_link_vector[nl];
+											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
+											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
+											double link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+											path_travel_time += link_travel_time;
+
+											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // added with mustafa 12/24/2022, verified
+											{
+												it->second.measurement_flag = 1;  // this path column has measurement 
+												it->second.path_sensor_link_vector.push_back(link_seq_no);
+											}
+										}
+
 
 									it->second.path_toll = path_toll;
 									it->second.path_travel_time = path_travel_time;
@@ -360,6 +374,8 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 										least_cost_path_seq_no = it->second.path_seq_no;
 										least_cost_path_node_sum_index = it->first;
 									}
+									}
+
 								}
 
 
@@ -370,14 +386,14 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 									column_path_counts++;
 
-									//if (s >= 1 && it->second.measurement_flag == 0)  // after 1  iteration, if there are no data passing through this path column. we will skip it in the ODME process
-									//    continue;
+									if (s >= 1 && it->second.measurement_flag == 0)  // after 1  iteration, if there are no data passing through this path column. we will skip it in the ODME process
+									    continue;
 
 									it->second.UE_gap = (it->second.path_travel_time - least_cost);
 									path_gradient_cost = 0;
 									path_distance = 0;
 									path_travel_time = 0;
-									p_column_pool->m_passing_sensor_flag = 0;
+									p_column_pool->m_passing_sensor_flag = -1;
 									// step 3.1 origin production flow gradient
 
 									// est_production_dev = est_production - obs_production;
@@ -410,10 +426,10 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 									}
 
 									float est_count_dev = 0;
-									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
+									for (int nl = 0; nl < it->second.path_sensor_link_vector.size(); ++nl)  // arc a  // modified with mustafa, 12/24/2022, verified
 									{
 										// step 3.3 link flow gradient
-										link_seq_no = it->second.path_link_vector[nl];
+										link_seq_no = it->second.path_sensor_link_vector[nl];
 										if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)
 										{
 											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 0)
@@ -439,7 +455,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 									it->second.path_gradient_cost = path_gradient_cost;
 
-									step_size = 0.05;
+									step_size = 1.0/(OD_updating_iterations+2.0);   // memo: with alicia, 0.05
 									double prev_path_volume = it->second.path_volume;
 
 									if (s == 0)  // first iteration of ODME 
@@ -495,8 +511,8 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 
 
-								//if (p_column_pool->m_passing_sensor_flag >= 1)
-								//    column_pool_with_sensor_counts++;
+								if (p_column_pool->m_passing_sensor_flag >= 1)
+								    column_pool_with_sensor_counts++;
 
 							}
 						}
@@ -526,4 +542,5 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 
 }
+
 

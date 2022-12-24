@@ -562,6 +562,479 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	return gap;
 }
 
+
+double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of_links, int iteration_no, double& system_gap)
+{
+	float total_gap = 0;
+	float sub_total_gap_link_count = 0;
+	float sub_total_system_gap_count = 0;
+	system_gap = 0;
+	float sub_total_gap_P_count = 0;
+	float sub_total_gap_A_count = 0;
+
+	double total_system_travel_cost = 0;
+	double total_system_travel_time = 0;
+	double total_system_demand = 0;
+	double total_system_UE_gap = 0;
+	// reset the link volume
+	for (int i = 0; i < number_of_links; ++i)
+	{
+			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+			{
+
+				if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
+				{
+					// used in travel time calculation
+				g_link_vector[i].PCE_volume_per_period[tau] = 0;
+				g_link_vector[i].person_volume_per_period[tau] = 0;
+
+				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
+					g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+				}
+
+
+			}
+	}
+
+	// reset the estimated production and attraction
+	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+	{
+		g_zone_vector[orig].est_attraction = 0;
+		g_zone_vector[orig].est_production = 0;
+	}
+
+	for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //m
+	{
+
+		int zone_size = g_zone_vector.size();
+		int tau_size = assignment.g_DemandPeriodVector.size();
+		float PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
+		float OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
+
+
+#pragma omp parallel for
+		for (int orig = 0; orig < zone_size; ++orig)  // o
+		{
+			int from_zone_sindex = g_zone_vector[orig].sindex;
+			if (from_zone_sindex == -1)
+				continue;
+
+
+			int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig];
+			std::map<int, CColumnPath>::iterator it;
+			float link_volume_contributed_by_path_volume;
+			int nl;
+
+			std::map<int, CColumnPath>::iterator it_begin;
+			std::map<int, CColumnPath>::iterator it_end;
+
+			int column_vector_size;
+			CColumnVector* p_column_pool;
+			for (int dest = 0; dest < zone_size; ++dest) //d
+			{
+				int to_zone_sindex = g_zone_vector[dest].sindex;
+
+				if (to_zone_sindex == -1)
+					continue;
+
+				for (int tau = 0; tau < tau_size; ++tau)  //tau
+				{
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+					if (p_column_pool->od_volume > 0)
+					{
+
+						// continuous: type 0
+						column_vector_size = p_column_pool->path_node_sequence_map.size();
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+
+						double least_cost = 999999;
+						int least_cost_path_seq_no = -1;
+						int least_cost_path_node_sum_index = -1;
+						int path_seq_count = 0;
+
+						double path_toll = 0;
+						double path_gradient_cost = 0;
+						double path_distance = 0;
+						double path_travel_time = 0;
+						int link_seq_no;
+
+						double link_travel_time;
+						double total_switched_out_path_volume = 0;
+
+						double step_size = 0;
+						double previous_path_volume = 0;
+
+						least_cost = 999999;
+						path_seq_count = 0;
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+
+
+						for (it = it_begin; it != it_end; ++it)  // path k
+						{
+							link_volume_contributed_by_path_volume = it->second.path_volume;  // assign all OD flow to this first path
+
+#pragma omp critical
+							// add path volume to link volume
+							for (nl = 0; nl < it->second.path_sensor_link_vector.size(); ++nl)  // arc a
+							{
+								link_seq_no = it->second.path_sensor_link_vector[nl];
+
+								// MSA updating for the existing column pools
+								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
+								{
+									g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
+									g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+
+									//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	int total_link_count = 0;
+
+	// calcualte deviation for each measurement type
+	for (int i = 0; i < number_of_links; ++i)
+	{
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+		{
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
+				continue;
+
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
+			{
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+
+				if (dtalog.debug_level() == 2)
+				{
+					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].PCE_volume_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
+				}
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
+				{
+					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
+				}
+				else
+				{  // upper bound constraints 
+					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
+					{
+						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+						sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+						sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
+					}
+				}
+				total_link_count += 1;
+			}
+		}
+
+	}
+	assignment.summary_file << "ODME #" << iteration_no
+		<< ", link MAE= " << total_gap / max(1, total_link_count)
+		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+		//"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+		//",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+		//" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+		endl;
+
+	dtalog.output() << "ODME #" << iteration_no
+		<< ", link MAE= " << total_gap / max(1, total_link_count)
+		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+		<< endl;
+	double gap = sub_total_gap_link_count / max(1, total_link_count);
+	system_gap = sub_total_system_gap_count / max(1, total_link_count);
+
+	return gap;
+}
+
+double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_implementation(int number_of_links, int iteration_no, double& system_gap)
+{
+	float total_gap = 0;
+	float sub_total_gap_link_count = 0;
+	float sub_total_system_gap_count = 0;
+	system_gap = 0;
+	float sub_total_gap_P_count = 0;
+	float sub_total_gap_A_count = 0;
+
+	double total_system_travel_cost = 0;
+	double total_system_travel_time = 0;
+	double total_system_demand = 0;
+	double total_system_UE_gap = 0;
+	// reset the link volume
+	for (int i = 0; i < number_of_links; ++i)
+	{
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+		{
+
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
+			{
+				// used in travel time calculation
+				g_link_vector[i].PCE_volume_per_period[tau] = 0;
+				g_link_vector[i].person_volume_per_period[tau] = 0;
+
+				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
+					g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+			}
+
+
+		}
+	}
+
+	// reset the estimated production and attraction
+	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+	{
+		g_zone_vector[orig].est_attraction = 0;
+		g_zone_vector[orig].est_production = 0;
+	}
+
+	for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //m
+	{
+
+		int zone_size = g_zone_vector.size();
+		int tau_size = assignment.g_DemandPeriodVector.size();
+		float PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
+		float OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
+
+
+#pragma omp parallel for
+		for (int orig = 0; orig < zone_size; ++orig)  // o
+		{
+			int from_zone_sindex = g_zone_vector[orig].sindex;
+			if (from_zone_sindex == -1)
+				continue;
+
+
+			int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig];
+			std::map<int, CColumnPath>::iterator it;
+			float link_volume_contributed_by_path_volume;
+			int nl;
+
+			std::map<int, CColumnPath>::iterator it_begin;
+			std::map<int, CColumnPath>::iterator it_end;
+
+			int column_vector_size;
+			CColumnVector* p_column_pool;
+			for (int dest = 0; dest < zone_size; ++dest) //d
+			{
+				int to_zone_sindex = g_zone_vector[dest].sindex;
+
+				if (to_zone_sindex == -1)
+					continue;
+
+				for (int tau = 0; tau < tau_size; ++tau)  //tau
+				{
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+					if (p_column_pool->od_volume > 0)
+					{
+
+						// continuous: type 0
+						column_vector_size = p_column_pool->path_node_sequence_map.size();
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+
+						double least_cost = 999999;
+						int least_cost_path_seq_no = -1;
+						int least_cost_path_node_sum_index = -1;
+						int path_seq_count = 0;
+
+						double path_toll = 0;
+						double path_gradient_cost = 0;
+						double path_distance = 0;
+						double path_travel_time = 0;
+						int link_seq_no;
+
+						double link_travel_time;
+						double total_switched_out_path_volume = 0;
+
+						double step_size = 0;
+						double previous_path_volume = 0;
+
+						least_cost = 999999;
+						path_seq_count = 0;
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+						for (it = it_begin; it != it_end; ++it)
+						{
+							total_system_demand += it->second.path_volume;
+							path_toll = 0;
+							path_gradient_cost = 0;
+							path_distance = 0;
+							path_travel_time = 0;
+
+							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
+							{
+								link_seq_no = it->second.path_link_vector[nl];
+								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+								path_travel_time += link_travel_time;
+
+							}
+
+							it->second.path_toll = path_toll;
+							it->second.path_travel_time = path_travel_time;
+							total_system_travel_time += (it->second.path_travel_time * it->second.path_volume);
+
+							if (column_vector_size == 1)  // only one path
+							{
+								break;
+							}
+
+							if (path_travel_time < least_cost)
+							{
+								least_cost = path_travel_time;
+								least_cost_path_seq_no = it->second.path_seq_no;
+								least_cost_path_node_sum_index = it->first;
+							}
+#pragma omp critical
+							{
+								total_system_travel_cost += (it->second.path_travel_time * it->second.path_volume);
+							}
+						} // end for each path
+
+
+
+
+						for (it = it_begin; it != it_end; ++it)  // path k
+						{
+							link_volume_contributed_by_path_volume = it->second.path_volume;  // assign all OD flow to this first path
+
+#pragma omp critical
+							// add path volume to link volume
+							for (nl = 0; nl < it->second.path_sensor_link_vector.size(); ++nl)  // arc a
+							{
+								link_seq_no = it->second.path_sensor_link_vector[nl];
+
+								// MSA updating for the existing column pools
+								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
+								{
+									g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
+									g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+
+									//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	int total_link_count = 0;
+
+	// calcualte deviation for each measurement type
+	for (int i = 0; i < number_of_links; ++i)
+	{
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+		{
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
+				continue;
+
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
+			{
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+
+				if (dtalog.debug_level() == 2)
+				{
+					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].PCE_volume_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
+				}
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
+				{
+					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
+				}
+				else
+				{  // upper bound constraints 
+					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
+					{
+						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+						sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+						sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
+					}
+				}
+				total_link_count += 1;
+			}
+		}
+
+	}
+	//for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+	//{
+	//    if (g_zone_vector[orig].obs_attraction >= 1)  // with observation
+	//    {
+	//        g_zone_vector[orig].est_attraction_dev = g_zone_vector[orig].est_attraction - g_zone_vector[orig].obs_attraction;
+
+	//        if (dtalog.debug_level() == 2)
+	//        {
+	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
+	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << endl;
+	//        }
+
+	//        total_gap += abs(g_zone_vector[orig].est_attraction_dev);
+	//        sub_total_gap_A_count += g_zone_vector[orig].est_attraction_dev / g_zone_vector[orig].obs_attraction;
+	//    }
+
+	//    if (g_zone_vector[orig].obs_production >= 1)  // with observation
+	//    {
+	//        g_zone_vector[orig].est_production_dev = g_zone_vector[orig].est_production - g_zone_vector[orig].obs_production;
+
+	//        if (dtalog.debug_level() == 2)
+	//        {
+	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
+	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << endl;
+	//        }
+
+	//        total_gap += abs(g_zone_vector[orig].est_production_dev);
+	//        sub_total_gap_P_count += g_zone_vector[orig].est_production_dev / g_zone_vector[orig].obs_production;
+	//    }
+	//}
+
+	assignment.summary_file << "ODME #" << iteration_no
+		<< ", link MAE= " << total_gap / max(1, total_link_count)
+		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+		<< endl;
+
+	dtalog.output() << "ODME #" << iteration_no
+		<< ", link MAE= " << total_gap / max(1, total_link_count)
+		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+		<< endl;
+	double gap = sub_total_gap_link_count / max(1, total_link_count);
+	system_gap = sub_total_system_gap_count / max(1, total_link_count);
+
+	return gap;
+}
 void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, bool b_sensitivity_analysis_flag)
 {
 	double total_system_cost_gap = 0;
