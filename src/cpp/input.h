@@ -893,7 +893,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 	dtalog.output() << "Step 1.8: Reading file section [demand_file_list] in setting.csv..." << endl;
 	parser.IsFirstLineHeader = false;
 
-	assignment.summary_file << "Step 2: read demand, defined in [demand_file_list] in settings.csv." << endl;
+	assignment.summary_file << "Step 2.1: read demand, defined in [demand_file_list] in settings.csv." << endl;
 
 	if (parser.OpenCSVFile("settings.csv", false))
 	{
@@ -1342,7 +1342,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 						g_program_stop();
 					}
 				}
-				else if (format_type.compare("activity_plan") == 0)
+				else if (format_type.compare("activity_chain") == 0)
 				{
 					/////////////////////
 					int path_counts = 0;
@@ -2172,8 +2172,8 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					CLink this_link;
 					char VDF_field_name[50];
 					bool VDF_required_field_flag = true;
-					sprintf(VDF_field_name, "QVDF_qdf%d", demand_period_id);
-					parser.GetValueByFieldName(VDF_field_name, this_link.VDF_period[tau].queue_demand_factor, VDF_required_field_flag, false);
+//					sprintf(VDF_field_name, "QVDF_plf%d", demand_period_id);
+//					parser.GetValueByFieldName(VDF_field_name, this_link.VDF_period[tau].queue_demand_factor, VDF_required_field_flag, false);
 					sprintf(VDF_field_name, "QVDF_alpha%d", demand_period_id);
 					parser.GetValueByFieldName(VDF_field_name, this_link.VDF_period[tau].Q_alpha, VDF_required_field_flag, false);
 					sprintf(VDF_field_name, "QVDF_beta%d", demand_period_id);
@@ -2392,10 +2392,10 @@ void g_detector_file_open_status(Assignment& assignment)
 	}
 
 
-	fopen_ss(&g_pFilePathMOE, "route_performance.csv", "w");
+	fopen_ss(&g_pFilePathMOE, "route_assignment.csv", "w");
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File route_performance.csv cannot be opened." << endl;
+		dtalog.output() << "File route_assignment.csv cannot be opened." << endl;
 		g_program_stop();
 	}
 	else

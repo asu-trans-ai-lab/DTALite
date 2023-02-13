@@ -591,38 +591,50 @@ public:
 							if (to_zone_sindex == -1)
 								continue;
 
-
-							if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau].path_node_sequence_map.end())
+							if (b_sensitivity_analysis_flag == false)
 							{
-								// add this unique path
+
+								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau].path_node_sequence_map.end())
+								{
+									// add this unique path
+									int path_count = pColumnVector->path_node_sequence_map.size();
+									pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
+									pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
+									pColumnVector->path_node_sequence_map[node_sum].path_toll = m_node_label_cost[i];
+
+									if (local_debugging_flag)
+									{
+										for (int li = 0; li < l_node_size; ++li)
+										{
+											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << endl;
+										}
+
+									}
+
+									pColumnVector->path_node_sequence_map[node_sum].AllocateVector(
+										l_node_size,
+										temp_path_node_vector,
+										l_link_size,
+										temp_path_link_vector, true);
+								}
+
+								pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
+							}
+							else  // RT users: add columns any way
+							{
 								int path_count = pColumnVector->path_node_sequence_map.size();
 								pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
 								pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
 								pColumnVector->path_node_sequence_map[node_sum].path_toll = m_node_label_cost[i];
-
-								if (local_debugging_flag)
-								{
-									for (int li = 0; li < l_node_size; ++li)
-									{
-										assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << endl;
-									}
-
-								}
 
 								pColumnVector->path_node_sequence_map[node_sum].AllocateVector(
 									l_node_size,
 									temp_path_node_vector,
 									l_link_size,
 									temp_path_link_vector, true);
+
 							}
 
-							if (b_sensitivity_analysis_flag == false)
-							{
-								pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
-							}
-
-							if(b_sensitivity_analysis_flag == true)
-								pColumnVector->path_node_sequence_map[node_sum].b_sensitivity_analysis_flag = b_sensitivity_analysis_flag;
 						}
 					}
 				}

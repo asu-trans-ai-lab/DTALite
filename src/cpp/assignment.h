@@ -1556,6 +1556,10 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 	}
 }
 
+void g_column_regeneration(Assignment& assignment);
+void g_reset_link_volume_in_master_program_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume);
+void g_reset_link_volume_for_all_processors();
+void g_fetch_link_volume_for_all_processors();
 
 void g_column_pool_route_modification(Assignment& assignment, int inner_iteration_number)  // for DMS users
 {

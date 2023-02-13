@@ -126,6 +126,182 @@ std::map<string, CInfoCell> g_info_cell_map;
 #include "scenario_API.h"
 
 
+void g_column_regeneration(Assignment& assignment)
+{		//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
+	clock_t start_t, end_t, iteration_t;
+	start_t = clock();
+	dtalog.output() << endl;
+	dtalog.output() << "Step 5: Column Re-Generation for Traffic Assignment..." << endl;
+	dtalog.output() << "Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations << endl;
+	// stage II: column re-generation at the sensitivity analysis stage
+
+	// for K = 5 iterations, which should be sufficient 
+
+	int number_of_column_regeneration_iterations = 5;
+	for (int iteration_number = 0; iteration_number <= number_of_column_regeneration_iterations; iteration_number++)
+	{
+
+
+		dtalog.output() << endl;
+		dtalog.output() << "SA: iteration number:" << iteration_number << endl;
+		end_t = clock();
+		iteration_t = end_t - start_t;
+		dtalog.output() << "SA: CPU time: " << iteration_t / 1000.0 << " s" << endl;
+
+		// step 3.1 update travel time and resource consumption
+		clock_t start_t_lu = clock();
+
+		//////detect induced_delay
+		for (int i = 0; i < g_link_vector.size(); ++i)
+		{
+			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+			{
+				// used in travel time calculation
+				//if (g_link_vector[i].VDF_period[tau].network_design_flag == 0)
+				//{
+				//	if (g_link_vector[i].VDF_period[tau].DOC > 3)  // dramatic delay, 3 is a cut off ratio/threshold for us to define large delay
+				//	{
+				//		g_link_vector[i].VDF_period[tau].network_design_flag = -2; // induced delay
+				//	}
+
+				//}
+
+			}
+		}
+
+
+		double total_system_travel_time = 0;
+		double total_least_system_travel_time = 0;
+		// initialization at beginning of shortest path
+		double total_distance = 0;
+		total_system_travel_time = update_link_travel_time_and_cost(iteration_number, total_distance);
+
+			//// we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),f
+			////  and use the newly generated path flow to add the additional 1/(k+1)
+			//bool sensitivity_analaysis_flag = true;
+			//g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, sensitivity_analaysis_flag);
+
+		if (dtalog.debug_level() >= 3)
+		{
+			dtalog.output() << "Results:" << endl;
+			for (int i = 0; i < g_link_vector.size(); ++i) {
+				dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
+					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
+					<< "flow count:" << g_link_vector[i].PCE_volume_per_period[0] << endl;
+			}
+		}
+
+		end_t = clock();
+		iteration_t = end_t - start_t_lu;
+		// g_fout << "Link update with CPU time " << iteration_t / 1000.0 << " s; " << (end_t - start_t) / 1000.0 << " s" << endl;
+
+		//****************************************//
+		//step 3.2 computng block for continuous variables;
+
+		clock_t start_t_lc = clock();
+		clock_t start_t_cp = clock();
+		clock_t iteration_t, cumulative_lc, cumulative_cp, cumulative_lu;
+		cumulative_lc = 0;
+		cumulative_cp = 0;
+		cumulative_lu = 0;
+
+		int number_of_memory_blocks = min((int)g_NetworkForSP_vector.size(), assignment.g_number_of_memory_blocks);
+
+#pragma omp parallel for  // step 3: C++ open mp automatically create n threads., each thread has its own computing thread on a cpu core
+		//for (int ProcessID = 0; ProcessID < g_NetworkForSP_vector.size(); ++ProcessID)
+		//{
+		//    int agent_type_no = g_NetworkForSP_vector[ProcessID]->m_agent_type_no;
+
+		//    for (int o_node_index = 0; o_node_index < g_NetworkForSP_vector[ProcessID]->m_origin_node_vector.size(); ++o_node_index)
+		//    {
+		//        start_t_lc = clock();
+		//        g_NetworkForSP_vector[ProcessID]->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index);
+		//        end_t = clock();
+		//        cumulative_lc += end_t - start_t_lc;
+
+		//        start_t_cp = clock();
+		//        g_NetworkForSP_vector[ProcessID]->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index);
+		//        end_t = clock();
+		//        cumulative_cp += end_t - start_t_cp;
+		//    }
+		//    // perform one to all shortest path tree calculation
+		//}
+
+		for (int ProcessID = 0; ProcessID < number_of_memory_blocks; ++ProcessID)
+		{
+			for (int blk = 0; blk < assignment.g_AgentTypeVector.size() * assignment.g_DemandPeriodVector.size(); ++blk)
+			{
+				int network_copy_no = blk * assignment.g_number_of_memory_blocks + ProcessID;
+				if (network_copy_no >= g_NetworkForSP_vector.size())
+					continue;
+
+				NetworkForSP* pNetwork = g_NetworkForSP_vector[network_copy_no];
+
+
+				for (int o_node_index = 0; o_node_index < pNetwork->m_origin_node_vector.size(); ++o_node_index)
+				{
+					start_t_lc = clock();
+
+
+					int origin_zone_seq_no = pNetwork->m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
+
+
+					if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 2 /*DMS*/
+						&& assignment.zone_seq_no_2_info_mapping.find(origin_zone_seq_no) != assignment.zone_seq_no_2_info_mapping.end())
+					{
+						int idebug = 1;
+					}
+
+					if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 0)  // for non-information users, do not generate new path "columns"
+						continue;  // skip the following shortest path codes
+
+					if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 2 /*DMS infomation with physcial origin*/
+						&& assignment.zone_seq_no_2_info_mapping.find(origin_zone_seq_no) == assignment.zone_seq_no_2_info_mapping.end()
+						)
+					{
+						continue;  // skip the shortest path regeneration in the SA stage
+					}
+
+					pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, true);
+
+
+					end_t = clock();
+					cumulative_lc += end_t - start_t_lc;
+
+					start_t_cp = clock();
+
+					bool sensitivity_analaysis_flag = true;
+					double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, sensitivity_analaysis_flag);
+
+
+#pragma omp critical
+					{
+						total_least_system_travel_time += total_origin_least_travel_time;
+					}
+					end_t = clock();
+					cumulative_cp += end_t - start_t_cp;
+				}
+			}
+
+		}
+
+
+		if (iteration_number == 0)
+		{
+			assignment.summary_file << "Sensitivity analysis stage" << endl;
+			assignment.summary_file << ",Iteration,Avg Travel Time(min)" << endl;
+		}
+
+		double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
+
+		assignment.summary_file << iteration_number << "," << Avg_Travel_Time << "," << endl;
+		// link based computing mode, we have to collect link volume from all processors.
+		if (assignment.assignment_mode == lue)
+			g_fetch_link_volume_for_all_processors();
+	}
+
+}
+
 
 void g_reset_link_volume_in_master_program_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume)
 {
@@ -504,7 +680,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	// k iterations for column generation
 	assignment.g_number_of_column_generation_iterations = column_generation_iterations;
 	assignment.g_number_of_column_updating_iterations = column_updating_iterations;
-	assignment.g_number_of_ODME_iterations = ODME_iterations;
+	assignment.g_number_of_ODME_iterations = 100;
 	assignment.g_number_of_sensitivity_analysis_iterations = sensitivity_analysis_iterations;
 	// 0: link UE: 1: path UE, 2: Path SO, 3: path resource constraints
 
@@ -877,182 +1053,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		// initialization at beginning of shortest path
 		total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
 
-
-		//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
-		dtalog.output() << endl;
-		dtalog.output() << "Step 5: Column Re-Generation for Traffic Assignment..." << endl;
-		dtalog.output() << "Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations << endl;
-//		// stage II: column generation at the sensitivity analysis stage
-//		for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations; iteration_number++)
-//		{
-//
-//
-//			dtalog.output() << endl;
-//			dtalog.output() << "SA: iteration number:" << iteration_number << endl;
-//			end_t = clock();
-//			iteration_t = end_t - start_t;
-//			dtalog.output() << "SA: CPU time: " << iteration_t / 1000.0 << " s" << endl;
-//
-//			// step 3.1 update travel time and resource consumption
-//			clock_t start_t_lu = clock();
-//
-//		//////detect induced_delay
-//			for (int i = 0; i < g_link_vector.size(); ++i)
-//			{
-//				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-//				{
-//					// used in travel time calculation
-//					if (g_link_vector[i].VDF_period[tau].network_design_flag == 0)  
-//					{
-//						if (g_link_vector[i].VDF_period[tau].DOC > 3)  // dramatic delay, 3 is a cut off ratio/threshold for us to define large delay
-//						{
-//							g_link_vector[i].VDF_period[tau].network_design_flag = -2; // induced delay
-//						}
-//
-//					}
-//
-//				}
-//			}
-//
-//
-//			double total_system_travel_time = 0;
-//			double total_least_system_travel_time = 0;
-//			// initialization at beginning of shortest path
-//			double total_distance = 0;
-//			total_system_travel_time = update_link_travel_time_and_cost(iteration_number, total_distance);
-//
-//			if (assignment.assignment_mode == lue)
-//			{
-//				//fw link based UE
-//				g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), iteration_number, true);
-//				g_reset_link_volume_for_all_processors();
-//			}
-//			else
-//			{
-//				// we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),f
-//				//  and use the newly generated path flow to add the additional 1/(k+1)
-//				bool sensitivity_analaysis_flag = true;
-//				g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, sensitivity_analaysis_flag);
-//			}
-//
-//			if (dtalog.debug_level() >= 3)
-//			{
-//				dtalog.output() << "Results:" << endl;
-//				for (int i = 0; i < g_link_vector.size(); ++i) {
-//					dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
-//						<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-//						<< "flow count:" << g_link_vector[i].PCE_volume_per_period[0] << endl;
-//				}
-//			}
-//
-//			end_t = clock();
-//			iteration_t = end_t - start_t_lu;
-//			// g_fout << "Link update with CPU time " << iteration_t / 1000.0 << " s; " << (end_t - start_t) / 1000.0 << " s" << endl;
-//
-//			//****************************************//
-//			//step 3.2 computng block for continuous variables;
-//
-//			clock_t start_t_lc = clock();
-//			clock_t start_t_cp = clock();
-//
-//			cumulative_lc = 0;
-//			cumulative_cp = 0;
-//			cumulative_lu = 0;
-//
-//			int number_of_memory_blocks = min((int)g_NetworkForSP_vector.size(), assignment.g_number_of_memory_blocks);
-//
-//#pragma omp parallel for  // step 3: C++ open mp automatically create n threads., each thread has its own computing thread on a cpu core
-//			//for (int ProcessID = 0; ProcessID < g_NetworkForSP_vector.size(); ++ProcessID)
-//			//{
-//			//    int agent_type_no = g_NetworkForSP_vector[ProcessID]->m_agent_type_no;
-//
-//			//    for (int o_node_index = 0; o_node_index < g_NetworkForSP_vector[ProcessID]->m_origin_node_vector.size(); ++o_node_index)
-//			//    {
-//			//        start_t_lc = clock();
-//			//        g_NetworkForSP_vector[ProcessID]->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index);
-//			//        end_t = clock();
-//			//        cumulative_lc += end_t - start_t_lc;
-//
-//			//        start_t_cp = clock();
-//			//        g_NetworkForSP_vector[ProcessID]->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index);
-//			//        end_t = clock();
-//			//        cumulative_cp += end_t - start_t_cp;
-//			//    }
-//			//    // perform one to all shortest path tree calculation
-//			//}
-//
-//			for (int ProcessID = 0; ProcessID < number_of_memory_blocks; ++ProcessID)
-//			{
-//				for (int blk = 0; blk < assignment.g_AgentTypeVector.size() * assignment.g_DemandPeriodVector.size(); ++blk)
-//				{
-//					int network_copy_no = blk * assignment.g_number_of_memory_blocks + ProcessID;
-//					if (network_copy_no >= g_NetworkForSP_vector.size())
-//						continue;
-//
-//					NetworkForSP* pNetwork = g_NetworkForSP_vector[network_copy_no];
-//
-//
-//					for (int o_node_index = 0; o_node_index < pNetwork->m_origin_node_vector.size(); ++o_node_index)
-//					{
-//						start_t_lc = clock();
-//						
-//
-//						int origin_zone_seq_no = pNetwork->m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
-//
-//
-//						if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 2 /*DMS*/
-//							&& assignment.zone_seq_no_2_info_mapping.find(origin_zone_seq_no) != assignment.zone_seq_no_2_info_mapping.end())
-//						{
-//							int idebug = 1;
-//						}
-//
-//						if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 0)  // for non-information users, do not generate new path "columns"
-//							continue;  // skip the following shortest path codes
-//
-//						if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 2 /*DMS infomation with physcial origin*/
-//							&& assignment.zone_seq_no_2_info_mapping.find(origin_zone_seq_no) == assignment.zone_seq_no_2_info_mapping.end()
-//							)  
-//						{
-//							continue;  // skip the shortest path regeneration in the SA stage
-//						}
-//
-//						pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, true);
-//
-//
-//						end_t = clock();
-//						cumulative_lc += end_t - start_t_lc;
-//
-//						start_t_cp = clock();
-//						
-//						bool sensitivity_analaysis_flag = true;
-//						double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, sensitivity_analaysis_flag);
-//
-//
-//#pragma omp critical
-//						{
-//							total_least_system_travel_time += total_origin_least_travel_time;
-//						}
-//						end_t = clock();
-//						cumulative_cp += end_t - start_t_cp;
-//					}
-//				}
-//
-//			}
-//
-//		
-//			if (iteration_number == 0)
-//			{
-//				assignment.summary_file << "Sensitivity analysis stage" << endl;
-//				assignment.summary_file << ",Iteration,Avg Travel Time(min)" << endl;
-//			}
-//
-//			double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
-//
-//			assignment.summary_file << iteration_number << "," << Avg_Travel_Time << "," << endl;
-//			// link based computing mode, we have to collect link volume from all processors.
-//			if (assignment.assignment_mode == lue)
-//				g_fetch_link_volume_for_all_processors();
-//		}
+	    g_column_regeneration(assignment);
 
 		// stage II: right after column generation, we will enable the path modifications for DMS users 
 		g_column_pool_route_modification(assignment, column_updating_iterations);

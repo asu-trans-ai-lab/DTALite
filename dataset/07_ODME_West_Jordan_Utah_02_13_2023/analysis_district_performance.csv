@@ -1,0 +1,2 @@
+district_id,agent_type,od_volume,number_of_links,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_time,SA_total_travel_time_min,SA_avg_distance_km_,SA_avg_distance_mile,SA_avg_time,SA_distance_diff_perc,SA_time_diff_perc,geometry,
+0,p,25286.2,378,0,0,0,0,0,0,0,0,0,0,0,0,"POLYGON (())"

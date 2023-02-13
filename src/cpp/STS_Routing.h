@@ -499,7 +499,7 @@ public:
 //								}
 //								if (subarea_output_flag == 0)
 //								{
-//									it->second.subarea_output_flag = 0;  // disable the output of this column into route_performance.csv
+//									it->second.subarea_output_flag = 0;  // disable the output of this column into route_assignment.csv
 //
 //									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 //									{

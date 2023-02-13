@@ -1,0 +1,249 @@
+File zone.csv does not exist. Please check.
+File link_qvdf.csv does not exist. Please check.
+iod] in setting.csv...
+cumulative profile no. 0, ratio at slot  85 (7:5) = 0.0033333,CR 0.083333
+cumulative profile no. 0, ratio at slot  86 (7:10) = 0.0033333,CR 0.16667
+cumulative profile no. 0, ratio at slot  87 (7:15) = 0.0033333,CR 0.25
+cumulative profile no. 0, ratio at slot  88 (7:20) = 0.0033333,CR 0.33333
+cumulative profile no. 0, ratio at slot  89 (7:25) = 0.0033333,CR 0.41667
+cumulative profile no. 0, ratio at slot  90 (7:30) = 0.0033333,CR 0.5
+cumulative profile no. 0, ratio at slot  91 (7:35) = 0.0033333,CR 0.58333
+cumulative profile no. 0, ratio at slot  92 (7:40) = 0.0033333,CR 0.66667
+cumulative profile no. 0, ratio at slot  93 (7:45) = 0.0033333,CR 0.75
+cumulative profile no. 0, ratio at slot  94 (7:50) = 0.0033333,CR 0.83333
+cumulative profile no. 0, ratio at slot  95 (7:55) = 0.0033333,CR 0.91667
+cumulative profile no. 0, ratio at slot  96 (8:0) = 0.0033333,CR 1
+final cumulative profile ratio = 0.91667
+number of demand periods = 1
+Step 1.2: Reading section [link_type] in setting.csv...
+important: traffic_flow_code on link type 1 is 1
+important: traffic_flow_code on link type 2 is 1
+important: traffic_flow_code on link type 3 is 1
+important: traffic_flow_code on link type 4 is 1
+important: traffic_flow_code on link type 5 is 1
+important: traffic_flow_code on link type 20 is 1
+important: traffic_flow_code on link type 99 is 1
+number of link types = 8
+Step 1.3: Reading section [agent_type] in setting.csv...
+number of agent typess = 1
+Step 1.3: Reading zone data in zone.csv...
+Step 1.4: Reading node data in node.csv...
+Reading node data at layer0
+number of nodes = 149
+number of multimodal activity nodes = 0
+number of zones = 41
+Step 1.5: Initializing O-D zone vector...
+number of zones = 41
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+Step 1.6: Reading link data in link.csv... 
+link layer= 0
+number of links =378
+number of links =378
+Step 1.91: Reading file section [real_time_info] in setting.csv...
+Step 1.9: Reading file section [output_file_configuration] in setting.csv...
+Step 2.1: Reading demand side scenario data...
+
+Step 1.8: Reading file section [departure_time_profile] in setting.csv...
+allocating 4D memory for 0 zones,nM=41,nX=41,nY=1,nZ=1
+
+Step 1.8: Reading file section [demand_file_list] in setting.csv...
+o_zone_id:1, d_zone_id: 2, value = 30.369
+o_zone_id:1, d_zone_id: 3, value = 61.239
+o_zone_id:1, d_zone_id: 4, value = 2.943
+o_zone_id:1, d_zone_id: 5, value = 21.039
+o_zone_id:1, d_zone_id: 6, value = 28.052
+o_zone_id:1, d_zone_id: 7, value = 19.724
+total demand volume is 25286
+crtical demand volume has 914 OD pairs in size,24152, , account for 95.514%%
+crtical OD zones volume has 914 OD pairs in size,24152, , account for 95.514%%
+Step 2.0: Reading supply side scenario data...
+Step 2: Assigning computing tasks to memory blocks...
+There are 4 SP networks in memory.
+There are 38 agent type*zones to be computed in CPU.
+
+Step 4: Column Generation for Traffic Assignment...
+Total Column Generation iteration: 20
+
+Current iteration number:0
+Current CPU time: 0.002 s
+iteration: 0,systemTT: 0
+iteration: 0,systemTT: 0, least system TT:1.4018e+05,gap=-1
+writing od_accessibility.csv..
+writing data for 41  zones 
+, # of connected OD pairs = 1482
+
+Current iteration number:1
+Current CPU time: 0.059 s
+iteration: 1,systemTT: 0
+iteration: 1,systemTT: 0, least system TT:1.4018e+05,gap=-1
+
+Current iteration number:2
+Current CPU time: 0.069 s
+iteration: 2,systemTT: 5.9385e+06
+iteration: 2,systemTT: 5.9385e+06, least system TT:3.1096e+05,gap=18.097
+
+Current iteration number:3
+Current CPU time: 0.087 s
+iteration: 3,systemTT: 5.9385e+06
+iteration: 3,systemTT: 5.9385e+06, least system TT:3.1096e+05,gap=18.097
+
+Current iteration number:4
+Current CPU time: 0.101 s
+iteration: 4,systemTT: 1.8835e+06
+iteration: 4,systemTT: 1.8835e+06, least system TT:4.8387e+05,gap=2.8926
+
+Current iteration number:5
+Current CPU time: 0.122 s
+iteration: 5,systemTT: 5.7881e+06
+iteration: 5,systemTT: 5.7881e+06, least system TT:4.2721e+05,gap=12.548
+
+Current iteration number:6
+Current CPU time: 0.14 s
+iteration: 6,systemTT: 2.5076e+06
+iteration: 6,systemTT: 2.5076e+06, least system TT:4.4889e+05,gap=4.5863
+
+Current iteration number:7
+Current CPU time: 0.161 s
+iteration: 7,systemTT: 2.0018e+06
+iteration: 7,systemTT: 2.0018e+06, least system TT:4.3516e+05,gap=3.6002
+
+Current iteration number:8
+Current CPU time: 0.177 s
+iteration: 8,systemTT: 1.2792e+06
+iteration: 8,systemTT: 1.2792e+06, least system TT:6.6546e+05,gap=0.92235
+
+Current iteration number:9
+Current CPU time: 0.198 s
+iteration: 9,systemTT: 1.2558e+06
+iteration: 9,systemTT: 1.2558e+06, least system TT:6.1848e+05,gap=1.0305
+
+Current iteration number:10
+Current CPU time: 0.225 s
+iteration: 10,systemTT: 1.1428e+06
+iteration: 10,systemTT: 1.1428e+06, least system TT:6.5617e+05,gap=0.74165
+
+Current iteration number:11
+Current CPU time: 0.257 s
+iteration: 11,systemTT: 1.084e+06
+iteration: 11,systemTT: 1.084e+06, least system TT:6.7297e+05,gap=0.61075
+
+Current iteration number:12
+Current CPU time: 0.284 s
+iteration: 12,systemTT: 1.0345e+06
+iteration: 12,systemTT: 1.0345e+06, least system TT:6.7741e+05,gap=0.52715
+
+Current iteration number:13
+Current CPU time: 0.317 s
+iteration: 13,systemTT: 9.8537e+05
+iteration: 13,systemTT: 9.8537e+05, least system TT:6.9914e+05,gap=0.40942
+
+Current iteration number:14
+Current CPU time: 0.342 s
+iteration: 14,systemTT: 9.5738e+05
+iteration: 14,systemTT: 9.5738e+05, least system TT:7.1174e+05,gap=0.34514
+
+Current iteration number:15
+Current CPU time: 0.369 s
+iteration: 15,systemTT: 9.1251e+05
+iteration: 15,systemTT: 9.1251e+05, least system TT:7.1642e+05,gap=0.2737
+
+Current iteration number:16
+Current CPU time: 0.4 s
+iteration: 16,systemTT: 9.0841e+05
+iteration: 16,systemTT: 9.0841e+05, least system TT:6.8667e+05,gap=0.32291
+
+Current iteration number:17
+Current CPU time: 0.427 s
+iteration: 17,systemTT: 8.8e+05
+iteration: 17,systemTT: 8.8e+05, least system TT:7.2475e+05,gap=0.21421
+
+Current iteration number:18
+Current CPU time: 0.456 s
+iteration: 18,systemTT: 8.7445e+05
+iteration: 18,systemTT: 8.7445e+05, least system TT:7.0787e+05,gap=0.23533
+
+Current iteration number:19
+Current CPU time: 0.484 s
+iteration: 19,systemTT: 8.7079e+05
+iteration: 19,systemTT: 8.7079e+05, least system TT:6.8618e+05,gap=0.26904
+,# of column generation (shortest path finding) iterations=, 20
+
+Step 4.2: Column Pool Updating
+Total Column Pool Updating iteration: 5
+column updating: iteration= 0, avg travel time = 32.677(min), optimization obj = 82730,Relative_gap=7.2805 %
+column updating: iteration= 1, avg travel time = 90.743(min), optimization obj = 1.9362e+06,Relative_gap=76.866 %
+column updating: iteration= 2, avg travel time = 370.35(min), optimization obj = 9.0699e+06,Relative_gap=94.406 %
+column updating: iteration= 3, avg travel time = 463.19(min), optimization obj = 1.1433e+07,Relative_gap=95.661 %
+column updating: iteration= 4, avg travel time = 490.38(min), optimization obj = 1.2108e+07,Relative_gap=95.737 %
+
+Step 4.3: OD estimation for traffic assignment..
+ODME #0, link MAE= 1324.6,link_MAPE: 88.695%,system_MPE: 27.605%,avg_tt = 492.15(min) ,UE gap =480.94(min) = (97.723 %)
+count of all column pool vectors=1482, count of all paths =11661, count of column_pools with sensors = 0(0%), count of column_paths with sensors = 6926 (59.395%)
+ODME #1, link MAE= 1238.9,link_MAPE: 88.592%,system_MPE: 62.257%,avg_tt = 406.2(min) ,UE gap =395.01(min) = (97.245 %)
+ODME #2, link MAE= 1104.1,link_MAPE: 79.188%,system_MPE: 54.174%,avg_tt = 470.65(min) ,UE gap =449.44(min) = (95.493 %)
+ODME #3, link MAE= 983.75,link_MAPE: 70.837%,system_MPE: 47.36%,avg_tt = 412.01(min) ,UE gap =391.05(min) = (94.911 %)
+ODME #4, link MAE= 869.79,link_MAPE: 63.04%,system_MPE: 41.589%,avg_tt = 372.73(min) ,UE gap =351.75(min) = (94.371 %)
+ODME #5, link MAE= 762.16,link_MAPE: 55.676%,system_MPE: 36.517%,avg_tt = 346.53(min) ,UE gap =325.3(min) = (93.875 %)
+ODME #6, link MAE= 661.21,link_MAPE: 48.829%,system_MPE: 32.238%,avg_tt = 328.78(min) ,UE gap =307.14(min) = (93.419 %)
+ODME #7, link MAE= 571.55,link_MAPE: 42.821%,system_MPE: 28.586%,avg_tt = 316.68(min) ,UE gap =294.48(min) = (92.988 %)
+ODME #8, link MAE= 491.34,link_MAPE: 37.333%,system_MPE: 24.812%,avg_tt = 308.48(min) ,UE gap =285.64(min) = (92.597 %)
+ODME #9, link MAE= 420.84,link_MAPE: 32.63%,system_MPE: 22.053%,avg_tt = 302.23(min) ,UE gap =279.12(min) = (92.356 %)
+ODME #10, link MAE= 357.04,link_MAPE: 28.32%,system_MPE: 19.299%,avg_tt = 298.54(min) ,UE gap =274.96(min) = (92.101 %)
+ODME #11, link MAE= 297.99,link_MAPE: 24.33%,system_MPE: 17.075%,avg_tt = 296.26(min) ,UE gap =272.17(min) = (91.867 %)
+ODME #12, link MAE= 243.03,link_MAPE: 20.7%,system_MPE: 15.687%,avg_tt = 292.32(min) ,UE gap =268.27(min) = (91.774 %)
+ODME #13, link MAE= 209.76,link_MAPE: 18.29%,system_MPE: 13.064%,avg_tt = 292.98(min) ,UE gap =267.98(min) = (91.466 %)
+ODME #14, link MAE= 170.45,link_MAPE: 15.874%,system_MPE: 13.014%,avg_tt = 287.54(min) ,UE gap =263.19(min) = (91.531 %)
+ODME #15, link MAE= 153.02,link_MAPE: 14.484%,system_MPE: 10.674%,avg_tt = 290.4(min) ,UE gap =264.6(min) = (91.117 %)
+ODME #16, link MAE= 141.14,link_MAPE: 13.389%,system_MPE: 10.296%,avg_tt = 287.79(min) ,UE gap =262.66(min) = (91.27 %)
+ODME #17, link MAE= 142.78,link_MAPE: 13.341%,system_MPE: 8.5862%,avg_tt = 288.68(min) ,UE gap =263.07(min) = (91.13 %)
+ODME #18, link MAE= 140.75,link_MAPE: 12.885%,system_MPE: 9.2248%,avg_tt = 287.72(min) ,UE gap =263.29(min) = (91.509 %)
+ODME #19, link MAE= 144.8,link_MAPE: 13.197%,system_MPE: 6.8684%,avg_tt = 288.63(min) ,UE gap =263.33(min) = (91.236 %)
+ODME #20, link MAE= 133.65,link_MAPE: 12.237%,system_MPE: 8.6489%,avg_tt = 286.78(min) ,UE gap =263.02(min) = (91.715 %)
+ODME #21, link MAE= 135.24,link_MAPE: 12.4%,system_MPE: 6.3381%,avg_tt = 288.11(min) ,UE gap =263.13(min) = (91.332 %)
+ODME #22, link MAE= 122.49,link_MAPE: 11.45%,system_MPE: 8.7577%,avg_tt = 285.61(min) ,UE gap =262.16(min) = (91.79 %)
+ODME #23, link MAE= 123.04,link_MAPE: 11.474%,system_MPE: 6.2463%,avg_tt = 287.09(min) ,UE gap =262.3(min) = (91.365 %)
+ODME #24, link MAE= 112.33,link_MAPE: 10.668%,system_MPE: 8.5477%,avg_tt = 284.73(min) ,UE gap =261.49(min) = (91.837 %)
+ODME #25, link MAE= 112.02,link_MAPE: 10.702%,system_MPE: 6.17%,avg_tt = 286.27(min) ,UE gap =261.65(min) = (91.399 %)
+ODME #26, link MAE= 101.29,link_MAPE: 9.8872%,system_MPE: 8.4168%,avg_tt = 283.58(min) ,UE gap =260.46(min) = (91.847 %)
+ODME #27, link MAE= 105.57,link_MAPE: 10.198%,system_MPE: 5.8915%,avg_tt = 285.35(min) ,UE gap =260.82(min) = (91.404 %)
+ODME #28, link MAE= 95.42,link_MAPE: 9.4133%,system_MPE: 8.2012%,avg_tt = 282.76(min) ,UE gap =259.73(min) = (91.855 %)
+ODME #29, link MAE= 104.06,link_MAPE: 10.016%,system_MPE: 5.4348%,avg_tt = 284.82(min) ,UE gap =260.37(min) = (91.415 %)
+ODME #30, link MAE= 92.021,link_MAPE: 9.1204%,system_MPE: 8.1621%,avg_tt = 281.75(min) ,UE gap =258.87(min) = (91.88 %)
+ODME #31, link MAE= 103.33,link_MAPE: 9.9122%,system_MPE: 5.1278%,avg_tt = 284.47(min) ,UE gap =260.06(min) = (91.422 %)
+ODME #32, link MAE= 91.548,link_MAPE: 9.0801%,system_MPE: 8.3407%,avg_tt = 280.83(min) ,UE gap =258.09(min) = (91.902 %)
+ODME #33, link MAE= 103.43,link_MAPE: 9.9015%,system_MPE: 4.8428%,avg_tt = 284.44(min) ,UE gap =260.03(min) = (91.418 %)
+ODME #34, link MAE= 89.118,link_MAPE: 8.9158%,system_MPE: 8.2667%,avg_tt = 280.4(min) ,UE gap =257.79(min) = (91.94 %)
+ODME #35, link MAE= 102.62,link_MAPE: 9.8454%,system_MPE: 4.6499%,avg_tt = 284.43(min) ,UE gap =260.11(min) = (91.448 %)
+ODME #36, link MAE= 88.189,link_MAPE: 8.8472%,system_MPE: 8.2636%,avg_tt = 280.12(min) ,UE gap =257.63(min) = (91.973 %)
+ODME #37, link MAE= 102,link_MAPE: 9.8006%,system_MPE: 4.5781%,avg_tt = 284.38(min) ,UE gap =260.12(min) = (91.472 %)
+ODME #38, link MAE= 88.969,link_MAPE: 8.9059%,system_MPE: 8.3539%,avg_tt = 279.87(min) ,UE gap =257.47(min) = (91.996 %)
+ODME #39, link MAE= 101.77,link_MAPE: 9.7891%,system_MPE: 4.4989%,avg_tt = 284.35(min) ,UE gap =260.14(min) = (91.486 %)
+ODME #40, link MAE= 88.587,link_MAPE: 8.8577%,system_MPE: 8.3471%,avg_tt = 279.6(min) ,UE gap =257.28(min) = (92.016 %)
+ODME #41, link MAE= 105.64,link_MAPE: 9.9524%,system_MPE: 4.265%,avg_tt = 284.94(min) ,UE gap =260.79(min) = (91.524 %)
+ODME #100, link MAE= 105.64,link_MAPE: 9.9524%,system_MPE: 4.265%,avg_tt = 279.02(min) ,UE gap =257.01(min) = (92.113 %)
+
+
+Step 5: Column Re-Generation for Traffic Assignment...
+Total Column Re-Generation iteration: 0
+
+SA: iteration number:0
+SA: CPU time: 4.513 s
+ updatingDone!
+CPU Running Time for the entire computing progcess: 4.55 s
+writing link_performance.csv..
+writing route_assignment.csv..
+writing data for 41  zones 
+writing link_queue_profile.csv..
+writing TD_link_performance.csv..
+writing dynamic_link_state.csv..
+writing trajectory.bin..
+writing data for 41  zones 
+Comlete writing 0K binary agents with CPU time 0.018 s.
+writing trajectory.csv..
+writing data for 41  zones 
+Output for assignment with 20 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 11.7 s
+free memory..
+CPU Running Time for Entire Process: 0 min 17 sec
+done.

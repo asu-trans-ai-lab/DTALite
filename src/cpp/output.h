@@ -820,15 +820,15 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		return;
 
 	{
-		dtalog.output() << "writing route_performance.csv.." << endl;
+		dtalog.output() << "writing route_assignment.csv.." << endl;
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 		FILE* g_pFilePathMOE = nullptr;
-		fopen_ss(&g_pFilePathMOE, "route_performance.csv", "w");
+		fopen_ss(&g_pFilePathMOE, "route_assignment.csv", "w");
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File route_performance.csv cannot be opened." << endl;
+			dtalog.output() << "File route_assignment.csv cannot be opened." << endl;
 			g_program_stop();
 		}
 
@@ -1251,7 +1251,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									
 									double volume_before_ODME = max(0, it->second.path_volume_before_ODME);
 									double volume_after_ODME = max(0,it->second.path_volume_after_ODME);
-									double volume = max(0.001,it->second.path_volume);  // avoid devide by zero error
+									double volume = it->second.path_volume;
 
 									double volume_diff_ODME = 0;
 
@@ -1624,7 +1624,7 @@ void g_output_accessibility_result(Assignment& assignment)
 									}
 									if (subarea_output_flag == 0)
 									{
-										it->second.subarea_output_flag = 0;  // disable the output of this column into route_performance.csv
+										it->second.subarea_output_flag = 0;  // disable the output of this column into route_assignment.csv
 
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 										{
@@ -2007,13 +2007,13 @@ void g_output_dynamic_link_performance(Assignment& assignment, int output_mode =
 
 void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 {
-	dtalog.output() << "writing TD_link_performance.csv.." << endl;
-	cout << "writing TD_link_performance.csv.." << endl;
+	dtalog.output() << "writing td_link_performance.csv.." << endl;
+	cout << "writing td_link_performance.csv.." << endl;
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
 
-	string file_name = "TD_link_performance.csv";
+	string file_name = "td_link_performance.csv";
 
 	fopen_ss(&g_pFileLinkMOE, file_name.c_str(), "w");
 

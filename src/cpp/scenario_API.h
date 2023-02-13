@@ -52,7 +52,7 @@ using std::istringstream;
 
 void g_load_supply_side_scenario_file(Assignment& assignment)
 {
-	dtalog.output() << "Step 2.0: Reading supply side scenario data..." << endl;
+	dtalog.output() << "Step 2.2: Reading supply side scenario data..." << endl;
 
 	CDTACSVParser parser;
 
@@ -63,6 +63,8 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 	int workzone_count = 0;
 	int dms_count = 0;
 
+	int record_no = 0;
+
 	FILE* g_pFileModel_LC = fopen("log_scenario.txt", "w");
 	if (g_pFileModel_LC == NULL)
 		return;
@@ -71,6 +73,9 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 	if (parser.OpenCSVFile("supply_side_scenario.csv", false))
 	{
+		fprintf(g_pFileModel_LC, "reading record %d\n", record_no+1);
+		record_no = record_no+1;
+
 		while (parser.ReadRecord())
 		{
 
@@ -78,12 +83,18 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			if (!parser.GetValueByFieldName("from_node_id", from_node_id))
 			{
 				dtalog.output() << "Error: from_node_id in file scenario.csv is not defined." << endl;
+				fprintf(g_pFileModel_LC, "Error: from_node_id %d in file scenario.csv is not defined\n", from_node_id);
 				continue;
 			}
 
 			int to_node_id = 0;
 			if (!parser.GetValueByFieldName("to_node_id", to_node_id))
+			{
+				dtalog.output() << "Error: to_node_id in file scenario.csv is not defined." << endl;
+				fprintf(g_pFileModel_LC, "Error: to_node_id %d in file scenario.csv is not defined\n", to_node_id);
+
 				continue;
+			}
 
 
 			if (from_node_id == 0 && to_node_id == 0)
@@ -94,12 +105,13 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			if (assignment.g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
 				dtalog.output() << "Error: from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << endl;
-				//has not been defined
+				fprintf(g_pFileModel_LC, "Error: from_node_id %d in file scenario.csv is not defined in node.csv\n", from_node_id);
 				continue;
 			}
 			if (assignment.g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
 				dtalog.output() << "Error: to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << endl;
+				fprintf(g_pFileModel_LC, "Error: to_node_id %d in file scenario.csv is not defined in node.csv\n", to_node_id);
 				//has not been defined
 				continue;
 			}
@@ -119,6 +131,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "Error: Link " << from_node_id << "->" << to_node_id << " in file supply_side_scenario.csv is not defined in link.csv." << endl;
+				fprintf(g_pFileModel_LC, "Error: link %d-> %d in file scenario.csv is not defined in link.csv\n", from_node_id, to_node_id);
 				continue;
 			}
 
@@ -307,11 +320,12 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 		}
 
-		dtalog.output() << "reading " << sa_capacity_count << " sa  capacity scenario.. " << endl;
-		dtalog.output() << "reading " << dms_count << " dms scenario.. " << endl;
 
 	}
 	// allocate 
+	dtalog.output() << "reading " << sa_capacity_count << " sa  capacity scenario.. " << endl;
+	dtalog.output() << "reading " << dms_count << " dms scenario.. " << endl;
+
 	if (incident_count >= 1)
 	{
 		g_assign_RT_computing_tasks_to_memory_blocks(assignment);
@@ -321,8 +335,9 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 	// we now know the number of links
 
-	assignment.summary_file << ", # of capacity records in supply_side_scenario.csv=," << capacity_count << "," << endl;
-	assignment.summary_file << ", # of sa records in supply_side_scenario.csv=," << sa_capacity_count << "," << endl;
+	assignment.summary_file << "step 2.2 read supply side scenario" << endl;
+	assignment.summary_file << ", # of records in supply_side_scenario.csv=," << sa_capacity_count + incident_count + dms_count << "," << endl;
+	assignment.summary_file << ", # of SA records in supply_side_scenario.csv=," << sa_capacity_count << "," << endl;
 	assignment.summary_file << ", # of incident records in supply_side_scenario.csv=," << incident_count << "," << endl;
 	assignment.summary_file << ", # of dms records in supply_side_scenario.csv=," << dms_count << "," << endl;
 

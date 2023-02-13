@@ -232,8 +232,6 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 		// Pi
 		// Dj
 		// link l
-//		Sensor_Vector_based_Demand_ODME(OD_updating_iterations);
-//		return; 
 
 
 		// step 2: loop for adjusting OD demand

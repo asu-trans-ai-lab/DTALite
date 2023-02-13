@@ -1,0 +1,1 @@
+first_column,agent_id,o_zone_id,d_zone_id,path_id,display_code,impacted_flag,info_receiving_flag,diverted_flag,agent_type_no,agent_type,PCE_unit,demand_period,volume,toll,departure_time,travel_time,distance_km,distance_mile,speed_kmph,speed_mph,waiting_time,max_link_waiting_time,max_wait_link,node_sequence,time_sequence

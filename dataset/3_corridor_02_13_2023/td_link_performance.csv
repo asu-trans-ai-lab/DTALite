@@ -1,0 +1,1 @@
+link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,meso_link_id,from_cell_code,lanes,length,free_speed,FFTT,time_period,inflow_volume,outflow_volume,CA,CD,density,queue_length_in_process,queue_ratio,discharge_cap,TD_free_flow_travel_time,waiting_time_in_sec,speed,geometry,notes
