@@ -456,11 +456,6 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 									step_size = 1.0/(OD_updating_iterations+2.0);   // memo: with alicia, 0.05
 									double prev_path_volume = it->second.path_volume;
 
-									if (s == 0)  // first iteration of ODME 
-									{
-										it->second.path_volume_before_ODME = prev_path_volume;
-									}
-
 									double weight_of_measurements = 1;  // ad hoc weight on the measurements with respect to the UE gap// because unit of UE gap  is around 1-5 mins, measurement error is around 100 vehicles per hour per lane
 
 									double change = step_size * (weight_of_measurements * it->second.path_gradient_cost + (1 - weight_of_measurements) * it->second.UE_gap);
@@ -500,11 +495,6 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 								{
 									it->second.path_time_per_iteration_ODME_map[s] = path_travel_time;
 									it->second.path_volume_per_iteration_ODME_map[s] = it->second.path_volume;
-
-									if (s >= 1)  // always record- last iteration of ODME 
-									{
-										it->second.path_volume_after_ODME = it->second.path_volume;
-									}
 								}
 
 

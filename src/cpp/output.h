@@ -832,7 +832,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 			g_program_stop();
 		}
 
-		fprintf(g_pFilePathMOE, "first_column,path_no,o_zone_id,d_zone_id,od_pair,o_sindex,d_sindex,within_OD_path_no,path_id,activity_zone_sequence,activity_agent_type_sequence,information_type,agent_type,demand_period,volume,volume_before_odme,volume_after_odme,volume_diff_odme,volume_before_sa,volume_after_sa,volume_diff_sa,simu_volume,subarea_flag,OD_impact_flag,at_OD_impact_flag,");
+		fprintf(g_pFilePathMOE, "first_column,path_no,o_zone_id,d_zone_id,od_pair,o_sindex,d_sindex,within_OD_path_no,path_id,activity_zone_sequence,activity_agent_type_sequence,information_type,agent_type,demand_period,volume,volume_before_odme,volume_after_odme,volume_diff_odme,rt_new_path_flag,volume_before_sa,volume_after_sa,volume_diff_sa,simu_volume,subarea_flag,OD_impact_flag,at_OD_impact_flag,");
 		fprintf(g_pFilePathMOE, "path_impact_flag,toll,#_of_nodes,#_of_sensor_links,travel_time,VDF_travel_time,VDF_travel_time_without_access_link,distance_km,distance_mile,node_sequence,link_sequence, ");
 
 		//// stage 1: column updating
@@ -1270,7 +1270,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									}
 
 									
-									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
+									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%d,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
 										count,
 										g_zone_vector[orig].zone_id,
 										g_zone_vector[dest].zone_id,
@@ -1289,6 +1289,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										volume_before_ODME,
 										volume_after_ODME,
 										volume_diff_ODME,
+										it->second.b_RT_new_path_flag,
 										volume_before_sa,
 										volume_after_sa,
 										volume_diff_sa,

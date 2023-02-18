@@ -520,7 +520,7 @@ public:
     CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
         path_switch_volume{ 0 }, path_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{-1}, path_volume_before_sa{-1}, path_volume_after_sa {-1}, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
         path_gradient_cost{ 0 }, path_gradient_cost_difference{ 0 }, path_gradient_cost_relative_difference{ 0 }, subarea_output_flag{ 1 }, measurement_flag{ 0 }, impacted_path_flag{ 0 },
-        network_design_detour_mode{ 0 }, global_path_no{ -1 }, b_sensitivity_analysis_flag { false}
+        network_design_detour_mode{ 0 }, b_RT_new_path_flag{0}, global_path_no{ -1 }, b_sensitivity_analysis_flag{ false }
     {
     }
 
@@ -624,6 +624,8 @@ public:
     int measurement_flag;
     int impacted_path_flag;
     bool b_sensitivity_analysis_flag;
+    int b_RT_new_path_flag;
+
     int network_design_detour_mode;  // network_design_mode = 1: passing through network design locations, // 2: OD pair passing through networok design, but this path is an alternative path as detour
 
     double path_switch_volume;

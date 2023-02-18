@@ -213,18 +213,49 @@ public:
 			CLink* p_link = &(g_link_vector[i]);
 
 
-			if(b_sensitivity_analysis_flag)
-			{
-				if (p_assignment->g_AgentTypeVector[agent_type_no].real_time_information == 2 /*dms*/
-					&& p_link->VDF_period[m_tau].network_design_flag == 2 /*dms link*/) // for agent type with information and the origin zone is information zone
-				{
-//					p_link->VDF_period[m_tau].LR_price[agent_type_no]  =-2;
-//					negative_cost_flag = true;
+	
+			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau] + p_link->VDF_period[m_tau].penalty +
+				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
+				p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60;
 
-				}
+			if (p_link->link_id == "7742")
+			{
+				int idebug = 1;
+			}
+			if (p_link->travel_time_per_period[m_tau] < 0)
+			{
+
+				dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
+					g_node_vector[p_link->to_node_seq_no].node_id << ","
+					<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
+					<< assignment.g_AgentTypeVector[agent_type_no].agent_type.c_str() << " at demand period =" << m_tau <<
+					",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
+					",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
+					",LR_price=" << p_link->VDF_period[m_tau].LR_price[agent_type_no] <<
+					", p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60 <<
+					endl;
 			}
 
-		
+			//route_choice_cost 's unit is min
+		}
+
+		return negative_cost_flag;
+	}
+
+
+	bool UpdateRTGeneralizedLinkCost(int agent_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
+	{
+		int link_cost_debug_flag = 1;
+		bool negative_cost_flag = false;
+		for (int i = 0; i < g_link_vector.size(); ++i)
+		{
+			CLink* p_link = &(g_link_vector[i]);
+
+				if (p_assignment->g_AgentTypeVector[agent_type_no].real_time_information == 1 /*RT users*/)
+				{
+
+					p_link->VDF_period[m_tau].penalty = p_link->VDF_period[m_tau].RT_route_regeneration_penalty;
+				}
 
 			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
@@ -410,6 +441,239 @@ public:
 
 	//double backtrace_shortest_path_tree(Assignment& assignment, int iteration_number, int o_node_index);
 	//major function: update the cost for each node at each SP tree, using a stack from the origin structure
+	double backtrace_RT_shortest_path_tree(Assignment& assignment, int iteration_number_RT_path_generation, int o_node_index, bool b_sensitivity_analysis_flag)
+	{
+		double total_origin_least_cost = 0;
+		int origin_node = m_origin_node_vector[o_node_index]; // assigned no
+		int m_origin_zone_seq_no = m_origin_zone_seq_no_vector[o_node_index]; // assigned no
+
+		//if (assignment.g_number_of_nodes >= 100000 && m_origin_zone_seq_no % 100 == 0)
+		//{
+		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << endl;
+		//}
+
+
+		int departure_time = m_tau;
+		int agent_type = m_agent_type_no;
+
+		if (g_node_vector[origin_node].m_outgoing_link_seq_no_vector.size() == 0)
+			return 0;
+
+		// given,  m_node_label_cost[i]; is the gradient cost , for this tree's, from its origin to the destination node i'.
+
+		//	fprintf(g_pFileDebugLog, "------------START: origin:  %d  ; Departure time: %d  ; demand type:  %d  --------------\n", origin_node + 1, departure_time, agent_type);
+
+		//change of path flow is a function of cost gap (the updated node cost for the path generated at the previous iteration -m_node_label_cost[i] at the current iteration)
+		// current path flow - change of path flow,
+		// new propability for flow staying at this path
+		// for current shortest path, collect all the switched path from the other shortest paths for this ODK pair.
+		// check demand flow balance constraints
+		int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[m_origin_zone_seq_no];
+
+		int num = 0;
+		int number_of_nodes = assignment.g_number_of_nodes;
+		int number_of_links = assignment.g_number_of_links;
+		int l_node_size = 0;  // initialize local node size index
+		int l_link_size = 0;
+		int node_sum = 0;
+
+		float path_travel_time = 0;
+		float path_distance = 0;
+
+		int current_node_seq_no = -1;  // destination node
+		int current_link_seq_no = -1;
+		int destination_zone_seq_no;
+		double ODvolume, volume;
+		CColumnVector* pColumnVector;
+
+		int local_debugging_flag = 0;
+		//if (iteration_number_outterloop == 0)
+		//{
+		//    if (g_node_vector[origin_node].zone_id == assignment.shortest_path_log_zone_id && number_of_nodes< 10000)
+		//        local_debugging_flag = 1;
+		//}
+
+		for (int i = 0; i < number_of_nodes; ++i)
+		{
+			if (g_node_vector[i].zone_id >= 1)
+			{
+				if (i == origin_node) // no within zone demand
+					continue;
+
+				if (g_node_vector[origin_node].zone_id == assignment.shortest_path_log_zone_id && g_node_vector[i].zone_id == 3)
+				{
+					int idebug = 1;
+				}
+
+				//fprintf(g_pFileDebugLog, "--------origin  %d ; destination node: %d ; (zone: %d) -------\n", origin_node + 1, i+1, g_node_vector[i].zone_id);
+				//fprintf(g_pFileDebugLog, "--------iteration number outterloop  %d ;  -------\n", iteration_number_outterloop);
+				destination_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[g_node_vector[i].zone_id];
+
+				int from_zone_sindex = g_zone_vector[m_origin_zone_seq_no].sindex;
+				if (from_zone_sindex == -1)
+					continue;
+
+				int to_zone_sindex = g_zone_vector[destination_zone_seq_no].sindex;
+				if (to_zone_sindex == -1)
+					continue;
+
+				pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau]);
+
+				if (pColumnVector->bfixed_route) // with routing policy, no need to run MSA for adding new columns
+					continue;
+
+				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea 
+					continue;
+
+
+				ODvolume = pColumnVector->od_volume;
+				volume = 0;
+				// this is contributed path volume from OD flow (O, D, k, per time period
+
+				if (ODvolume > 0.000001)
+				{
+					l_node_size = 0;  // initialize local node size index
+					l_link_size = 0;
+					node_sum = 0;
+
+					path_travel_time = 0;
+					path_distance = 0;
+
+					current_node_seq_no = i;  // destination node
+					current_link_seq_no = -1;
+
+					if (m_link_predecessor[current_node_seq_no] >= 0)
+					{
+						total_origin_least_cost += ODvolume * m_node_label_cost[current_node_seq_no];
+					}
+					// backtrace the sp tree from the destination to the root (at origin)
+					while (current_node_seq_no >= 0 && current_node_seq_no < number_of_nodes)
+					{
+						temp_path_node_vector[l_node_size++] = current_node_seq_no;
+
+						if (l_node_size >= temp_path_node_vector_size)
+						{
+							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << endl;
+							g_program_stop();
+						}
+
+						// this is valid node
+						if (current_node_seq_no >= 0 && current_node_seq_no < number_of_nodes)
+						{
+							current_link_seq_no = m_link_predecessor[current_node_seq_no];
+							node_sum += current_node_seq_no + current_link_seq_no;
+
+							// fetch m_link_predecessor to mark the link volume
+							if (current_link_seq_no >= 0 && current_link_seq_no < number_of_links)
+							{
+								temp_path_link_vector[l_link_size++] = current_link_seq_no;
+								//fprintf(g_pFileDebugLog, "--------origin  %d ; destination node: %d ; (zone: %d) -------\n", origin_node + 1, i+1, g_node_vector[i].zone_id);
+
+								// pure link based computing mode
+								if (assignment.assignment_mode == lue)
+								{
+									// this is critical for parallel computing as we can write the volume to data
+									m_link_PCE_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
+									m_link_person_volume_array[current_link_seq_no] += volume * OCC_ratio;
+
+
+									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
+									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume * OCC_ratio;
+									//cout << "node = " << g_node_vector[i].node_id 
+									//    << "zone id= " << g_node_vector[i].zone_id << ","
+									//    << "l_link_size= " << l_link_size << ","
+									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									//    << ": add volume " << volume << endl;
+
+									//if (m_link_PCE_volume_array[current_link_seq_no] > 7001)
+									//{
+									//    int idebug = 1;
+									//}
+								}
+
+								//path_travel_time += g_link_vector[current_link_seq_no].travel_time_per_period[tau];
+								//path_distance += g_link_vector[current_link_seq_no].link_distance_VDF;
+							}
+						}
+						current_node_seq_no = m_node_predecessor[current_node_seq_no];  // update node seq no
+					}
+					//fprintf(g_pFileDebugLog, "\n");
+
+					// we obtain the cost, time, distance from the last tree-k
+					if (assignment.assignment_mode >= 1) // column based mode
+					{
+						if (node_sum < 100)
+						{
+							int i_debug = 1;
+						}
+
+						// we cannot find a path with the same node sum, so we need to add this path into the map,
+						if (l_node_size >= 2)
+						{
+							int from_zone_sindex = g_zone_vector[m_origin_zone_seq_no].sindex;
+							if (from_zone_sindex == -1)
+								continue;
+
+							int to_zone_sindex = g_zone_vector[destination_zone_seq_no].sindex;
+							if (to_zone_sindex == -1)
+								continue;
+
+								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau].path_node_sequence_map.end())
+								{
+									// add this unique path
+									int path_count = pColumnVector->path_node_sequence_map.size();
+									pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
+									pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
+									pColumnVector->path_node_sequence_map[node_sum].b_RT_new_path_flag = 1;
+									
+									pColumnVector->path_node_sequence_map[node_sum].path_toll = m_node_label_cost[i];
+
+#pragma omp critical
+									{
+										// adding 25% penality to the links in the newly generated path and column in the RT user group
+										// so we use a partial link penality approach to discover new alterantive routes for RT and DMS users. Xuesong and Mohammad 02/17/2023
+										for (int li = 0; li < l_node_size-1; ++li)
+										{
+											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau];
+											g_link_vector[temp_path_link_vector[li]].VDF_period[m_tau].RT_route_regeneration_penalty = current_travel_time * 0.25;
+										}
+
+									}
+
+
+
+									if (local_debugging_flag)
+									{
+										for (int li = 0; li < l_node_size; ++li)
+										{
+											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << endl;
+										}
+
+									}
+
+									pColumnVector->path_node_sequence_map[node_sum].AllocateVector(
+										l_node_size,
+										temp_path_node_vector,
+										l_link_size,
+										temp_path_link_vector, true);
+								}
+								else
+								{
+									// skip the path
+									int skip_the_path_flag = 1;
+								}
+
+								pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
+	
+						}
+					}
+				}
+			}
+		}
+		return total_origin_least_cost;
+	}
+
 	double backtrace_shortest_path_tree(Assignment& assignment, int iteration_number_outterloop, int o_node_index, bool b_sensitivity_analysis_flag)
 	{
 		double total_origin_least_cost = 0;
@@ -642,7 +906,6 @@ public:
 		}
 		return total_origin_least_cost;
 	}
-
 
 	//major function 2: // time-dependent label correcting algorithm with double queue implementation
 	float optimal_label_correcting(int processor_id, Assignment* p_assignment, int iteration_k, int o_node_index, int d_node_no, bool pure_travel_time_cost, bool bsensitivity_analysis_flag)

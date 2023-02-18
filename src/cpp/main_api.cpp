@@ -126,7 +126,7 @@ std::map<string, CInfoCell> g_info_cell_map;
 #include "scenario_API.h"
 
 
-void g_column_regeneration(Assignment& assignment)
+void g_column_regeneration(Assignment& assignment)  // for RT
 {		//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
 	clock_t start_t, end_t, iteration_t;
 	start_t = clock();
@@ -137,8 +137,15 @@ void g_column_regeneration(Assignment& assignment)
 
 	// for K = 5 iterations, which should be sufficient 
 
-	int number_of_column_regeneration_iterations = 5;
-	for (int iteration_number = 0; iteration_number <= number_of_column_regeneration_iterations; iteration_number++)
+
+	double total_system_travel_time = 0;
+	double total_least_system_travel_time = 0;
+	// initialization at beginning of shortest path
+	double total_distance = 0;
+	total_system_travel_time = update_link_travel_time_and_cost(0, total_distance);
+
+	int number_of_column_regeneration_iterations = 1;
+	for (int iteration_number = 0; iteration_number < number_of_column_regeneration_iterations; iteration_number++)
 	{
 
 
@@ -169,12 +176,6 @@ void g_column_regeneration(Assignment& assignment)
 			}
 		}
 
-
-		double total_system_travel_time = 0;
-		double total_least_system_travel_time = 0;
-		// initialization at beginning of shortest path
-		double total_distance = 0;
-		total_system_travel_time = update_link_travel_time_and_cost(iteration_number, total_distance);
 
 			//// we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),f
 			////  and use the newly generated path flow to add the additional 1/(k+1)
@@ -271,7 +272,7 @@ void g_column_regeneration(Assignment& assignment)
 					start_t_cp = clock();
 
 					bool sensitivity_analaysis_flag = true;
-					double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, sensitivity_analaysis_flag);
+					double total_origin_least_travel_time = pNetwork->backtrace_RT_shortest_path_tree(assignment, number_of_column_regeneration_iterations, o_node_index, sensitivity_analaysis_flag);
 
 
 #pragma omp critical
@@ -300,6 +301,7 @@ void g_column_regeneration(Assignment& assignment)
 			g_fetch_link_volume_for_all_processors();
 	}
 
+	g_reset_RT_link_penalty_in_column_pool(assignment);
 }
 
 
@@ -950,7 +952,11 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 
 		dtalog.output() << "Step 4.3: OD estimation for traffic assignment.." << endl;
+		g_update_odme_volume_in_column_pool(assignment, 0);  // ODME before
 		assignment.Demand_ODME(ODME_iterations, sensitivity_analysis_iterations);
+		g_update_odme_volume_in_column_pool(assignment, 1);  // ODME after
+
+
 		assignment.summary_file << "Step 4.3: OD estimation " << endl;
 		assignment.summary_file << ",# of ODME_iterations=," << ODME_iterations << endl;
 
@@ -1053,7 +1059,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		// initialization at beginning of shortest path
 		total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
 
-	    g_column_regeneration(assignment);
+		g_update_sa_volume_in_column_pool(assignment, 0);  // SA before
+
+		g_column_regeneration(assignment);
 
 		// stage II: right after column generation, we will enable the path modifications for DMS users 
 		g_column_pool_route_modification(assignment, column_updating_iterations);
@@ -1062,6 +1070,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		// stage III: after DMS path modification, we enable further user equilibirum computing for real time info users by switching their routes 
 		g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations, true);
 		
+		g_update_sa_volume_in_column_pool(assignment, 1);  // SA after
 	}
 
 	g_classification_in_column_pool(assignment);
