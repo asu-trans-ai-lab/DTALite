@@ -832,7 +832,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 			g_program_stop();
 		}
 
-		fprintf(g_pFilePathMOE, "first_column,path_no,o_zone_id,d_zone_id,od_pair,o_sindex,d_sindex,within_OD_path_no,path_id,activity_zone_sequence,activity_agent_type_sequence,information_type,agent_type,demand_period,volume,volume_before_odme,volume_after_odme,volume_diff_odme,rt_new_path_flag,volume_before_sa,volume_after_sa,volume_diff_sa,simu_volume,subarea_flag,OD_impact_flag,at_OD_impact_flag,");
+		fprintf(g_pFilePathMOE, "first_column,path_no,o_zone_id,d_zone_id,od_pair,o_sindex,d_sindex,within_OD_path_no,path_id,activity_zone_sequence,activity_agent_type_sequence,information_type,agent_type,demand_period,volume,preload_volume,volume_before_odme,volume_after_odme,volume_diff_odme,rt_new_path_flag,volume_before_sa,volume_after_sa,volume_diff_sa,simu_volume,subarea_flag,OD_impact_flag,at_OD_impact_flag,");
 		fprintf(g_pFilePathMOE, "path_impact_flag,toll,#_of_nodes,#_of_sensor_links,travel_time,VDF_travel_time,VDF_travel_time_without_access_link,distance_km,distance_mile,node_sequence,link_sequence, ");
 
 		//// stage 1: column updating
@@ -847,15 +847,15 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		//}
 
 		//stage 2: ODME
-		//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_ODME_iterations); iteration_number++)
-		//{
-		//    fprintf(g_pFilePathMOE, "ODME_TT_%d,", iteration_number);
-		//}
+		for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_ODME_iterations); iteration_number++)
+		{
+		    fprintf(g_pFilePathMOE, "ODME_TT_%d,", iteration_number);
+		}
 
-		//for (int iteration_number = max(0, assignment.g_number_of_ODME_iterations-10); iteration_number < assignment.g_number_of_ODME_iterations; iteration_number++)
-		//{
-		//    fprintf(g_pFilePathMOE, "ODME_Vol_%d,", iteration_number);
-		//}
+		for (int iteration_number = max(0, assignment.g_number_of_ODME_iterations-10); iteration_number < assignment.g_number_of_ODME_iterations; iteration_number++)
+		{
+		    fprintf(g_pFilePathMOE, "ODME_Vol_%d,", iteration_number);
+		}
 
 		//stage 3: sensitivity analysi
 		for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations; iteration_number++)
@@ -1270,7 +1270,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									}
 
 									
-									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%d,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
+									fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%d,%s,%s,%d,%s,%s,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%.4f,%.4f,%.4f,%d,%d,%d,%d,%d,%.1f,%d,%d,%.1f,%.4f,%.4f,%.4f,%.4f,",
 										count,
 										g_zone_vector[orig].zone_id,
 										g_zone_vector[dest].zone_id,
@@ -1286,6 +1286,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										assignment.g_AgentTypeVector[at].agent_type.c_str(),
 										assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
 										volume,
+										it->second.path_preload_volume,
 										volume_before_ODME,
 										volume_after_ODME,
 										volume_diff_ODME,
@@ -1369,29 +1370,29 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 									//}
 									// stage II: ODME
-									//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_ODME_iterations); iteration_number++)
-									//{
-									//    double TT = -1;
-									//    if (it->second.path_time_per_iteration_ODME_map.find(iteration_number) != it->second.path_time_per_iteration_ODME_map.end())
-									//    {
-									//        TT = it->second.path_time_per_iteration_ODME_map[iteration_number];
-									//    }
+									for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_ODME_iterations); iteration_number++)
+									{
+									    double TT = -1;
+									    if (it->second.path_time_per_iteration_ODME_map.find(iteration_number) != it->second.path_time_per_iteration_ODME_map.end())
+									    {
+									        TT = it->second.path_time_per_iteration_ODME_map[iteration_number];
+									    }
 
 
-									//    fprintf(g_pFilePathMOE, "%f,", TT);
+									    fprintf(g_pFilePathMOE, "%f,", TT);
 
-									//}
-									//for (int iteration_number = max(0, assignment.g_number_of_ODME_iterations-10); iteration_number < assignment.g_number_of_ODME_iterations; iteration_number++)
-									//{
-									//    double Vol = 0;
-									//    if (it->second.path_volume_per_iteration_ODME_map.find(iteration_number) != it->second.path_volume_per_iteration_ODME_map.end())
-									//    {
-									//        Vol = it->second.path_volume_per_iteration_ODME_map[iteration_number];
-									//    }
+									}
+									for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_ODME_iterations); iteration_number++)
+									{
+									    double Vol = 0;
+									    if (it->second.path_volume_per_iteration_ODME_map.find(iteration_number) != it->second.path_volume_per_iteration_ODME_map.end())
+									    {
+									        Vol = it->second.path_volume_per_iteration_ODME_map[iteration_number];
+									    }
 
-									//    fprintf(g_pFilePathMOE, "%f,", Vol);
+									    fprintf(g_pFilePathMOE, "%f,", Vol);
 
-									//}
+									}
 
 									//stage III: 
 

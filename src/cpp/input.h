@@ -224,7 +224,7 @@ double g_pre_read_demand_file(Assignment& assignment)
 				}
 
 
-				if (format_type.find("column") != string::npos)  // or muliti-column
+				if (format_type.find("column") != string::npos )  // or muliti-column
 				{
 					bool bFileReady = false;
 					int error_count = 0;
@@ -242,6 +242,8 @@ double g_pre_read_demand_file(Assignment& assignment)
 						string agent_type, demand_period;
 
 						std::vector <int> node_sequence;
+
+						dtalog.output() << "Reading demand file  " << file_name << endl;
 
 						while (parser.ReadRecord())
 						{
@@ -276,189 +278,96 @@ double g_pre_read_demand_file(Assignment& assignment)
 
 
 							line_no++;
+
+							if (line_no % 1000000 == 0)
+							{
+								int line_no_output = line_no / 1000000;
+								dtalog.output() << "Reading demand file line no =  " << line_no_output << "M" << endl;
+							}
 						}  // scan lines
 					}
 
 					// pre-read complete.
 					break;
 				}
-				else if (format_type.compare("matrix") == 0)
-				{
-					bool bFileReady = false;
-					int error_count = 0;
-					int critical_OD_count = 0;
-					double critical_OD_volume = 0;
-
-					vector<int> LineIntegerVector;
-
-					CDTACSVParser parser;
-					parser.IsFirstLineHeader = false;
-					if (parser.OpenCSVFile(file_name, true))
-					{
-						int i = 0;
-						if (parser.ReadRecord())
-						{
-							parser.ConvertLineStringValueToIntegers();
-							LineIntegerVector = parser.LineIntegerVector;
-						}
-						parser.CloseCSVFile();
-					}
-
-					int number_of_zones = LineIntegerVector.size();
-
-
-					bFileReady = false;
-
-					FILE* st;
-					fopen_ss(&st, file_name.c_str(), "r");
-					if (st != NULL)
-					{
-						// read the first line
-						g_read_a_line(st);
-
-						cout << "number of zones to be read = " << number_of_zones << endl;
-
-						//test if a zone has been defined. 
-						for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-						{
-							int zone = LineIntegerVector[destination_zone_index];
-							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-							{
-								if (error_count < 10)
-									dtalog.output() << endl << "Warning: destination zone " << zone << "  has not been defined in node.csv" << endl;
-
-								error_count++;
-								// destination zone has not been defined, skipped.
-								continue;
-							}
-
-						}
-
-
-						int line_no = 0;
-						for (int origin_zone_index = 0; origin_zone_index < number_of_zones; origin_zone_index++)
-						{
-							int origin_zone = (int)(g_read_float(st)); // read the origin zone number
-
-							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(origin_zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-							{
-								if (error_count < 10)
-									dtalog.output() << endl << "Warning: destination zone " << origin_zone << "  has not been defined in node.csv" << endl;
-
-								for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-								{
-									float demand_value = g_read_float(st);
-								}
-
-								error_count++;
-								// destination zone has not been defined, skipped.
-								continue;
-							}
-
-							cout << "Reading file no." << file_sequence_no << " " << file_name << " at zone " << origin_zone << " ... " << endl;
-
-							for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-							{
-								int destination_zone = LineIntegerVector[destination_zone_index];
-
-								float demand_value = g_read_float(st);
-
-								int from_zone_seq_no = 0;
-								int to_zone_seq_no = 0;
-								from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[origin_zone];
-								to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[destination_zone];
-
-								g_zone_vector[from_zone_seq_no].preread_total_O_demand += demand_value;
-								g_zone_vector[from_zone_seq_no].preread_ODdemand[to_zone_seq_no] += demand_value;
-
-								total_demand_in_demand_file += demand_value;
-								line_no++;
-							}  // scan lines
-
-						}
-
-						fclose(st);
-					}
-
-					//preread complete
-					break;
-				}
+				
 			}
 		}
 	}
 	return total_demand_in_demand_file;
 }
 
-void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
+int g_load_demand_from_route_file_in_settings()
 {
-	g_load_demand_side_scenario_file(assignment);
+	CDTACSVParser parser;
+	parser.IsFirstLineHeader = false;
 
-	g_related_zone_vector_size = g_zone_vector.size();
-	for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	if (parser.OpenCSVFile("settings.csv", false))
 	{
-		g_zone_vector[orig].sindex = orig;  //copy this index 
+		while (parser.ReadRecord_Section())
+		{
+			int this_departure_time_profile_no = 0;
+
+			if (parser.SectionName == "[demand_file_list]")
+			{
+				int file_sequence_no = 1;
+
+				string format_type = "null";
+
+				int demand_format_flag = 0;
+
+				if (!parser.GetValueByFieldName("file_sequence_no", file_sequence_no))
+					break;
+
+				// skip negative sequence no
+				if (file_sequence_no <= -1)
+					continue;
+
+				double loading_scale_factor = 1.0;
+				string file_name, demand_period_str, agent_type;
+				parser.GetValueByFieldName("file_name", file_name);
+				parser.GetValueByFieldName("format_type", format_type);
+
+
+				if (format_type.compare("route") == 0)
+				{
+					parser.CloseCSVFile();
+					return 1;
+				}
+			}
+		}
+		parser.CloseCSVFile();
+
 	}
+	return 0;
+}
 
-	// subarea handling step 1: reading
-	g_read_subarea_CSV_file(assignment);
-	// subarea handling step 2:
-	// for each OD 
+void g_create_subarea_related_zone_structure()
+{
+	double total_demand = 0;
+	double total_related_demand = 0;
+	double total_related_demand_from_internal = 0;
+	double total_related_demand_from_external = 0;
+	double total_related_demand_from_external_cutoff = 0;
+	double volume_cut_off_value = 0;
 
-	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
+	int non_impact_zone_count = 0;
+	int inside_zone_count = 0;
+	int related_external_zone_count = 0;
+	int related_external_zone_count_with_significant_volume = 0;
+	// pre read demand 
+	double total_preload_demand = g_pre_read_demand_file(assignment);
+
+	cout << "total pre-load demand = " << total_preload_demand << endl;
+	if (total_preload_demand <= 1)
 	{
-
-		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
-		{
-			g_zone_vector[orig].subarea_inside_flag = 0;  //reset the subarea inside flag to 0 once there is a subarea.csv
-		}
-		
-
-		// for node layer
-		for (int i = 0; i < g_node_vector.size(); i++)
-		{
-			DTAGDPoint pt;
-			pt.x = g_node_vector[i].x;
-			pt.y = g_node_vector[i].y;
-
-			if (g_test_point_in_polygon(pt, assignment.g_subarea_shape_points) == 1)
-			{
-				g_node_vector[i].subarea_id = 1;
-
-			}
-		}
-
-		// for link layer
-		for (int l = 0; l < g_link_vector.size(); l++) 
-		{
-			if (g_node_vector[g_link_vector[l].from_node_seq_no].subarea_id >= 1 || g_node_vector[g_link_vector[l].to_node_seq_no].subarea_id >= 1)
-			{
-				g_link_vector[l].subarea_id = g_node_vector[g_link_vector[l].from_node_seq_no].subarea_id;
-			}
-		}
-		double total_demand = 0;
-		double total_related_demand = 0;
-		double total_related_demand_from_internal = 0;
-		double total_related_demand_from_external = 0;
-		double total_related_demand_from_external_cutoff = 0;
-		double volume_cut_off_value = 0;
-
-		int non_impact_zone_count = 0;
-		int inside_zone_count = 0;
-		int related_external_zone_count = 0;
-		int related_external_zone_count_with_significant_volume = 0;
-		// pre read demand 
-		double total_preload_demand = g_pre_read_demand_file(assignment);
-
-		cout << "total pre-load demand = " << total_preload_demand << endl;
-		if (total_preload_demand <= 1)
-		{
-			g_program_stop();
-		}
-		else
-		{
-			// first stage: scan all origin zones
-			// output: g_zone_vector[orig].subarea_significance_flag: true for inside zone, and related zone
-			// total_related_demand: inside to all, outside passing to all
+		g_program_stop();
+	}
+	else
+	{
+		// first stage: scan all origin zones
+		// output: g_zone_vector[orig].subarea_significance_flag: true for inside zone, and related zone
+		// total_related_demand: inside to all, outside passing to all
 		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 		{
 			DTAGDPoint Pt;
@@ -547,7 +456,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 
 		// use the following rule to determine how many zones to keep as origin zones, we still keep all destination zones
-		int cutoff_zone_size = min ( g_zone_vector.size(), max( related_external_zone_count_with_significant_volume*0.25, 100));
+		int cutoff_zone_size = min(g_zone_vector.size(), max(related_external_zone_count_with_significant_volume * 0.25, 100));
 
 
 		if (cutoff_zone_size + inside_zone_count < g_zone_vector.size())  // additional handling  remaining zones are still greater than 1000
@@ -560,7 +469,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 			{
 				if (g_zone_vector[orig].subarea_significance_flag == true)
 				{
-					if(g_zone_vector[orig].subarea_inside_flag == 2)
+					if (g_zone_vector[orig].subarea_inside_flag == 2)
 						origin_zone_volume_vector.push_back(g_zone_vector[orig].origin_zone_impact_volume);
 					else
 					{
@@ -572,311 +481,422 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 			// sort 
 
-			if(origin_zone_volume_vector.size() > 0)
+			if (origin_zone_volume_vector.size() > 0)
 			{
-			std::sort(origin_zone_volume_vector.begin(), origin_zone_volume_vector.end());
+				std::sort(origin_zone_volume_vector.begin(), origin_zone_volume_vector.end());
 
-			// determine the cut off value;
-			int cut_off_zone_index = max(0, origin_zone_volume_vector.size() - cutoff_zone_size);
+				// determine the cut off value;
+				int cut_off_zone_index = max(0, origin_zone_volume_vector.size() - cutoff_zone_size);
 
-			volume_cut_off_value = origin_zone_volume_vector[cut_off_zone_index];
+				volume_cut_off_value = origin_zone_volume_vector[cut_off_zone_index];
 
 
 
-			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
-			{
-				if (g_zone_vector[orig].subarea_inside_flag == 2 && g_zone_vector[orig].subarea_significance_flag == true)
+				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 				{
-					if (g_zone_vector[orig].origin_zone_impact_volume < volume_cut_off_value)  // volume_cut_off_value is based on the value just established
+					if (g_zone_vector[orig].subarea_inside_flag == 2 && g_zone_vector[orig].subarea_significance_flag == true)
 					{
-						g_zone_vector[orig].subarea_significance_flag = false; // set non significant
-						g_zone_vector[orig].subarea_inside_flag = 1;  // zone is set to boundary
-//						related_zone_count++;
-					}
-					else
-					{
-						g_zone_vector[orig].subarea_inside_flag = 2;  // zone is set to significantly related
-						total_related_demand_from_external_cutoff += g_zone_vector[orig].preread_total_O_related_demand;
-						
+						if (g_zone_vector[orig].origin_zone_impact_volume < volume_cut_off_value)  // volume_cut_off_value is based on the value just established
+						{
+							g_zone_vector[orig].subarea_significance_flag = false; // set non significant
+							g_zone_vector[orig].subarea_inside_flag = 1;  // zone is set to boundary
+	//						related_zone_count++;
+						}
+						else
+						{
+							g_zone_vector[orig].subarea_inside_flag = 2;  // zone is set to significantly related
+							total_related_demand_from_external_cutoff += g_zone_vector[orig].preread_total_O_related_demand;
+
+						}
+
 					}
 
 				}
 
 			}
 
-			}
-
 			//re select the impact origin zones 
 		}
-		
+
 		assignment.summary_file << ",second stage cut off" << endl;
 		assignment.summary_file << ",# cut off zone size = " << cutoff_zone_size << ", total_related_demand_from_external_cutoff  = " << total_related_demand_from_external_cutoff << endl;
 		assignment.summary_file << ",cut off threshold = " << volume_cut_off_value << endl;
 		double cut_off_demand_ratio = total_related_demand_from_external_cutoff / max(1, total_related_demand_from_external);
 		assignment.summary_file << ",cut off demand ratio = " << cut_off_demand_ratio << endl;
 
-		
-		}
 
-		// 		number of super zones
-		int sindex = 0;
-		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	}
+
+	// 		number of super zones
+	int sindex = 0;
+	for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	{
+		if (g_zone_vector[orig].subarea_significance_flag == false)  // no significant: skip
 		{
-			if (g_zone_vector[orig].subarea_significance_flag == false)  // no significant: skip
-			{
-				g_zone_vector[orig].sindex = -1;
-
-			}
-			else
-			{
-				g_zone_vector[orig].sindex = sindex++;  // resort the index
-			}
+			g_zone_vector[orig].sindex = -1;
 
 		}
-		g_related_zone_vector_size = sindex;
-
-		////
-		if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
+		else
 		{
+			g_zone_vector[orig].sindex = sindex++;  // resort the index
+		}
 
-			if (assignment.g_number_of_analysis_districts <= 1)  // no external distriction is given
-			{// generate analaysis district
-				// output: 
-				//assignment.g_zone_seq_no_to_analysis_distrct_id_mapping
-				//assignment.g_number_of_analysis_districts = zone_id_to_analysis_district_id_mapping[ozone.zone_id] + 1;
+	}
+	g_related_zone_vector_size = sindex;
 
-				double distrct_ratio = 20.0 / g_related_zone_vector_size;
+	////
+	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
+	{
 
-				int distrct_index = 1;
+		if (assignment.g_number_of_analysis_districts <= 1)  // no external distriction is given
+		{// generate analaysis district
+			// output: 
+			//assignment.g_zone_seq_no_to_analysis_distrct_id_mapping
+			//assignment.g_number_of_analysis_districts = zone_id_to_analysis_district_id_mapping[ozone.zone_id] + 1;
 
-				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+			double distrct_ratio = 20.0 / g_related_zone_vector_size;
+
+			int distrct_index = 1;
+
+			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+			{
+				if (g_zone_vector[orig].sindex >= 0)  // no significant: skip
 				{
-					if (g_zone_vector[orig].sindex >= 0)  // no significant: skip
+					if (g_get_random_ratio() < distrct_ratio)
 					{
-						if (g_get_random_ratio() < distrct_ratio)
-						{
-							assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig] = distrct_index;
-							g_zone_vector[orig].b_distrct_cluster_seed = true;
-							g_zone_vector[orig].distrct_cluster_index = distrct_index;
+						assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig] = distrct_index;
+						g_zone_vector[orig].b_distrct_cluster_seed = true;
+						g_zone_vector[orig].distrct_cluster_index = distrct_index;
 
-							distrct_index++;
-						}
-						else
-						{
-							g_zone_vector[orig].distrct_cluster_index = -1;
-						}
-
+						distrct_index++;
+					}
+					else
+					{
+						g_zone_vector[orig].distrct_cluster_index = -1;
 					}
 
 				}
-				assignment.g_number_of_analysis_districts = distrct_index;
+
+			}
+			assignment.g_number_of_analysis_districts = distrct_index;
+
+			//clustering 
+			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+			{
+				if (g_zone_vector[orig].distrct_cluster_index == -1)
+				{
+					double min_distance = 99999;
+
+					for (int d = 0; d < g_zone_vector.size(); d++)  // o
+					{
+						if (g_zone_vector[d].b_distrct_cluster_seed == true)
+						{
+							double delta_x = g_zone_vector[orig].cell_x - g_zone_vector[d].cell_x;
+							double delta_y = g_zone_vector[orig].cell_y - g_zone_vector[d].cell_y;
+
+							double local_distance = pow(delta_x * delta_x + delta_y * delta_y, 0.5);
+
+							if (local_distance < min_distance)
+							{
+								min_distance = local_distance;
+								g_zone_vector[orig].distrct_cluster_index = g_zone_vector[d].distrct_cluster_index;
+								assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig] = g_zone_vector[d].distrct_cluster_index;
+
+							}
+
+						}
+					}
+
+				}
+
+			}
+
+
+
+			for (int district = 0; district < assignment.g_number_of_analysis_districts; district++)
+			{
+				std::vector<DTAGDPoint> points, points_in_polygon;
+
+				//DTAGDPoint pt;
+				//pt.x = 0; pt.y = 4; points.push_back(pt);
+				//pt.x = 1; pt.y = 1; points.push_back(pt);
+				//pt.x = 2; pt.y = 2; points.push_back(pt);
+				//pt.x = 4; pt.y = 4; points.push_back(pt);
+				//pt.x = 3; pt.y = 1; points.push_back(pt);
+				//pt.x = 3; pt.y = 3; points.push_back(pt);
+				//g_find_convex_hull(points, points_in_polygon);
+
+				//test
 
 				//clustering 
 				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 				{
-					if (g_zone_vector[orig].distrct_cluster_index == -1)
+					if (g_zone_vector[orig].distrct_cluster_index == district)
 					{
-						double min_distance = 99999;
+						DTAGDPoint pt;
+						pt.x = g_zone_vector[orig].cell_x;
+						pt.y = g_zone_vector[orig].cell_y;
 
-						for (int d = 0; d < g_zone_vector.size(); d++)  // o
-						{
-							if (g_zone_vector[d].b_distrct_cluster_seed == true)
-							{
-								double delta_x = g_zone_vector[orig].cell_x - g_zone_vector[d].cell_x;
-								double delta_y = g_zone_vector[orig].cell_y - g_zone_vector[d].cell_y;
-
-								double local_distance = pow(delta_x * delta_x + delta_y * delta_y, 0.5);
-
-								if (local_distance < min_distance)
-								{
-									min_distance = local_distance;
-									g_zone_vector[orig].distrct_cluster_index = g_zone_vector[d].distrct_cluster_index;
-									assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig] = g_zone_vector[d].distrct_cluster_index;
-
-								}
-
-							}
-						}
-
+						points.push_back(pt);
 					}
-
 				}
 
 
-
-				for (int district = 0; district < assignment.g_number_of_analysis_districts; district++)
+				if (points.size() >= 4)  // 4 as restrictive conditions
 				{
-					std::vector<DTAGDPoint> points, points_in_polygon;
-
-					//DTAGDPoint pt;
-					//pt.x = 0; pt.y = 4; points.push_back(pt);
-					//pt.x = 1; pt.y = 1; points.push_back(pt);
-					//pt.x = 2; pt.y = 2; points.push_back(pt);
-					//pt.x = 4; pt.y = 4; points.push_back(pt);
-					//pt.x = 3; pt.y = 1; points.push_back(pt);
-					//pt.x = 3; pt.y = 3; points.push_back(pt);
-					//g_find_convex_hull(points, points_in_polygon);
-
-					//test
-
-					//clustering 
-					for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
-					{
-						if (g_zone_vector[orig].distrct_cluster_index == district)
-						{
-							DTAGDPoint pt;
-							pt.x = g_zone_vector[orig].cell_x;
-							pt.y = g_zone_vector[orig].cell_y;
-
-							points.push_back(pt);
-						}
-					}
-
-
-					if(points.size()>=4)  // 4 as restrictive conditions
-					{
 					g_find_convex_hull(points, points_in_polygon);
-					}
-					else
+				}
+				else
+				{
+					for (int i = 0; i < points.size(); i++)
 					{
-						for (int i = 0; i < points.size(); i++)
-						{
-							points_in_polygon.push_back(points[i]);
-
-						}
-					}
-
-					for (int i = 0; i < points_in_polygon.size(); i++)
-					{
-						g_district_info_base0_map[district].shape_points.push_back(points_in_polygon[i]);
+						points_in_polygon.push_back(points[i]);
 
 					}
+				}
 
+				for (int i = 0; i < points_in_polygon.size(); i++)
+				{
+					g_district_info_base0_map[district].shape_points.push_back(points_in_polygon[i]);
 
 				}
+
 
 			}
 
-			// end of generating analaysis district
+		}
+
+		// end of generating analaysis district
 
 
-			if (g_related_zone_vector_size >= 30000)  // do not use this function for now.
+		if (g_related_zone_vector_size >= 30000)  // do not use this function for now.
+		{
+			// k mean method
+			//random select 300 zones then find the closest zone to aggregate
+
+			double super_zone_ratio = 300.0 / g_related_zone_vector_size;
+
+			int super_zone_index = assignment.g_number_of_analysis_districts + 1;  // automated district  id start from the externally given district id 
+
+			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 			{
-				// k mean method
-				//random select 300 zones then find the closest zone to aggregate
-
-				double super_zone_ratio = 300.0/g_related_zone_vector_size;
-
-				int super_zone_index = assignment.g_number_of_analysis_districts+1;  // automated district  id start from the externally given district id 
-
-				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+				if (g_zone_vector[orig].sindex >= 0)  // no significant: skip
 				{
-					if (g_zone_vector[orig].sindex>=0)  // no significant: skip
+					if (g_get_random_ratio() < super_zone_ratio)
 					{
-						if (g_get_random_ratio() < super_zone_ratio)
-						{
-							g_zone_vector[orig].superzone_index = super_zone_index;
-							g_zone_vector[orig].bcluster_seed = true;
-							super_zone_index++;
-						}
-						else
-						{
-							g_zone_vector[orig].superzone_index = -1;
-							g_zone_vector[orig].b_shortest_path_computing_flag = false;
-						}
-
+						g_zone_vector[orig].superzone_index = super_zone_index;
+						g_zone_vector[orig].bcluster_seed = true;
+						super_zone_index++;
 					}
 					else
 					{
+						g_zone_vector[orig].superzone_index = -1;
 						g_zone_vector[orig].b_shortest_path_computing_flag = false;
 					}
 
 				}
-				g_related_zone_vector_size = super_zone_index;
-				//clustering 
-				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+				else
 				{
-					if (g_zone_vector[orig].superzone_index == -1) 
+					g_zone_vector[orig].b_shortest_path_computing_flag = false;
+				}
+
+			}
+			g_related_zone_vector_size = super_zone_index;
+			//clustering 
+			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+			{
+				if (g_zone_vector[orig].superzone_index == -1)
+				{
+					double min_distance = 99999;
+
+					for (int d = 0; d < g_zone_vector.size(); d++)  // o
 					{
-						double min_distance = 99999;
-
-						for (int d = 0; d < g_zone_vector.size(); d++)  // o
+						if (g_zone_vector[d].bcluster_seed == true)
 						{
-							if (g_zone_vector[d].bcluster_seed == true)
+							double delta_x = g_zone_vector[orig].cell_x - g_zone_vector[d].cell_x;
+							double delta_y = g_zone_vector[orig].cell_y - g_zone_vector[d].cell_y;
+
+							double local_distance = pow(delta_x * delta_x + delta_y * delta_y, 0.5);
+
+							if (local_distance < min_distance)
 							{
-								double delta_x = g_zone_vector[orig].cell_x - g_zone_vector[d].cell_x;
-								double delta_y = g_zone_vector[orig].cell_y - g_zone_vector[d].cell_y;
-
-								double local_distance = pow(delta_x * delta_x + delta_y * delta_y, 0.5);
-
-								if (local_distance < min_distance)
-								{
-									min_distance = local_distance;
-									g_zone_vector[orig].superzone_index = g_zone_vector[d].superzone_index;
-									assignment.zone_id_to_seed_zone_id_mapping[g_zone_vector[orig].zone_id] = g_zone_vector[d].zone_id;
-
-								}
+								min_distance = local_distance;
+								g_zone_vector[orig].superzone_index = g_zone_vector[d].superzone_index;
+								assignment.zone_id_to_seed_zone_id_mapping[g_zone_vector[orig].zone_id] = g_zone_vector[d].zone_id;
 
 							}
-						}
 
+						}
 					}
 
 				}
-				
-				// assign the value back
-				for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
-				{
-						if(g_zone_vector[orig].sindex >=0) // related zones
-						{
-							g_zone_vector[orig].sindex = g_zone_vector[orig].superzone_index;  //rewrite using super zones
-						}
 
+			}
+
+			// assign the value back
+			for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+			{
+				if (g_zone_vector[orig].sindex >= 0) // related zones
+				{
+					g_zone_vector[orig].sindex = g_zone_vector[orig].superzone_index;  //rewrite using super zones
 				}
 
+			}
+
+
+		}
+	}
+
+
+
+	FILE* g_pFileZone = nullptr;
+	g_pFileZone = fopen("subarea_related_zone.csv", "w");
+
+	if (g_pFileZone == NULL)
+	{
+		cout << "File subarea_related_zone.csv cannot be opened." << endl;
+		g_program_stop();
+	}
+
+	fprintf(g_pFileZone, "first_column,zone_id,x_coord,y_coord,super_zone_id,analysis_district_id,demand,subarea_significance_flag,inside_flag\n");
+	for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	{
+		fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d,%d\n",
+			g_zone_vector[orig].zone_id, g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y,
+			g_zone_vector[orig].sindex,
+			g_zone_vector[orig].distrct_cluster_index,
+			g_zone_vector[orig].origin_zone_impact_volume,
+			g_zone_vector[orig].subarea_significance_flag,
+			g_zone_vector[orig].subarea_inside_flag);
+	}
+
+	fclose(g_pFileZone);
+
+	dtalog.output() << endl;
+	double non_related_zone_ratio = non_impact_zone_count * 1.0 / g_zone_vector.size();
+	dtalog.output() << non_impact_zone_count << " zones are not signifantly related by the subarea. = (" << non_related_zone_ratio << ")" << endl;
+	dtalog.output() << inside_zone_count << " zones are inside the subarea. " << endl;
+
+
+
+	double related_ratio = total_related_demand / max(1, total_demand);
+	dtalog.output() << "total demand = " << total_demand << " total subarea-related demand = " << total_related_demand << " ("
+		<< related_ratio << " )" << endl;
+
+	//assignment.summary_file << ",# of subarea related zones =," << g_related_zone_vector_size << endl;
+	//assignment.summary_file << "," <<" # of inside zones = " << inside_zone_count <<  endl;
+	//assignment.summary_file << "," << " # of related outside zones = " << related_external_zone_count << endl;
+}
+
+int g_read_subarea_related_zone_file()
+{
+
+	CDTACSVParser parser;
+	int number_of_super_zone_records = 0;
+
+	dtalog.output() << "Step X.X Reading subarea_related_zone data in subarea_related_zone.csv..." << endl;
+
+	if (parser.OpenCSVFile("subarea_related_zone.csv", true))
+	{
+		g_related_zone_vector_size = 0;
+		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
+		{
+			int zone_id = 0;
+			if (!parser.GetValueByFieldName("zone_id", zone_id))
+				continue;
+
+			if (zone_id <= 0)
+			{
+				continue;
+			}
+			number_of_super_zone_records++;
+			int super_zone_id = -1;
+			int analysis_district_id = -1;
+			int subarea_significance_flag = -1;
+			int inside_flag = -1;
+
+			parser.GetValueByFieldName("super_zone_id", super_zone_id, false);
+			parser.GetValueByFieldName("analysis_district_id", analysis_district_id, false);
+			parser.GetValueByFieldName("subarea_significance_flag", subarea_significance_flag, false);
+			parser.GetValueByFieldName("inside_flag", inside_flag, false);
+
+			int zone_seq_no = 0;
+			if (assignment.g_zoneid_to_zone_seq_no_mapping.find(zone_id) != assignment.g_zoneid_to_zone_seq_no_mapping.end())
+				zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[zone_id];
+
+
+
+			g_zone_vector[zone_seq_no].sindex = super_zone_id;
+			g_zone_vector[zone_seq_no].distrct_cluster_index = analysis_district_id;
+			g_zone_vector[zone_seq_no].subarea_significance_flag = subarea_significance_flag;
+			g_zone_vector[zone_seq_no].subarea_inside_flag = inside_flag;
+
+			if (g_related_zone_vector_size <= super_zone_id)
+				g_related_zone_vector_size = super_zone_id+1;
+			// push it to the global node vector
+		}
+
+		dtalog.output() << "number_of_super_zone_records = "<< number_of_super_zone_records << " in subarea_related_zone.csv." << endl;
+
+		parser.CloseCSVFile();
+		return 1;
+	}
+	return 0;  // no such a file
+}
+void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
+{
+	g_load_demand_side_scenario_file(assignment);
+
+	g_related_zone_vector_size = g_zone_vector.size();
+	for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	{
+		g_zone_vector[orig].sindex = orig;  //copy this index 
+	}
+
+	// subarea handling step 1: reading
+	g_read_subarea_CSV_file(assignment);
+	// subarea handling step 2:
+	// for each OD 
+
+	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined and not using preloaded route file
+	{
+
+		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+		{
+			g_zone_vector[orig].subarea_inside_flag = 0;  //reset the subarea inside flag to 0 once there is a subarea.csv
+		}
+		
+
+		// for node layer
+		for (int i = 0; i < g_node_vector.size(); i++)
+		{
+			DTAGDPoint pt;
+			pt.x = g_node_vector[i].x;
+			pt.y = g_node_vector[i].y;
+
+			if (g_test_point_in_polygon(pt, assignment.g_subarea_shape_points) == 1)
+			{
+				g_node_vector[i].subarea_id = 1;
 
 			}
 		}
 
-
-
-		FILE* g_pFileZone = nullptr;
-		g_pFileZone = fopen("subarea_related_zone.csv", "w");
-
-		if (g_pFileZone == NULL)
+		// for link layer
+		for (int l = 0; l < g_link_vector.size(); l++) 
 		{
-			cout << "File subarea_related_zone.csv cannot be opened." << endl;
-			g_program_stop();
+			if (g_node_vector[g_link_vector[l].from_node_seq_no].subarea_id >= 1 || g_node_vector[g_link_vector[l].to_node_seq_no].subarea_id >= 1)
+			{
+				g_link_vector[l].subarea_id = g_node_vector[g_link_vector[l].from_node_seq_no].subarea_id;
+			}
 		}
 
-		fprintf(g_pFileZone, "first_column,zone_id,x_coord,y_coord,super_zone_id,analysis_district_id,demand,subarea_significance_flag,inside_flag\n");
-		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+		// create subarea_related_zone information
+	
+		if(g_read_subarea_related_zone_file()==0)  // if the subarea_related_zone.csv has not been defined from the previous run, then we create the subarea related zone structure from the scratch
 		{
-				fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d,%d\n", 
-					g_zone_vector[orig].zone_id, g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y, 
-					g_zone_vector[orig].sindex,
-					g_zone_vector[orig].distrct_cluster_index,
-					g_zone_vector[orig].origin_zone_impact_volume,
-					g_zone_vector[orig].subarea_significance_flag, 
-					g_zone_vector[orig].subarea_inside_flag);
+		g_create_subarea_related_zone_structure();
 		}
-
-		fclose(g_pFileZone);
-
-		dtalog.output() << endl;
-		double non_related_zone_ratio = non_impact_zone_count * 1.0 / g_zone_vector.size();
-		dtalog.output() << non_impact_zone_count << " zones are not signifantly related by the subarea. = (" << non_related_zone_ratio << ")" <<endl;
-		dtalog.output() << inside_zone_count << " zones are inside the subarea. " << endl;
-
-
-
-		double related_ratio = total_related_demand / max(1, total_demand);
-		dtalog.output() << "total demand = " << total_demand << " total subarea-related demand = " << total_related_demand << " ("
-			<< related_ratio << " )" << endl;
-		
-		//assignment.summary_file << ",# of subarea related zones =," << g_related_zone_vector_size << endl;
-		//assignment.summary_file << "," <<" # of inside zones = " << inside_zone_count <<  endl;
-		//assignment.summary_file << "," << " # of related outside zones = " << related_external_zone_count << endl;
+	
 	}
 
 	//	fprintf(g_pFileOutputLog, "number of zones =,%lu\n", g_zone_vector.size());
@@ -989,8 +1009,24 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					g_program_stop();
 				}
 
+
+
 				if (format_type.find("column") != string::npos)  // or muliti-column
 				{
+
+					// try to detect if we have a route.csv as preload file, if yes, we skip the following reading .
+					CDTACSVParser parser_route;
+					
+					if (parser_route.OpenCSVFile("route.csv", false))
+					{
+						// a route file exists
+						dtalog.output() << "route.csv exists as preload file so we skip the reading for the column based demand file." << endl;
+					}
+					else
+					{
+					
+
+
 					bool bFileReady = false;
 					int error_count = 0;
 					int critical_OD_count = 0;
@@ -1198,9 +1234,9 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 
 					std::map<int, float>::iterator it;
-
+					}
 				}
-				else if (format_type.compare("path") == 0)
+				else if (format_type.compare("route") == 0)
 				{
 
 					int path_counts = 0;
@@ -1324,12 +1360,14 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 									pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
 									pColumnVector->path_node_sequence_map[node_sum].path_id = agent_path_element.path_id;
 									pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
+									
 									pColumnVector->path_node_sequence_map[node_sum].path_toll = 0;
 
 									pColumnVector->path_node_sequence_map[node_sum].AllocateVector(node_no_sequence, link_no_sequence, false);
 								}
 
 								pColumnVector->path_node_sequence_map[node_sum].path_volume += agent_path_element.volume;
+								pColumnVector->path_node_sequence_map[node_sum].path_preload_volume += volume;
 							}
 						}
 						dtalog.output() << "total_demand_volume loaded from path file is " << sum_of_path_volume << " with " << path_counts << "paths." << endl;
@@ -1516,171 +1554,8 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					}
 
 				}// activity
-				else if (format_type.compare("matrix") == 0)
-				{
-					bool bFileReady = false;
-					int error_count = 0;
-					int critical_OD_count = 0;
-					double critical_OD_volume = 0;
-
-					vector<int> LineIntegerVector;
-
-					CDTACSVParser parser;
-					parser.IsFirstLineHeader = false;
-					if (parser.OpenCSVFile(file_name, true))
-					{
-						int i = 0;
-						if (parser.ReadRecord())
-						{
-							parser.ConvertLineStringValueToIntegers();
-							LineIntegerVector = parser.LineIntegerVector;
-						}
-						parser.CloseCSVFile();
-					}
-
-					int number_of_zones = LineIntegerVector.size();
-
-
-					bFileReady = false;
-
-					FILE* st;
-					fopen_ss(&st, file_name.c_str(), "r");
-					if (st != NULL)
-					{
-						// read the first line
-						g_read_a_line(st);
-
-						cout << "number of zones to be read = " << number_of_zones << endl;
-
-						//test if a zone has been defined. 
-						for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-						{
-							int zone = LineIntegerVector[destination_zone_index];
-							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-							{
-								if (error_count < 10)
-									dtalog.output() << endl << "Warning: destination zone " << zone << "  has not been defined in node.csv" << endl;
-
-								error_count++;
-								// destination zone has not been defined, skipped.
-								continue;
-							}
-
-						}
-
-
-						int line_no = 0;
-						for (int origin_zone_index = 0; origin_zone_index < number_of_zones; origin_zone_index++)
-						{
-							int origin_zone = (int)(g_read_float(st)); // read the origin zone number
-
-							if (assignment.g_zoneid_to_zone_seq_no_mapping.find(origin_zone) == assignment.g_zoneid_to_zone_seq_no_mapping.end())
-							{
-								if (error_count < 10)
-									dtalog.output() << endl << "Warning: destination zone " << origin_zone << "  has not been defined in node.csv" << endl;
-
-								for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-								{
-									float demand_value = g_read_float(st);
-								}
-
-								error_count++;
-								// destination zone has not been defined, skipped.
-								continue;
-							}
-
-							cout << "Reading file no." << file_sequence_no << " " << file_name << " at zone " << origin_zone << " ... " << endl;
-
-							for (int destination_zone_index = 0; destination_zone_index < number_of_zones; destination_zone_index++)
-							{
-								int destination_zone = LineIntegerVector[destination_zone_index];
-
-								float demand_value = g_read_float(st);
-
-								int from_zone_seq_no = 0;
-								int to_zone_seq_no = 0;
-								from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[origin_zone];
-								to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[destination_zone];
-
-								int from_zone_sindex = g_zone_vector[from_zone_seq_no].sindex;
-								if (from_zone_sindex == -1)
-									continue;
-
-								int to_zone_sindex = g_zone_vector[to_zone_seq_no].sindex;
-								if (to_zone_sindex == -1)
-									continue;
-
-								// encounter return
-								if (demand_value < -99)
-									break;
-
-
-								demand_value *= loading_scale_factor;
-								if (demand_value >= 1)
-								{
-									if (assignment.shortest_path_log_zone_id == -1)  // set this to the first zone
-										assignment.shortest_path_log_zone_id = origin_zone;
-
-									critical_OD_volume += demand_value;
-									critical_OD_count += 1;
-									//dtalog.output() << origin_zone << "," << destination_zone << "," << demand_value << "," << "\"LINESTRING( " <<
-									//    assignment.zone_id_X_mapping[origin_zone] << " " << assignment.zone_id_Y_mapping[origin_zone] << "," <<
-									//    assignment.zone_id_X_mapping[destination_zone] << " " << assignment.zone_id_Y_mapping[destination_zone] << ")\" " << endl;
-
-								}
-
-								assignment.total_demand[agent_type_no][demand_period_no] += demand_value;
-								assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].od_volume += demand_value;
-								assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].departure_time_profile_no = this_departure_time_profile_no;
-								assignment.total_demand_volume += demand_value;
-								assignment.g_origin_demand_array[from_zone_seq_no] += demand_value;
-
-								int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[from_zone_seq_no];
-								g_district_info_base0_map[analysis_district_id].record_origin_2_district_volume(agent_type_no, demand_value);
-
-								// we generate vehicles here for each OD data line
-								if (line_no <= 5)  // read only one line, but has not reached the end of the line
-									dtalog.output() << "o_zone_id:" << origin_zone << ", d_zone_id: " << destination_zone << ", value = " << demand_value << endl;
-
-								line_no++;
-							}  // scan lines
-
-						}
-
-						fclose(st);
-
-						dtalog.output() << "total demand volume is " << assignment.total_demand_volume << endl;
-						dtalog.output() << "crtical demand volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << endl;
-
-						dtalog.output() << "crtical OD zones volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << endl;
-
-						//assignment.summary_file << "crtical demand volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1, assignment.total_demand_volume) * 100 << "%%" << endl;
-						//assignment.summary_file << "crtical OD zones volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1, assignment.total_demand_volume) * 100 << "%%" << endl;
-
-						std::map<int, float>::iterator it;
-						int count_zone_demand = 0;
-						for (it = assignment.g_origin_demand_array.begin(); it != assignment.g_origin_demand_array.end(); ++it)
-						{
-							if (it->second > 0.001)
-							{
-								dtalog.output() << "o_zone " << it->first << ", demand=," << it->second << endl;
-								count_zone_demand++;
-							}
-						}
-						dtalog.output() << "There are  " << count_zone_demand << " zones with positive demand" << endl;
-
-
-					} //end reading file
-					else
-					{
-						// open file
-						dtalog.output() << "Error: File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
-						g_program_stop();
-					}
-
-				}
 				else {
-					dtalog.output() << "Error: format_type = " << format_type << " is not supported. Currently DTALite supports format such as column, matrix, activity_plan, path." << endl;
+					dtalog.output() << "Error: format_type = " << format_type << " is not supported. Currently DTALite supports format such as column, activity_plan, path." << endl;
 					g_program_stop();
 				}
 
@@ -2078,7 +1953,7 @@ int g_detect_if_demand_data_provided(Assignment& assignment)
 						return 2; // matrix format demand file is needed.
 					}
 				}
-				if (format_type.find("path") != string::npos)
+				if (format_type.find("route") != string::npos)
 				{
 					// read the file formaly after the test.
 					CDTACSVParser parser;
@@ -2713,7 +2588,7 @@ void g_read_input_data(Assignment& assignment)
 		g_program_stop();
 	}
 
-	dtalog.output() << "number of agent typess = " << assignment.g_AgentTypeVector.size() << endl;
+	dtalog.output() << "number of agent types = " << assignment.g_AgentTypeVector.size() << endl;
 
 
 	assignment.g_number_of_nodes = 0;

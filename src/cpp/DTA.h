@@ -518,7 +518,7 @@ public:
 class CColumnPath {
 public:
     CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
-        path_switch_volume{ 0 }, path_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{-1}, path_volume_before_sa{-1}, path_volume_after_sa {-1}, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
+        path_switch_volume{ 0 }, path_volume{ 0 }, path_preload_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{ -1 }, path_volume_before_sa{ -1 }, path_volume_after_sa{ -1 }, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
         path_gradient_cost{ 0 }, path_gradient_cost_difference{ 0 }, path_gradient_cost_relative_difference{ 0 }, subarea_output_flag{ 1 }, measurement_flag{ 0 }, impacted_path_flag{ 0 },
         network_design_detour_mode{ 0 }, b_RT_new_path_flag{0}, global_path_no{ -1 }, b_sensitivity_analysis_flag{ false }
     {
@@ -614,6 +614,7 @@ public:
     std::string path_id;
     // path volume
     double path_volume;
+    double path_preload_volume;
     double path_volume_before_ODME;
     double path_volume_after_ODME;
     double path_volume_before_sa;
@@ -852,7 +853,7 @@ class Assignment {
 public:
     // default is UE
     Assignment() : assignment_mode{ lue }, g_number_of_memory_blocks{ 4 }, g_number_of_threads{ 1 }, g_info_updating_freq_in_min{ 5 }, g_visual_distance_in_cells{ 5 },
-        g_link_type_file_loaded{ true }, g_agent_type_file_loaded{ false },
+        g_link_type_file_loaded{ true }, g_agent_type_file_loaded{ false }, total_route_demand_volume{ 0 },
         total_demand_volume{ 0.0 }, g_column_pool{ nullptr }, g_number_of_in_memory_simulation_intervals{ 500 },
         g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
         g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_agent_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
@@ -915,7 +916,10 @@ public:
         for (int i = 0; i < number_of_agent_types; ++i)
         {
             for (int tau = 0; tau < g_number_of_demand_periods; ++tau)
+            { 
                 total_demand[i][tau] = 0.0;
+                total_route_demand[i][tau] = 0.0;
+            }
         }
 
         g_DemandGlobalMultiplier = 1.0f;
@@ -982,6 +986,7 @@ public:
     bool g_agent_type_file_loaded;
 
     float total_demand_volume;
+    float total_route_demand_volume;
     std::map<int, float> g_origin_demand_array;
     CColumnVector**** g_column_pool;
     NetworkForSP* *** g_rt_network_pool;
@@ -1051,6 +1056,7 @@ public:
 
 
     float total_demand[MAX_AGNETTYPES][MAX_TIMEPERIODS];
+    float total_route_demand[MAX_AGNETTYPES][MAX_TIMEPERIODS];
     float g_DemandGlobalMultiplier;
 
     // used in ST Simulation

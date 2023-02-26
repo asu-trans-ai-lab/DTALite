@@ -238,6 +238,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 		double prev_gap = 9999999;
 		for (int s = 0; s < OD_updating_iterations; ++s)
 		{
+			double total_system_demand = 0;
 			float total_gap = 0;
 			float total_relative_gap = 0;
 			float total_system_travel_cost = 0;
@@ -385,7 +386,12 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 									column_path_counts++;
 
 									if (s >= 1 && it->second.measurement_flag == 0)  // after 1  iteration, if there are no data passing through this path column. we will skip it in the ODME process
-									    continue;
+									{
+										total_system_demand += it->second.path_volume;
+										continue;
+									}
+
+
 
 									it->second.UE_gap = (it->second.path_travel_time - least_cost);
 									path_gradient_cost = 0;
@@ -453,17 +459,19 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 									it->second.path_gradient_cost = path_gradient_cost;
 
-									step_size = 1.0/(OD_updating_iterations+2.0);   // memo: with alicia, 0.05
+									step_size = 1.0 / (OD_updating_iterations + 2.0);   // memo: with alicia, 0.05
+									// memo: with Peiheng, use 1.0/(OD_updating_iterations+2.0) for stability
 									double prev_path_volume = it->second.path_volume;
 
 									double weight_of_measurements = 1;  // ad hoc weight on the measurements with respect to the UE gap// because unit of UE gap  is around 1-5 mins, measurement error is around 100 vehicles per hour per lane
 
 									double change = step_size * (weight_of_measurements * it->second.path_gradient_cost + (1 - weight_of_measurements) * it->second.UE_gap);
 
-									//                                dtalog.output() <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << endl;
+									//dtalog.output() <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << endl;
 
-									float change_lower_bound = it->second.path_volume * 0.1 * (-1);
-									float change_upper_bound = it->second.path_volume * 0.1;
+									float bound = 0.1;
+									float change_lower_bound = it->second.path_volume * bound * (-1);
+									float change_upper_bound = it->second.path_volume * bound;
 
 									// reset
 									if (change < change_lower_bound)
@@ -473,7 +481,9 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 									if (change > change_upper_bound)
 										change = change_upper_bound;
 
-									it->second.path_volume = max(1.0, it->second.path_volume - change);
+									it->second.path_volume = max(0.000, it->second.path_volume - change);
+
+									total_system_demand += it->second.path_volume;
 
 									if (dtalog.log_odme() == 1)
 									{
@@ -490,12 +500,12 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 								}  // end of loop for all paths in the column pools
 
 
-							 // record adjustment results
-								for (it = it_begin; it != it_end; ++it) // for each k
-								{
-									it->second.path_time_per_iteration_ODME_map[s] = path_travel_time;
-									it->second.path_volume_per_iteration_ODME_map[s] = it->second.path_volume;
-								}
+							 //// record adjustment results
+								//for (it = it_begin; it != it_end; ++it) // for each k
+								//{
+								//	it->second.path_time_per_iteration_ODME_map[s] = path_travel_time;
+								//	it->second.path_volume_per_iteration_ODME_map[s] = it->second.path_volume;
+								//}
 
 
 
@@ -517,6 +527,8 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 					<< "count of column_paths with sensors = " << column_path_with_sensor_counts << " (" << percentage_of_paths_with_sensors << "%)" << endl;
 
 			}
+
+			dtalog.output() << "total_system_demand =" << total_system_demand << ", "; 
 
 		}
 

@@ -673,6 +673,174 @@ void  CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conge
 		}
 	}
 }
+int read_route_information_to_replace_column_generation_and_ODME()
+{
+				int path_counts = 0;
+				float sum_of_path_volume = 0;
+				int line_no = 0;
+				CDTACSVParser parser;
+				if (parser.OpenCSVFile("route.csv", false))
+				{
+					int total_path_in_demand_file = 0;
+					// read agent file line by line,
+
+					int o_zone_id, d_zone_id;
+
+					int this_departure_time_profile_no = 0;
+					string agent_type, demand_period;
+
+					std::vector <int> node_sequence;
+
+					dtalog.output() << "Reading preload route file" << endl;
+
+					while (parser.ReadRecord())
+					{
+
+
+						total_path_in_demand_file++;
+						if (total_path_in_demand_file % 100000 == 0)
+							dtalog.output() << "total_path_in_demand_file is " << total_path_in_demand_file << endl;
+
+						parser.GetValueByFieldName("o_zone_id", o_zone_id);
+						parser.GetValueByFieldName("d_zone_id", d_zone_id);
+
+						CAgentPath agent_path_element;
+
+						parser.GetValueByFieldName("path_id", agent_path_element.path_id, true);
+
+
+						int from_zone_seq_no = 0;
+						int to_zone_seq_no = 0;
+						from_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[o_zone_id];
+						to_zone_seq_no = assignment.g_zoneid_to_zone_seq_no_mapping[d_zone_id];
+						int from_zone_sindex = g_zone_vector[from_zone_seq_no].sindex;
+						if (from_zone_sindex == -1)
+							continue;
+
+						int to_zone_sindex = g_zone_vector[to_zone_seq_no].sindex;
+						if (to_zone_sindex == -1)
+							continue;
+
+						double volume = 0;
+						parser.GetValueByFieldName("volume", volume);
+						agent_path_element.volume = volume;
+						path_counts++;
+						sum_of_path_volume += agent_path_element.volume;
+
+						string agent_type, demand_period;
+						int agent_type_no = 0;
+						int demand_period_no = 0;
+
+						parser.GetValueByFieldName("agent_type", agent_type);
+						parser.GetValueByFieldName("demand_period", demand_period);
+
+						//char time_interval_field_name[20];
+						if (assignment.agent_type_2_seqno_mapping.find(agent_type) != assignment.agent_type_2_seqno_mapping.end())
+								agent_type_no = assignment.agent_type_2_seqno_mapping[agent_type];
+
+						if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
+							demand_period_no = assignment.demand_period_to_seqno_mapping[demand_period];
+
+						assignment.total_demand[agent_type_no][demand_period_no] += agent_path_element.volume;
+						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].od_volume += agent_path_element.volume;
+						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].departure_time_profile_no = this_departure_time_profile_no;  // to be updated
+						assignment.total_route_demand_volume += agent_path_element.volume;
+						assignment.g_origin_demand_array[from_zone_seq_no] += agent_path_element.volume;
+
+						int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[from_zone_seq_no];
+						g_district_info_base0_map[analysis_district_id].record_origin_2_district_volume(agent_type_no, agent_path_element.volume);
+
+						//apply for both agent csv and routing policy
+						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].bfixed_route = true;
+
+						bool bValid = true;
+
+						string path_node_sequence;
+						parser.GetValueByFieldName("node_sequence", path_node_sequence);
+
+						if (path_node_sequence.size() == 0)
+							continue;
+
+						std::vector<int> node_id_sequence;
+
+						g_ParserIntSequence(path_node_sequence, node_id_sequence);
+
+						std::vector<int> node_no_sequence;
+						std::vector<int> link_no_sequence;
+
+						int node_sum = 0;
+						for (int i = 0; i < node_id_sequence.size(); ++i)
+						{
+							if (assignment.g_node_id_to_seq_no_map.find(node_id_sequence[i]) == assignment.g_node_id_to_seq_no_map.end())
+							{
+								bValid = false;
+								//has not been defined
+								continue;
+								// warning
+							}
+
+							int internal_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i]];  // map external node number to internal node seq no.
+							node_no_sequence.push_back(internal_node_seq_no);
+
+							if (i >= 1)
+							{
+								// check if a link exists
+								int link_seq_no = -1;
+								// map external node number to internal node seq no.
+								int prev_node_seq_no = assignment.g_node_id_to_seq_no_map[node_id_sequence[i - 1]];
+								int current_node_no = node_no_sequence[i];
+
+								if (g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.find(current_node_no) != g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map.end())
+								{
+									link_seq_no = g_node_vector[prev_node_seq_no].m_to_node_2_link_seq_no_map[node_no_sequence[i]];
+									node_sum += internal_node_seq_no * link_seq_no;
+									link_no_sequence.push_back(link_seq_no);
+								}
+								else
+									bValid = false;
+							}
+						}
+
+						if (bValid)
+						{
+							agent_path_element.node_sum = node_sum; // pointer to the node sum based path node sequence;
+							agent_path_element.path_link_sequence = link_no_sequence;
+
+							CColumnVector* pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no]);
+							pColumnVector->departure_time_profile_no = this_departure_time_profile_no;
+							// we cannot find a path with the same node sum, so we need to add this path into the map,
+							if (pColumnVector->path_node_sequence_map.find(node_sum) == pColumnVector->path_node_sequence_map.end())
+							{
+								// add this unique path
+								int path_count = pColumnVector->path_node_sequence_map.size();
+								pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
+								pColumnVector->path_node_sequence_map[node_sum].path_id = agent_path_element.path_id;
+								pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
+								pColumnVector->path_node_sequence_map[node_sum].path_toll = 0;
+
+								pColumnVector->path_node_sequence_map[node_sum].AllocateVector(node_no_sequence, link_no_sequence, false);
+							}
+
+							pColumnVector->path_node_sequence_map[node_sum].path_volume += agent_path_element.volume;
+							pColumnVector->path_node_sequence_map[node_sum].path_preload_volume += volume;
+
+						}
+
+						line_no++;
+						if (line_no % 100000 == 0)
+							dtalog.output() << "Reading demand file line no =  " << line_no / 1000 << "k" << endl;
+
+					} 
+					dtalog.output() << "total_demand_volume loaded from route file is " << sum_of_path_volume << " with " << path_counts << " paths." << endl;
+
+					return 1;
+				}
+				else
+				{
+				return 0;
+				}
+
+}
 
 double network_assignment(int assignment_mode, int column_generation_iterations, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_iterations, int number_of_memory_blocks)
 {
@@ -682,7 +850,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	// k iterations for column generation
 	assignment.g_number_of_column_generation_iterations = column_generation_iterations;
 	assignment.g_number_of_column_updating_iterations = column_updating_iterations;
-	assignment.g_number_of_ODME_iterations = 100;
+	assignment.g_number_of_ODME_iterations = 3;  // comment: peiheng: 
 	assignment.g_number_of_sensitivity_analysis_iterations = sensitivity_analysis_iterations;
 	// 0: link UE: 1: path UE, 2: Path SO, 3: path resource constraints
 
@@ -706,6 +874,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 	//g_reload_timing_arc_data(assignment); // no need to load timing data from timing.csv
 	g_ReadOutputFileConfiguration(assignment);
+
 	g_ReadDemandFileBasedOnDemandFileList(assignment);
 
 	// after we read the physical links and demand files
@@ -757,6 +926,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	clock_t start_simu, end_simu, total_simu;
 	start_t = clock();
 
+
 	clock_t iteration_t, cumulative_lc, cumulative_cp, cumulative_lu;
 
 	//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
@@ -764,6 +934,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	dtalog.output() << "Step 4: Column Generation for Traffic Assignment..." << endl;
 	dtalog.output() << "Total Column Generation iteration: " << assignment.g_number_of_column_generation_iterations << endl;
 
+	if(read_route_information_to_replace_column_generation_and_ODME()==0)
+	{  // apply column generation and ODME
 
 	for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
 	{
@@ -971,7 +1143,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 		dtalog.output() << endl;
 	}
-
+	 
+	}  // end of ODME 
 	// stage II sensitivity analysis stage 
 	if (assignment.g_number_of_sensitivity_analysis_iterations >= 0)
 	{

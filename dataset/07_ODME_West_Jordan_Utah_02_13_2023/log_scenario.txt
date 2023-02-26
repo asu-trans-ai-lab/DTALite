@@ -1,3 +1,1 @@
 scenario_type,demand_period,from_node,to_node,geometry,values
-reading record 1
-AM,1,2,"LINESTRING (-111.920177 40.587738,-111.918417 40.587734,)"sa,number_of_lanes_changed=0.000000,
