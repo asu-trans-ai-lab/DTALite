@@ -15,7 +15,7 @@ Step 1: read network node.csv, link.csv, zone.csv
 ,info_updating_freq_in_min= 5 min
 ,visual_distance_in_cells= 5 cells
 , # of demand side records in demand_side_scenario.csv=,0,
-Step 2: read demand, defined in [demand_file_list] in settings.csv.
+Step 2.1: read demand, defined in [demand_file_list] in settings.csv.
 ,o_zone_id,d_zone_id,inside_flag_from,inside_flag_to,volume
 ,file_sequence_no=,1,file_name =, demand.csv,demand_period =, AM,departure_time_profile_no=,0,cumulative demand =, 7000
 ,total demand =, 7000
@@ -29,11 +29,12 @@ Step 2: read demand, defined in [demand_file_list] in settings.csv.
 3,0,0,0,7000
 ,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,agent_type,departure_time,volume
 ,,1,1,2,3,3,p,AM,7000
-, # of capacity records in supply_side_scenario.csv=,0,
-, # of sa records in supply_side_scenario.csv=,0,
+step 2.2 read supply side scenario
+, # of records in supply_side_scenario.csv=,0,
+, # of SA records in supply_side_scenario.csv=,0,
 , # of incident records in supply_side_scenario.csv=,0,
 , # of dms records in supply_side_scenario.csv=,0,
-Step 3: check OD connectivity and accessibility in od_accessibility.csv
+Step 3: check OD connectivity and accessibility in od_performance.csv
 , # of connected OD pairs =, 1
 , # of OD/agent_type/demand_type columns without paths =, 0
 Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
@@ -79,18 +80,39 @@ Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
 39,0,7000,30.7898,1.74285
 Step 4: Column Generation for Traffic Assignment
 column updating
-column updating: iteration= 0, avg travel time = 29.3076(min), optimization obj = 2832.23,Relative_gap=1.34345 %
-column updating: iteration= 1, avg travel time = 30.3121(min), optimization obj = 24.442,Relative_gap=0.0115172 %
+column updating: iteration= 0, avg travel time = 29.3076(min), optimization obj = 2832.23,Relative_gap=1.34537 %
+column updating: iteration= 1, avg travel time = 30.2532(min), optimization obj = 161.039,Relative_gap=0.0759576 %
+column updating: iteration= 2, avg travel time = 30.298(min), optimization obj = 56.8306,Relative_gap=0.0267879 %
+column updating: iteration= 3, avg travel time = 30.31(min), optimization obj = 29.2384,Relative_gap=0.013779 %
+column updating: iteration= 4, avg travel time = 30.315(min), optimization obj = 17.8796,Relative_gap=0.00842508 %
+column updating: iteration= 5, avg travel time = 30.3175(min), optimization obj = 12.0977,Relative_gap=0.00570027 %
+column updating: iteration= 6, avg travel time = 30.319(min), optimization obj = 8.73667,Relative_gap=0.00411646 %
+column updating: iteration= 7, avg travel time = 30.3199(min), optimization obj = 6.61901,Relative_gap=0.00311861 %
+column updating: iteration= 8, avg travel time = 30.3205(min), optimization obj = 5.19063,Relative_gap=0.00244557 %
+column updating: iteration= 9, avg travel time = 30.321(min), optimization obj = 4.18321,Relative_gap=0.0019709 %
+column updating: iteration= 10, avg travel time = 30.3213(min), optimization obj = 3.44378,Relative_gap=0.00162251 %
+column updating: iteration= 11, avg travel time = 30.3215(min), optimization obj = 2.88881,Relative_gap=0.00136103 %
+column updating: iteration= 12, avg travel time = 30.3217(min), optimization obj = 2.45546,Relative_gap=0.00115686 %
+column updating: iteration= 13, avg travel time = 30.3219(min), optimization obj = 2.11743,Relative_gap=0.000997594 %
+column updating: iteration= 14, avg travel time = 30.322(min), optimization obj = 1.84331,Relative_gap=0.000868445 %
+column updating: iteration= 15, avg travel time = 30.3221(min), optimization obj = 1.62004,Relative_gap=0.000763252 %
+column updating: iteration= 16, avg travel time = 30.3222(min), optimization obj = 1.43518,Relative_gap=0.000676156 %
+column updating: iteration= 17, avg travel time = 30.3222(min), optimization obj = 1.27629,Relative_gap=0.000601297 %
+column updating: iteration= 18, avg travel time = 30.3223(min), optimization obj = 1.14848,Relative_gap=0.000541083 %
+column updating: iteration= 19, avg travel time = 30.3223(min), optimization obj = 1.03406,Relative_gap=0.000487174 %
 Step 6: column pool-based flow updating for traffic assignment 
-,# of flow updating iterations=,2
+,# of flow updating iterations=,20
+ODME stage
+Step 4.3: OD estimation 
+,# of ODME_iterations=,0
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,96661.3,VKT=,155528
-,VHT=,3537.18
-,network vehicle speed (MPH) =,27.3272,,network vehicle speed (KPH) =,43.9695
-,PMT=,96661.3,PKT=,155528
-,PHT=,3537.18
-,network person speed (MPH) =,27.3272,,network person speed (KPH) =,43.9695
+,VMT=,96657.7,VKT=,155522
+,VHT=,3537.57
+,network vehicle speed (MPH) =,27.3232,,network vehicle speed (KPH) =,43.963
+,PMT=,96657.7,PKT=,155522
+,PHT=,3537.57
+,network person speed (MPH) =,27.3232,,network person speed (KPH) =,43.963
 ,simple avg link volume=,3500
-,simple avg link speed=,49.471
-,simple avg link speed ratio=,0.824517
+,simple avg link speed=,49.4686
+,simple avg link speed ratio=,0.824477

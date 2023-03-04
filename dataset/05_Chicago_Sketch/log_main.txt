@@ -20,7 +20,7 @@ important: traffic_flow_code on link type 1 is 1
 important: traffic_flow_code on link type 2 is 1
 number of link types = 3
 Step 1.3: Reading section [agent_type] in setting.csv...
-number of agent typess = 1
+number of agent types = 1
 Step 1.3: Reading zone data in zone.csv...
 Step 1.4: Reading node data in node.csv...
 Reading node data at layer0
@@ -53,46 +53,241 @@ o_zone_id:1, d_zone_id: 7, value = 119.69
 total demand volume is 1.1373e+06
 crtical demand volume has 22039 OD pairs in size,1.0772e+06, , account for 94.718%%
 crtical OD zones volume has 22039 OD pairs in size,1.0772e+06, , account for 94.718%%
-Step 2.0: Reading supply side scenario data...
+Step 2.2: Reading supply side scenario data...
+reading 0 sa  capacity scenario.. 
+reading 0 dms scenario.. 
 Step 2: Assigning computing tasks to memory blocks...
-There are 1 SP networks in memory.
+There are 4 SP networks in memory.
 There are 386 agent type*zones to be computed in CPU.
 
 Step 4: Column Generation for Traffic Assignment...
-Total Column Generation iteration: 1
+Total Column Generation iteration: 20
 
 Current iteration number:0
-Current CPU time: 0.002 s
+Current CPU time: 0.001 s
 label correcting for zone 0 in processor 0
-label correcting for zone 97 in processor 0
-label correcting for zone 194 in processor 0
-label correcting for zone 291 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
 iteration: 0,systemTT: 0
-iteration: 0,systemTT: 0, least system TT:14509,gap=-1
-writing od_accessibility.csv..
+iteration: 0,systemTT: 0, least system TT:14509,gap=-100 %
+writing od_performance.csv..
 writing data for 387  zones 
 o zone id =  100
 o zone id =  200
 o zone id =  300
 , # of connected OD pairs = 93135
-,# of column generation (shortest path finding) iterations=, 1
+
+Current iteration number:1
+Current CPU time: 0.426 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 1,systemTT: 0
+iteration: 1,systemTT: 0, least system TT:14509,gap=-100 %
+
+Current iteration number:2
+Current CPU time: 0.528 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 2,systemTT: 53585
+iteration: 2,systemTT: 53585, least system TT:16343,gap=227.88 %
+
+Current iteration number:3
+Current CPU time: 0.663 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 3,systemTT: 53585
+iteration: 3,systemTT: 53585, least system TT:16343,gap=227.88 %
+
+Current iteration number:4
+Current CPU time: 0.805 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 4,systemTT: 28268
+iteration: 4,systemTT: 28268, least system TT:16076,gap=75.838 %
+
+Current iteration number:5
+Current CPU time: 0.963 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 5,systemTT: 19862
+iteration: 5,systemTT: 19862, least system TT:15822,gap=25.531 %
+
+Current iteration number:6
+Current CPU time: 1.135 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 6,systemTT: 17338
+iteration: 6,systemTT: 17338, least system TT:15817,gap=9.6146 %
+
+Current iteration number:7
+Current CPU time: 1.315 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 7,systemTT: 16629
+iteration: 7,systemTT: 16629, least system TT:15918,gap=4.4673 %
+
+Current iteration number:8
+Current CPU time: 1.504 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 8,systemTT: 16458
+iteration: 8,systemTT: 16458, least system TT:15975,gap=3.0224 %
+
+Current iteration number:9
+Current CPU time: 1.686 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 9,systemTT: 16350
+iteration: 9,systemTT: 16350, least system TT:15976,gap=2.336 %
+
+Current iteration number:10
+Current CPU time: 1.873 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 10,systemTT: 16246
+iteration: 10,systemTT: 16246, least system TT:15968,gap=1.7416 %
+
+Current iteration number:11
+Current CPU time: 2.072 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 11,systemTT: 16188
+iteration: 11,systemTT: 16188, least system TT:15950,gap=1.4946 %
+
+Current iteration number:12
+Current CPU time: 2.27 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 12,systemTT: 16141
+iteration: 12,systemTT: 16141, least system TT:15941,gap=1.2579 %
+
+Current iteration number:13
+Current CPU time: 2.476 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 13,systemTT: 16113
+iteration: 13,systemTT: 16113, least system TT:15943,gap=1.0651 %
+
+Current iteration number:14
+Current CPU time: 2.681 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 14,systemTT: 16096
+iteration: 14,systemTT: 16096, least system TT:15945,gap=0.95075 %
+
+Current iteration number:15
+Current CPU time: 2.889 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 15,systemTT: 16079
+iteration: 15,systemTT: 16079, least system TT:15940,gap=0.86684 %
+
+Current iteration number:16
+Current CPU time: 3.093 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 16,systemTT: 16063
+iteration: 16,systemTT: 16063, least system TT:15938,gap=0.78626 %
+
+Current iteration number:17
+Current CPU time: 3.301 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 17,systemTT: 16053
+iteration: 17,systemTT: 16053, least system TT:15930,gap=0.77469 %
+
+Current iteration number:18
+Current CPU time: 3.508 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 18,systemTT: 16051
+iteration: 18,systemTT: 16051, least system TT:15934,gap=0.73365 %
+
+Current iteration number:19
+Current CPU time: 3.72 s
+label correcting for zone 0 in processor 0
+label correcting for zone 97 in processor 1
+label correcting for zone 194 in processor 2
+label correcting for zone 291 in processor 3
+iteration: 19,systemTT: 16058
+iteration: 19,systemTT: 16058, least system TT:15935,gap=0.76925 %
+,# of column generation (shortest path finding) iterations=, 20
 
 Step 4.2: Column Pool Updating
-Total Column Pool Updating iteration: 2
-column updating: iteration= 0, avg travel time = 0.047108(min), optimization obj = 0,Relative_gap=0 %
-column updating: iteration= 1, avg travel time = 0.047108(min), optimization obj = 0,Relative_gap=0 %
+Total Column Pool Updating iteration: 20
+column updating: iteration= 0, avg travel time = 0.014101(min), optimization obj = 101.98,Relative_gap=0.63535 %
+column updating: iteration= 1, avg travel time = 0.014099(min), optimization obj = 99.444,Relative_gap=0.61979 %
+column updating: iteration= 2, avg travel time = 0.014097(min), optimization obj = 97.854,Relative_gap=0.61001 %
+column updating: iteration= 3, avg travel time = 0.014096(min), optimization obj = 96.705,Relative_gap=0.60293 %
+column updating: iteration= 4, avg travel time = 0.014096(min), optimization obj = 95.818,Relative_gap=0.59746 %
+column updating: iteration= 5, avg travel time = 0.014095(min), optimization obj = 95.093,Relative_gap=0.59298 %
+column updating: iteration= 6, avg travel time = 0.014095(min), optimization obj = 94.481,Relative_gap=0.5892 %
+column updating: iteration= 7, avg travel time = 0.014094(min), optimization obj = 93.954,Relative_gap=0.58594 %
+column updating: iteration= 8, avg travel time = 0.014094(min), optimization obj = 93.491,Relative_gap=0.58308 %
+column updating: iteration= 9, avg travel time = 0.014094(min), optimization obj = 93.078,Relative_gap=0.58053 %
+column updating: iteration= 10, avg travel time = 0.014093(min), optimization obj = 92.707,Relative_gap=0.57823 %
+column updating: iteration= 11, avg travel time = 0.014093(min), optimization obj = 92.369,Relative_gap=0.57614 %
+column updating: iteration= 12, avg travel time = 0.014093(min), optimization obj = 92.06,Relative_gap=0.57422 %
+column updating: iteration= 13, avg travel time = 0.014092(min), optimization obj = 91.774,Relative_gap=0.57246 %
+column updating: iteration= 14, avg travel time = 0.014092(min), optimization obj = 91.509,Relative_gap=0.57082 %
+column updating: iteration= 15, avg travel time = 0.014092(min), optimization obj = 91.262,Relative_gap=0.56929 %
+column updating: iteration= 16, avg travel time = 0.014092(min), optimization obj = 91.031,Relative_gap=0.56785 %
+column updating: iteration= 17, avg travel time = 0.014092(min), optimization obj = 90.814,Relative_gap=0.56651 %
+column updating: iteration= 18, avg travel time = 0.014092(min), optimization obj = 90.609,Relative_gap=0.56524 %
+column updating: iteration= 19, avg travel time = 0.014091(min), optimization obj = 90.415,Relative_gap=0.56404 %
+
+Step 4.3: OD estimation for traffic assignment..
 
 Done!
-CPU Running Time for the entire computing progcess: 0.378 s
+CPU Running Time for the entire computing progcess: 7.786 s
 writing link_performance.csv..
 writing route_assignment.csv..
 writing link_background_volume.csv..
 writing data for 387  zones 
 o zone id =  100
+writing 100K agents with CPU time 1.178 s
 o zone id =  200
+writing 200K agents with CPU time 2.253 s
 o zone id =  300
-Output for assignment with 1 iterations. Traffic assignment completes!
-CPU Running Time for outputting simulation results: 0.9 s
+Output for assignment with 20 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 3.367 s
 free memory..
-CPU Running Time for Entire Process: 0 min 2 sec
+CPU Running Time for Entire Process: 0 min 15 sec
 done.

@@ -1,5 +1,5 @@
-[assignment],,assignment_mode,number_of_iterations,column_updating_iterations,signal_updating_iterations,signal_updating_output,remarks
-,,dta,40,40,-1,0,"assignment_mode can be ue, dta or odme"
+[assignment],,,number_of_iterations,route_output,,,
+,,,40,1,,,
 ,,,,,,,
 [agent_type],agent_type,name,,VOT,flow_type,PCE,
 ,p,passenger,,10,0,1,

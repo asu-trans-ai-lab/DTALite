@@ -2,8 +2,8 @@
 ,,,20,1,,,,,
 ,,,,,,,,,
 [agent_type],,agent_type,name,,VOT,flow_type,PCE,occ,real_time_info
-,,p,passenger,,10,0,1,1,1
-,,,,,,,,,
+,,rt,passenger,,10,0,1,1,1
+,,hist,passenger,,10,0,1,1,0
 [link_type],,link_type,link_type_name,,agent_type_blocklist,type_code,traffic_flow_code,vdf_type,
 ,,1,Highway/Expressway,,,f,kw,bpr,
 ,,2,Major arterial,,,a,spatial_queue,bpr,
@@ -15,5 +15,5 @@
 [demand_period],,demand_period_id,demand_period,,time_period,,,,
 ,,1,AM,,0700_0800,,,,
 ,,,,,,,,,
-[demand_file_list],,file_sequence_no,file_name,,format_type,demand_period,agent_type,,
-,,1,demand.csv,,column,AM,p,,
+[demand_file_list],,file_sequence_no,file_name,,format_type,demand_period,agent_type,scale_factor,
+,,1,demand.csv,,column,AM,rt,1,
