@@ -126,7 +126,7 @@ std::map<string, CInfoCell> g_info_cell_map;
 #include "scenario_API.h"
 
 
-void g_column_regeneration(Assignment& assignment)  // for RT
+void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  // for RT
 {		//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
 	clock_t start_t, end_t, iteration_t;
 	start_t = clock();
@@ -188,7 +188,7 @@ void g_column_regeneration(Assignment& assignment)  // for RT
 			for (int i = 0; i < g_link_vector.size(); ++i) {
 				dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].PCE_volume_per_period[0] << endl;
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_agent_types_per_period[0] << endl;
 			}
 		}
 
@@ -246,7 +246,8 @@ void g_column_regeneration(Assignment& assignment)  // for RT
 
 					int origin_zone_seq_no = pNetwork->m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
-
+				if(real_time_info_flag == true)
+				{
 					if (assignment.g_AgentTypeVector[pNetwork->m_agent_type_no].real_time_information == 2 /*DMS*/
 						&& assignment.zone_seq_no_2_info_mapping.find(origin_zone_seq_no) != assignment.zone_seq_no_2_info_mapping.end())
 					{
@@ -263,7 +264,14 @@ void g_column_regeneration(Assignment& assignment)  // for RT
 						continue;  // skip the shortest path regeneration in the SA stage
 					}
 
-					pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, true);
+				}
+				else
+				{  // offline case, 
+					// all agent types will recompute their paths based on allowed_uses and updated number of lanes 
+				}
+				
+				pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, true, real_time_info_flag);
+
 
 
 					end_t = clock();
@@ -316,7 +324,7 @@ void g_reset_link_volume_in_master_program_without_columns(int number_of_links, 
 			for (int tau = 0; tau < number_of_demand_periods; ++tau)
 			{
 				// used in travel time calculation
-				g_link_vector[i].PCE_volume_per_period[tau] = 0;
+				g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = 0;
 			}
 		}
 	}
@@ -333,11 +341,14 @@ void g_reset_link_volume_in_master_program_without_columns(int number_of_links, 
 					ratio = double(iteration_index) / double(iteration_index + 1);
 					// after link volumn "tally", self-deducting the path volume by 1/(k+1) (i.e. keep k/(k+1) ratio of previous flow)
 					// so that the following shortes path will be receiving 1/(k+1) flow
-					g_link_vector[i].PCE_volume_per_period[tau] = g_link_vector[i].PCE_volume_per_period[tau] * ratio;
-					g_link_vector[i].person_volume_per_period[tau] = g_link_vector[i].person_volume_per_period[tau] * ratio;
+					g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] * ratio;
+					g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] = g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] * ratio;
 
 					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
-						g_link_vector[i].person_volume_per_period_per_at[tau][at] *= ratio;
+					{
+						g_link_vector[i].volume_per_agent_type_per_period[tau][at] *= ratio;
+						g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] *= ratio;
+					}
 				}
 
 				//for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
@@ -404,7 +415,6 @@ void g_assign_computing_tasks_to_memory_blocks(Assignment& assignment)
 
 					p_NetworkForSP->m_agent_type_no = at;
 					p_NetworkForSP->m_tau = tau;
-					p_NetworkForSP->PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
 					p_NetworkForSP->OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
 
 					computing_zone_count++;
@@ -482,7 +492,6 @@ void g_assign_RT_computing_tasks_to_memory_blocks(Assignment& assignment)
 
 				p_NetworkForSP->m_agent_type_no = at;
 				p_NetworkForSP->m_tau = tau;
-				p_NetworkForSP->PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
 				p_NetworkForSP->OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
 
 				computing_zone_count++;
@@ -539,7 +548,7 @@ void g_reset_link_volume_for_all_processors()
 				int number_of_links = assignment.g_number_of_links;
 				for (int i = 0; i < number_of_links; ++i)
 				{
-					pNetwork->m_link_PCE_volume_array[i] = 0;
+					pNetwork->m_link_agent_type_volume_array[i] = 0;
 					pNetwork->m_link_person_volume_array[i] = 0;
 
 
@@ -565,10 +574,11 @@ void g_fetch_link_volume_for_all_processors()
 
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
-			g_link_vector[i].PCE_volume_per_period[pNetwork->m_tau] += pNetwork->m_link_PCE_volume_array[i];
-			g_link_vector[i].person_volume_per_period[pNetwork->m_tau] += pNetwork->m_link_person_volume_array[i];
+			g_link_vector[i].total_volume_for_all_agent_types_per_period[pNetwork->m_tau] += pNetwork->m_link_agent_type_volume_array[i];
+			g_link_vector[i].total_person_volume_for_all_agent_types_per_period[pNetwork->m_tau] += pNetwork->m_link_person_volume_array[i];
 
-			g_link_vector[i].person_volume_per_period_per_at[pNetwork->m_tau][pNetwork->m_agent_type_no] += pNetwork->m_link_person_volume_array[i];
+			g_link_vector[i].volume_per_agent_type_per_period[pNetwork->m_tau][pNetwork->m_agent_type_no] += pNetwork->m_link_agent_type_volume_array[i];
+
 
 			//for(int og = 0; og < assignment.g_number_of_analysis_districts; og ++)
 			//{
@@ -583,32 +593,89 @@ void  CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conge
 {
 	RT_waiting_time = 0; // reset RT_travel time for each end of simulation iteration 
 
+	int link_type = link_type_si[assignment.active_scenario_index]; 
 	if (VDF_type_no == 0 || VDF_type_no == 1)  // BPR, QVDF
 	{
+		for (int at = 0; at < assignment.g_AgentTypeVector.size(); at++)  // base at mode
+		{ 
 		// for each time period
-		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-		{
-			double link_volume_to_be_assigned = PCE_volume_per_period[tau] + VDF_period[tau].preload + VDF_period[tau].sa_volume;
-
-			if (link_id == "10")
+			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
-				int idebug = 1;
+				double link_volume_to_be_assigned = 0;
+
+				// mapping matrix 
+				converted_MEU_volume_per_period_per_at[tau][at] = 0;  // reset
+				for (int at_k = 0; at_k < assignment.g_AgentTypeVector.size(); at_k++)  // the other at mode
+				{
+					
+					double MEU_conversion_value = assignment.g_LinkTypeMap[link_type].meu_matrix[at_k][at];  // at is the base at, at_k is the external at with impact 
+					converted_MEU_volume_per_period_per_at[tau][at]+= volume_per_agent_type_per_period[tau][at_k] * MEU_conversion_value;
+
+				}
+
+				double mode_hourly_capacity = 0;
+				double mode_FFFTT = 0; 
+				double mode_peak_load_factor = 1;
+				if (at == 0 || assignment.g_AgentTypeVector[at].mode_specific_assignment_flag == 0)  // primary mode 
+				{
+					int at_base = 0; 
+					mode_FFFTT = VDF_period[tau].FFTT_at[at_base];
+					mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][at_base];
+					link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][at_base] + VDF_period[tau].preload;
+					mode_hourly_capacity = VDF_period[tau].lane_based_ultimate_hourly_capacity;
+				}
+				else
+				{
+										
+					mode_FFFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[at] * 60.0; // 60.0 for 60 min per hour
+					mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][at];
+					link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][at]; // its own agent type
+					mode_hourly_capacity = assignment.g_LinkTypeMap[link_type].capacity_at[at];
+				}
+				
+
+
+				if (link_id == "10")
+				{
+					int idebug = 1;
+				}
+
+				// only predefined allowed agent type can be considered
+				int number_of_lanes = 1;
+				
+				if (at == 0)  // main mode of auto
+					VDF_period[tau].nlanes = number_of_lanes_si[assignment.active_scenario_index];
+				else if (at > 0)
+				{
+					int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
+					VDF_period[tau].nlanes = assignment.g_LinkTypeMap[link_type].lanes_at[at];
+				}
+					//	continue;
+
+				if (VDF_period[tau].nlanes == 0)
+				{
+					int idebug;
+					idebug = 1;
+					travel_time_per_period[tau][at] = 999999;
+					continue; 
+				}
+
+
+				travel_time_per_period[tau][at] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
+					at, 
+					VDF_period[tau].FFTT_at[at],
+					link_volume_to_be_assigned,
+					mode_hourly_capacity,
+					mode_peak_load_factor,
+					this->model_speed, 
+					this->est_volume_per_hour_per_lane);
+
+					travel_time_per_period[tau][at] += penalty_si_at[assignment.active_scenario_index][at][tau];  // add additional penalty
+
+
+				VDF_period[tau].link_volume = link_volume_to_be_assigned;
+	//			VDF_period[tau].travel_time_per_iteration_map[inner_iteration_number] = travel_time_per_period[tau];
 			}
-			if (VDF_period[tau].nlanes == 0)
-			{
-				int idebug;
-				idebug = 1;
-			}
-
-
-
-			travel_time_per_period[tau] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
-				link_volume_to_be_assigned,
-				this->model_speed, this->est_volume_per_hour_per_lane);
-
-
-			VDF_period[tau].link_volume = link_volume_to_be_assigned;
-//			VDF_period[tau].travel_time_per_iteration_map[inner_iteration_number] = travel_time_per_period[tau];
 		}
 	}
 	else  // VDF_type_no = 2: 
@@ -622,7 +689,7 @@ void  CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conge
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 			VDF_period[tau].queue_length = 0;
-			VDF_period[tau].arrival_flow_volume = PCE_volume_per_period[tau];
+			VDF_period[tau].arrival_flow_volume = total_volume_for_all_agent_types_per_period[tau];
 			VDF_period[tau].discharge_rate = VDF_period[tau].lane_based_ultimate_hourly_capacity * VDF_period[tau].nlanes;
 
 			// dependend on the downstream blockagge states 
@@ -654,21 +721,21 @@ void  CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conge
 			float total_waiting_time = (prevailing_queue_length + VDF_period[tau].queue_length) / 2.0 * VDF_period[tau].L;  // unit min
 			// to do: 
 
+			int at = 0;
 			VDF_period[tau].avg_waiting_time = total_waiting_time / max(1.0f, VDF_period[tau].arrival_flow_volume);
-			VDF_period[tau].avg_travel_time = VDF_period[tau].FFTT + VDF_period[tau].avg_waiting_time;
+			VDF_period[tau].avg_travel_time = VDF_period[tau].FFTT_at[at] + VDF_period[tau].avg_waiting_time;
 			VDF_period[tau].DOC = (prevailing_queue_length + VDF_period[tau].arrival_flow_volume) / max(0.01, VDF_period[tau].lane_based_ultimate_hourly_capacity * VDF_period[tau].nlanes);
 			//to do:
 
-
-			this->travel_time_per_period[tau] = VDF_period[tau].avg_waiting_time + VDF_period[tau].FFTT;
+			this->travel_time_per_period[tau][at] = VDF_period[tau].avg_waiting_time + VDF_period[tau].FFTT_at[at];
 
 			// apply queue length at the time period to all the time slots included in this period
 			for (int slot_no = assignment.g_DemandPeriodVector[tau].starting_time_slot_no; slot_no < assignment.g_DemandPeriodVector[tau].ending_time_slot_no; slot_no++)
 			{
-				this->est_queue_length_per_lane[slot_no] = VDF_period[tau].queue_length / max(1.0, this->number_of_lanes);
+				this->est_queue_length_per_lane[slot_no] = VDF_period[tau].queue_length / max(1.0, this->number_of_lanes_si[assignment.active_scenario_index]);
 				this->est_avg_waiting_time_in_min[slot_no] = VDF_period[tau].avg_waiting_time;
 				float number_of_hours = assignment.g_DemandPeriodVector[tau].time_period_in_hour;  // unit hour
-				this->est_volume_per_hour_per_lane[slot_no] = VDF_period[tau].arrival_flow_volume / max(0.01f, number_of_hours) / max(1.0, this->number_of_lanes);
+				this->est_volume_per_hour_per_lane[slot_no] = VDF_period[tau].arrival_flow_volume / max(0.01f, number_of_hours) / max(1.0, this->number_of_lanes_si[assignment.active_scenario_index]);
 			}
 		}
 	}
@@ -742,7 +809,7 @@ int read_route_information_to_replace_column_generation_and_ODME()
 							demand_period_no = assignment.demand_period_to_seqno_mapping[demand_period];
 
 						assignment.total_demand[agent_type_no][demand_period_no] += agent_path_element.volume;
-						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].od_volume += agent_path_element.volume;
+						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].od_volume[assignment.active_scenario_index] += agent_path_element.volume;
 						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type_no][demand_period_no].departure_time_profile_no = this_departure_time_profile_no;  // to be updated
 						assignment.total_route_demand_volume += agent_path_element.volume;
 						assignment.g_origin_demand_array[from_zone_seq_no] += agent_path_element.volume;
@@ -842,8 +909,37 @@ int read_route_information_to_replace_column_generation_and_ODME()
 
 }
 
-double network_assignment(int assignment_mode, int column_generation_iterations, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_iterations, int number_of_memory_blocks)
+double network_assignment(int assignment_mode, int column_generation_iterations, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_iterations, int number_of_memory_blocks,int scenario_A_index, int scenario_index_size)
 {
+
+	CDTACSVParser parser_scenario_index_file_list;
+	if (parser_scenario_index_file_list.OpenCSVFile("scenario_index_list.csv", false))
+	{
+		assignment.summary_file << "Step 0: reading scenario_index_list.csv" << endl;
+		while (parser_scenario_index_file_list.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
+		{
+			DTAScenario element; 
+			
+			int activation = 0;
+			parser_scenario_index_file_list.GetValueByFieldName("activation", activation);
+			if(activation ==1)
+			{
+
+			parser_scenario_index_file_list.GetValueByFieldName("scenario_index", element.scenario_index);
+			parser_scenario_index_file_list.GetValueByFieldName("scenario_name", element.scenario_name);
+			assignment.g_active_DTAscenario_map[element.scenario_index] = 1;
+			assignment.g_DTAscenario_vector.push_back(element);
+			assignment.summary_file << "scenario_index=" << element.scenario_index << ",scenario_name=," << element.scenario_name.c_str() << endl;
+
+			}
+		}
+	}
+	else
+	{
+		dtalog.output() << "File scenario_index_list.csv does not exist!" << endl;
+		g_program_stop();
+	}
+
 	clock_t start_t0, end_t0, total_t0;
 	int signal_updating_iterations = 0;
 	start_t0 = clock();
@@ -852,6 +948,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	assignment.g_number_of_column_updating_iterations = column_updating_iterations;
 	assignment.g_number_of_ODME_iterations = 3;  // comment: peiheng: 
 	assignment.g_number_of_sensitivity_analysis_iterations = sensitivity_analysis_iterations;
+
+	assignment.active_scenario_index = scenario_A_index;
+
 	// 0: link UE: 1: path UE, 2: Path SO, 3: path resource constraints
 
 	if(assignment_mode==0)
@@ -870,10 +969,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 	// step 1: read input data of network / demand tables / Toll
 	g_read_input_data(assignment);
-	g_ReadInformationConfiguration(assignment);
-
+	// to add back: Xueosong g_ReadInformationConfiguration(assignment);
 	//g_reload_timing_arc_data(assignment); // no need to load timing data from timing.csv
-	g_ReadOutputFileConfiguration(assignment);
+	// to do: g_ReadOutputFileConfiguration(assignment);
 
 	g_ReadDemandFileBasedOnDemandFileList(assignment);
 
@@ -916,6 +1014,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		}
 
 	}
+	
 	g_load_supply_side_scenario_file(assignment);
 
 	//step 2: allocate memory and assign computing tasks
@@ -934,350 +1033,385 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	dtalog.output() << "Step 4: Column Generation for Traffic Assignment..." << endl;
 	dtalog.output() << "Total Column Generation iteration: " << assignment.g_number_of_column_generation_iterations << endl;
 
-	if(read_route_information_to_replace_column_generation_and_ODME()==0)
-	{  // apply column generation and ODME
-
-	for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
-	{
-		dtalog.output() << endl;
-		dtalog.output() << "Current iteration number:" << iteration_number << endl;
-		end_t = clock();
-		iteration_t = end_t - start_t;
-		dtalog.output() << "Current CPU time: " << iteration_t / 1000.0 << " s" << endl;
-
-		// step 3.1 update travel time and resource consumption
-		clock_t start_t_lu = clock();
-
-		double total_system_travel_time = 0;
-		double total_least_system_travel_time = 0;
-		double total_travel_distance = 0;
-		double avg_speed = 0;
-
-		// initialization at beginning of shortest path
-		total_system_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
-
-		if (assignment.assignment_mode == lue)
-		{
-			//fw link based UE
-			g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), iteration_number, true);
-			g_reset_link_volume_for_all_processors();
-		}
-		else
-		{
-			// we can have a recursive formula to reupdate the current link volume by a factor of k/(k+1),
-			//  and use the newly generated path flow to add the additional 1/(k+1)
-			g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
-		}
-
-		if (dtalog.debug_level() >= 3)
-		{
-			dtalog.output() << "Results:" << endl;
-			for (int i = 0; i < g_link_vector.size(); ++i) {
-				dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
-					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].PCE_volume_per_period[0] << endl;
-			}
-		}
-
-		end_t = clock();
-		iteration_t = end_t - start_t_lu;
-		// g_fout << "Link update with CPU time " << iteration_t / 1000.0 << " s; " << (end_t - start_t) / 1000.0 << " s" << endl;
-
-		//****************************************//
-		//step 3.2 computng block for continuous variables;
-
-		clock_t start_t_lc = clock();
-		clock_t start_t_cp = clock();
-
-		cumulative_lc = 0;
-		cumulative_cp = 0;
-		cumulative_lu = 0;
-
-		int number_of_memory_blocks = min((int)g_NetworkForSP_vector.size(), assignment.g_number_of_memory_blocks);
-
-#pragma omp parallel for  // step 3: C++ open mp automatically create n threads., each thread has its own computing thread on a cpu core
-		//for (int ProcessID = 0; ProcessID < g_NetworkForSP_vector.size(); ++ProcessID)
-		//{
-		//    int agent_type_no = g_NetworkForSP_vector[ProcessID]->m_agent_type_no;
-
-		//    for (int o_node_index = 0; o_node_index < g_NetworkForSP_vector[ProcessID]->m_origin_node_vector.size(); ++o_node_index)
-		//    {
-		//        start_t_lc = clock();
-		//        g_NetworkForSP_vector[ProcessID]->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index);
-		//        end_t = clock();
-		//        cumulative_lc += end_t - start_t_lc;
-
-		//        start_t_cp = clock();
-		//        g_NetworkForSP_vector[ProcessID]->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index);
-		//        end_t = clock();
-		//        cumulative_cp += end_t - start_t_cp;
-		//    }
-		//    // perform one to all shortest path tree calculation
-		//}
-
-		for (int ProcessID = 0; ProcessID < number_of_memory_blocks; ++ProcessID)
-		{
-			for (int blk = 0; blk < assignment.g_AgentTypeVector.size() * assignment.g_DemandPeriodVector.size(); ++blk)
-			{
-				int network_copy_no = blk * assignment.g_number_of_memory_blocks + ProcessID;
-				if (network_copy_no >= g_NetworkForSP_vector.size())
-					continue;
-
-				NetworkForSP* pNetwork = g_NetworkForSP_vector[network_copy_no];
-
-				for (int o_node_index = 0; o_node_index < pNetwork->m_origin_node_vector.size(); ++o_node_index)
-				{
-					start_t_lc = clock();
-					pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, false);
-
-
-					end_t = clock();
-					cumulative_lc += end_t - start_t_lc;
-
-					start_t_cp = clock();
-					double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, false);
-
-
-#pragma omp critical
-					{
-						total_least_system_travel_time += total_origin_least_travel_time;
-					}
-					end_t = clock();
-					cumulative_cp += end_t - start_t_cp;
-				}
-			}
-
-		}
-
-		// link based computing mode, we have to collect link volume from all processors.
-		if (assignment.assignment_mode == lue)
-			g_fetch_link_volume_for_all_processors();
-
-		// g_fout << "LC with CPU time " << cumulative_lc / 1000.0 << " s; " << endl;
-		// g_fout << "column generation with CPU time " << cumulative_cp / 1000.0 << " s; " << endl;
-
-		//****************************************//
-
-		// last iteraion before performing signal timing updating
-		double relative_gap = (total_system_travel_time - total_least_system_travel_time) / max(0.00001, total_least_system_travel_time);
-		dtalog.output() << "iteration: " << iteration_number << ",systemTT: " << total_system_travel_time << endl;
-
-		double CPU_Running_Time = 0;
-		int number_of_agents = 0;
-		double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
-
-		dtalog.output() << "iteration: " << iteration_number << ",systemTT: " << total_system_travel_time << ", least system TT:" <<
-		    total_least_system_travel_time << ",gap=" << relative_gap << endl;
-
-		if(iteration_number==0)
-		{ 
-			g_output_accessibility_result(assignment);
-			assignment.summary_file << "Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %" << endl;
-		}
-
-		assignment.summary_file << iteration_number << "," << CPU_Running_Time << "," << assignment.total_demand_volume << "," << Avg_Travel_Time << "," << relative_gap*100 << endl;
-	}
 	assignment.summary_file << "Step 4: Column Generation for Traffic Assignment" << endl;
+	assignment.summary_file << ",Total number of column generation iterations =, " << assignment.g_number_of_column_generation_iterations << endl;
+	assignment.summary_file << ",Total number of column generation iterations =, " << assignment.g_number_of_column_generation_iterations << endl;
+
 	dtalog.output() << ",# of column generation (shortest path finding) iterations=, " << assignment.g_number_of_column_generation_iterations << endl;
 
 	dtalog.output() << endl;
 
-	// step 1.8: column updating stage: for given column pool, update volume assigned for each column
-	dtalog.output() << "Step 4.2: Column Pool Updating" << endl;
-	dtalog.output() << "Total Column Pool Updating iteration: " << column_updating_iterations << endl;
-
-	start_t = clock();
-	g_column_pool_optimization(assignment, column_updating_iterations);
-
-	assignment.summary_file << "Step 6: column pool-based flow updating for traffic assignment " << endl;
-	assignment.summary_file << ",# of flow updating iterations=," << column_updating_iterations << endl;
-
-	dtalog.output() << endl;
-
-	// post-processing for collecting path flow to link flow
-	// post-processsing route assignment aggregation
-	if (assignment.assignment_mode != lue)
+	for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
 	{
-		// we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),
-		// and use the newly generated path flow to add the additional 1/(k+1)
-		g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), column_generation_iterations, false, false);
-	}
-	else
-		g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), column_generation_iterations, false);
+		assignment.active_scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
 
-	// initialization at the first iteration of shortest path
-	double total_distance = 0;
-	update_link_travel_time_and_cost(column_generation_iterations, total_distance);
+		//if (read_route_information_to_replace_column_generation_and_ODME() == 0)
+		{  // apply column generation and ODME
 
-
-	if (assignment.g_number_of_ODME_iterations >=1)
-	{
-
-		// record before odme volume
-		for (int i = 0; i < g_link_vector.size(); ++i)
-		{
-			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+			for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
 			{
-					g_link_vector[i].VDF_period[tau].volume_before_odme = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-			}
-		}
+				dtalog.output() << endl;
+				dtalog.output() << "Current iteration number:" << iteration_number << endl;
+				end_t = clock();
+				iteration_t = end_t - start_t;
+				dtalog.output() << "Current CPU time: " << iteration_t / 1000.0 << " s" << endl;
 
+				// step 3.1 update travel time and resource consumption
+				clock_t start_t_lu = clock();
 
-		dtalog.output() << "Step 4.3: OD estimation for traffic assignment.." << endl;
-		g_update_odme_volume_in_column_pool(assignment, 0);  // ODME before
-		assignment.Demand_ODME(ODME_iterations, sensitivity_analysis_iterations);
-		g_update_odme_volume_in_column_pool(assignment, 1);  // ODME after
+				double total_system_travel_time = 0;
+				double total_least_system_travel_time = 0;
+				double total_travel_distance = 0;
+				double avg_speed = 0;
 
+				// initialization at beginning of shortest path
+				total_system_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
 
-		assignment.summary_file << "Step 4.3: OD estimation " << endl;
-		assignment.summary_file << ",# of ODME_iterations=," << ODME_iterations << endl;
-
-		// record after odme volume
-		for (int i = 0; i < g_link_vector.size(); ++i)
-		{
-			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-			{
-				g_link_vector[i].VDF_period[tau].volume_after_odme = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-			}
-		}
-
-		dtalog.output() << endl;
-	}
-	 
-	}  // end of ODME 
-	// stage II sensitivity analysis stage 
-	if (assignment.g_number_of_sensitivity_analysis_iterations >= 0)
-	{
-
-		int base_case_flag = 0; //base_case
-		g_record_corridor_performance_summary(assignment, 0);
-
-		// apply supply side scenarios
-		for (int i = 0; i < g_link_vector.size(); ++i)
-		{
-			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-			{
-				// used in travel time calculation
-				if (g_link_vector[i].VDF_period[tau].network_design_flag == -1 /*sa flag*/)  // we 
+				if (assignment.assignment_mode == lue)
 				{
-					float old_lanes = g_link_vector[i].VDF_period[tau].nlanes;
-					g_link_vector[i].VDF_period[tau].nlanes = g_link_vector[i].VDF_period[tau].sa_lanes_change; // apply the lane changes 
-					g_link_vector[i].VDF_period[tau].BPR_period_capacity *= g_link_vector[i].VDF_period[tau].nlanes / max(0.00001, old_lanes);
-					if (g_link_vector[i].VDF_period[tau].nlanes < 0.01)
-						g_link_vector[i].VDF_period[tau].FFTT = 1440; // prevent free flow travel time under zero flow due to blockage
+					//fw link based UE
+					g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), iteration_number, true);
+					g_reset_link_volume_for_all_processors();
+				}
+				else
+				{
+					// we can have a recursive formula to reupdate the current link volume by a factor of k/(k+1),
+					//  and use the newly generated path flow to add the additional 1/(k+1)
+					g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
 				}
 
+				if (dtalog.debug_level() >= 3)
+				{
+					dtalog.output() << "Results:" << endl;
+					for (int i = 0; i < g_link_vector.size(); ++i) {
+						dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
+							<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
+							<< "flow count:" << g_link_vector[i].total_volume_for_all_agent_types_per_period[0] << endl;
+					}
+				}
+
+				end_t = clock();
+				iteration_t = end_t - start_t_lu;
+				// g_fout << "Link update with CPU time " << iteration_t / 1000.0 << " s; " << (end_t - start_t) / 1000.0 << " s" << endl;
+
+				//****************************************//
+				//step 3.2 computng block for continuous variables;
+
+				clock_t start_t_lc = clock();
+				clock_t start_t_cp = clock();
+
+				cumulative_lc = 0;
+				cumulative_cp = 0;
+				cumulative_lu = 0;
+
+				int number_of_memory_blocks = min((int)g_NetworkForSP_vector.size(), assignment.g_number_of_memory_blocks);
+
+#pragma omp parallel for  // step 3: C++ open mp automatically create n threads., each thread has its own computing thread on a cpu core
+				//for (int ProcessID = 0; ProcessID < g_NetworkForSP_vector.size(); ++ProcessID)
+				//{
+				//    int agent_type_no = g_NetworkForSP_vector[ProcessID]->m_agent_type_no;
+
+				//    for (int o_node_index = 0; o_node_index < g_NetworkForSP_vector[ProcessID]->m_origin_node_vector.size(); ++o_node_index)
+				//    {
+				//        start_t_lc = clock();
+				//        g_NetworkForSP_vector[ProcessID]->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index);
+				//        end_t = clock();
+				//        cumulative_lc += end_t - start_t_lc;
+
+				//        start_t_cp = clock();
+				//        g_NetworkForSP_vector[ProcessID]->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index);
+				//        end_t = clock();
+				//        cumulative_cp += end_t - start_t_cp;
+				//    }
+				//    // perform one to all shortest path tree calculation
+				//}
+
+				for (int ProcessID = 0; ProcessID < number_of_memory_blocks; ++ProcessID)
+				{
+					for (int blk = 0; blk < assignment.g_AgentTypeVector.size() * assignment.g_DemandPeriodVector.size(); ++blk)
+					{
+						int network_copy_no = blk * assignment.g_number_of_memory_blocks + ProcessID;
+						if (network_copy_no >= g_NetworkForSP_vector.size())
+							continue;
+
+						NetworkForSP* pNetwork = g_NetworkForSP_vector[network_copy_no];
+
+						for (int o_node_index = 0; o_node_index < pNetwork->m_origin_node_vector.size(); ++o_node_index)
+						{
+							start_t_lc = clock();
+							pNetwork->optimal_label_correcting(ProcessID, &assignment, iteration_number, o_node_index, false, false, false, false);
+
+
+							end_t = clock();
+							cumulative_lc += end_t - start_t_lc;
+
+							start_t_cp = clock();
+							double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, false);
+
+
+#pragma omp critical
+							{
+								total_least_system_travel_time += total_origin_least_travel_time;
+							}
+							end_t = clock();
+							cumulative_cp += end_t - start_t_cp;
+						}
+					}
+
+				}
+
+				// link based computing mode, we have to collect link volume from all processors.
+				if (assignment.assignment_mode == lue)
+					g_fetch_link_volume_for_all_processors();
+
+				// g_fout << "LC with CPU time " << cumulative_lc / 1000.0 << " s; " << endl;
+				// g_fout << "column generation with CPU time " << cumulative_cp / 1000.0 << " s; " << endl;
+
+				//****************************************//
+
+				// last iteraion before performing signal timing updating
+				double relative_gap = (total_system_travel_time - total_least_system_travel_time) / max(0.00001, total_least_system_travel_time);
+				dtalog.output() << "iteration: " << iteration_number << ",systemTT: " << total_system_travel_time << endl;
+
+				double CPU_Running_Time = cumulative_cp / 1000.0;
+				int number_of_agents = 0;
+				double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
+
+				dtalog.output() << "iteration: " << iteration_number << ",systemTT: " << total_system_travel_time << ", least system TT:" <<
+					total_least_system_travel_time << ",gap=" << relative_gap * 100 << " %" << endl;
+
+				if (iteration_number == 0)
+				{
+					
+					assignment.summary_file << "Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %" << endl;
+				}
+
+				assignment.summary_file << iteration_number << "," << CPU_Running_Time << "," << assignment.total_demand_volume << "," << Avg_Travel_Time << "," << relative_gap * 100 << endl;
 			}
-		}
 
-		// apply demand side scenarios
+			// column updating stage: for given column pool, update volume assigned for each column
+			dtalog.output() << "Step 5: Column Pool Updating" << endl;
+			dtalog.output() << "Total Column Pool Updating iteration: " << column_updating_iterations << endl;
 
-		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
-		{
-			CColumnVector* p_column_pool;
-			std::map<int, CColumnPath>::iterator it, it_begin, it_end;
-			int from_zone_sindex = g_zone_vector[orig].sindex;
-			if (from_zone_sindex == -1)
-				continue;
+			assignment.summary_file << "Step 5: column pool-based flow updating for traffic assignment " << endl;
+			assignment.summary_file << ",# of flow updating iterations=," << column_updating_iterations << endl;
 
-			for (int dest = 0; dest < g_zone_vector.size(); ++dest) //d
+			start_t = clock();
+			g_column_pool_optimization(assignment, column_updating_iterations);
+
+
+			dtalog.output() << endl;
+
+			// post-processing for collecting path flow to link flow
+			// post-processsing route assignment aggregation
+			if (assignment.assignment_mode != lue)
+			{
+				// we can have a recursive formulat to reupdate the current link volume by a factor of k/(k+1),
+				// and use the newly generated path flow to add the additional 1/(k+1)
+				g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), column_generation_iterations, false, false);
+			}
+			else
+				g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), column_generation_iterations, false);
+
+			// initialization at the first iteration of shortest path
+			double total_distance = 0;
+			update_link_travel_time_and_cost(column_generation_iterations, total_distance);
+
+
+			if (assignment.g_number_of_ODME_iterations >= 1)
 			{
 
-				int to_zone_sindex = g_zone_vector[dest].sindex;
-				if (to_zone_sindex == -1)
+				// record before odme volume
+				for (int i = 0; i < g_link_vector.size(); ++i)
+				{
+					for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+					{
+						g_link_vector[i].VDF_period[tau].volume_before_odme = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+					}
+				}
+
+
+				dtalog.output() << "Step 6: OD demand matrix estimation .." << endl;
+				assignment.summary_file << "Step 6: OD demand matrix estimation" << endl;
+
+				if (ODME_iterations == 100)
+				{
+
+					dtalog.output() << "File sensor_data.csv exists. # of ODME iterations = " << ODME_iterations << endl;
+					assignment.summary_file << "File sensor_data.csv exists. # of ODME iterations =, " << ODME_iterations << endl;
+				}
+				else
+				{
+					dtalog.output() << "File sensor_data.csv does not exist. # of ODME iterations = " << ODME_iterations << endl;
+					assignment.summary_file << "File sensor_data.csv does not exist. # of ODME iterations =, " << ODME_iterations << endl;
+				}
+
+
+
+
+				g_update_odme_volume_in_column_pool(assignment, 0);  // ODME before
+				assignment.Demand_ODME(ODME_iterations);
+				g_update_odme_volume_in_column_pool(assignment, 1);  // ODME after
+
+
+				assignment.summary_file << ",# of ODME_iterations=," << ODME_iterations << endl;
+
+				// record after odme volume
+				for (int i = 0; i < g_link_vector.size(); ++i)
+				{
+					for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+					{
+						g_link_vector[i].VDF_period[tau].volume_after_odme = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+					}
+				}
+
+				dtalog.output() << endl;
+			}
+
+		}  // end of ODME 
+		// stage II sensitivity analysis stage 
+
+
+		assignment.summary_file << "Step 7: perform sensivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. " << endl;
+
+		if (assignment.g_number_of_sensitivity_analysis_iterations >= 0)  // for real-time information, where historical path flows are kept the same 
+		{
+
+			int base_case_flag = 0; //base_case
+			g_record_corridor_performance_summary(assignment, 0);
+
+			// apply supply side scenarios
+			for (int i = 0; i < g_link_vector.size(); ++i)
+			{
+				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+				{
+					// used in travel time calculation
+					if (g_link_vector[i].VDF_period[tau].network_design_flag == -1 /*sa flag*/)  // we 
+					{
+						float old_lanes = g_link_vector[i].VDF_period[tau].nlanes;
+						g_link_vector[i].VDF_period[tau].nlanes = g_link_vector[i].VDF_period[tau].sa_lanes_change; // apply the absolute lane changes 
+						g_link_vector[i].VDF_period[tau].allowed_uses[assignment.active_scenario_index] = g_link_vector[i].VDF_period[tau].sa_allowed_uses; // apply the lane changes 
+
+						int at = 0;
+						if (g_link_vector[i].VDF_period[tau].nlanes < 0.01)
+							g_link_vector[i].VDF_period[tau].FFTT_at[at] = 1440; // prevent free flow travel time under zero flow due to blockage
+					}
+
+				}
+			}
+
+			// apply demand side scenarios
+
+			for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+			{
+				CColumnVector* p_column_pool;
+				std::map<int, CColumnPath>::iterator it, it_begin, it_end;
+				int from_zone_sindex = g_zone_vector[orig].sindex;
+				if (from_zone_sindex == -1)
 					continue;
 
-				double local_scale_factor = 1.0;
-				int o_district = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig];
-				int d_district = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[dest];
-
-
-				if (assignment.SA_o_district_id_factor_map.find(o_district) != assignment.SA_o_district_id_factor_map.end())
+				for (int dest = 0; dest < g_zone_vector.size(); ++dest) //d
 				{
-					local_scale_factor = assignment.SA_o_district_id_factor_map[o_district];
-				}
 
-				//d based factor
-				if (assignment.SA_d_district_id_factor_map.find(d_district) != assignment.SA_d_district_id_factor_map.end())
-				{
-					local_scale_factor = assignment.SA_d_district_id_factor_map[d_district];
-				}
+					int to_zone_sindex = g_zone_vector[dest].sindex;
+					if (to_zone_sindex == -1)
+						continue;
 
-				int od_district_key = o_district * 1000 + d_district;
-				if (assignment.SA_od_district_id_factor_map.find(od_district_key) != assignment.SA_od_district_id_factor_map.end())
-				{
-					local_scale_factor = assignment.SA_od_district_id_factor_map[od_district_key];
-				}
+					double local_scale_factor = 1.0;
+					int o_district = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig];
+					int d_district = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[dest];
 
 
-				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //at
-				{
-					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+					if (assignment.SA_o_district_id_factor_map.find(o_district) != assignment.SA_o_district_id_factor_map.end())
 					{
-						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-						if (p_column_pool->od_volume > 0 && fabs(local_scale_factor-1.0) > 0.001)
+						local_scale_factor = assignment.SA_o_district_id_factor_map[o_district];
+					}
+
+					//d based factor
+					if (assignment.SA_d_district_id_factor_map.find(d_district) != assignment.SA_d_district_id_factor_map.end())
+					{
+						local_scale_factor = assignment.SA_d_district_id_factor_map[d_district];
+					}
+
+					int od_district_key = o_district * 1000 + d_district;
+					if (assignment.SA_od_district_id_factor_map.find(od_district_key) != assignment.SA_od_district_id_factor_map.end())
+					{
+						local_scale_factor = assignment.SA_od_district_id_factor_map[od_district_key];
+					}
+
+
+					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //at
+					{
+						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 						{
-							p_column_pool->od_volume = p_column_pool->od_volume* local_scale_factor;
+							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+							if (p_column_pool->od_volume[assignment.active_scenario_index] > 0 && fabs(local_scale_factor - 1.0) > 0.001)
+							{
+								p_column_pool->od_volume[assignment.active_scenario_index] = p_column_pool->od_volume[assignment.active_scenario_index] * local_scale_factor;
+							}
 						}
 					}
 				}
 			}
+
+			//end of scenario 
+
+			double total_system_travel_time = 0;
+			double total_travel_distance = 0;
+
+			// initialization at beginning of shortest path
+			total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
+
+			g_update_sa_volume_in_column_pool(assignment, 0);  // SA before
+
+			g_column_regeneration(assignment, true);
+
+			// stage II: right after column generation, we will enable the path modifications for DMS users 
+			g_column_pool_route_modification(assignment, column_updating_iterations);
+
+
+			// stage III: after DMS path modification, we enable further user equilibirum computing for real time info users by switching their routes 
+			g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations, true);
+
+			g_update_sa_volume_in_column_pool(assignment, 1);  // SA after
+		}// SA change 
+
+		g_classification_in_column_pool(assignment);
+
+		assignment.summary_file << "Step 8: traffic simulataion if simulation_ouput = 1 in settings.csv . " << endl;
+
+		if (simulation_iterations >= 1)
+		{
+			start_simu = clock();
+
+			dtalog.output() << "Step 7: Simulation for traffic assignment.." << endl;
+			assignment.STTrafficSimulation();
+			end_simu = clock();
+			total_simu = end_simu - end_simu;
+
+			dtalog.output() << "CPU Running Time for traffic simulation: " << total_simu / 1000.0 << " s" << endl;
+			dtalog.output() << endl;
 		}
 
-		//end of scenario 
+		end_t = clock();
+		total_t = (end_t - start_t);
+		dtalog.output() << "Done!" << endl;
 
-		double total_system_travel_time = 0;
-		double total_travel_distance = 0;
-
-		// initialization at beginning of shortest path
-		total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
-
-		g_update_sa_volume_in_column_pool(assignment, 0);  // SA before
-
-		g_column_regeneration(assignment);
-
-		// stage II: right after column generation, we will enable the path modifications for DMS users 
-		g_column_pool_route_modification(assignment, column_updating_iterations);
+		dtalog.output() << "CPU Running Time for the entire computing progcess: " << total_t / 1000.0 << " s" << endl;
 
 
-		// stage III: after DMS path modification, we enable further user equilibirum computing for real time info users by switching their routes 
-		g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations, true);
-		
-		g_update_sa_volume_in_column_pool(assignment, 1);  // SA after
-	}
 
-	g_classification_in_column_pool(assignment);
-	
+		start_t = clock();
 
-	if (simulation_iterations >= 1)
-	{
-		start_simu = clock();
-		assignment.summary_file << "Step 5: traffic simulataion. " << endl;
+		//step 5: output simulation results of the new demand
+
+		g_record_corridor_performance_summary(assignment, 1);
 
 
-		dtalog.output() << "Step 5: Simulation for traffic assignment.." << endl;
-		assignment.STTrafficSimulation();
-		end_simu = clock();
-		total_simu = end_simu - end_simu;
-
-		dtalog.output() << "CPU Running Time for traffic simulation: " << total_simu / 1000.0 << " s" << endl;
-		dtalog.output() << endl;
-	}
-
-	end_t = clock();
-	total_t = (end_t - start_t);
-	dtalog.output() << "Done!" << endl;
-
-	dtalog.output() << "CPU Running Time for the entire computing progcess: " << total_t / 1000.0 << " s" << endl;
-
-	start_t = clock();
-
-	//step 5: output simulation results of the new demand
-
-	g_record_corridor_performance_summary(assignment, 1);
 
 	g_output_assignment_result(assignment,0);
 
+	g_output_demand_bin(assignment);
 	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
 	{
 	g_output_assignment_result(assignment, 1);
@@ -1289,6 +1423,14 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	}
 
 	g_OutputSummaryFiles(assignment);
+
+
+	// end of scenario computing, clean the memory 
+	g_column_pool_reset(assignment);
+	}
+	g_output_accessibility_result(assignment);
+	g_output_assignment_summary_result(assignment, 0);
+	g_output_2_way_assignment_summary_result(assignment, 0);
 	// at the end of simulation 
 	// validation step if reading data are available
 	bool b_sensor_reading_data_available = false;

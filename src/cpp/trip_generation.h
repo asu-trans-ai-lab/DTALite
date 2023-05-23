@@ -61,7 +61,10 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 	link.link_seq_no = assignment.g_number_of_links;
 	link.to_node_seq_no = internal_to_node_seq_no;
 
-	link.link_type = 1000;  // access_link
+	for (int si = 0; si < MAX_SCENARIOS; si++)
+	{
+		link.link_type_si[si] = 1000;  // access_link
+	}
 
 	//only for outgoing connectors
 	link.zone_seq_no_for_outgoing_connector = zone_seq_no;
@@ -82,12 +85,15 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 		link.VDF_period[tau].lane_based_ultimate_hourly_capacity = 99999;
 		// 60.0 for 60 min per hour
 		link.free_flow_travel_time_in_min = link_distance_VDF / max(0.001, link.free_speed) * 60;
-		link.VDF_period[tau].FFTT = link.free_flow_travel_time_in_min;
 		link.VDF_period[tau].penalty = 99;
 		link.VDF_period[tau].alpha = 0;
 		link.VDF_period[tau].beta = 0;
-		link.VDF_period[tau].allowed_uses += assignment.g_AgentTypeVector[agent_type_no].agent_type;
-		link.travel_time_per_period[tau] = link.free_flow_travel_time_in_min;
+
+		for (int at = 0; at < assignment.g_AgentTypeVector.size(); at++)
+		{
+		link.travel_time_per_period[tau][at] = link.free_flow_travel_time_in_min;
+		link.VDF_period[tau].FFTT_at[at] = link.free_flow_travel_time_in_min;
+		}
 	}
 
 	// add this link to the corresponding node as part of outgoing node/link

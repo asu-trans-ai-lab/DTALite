@@ -434,7 +434,7 @@ public:
 //			for (int tau = 0; tau < demand_period_size; ++tau)
 //			{
 //				// used in travel time calculation
-//				g_link_vector[i].background_PCE_volume_per_period[tau] = 0;
+//				g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau] = 0;
 //			}
 //
 //			if (g_node_vector[g_link_vector[i].from_node_seq_no].subarea_id >= 1 && g_node_vector[g_link_vector[i].to_node_seq_no].node_id >= 1)
@@ -460,7 +460,7 @@ public:
 //					for (int tau = 0; tau < demand_period_size; ++tau)
 //					{
 //						p_column_pool = &(assignment.g_column_pool[orig][dest][at][tau]);
-//						if (p_column_pool->od_volume > 0)
+//						if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 //						{
 //							// scan through the map with different node sum for different continuous paths
 //							it_begin = p_column_pool->path_node_sequence_map.begin();
@@ -504,7 +504,7 @@ public:
 //									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 //									{
 //										int link_seq_no = it->second.path_link_vector[nl];
-//										g_link_vector[link_seq_no].background_PCE_volume_per_period[tau] += it->second.path_volume;
+//										g_link_vector[link_seq_no].background_total_volume_for_all_agent_types_per_period[tau] += it->second.path_volume;
 //									}
 //								}
 //
@@ -545,8 +545,8 @@ public:
 //
 //				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 //				{
-//					double volume = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-//					double major_path_link_volume = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_PCE_volume_per_period[tau];
+//					double volume = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+//					double major_path_link_volume = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau];
 //					double ratio = major_path_link_volume / max(volume, 0.000001);
 //
 //					if (volume < 0.0000001)
@@ -557,8 +557,8 @@ public:
 //						g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
 //						g_node_vector[g_link_vector[i].from_node_seq_no].cell_str.c_str(),
 //						assignment.g_DemandPeriodVector[tau].time_period.c_str(),
-//						g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
-//						g_link_vector[i].background_PCE_volume_per_period[tau],
+//						g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
+//						g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau],
 //						major_path_link_volume,
 //						ratio,
 //						g_link_vector[i].geometry.c_str());
@@ -587,7 +587,7 @@ public:
 //				for (int tau = 0; tau < demand_period_size; ++tau)
 //				{
 //					p_column_pool = &(assignment.g_column_pool[orig][dest][at][tau]);
-//					if (p_column_pool->od_volume > 0 ||
+//					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0 ||
 //						(assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end()
 //							&& assignment.g_AgentTypeVector[at].real_time_information >= 1)
 //						)
@@ -599,7 +599,7 @@ public:
 //						if (assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end()
 //							&& assignment.g_AgentTypeVector[at].real_time_information >= 1)
 //						{
-//							p_column_pool->od_volume = 1;  // reset the volume as 1 to enable visualization 
+//							p_column_pool->od_volume[assignment.active_scenario_index] = 1;  // reset the volume as 1 to enable visualization 
 //
 //						}
 //
@@ -610,7 +610,7 @@ public:
 //			for (int o = 0; o < g_zone_vector.size(); o++)  // o
 //				for (int d = 0; d < g_zone_vector.size(); d++) //d
 //					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)  //tau
-//						if (assignment.g_column_pool[o][d][at][tau].od_volume > 0)
+//						if (assignment.g_column_pool[o][d][at][tau].od_volume[active_scenario_index] > 0)
 //						{
 //							for (int ai = 0; ai < assignment.g_column_pool[o][d][at][tau].discrete_agent_path_vector.size(); ai++)
 //							{

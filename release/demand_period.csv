@@ -1,0 +1,4 @@
+first_column,demand_period_id,demand_period,time_period,peak_time
+,1,am,0700_0800,730
+,2,md,0900_1400,1230
+,3,pm,1500_1700,1600

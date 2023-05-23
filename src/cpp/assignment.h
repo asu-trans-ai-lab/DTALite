@@ -59,11 +59,13 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 			// used in travel time calculation
-			g_link_vector[i].PCE_volume_per_period[tau] = 0;
-			g_link_vector[i].person_volume_per_period[tau] = 0;
+			g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = 0;
+			g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] = 0;
 
 			for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
-				g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+			{
+				g_link_vector[i].volume_per_agent_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+			}
 		}
 
 		//for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
@@ -87,7 +89,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 			float link_volume_contributed_by_path_volume;
 
 			int link_seq_no;
-			double PCE_ratio = 1;
+			double MEU_ratio = 1;
 			double OCC_ratio = 1;
 
 			int nl;
@@ -115,7 +117,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 					for (int tau = 0; tau < tau_size; ++tau)  //tau
 					{
 						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-						if (p_column_pool->od_volume > 0)
+						if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 						{
 
 							column_vector_size = p_column_pool->path_node_sequence_map.size();
@@ -133,13 +135,13 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 
 									// MSA updating for the existing column pools
 									// if iteration_index = 0; then update no flow discount is used (for the column pool case)
-									PCE_ratio = g_link_vector[link_seq_no].VDF_period[tau].pce[at];  // updated on 08/16/2021 for link dependent and agent type dependent pce factor mainly for trucks 
 									OCC_ratio = g_link_vector[link_seq_no].VDF_period[tau].occ[at];  // updated on 08/16/2021 for link dependent and agent type dependent pce factor mainly for trucks 
 #pragma omp critical
 									{
-										g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
-										g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
-										g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume * OCC_ratio;  // pure volume, not consider PCE
+										g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume ;
+										g_link_vector[link_seq_no].total_person_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+										g_link_vector[link_seq_no].volume_per_agent_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+
 										//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume * OCC_ratio;  // pure volume, not consider PCE
 
 
@@ -227,7 +229,7 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 		{
 			for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
 			{
-				float PCE_agent_type = assignment.g_AgentTypeVector[at].PCE;
+				float PCE_agent_type = 1;
 
 				// step 2: marginal cost for SO
 				g_link_vector[i].calculate_marginal_cost_for_agent_type(tau, at, PCE_agent_type);
@@ -279,11 +281,13 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 			// used in travel time calculation
-			g_link_vector[i].PCE_volume_per_period[tau] = 0;
-			g_link_vector[i].person_volume_per_period[tau] = 0;
+			g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = 0;
+			g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] = 0;
 
 			for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
-				g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+			{
+				g_link_vector[i].volume_per_agent_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+			}
 		}
 
 		//for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
@@ -306,7 +310,6 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 
 		int zone_size = g_zone_vector.size();
 		int tau_size = assignment.g_DemandPeriodVector.size();
-		float PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
 		float OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
 
 
@@ -338,7 +341,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 				for (int tau = 0; tau < tau_size; ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
 
@@ -381,7 +384,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -452,9 +455,9 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 #pragma omp critical
 								{
-									g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+									g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume;
+									g_link_vector[link_seq_no].total_person_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].volume_per_agent_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 									//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 								}
@@ -479,13 +482,13 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 
 			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].PCE_volume_per_period[tau]
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_agent_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
@@ -585,11 +588,13 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
 			{
 				// used in travel time calculation
-				g_link_vector[i].PCE_volume_per_period[tau] = 0;
-				g_link_vector[i].person_volume_per_period[tau] = 0;
+				g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = 0;
+				g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
-					g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+				{ 
+					g_link_vector[i].volume_per_agent_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+				}
 			}
 
 
@@ -608,7 +613,6 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 
 		int zone_size = g_zone_vector.size();
 		int tau_size = assignment.g_DemandPeriodVector.size();
-		float PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
 		float OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
 
 
@@ -640,7 +644,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 				for (int tau = 0; tau < tau_size; ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
 						// continuous: type 0
@@ -686,9 +690,9 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 								// MSA updating for the existing column pools
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
-									g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+									g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume;
+									g_link_vector[link_seq_no].total_person_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].volume_per_agent_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 									//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 								}
@@ -713,13 +717,13 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 
 			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].PCE_volume_per_period[tau]
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_agent_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
@@ -787,11 +791,13 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
 			{
 				// used in travel time calculation
-				g_link_vector[i].PCE_volume_per_period[tau] = 0;
-				g_link_vector[i].person_volume_per_period[tau] = 0;
+				g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] = 0;
+				g_link_vector[i].total_person_volume_for_all_agent_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
-					g_link_vector[i].person_volume_per_period_per_at[tau][at] = 0;
+				{ 
+					g_link_vector[i].volume_per_agent_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+				}
 			}
 
 
@@ -810,7 +816,6 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 		int zone_size = g_zone_vector.size();
 		int tau_size = assignment.g_DemandPeriodVector.size();
-		float PCE_ratio = assignment.g_AgentTypeVector[at].PCE;
 		float OCC_ratio = assignment.g_AgentTypeVector[at].OCC;
 
 
@@ -842,7 +847,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 				for (int tau = 0; tau < tau_size; ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
 						// continuous: type 0
@@ -884,7 +889,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -926,9 +931,9 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 								// MSA updating for the existing column pools
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
-									g_link_vector[link_seq_no].PCE_volume_per_period[tau] += link_volume_contributed_by_path_volume * PCE_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
-									g_link_vector[link_seq_no].person_volume_per_period_per_at[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+									g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume;
+									g_link_vector[link_seq_no].total_person_volume_for_all_agent_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].volume_per_agent_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 									//g_link_vector[link_seq_no].person_volume_per_district_per_at[analysis_district_id][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 								}
@@ -953,13 +958,13 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].PCE_volume_per_period[tau]
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_agent_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
@@ -1056,7 +1061,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 				if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 				{
-					g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].PCE_volume_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
+					g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 				}
 			}
 		}
@@ -1069,7 +1074,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 //   assignment.summary_file << ",iteration,key,o,d,at,tau,volume,"<< endl;
 	//step 1: calculate shortest path at inner iteration of column flow updating
-//#pragma omp parallel for
+#pragma omp parallel for
 	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
 	{
 		CColumnVector* p_column_pool;
@@ -1077,6 +1082,8 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 		int column_vector_size;
 
 		double least_gradient_cost = 999999;
+		double largest_gradient_cost = 1;  // 1 to avoid devided by zero error
+
 		int least_gradient_cost_path_seq_no = -1;
 		int least_gradient_cost_path_node_sum_index = -1;
 		int path_seq_count = 0;
@@ -1108,10 +1115,12 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
+						double total_OD_gap = 0;
+						double total_OD_travel_time = 0;
 
-						double diff = p_column_pool->od_volume - p_column_pool->prev_od_volume;
+						double diff = p_column_pool->od_volume[assignment.active_scenario_index] - p_column_pool->prev_od_volume;
 
 						if (b_sensitivity_analysis_flag && inner_iteration_number >= 1)
 						{
@@ -1121,7 +1130,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							}
 
 							if (inner_iteration_number >= 1)
-								diff = p_column_pool->od_volume - p_column_pool->od_volume_per_iteration_map[inner_iteration_number - 1];
+								diff = p_column_pool->od_volume[assignment.active_scenario_index] - p_column_pool->od_volume_per_iteration_map[inner_iteration_number - 1];
 
 							if (diff < -0.0001 || diff > 0.0001)
 							{
@@ -1138,14 +1147,14 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							}
 						}
 
-						p_column_pool->prev_od_volume = p_column_pool->od_volume;
+						p_column_pool->prev_od_volume = p_column_pool->od_volume[assignment.active_scenario_index];
 
 						column_vector_size = p_column_pool->path_node_sequence_map.size();
 
 
 						if (b_sensitivity_analysis_flag)
 						{
-							p_column_pool->od_volume_per_iteration_map[inner_iteration_number] = p_column_pool->od_volume;
+							p_column_pool->od_volume_per_iteration_map[inner_iteration_number] = p_column_pool->od_volume[assignment.active_scenario_index];
 						}
 
 						// scan through the map with different node sum for different paths
@@ -1160,6 +1169,15 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 						it_end = p_column_pool->path_node_sequence_map.end();
 
 						bool least_path_passing_improvement_flag = false;
+
+						if(g_zone_vector[orig].zone_id == 1 && g_zone_vector[dest].zone_id == 3 && b_sensitivity_analysis_flag == true)
+						{
+							if(p_column_pool->relative_OD_gap > 0.5)
+							{
+							int iii_debug = 1;
+							}
+						}
+						
 						for (it = it_begin; it != it_end; ++it)
 						{
 							path_toll = 0;
@@ -1167,6 +1185,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							path_distance = 0;
 							path_travel_time = 0;
 
+					//		cout << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id  <<  "; path_id" << it->second.path_seq_no << endl;
 							/// <summary>
 							/// 
 							if (b_sensitivity_analysis_flag && assignment.g_AgentTypeVector[at].real_time_information == 1)  //real time information
@@ -1193,13 +1212,25 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							/// <param name="inner_iteration_number"></param>
 							/// <param name="b_sensitivity_analysis_flag"></param>
 
+
+
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
 								path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 								path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
+
+								if (b_sensitivity_analysis_flag && inner_iteration_number == 0)  // peiheng and entai, 02/28/2023
+								{
+									if (g_link_vector[link_seq_no].VDF_period[tau].network_design_flag!=0)
+									{
+
+										it->second.path_SA_link_vector.push_back(link_seq_no);
+									}
+
+								}
 
 								path_gradient_cost += g_link_vector[link_seq_no].get_generalized_first_order_gradient_cost_of_second_order_loss_for_agent_type(tau, at);
 							}
@@ -1237,26 +1268,47 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 									least_path_passing_improvement_flag = 1;
 								}
 							}
+
+							if (path_gradient_cost > largest_gradient_cost && it->second. path_volume > -0.1)  // carrrying positive flow
+							{
+								largest_gradient_cost = path_gradient_cost;
+							}
 						}
 
 						if (column_vector_size >= 2)
 						{
 							// step 2: calculate gradient cost difference for each column path
 							total_switched_out_path_volume = 0;
+
 							for (it = it_begin; it != it_end; ++it)
 							{
+		//						cout << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id << "; path_id" << it->second.path_seq_no << endl;
+
+								if (it->second.path_seq_no == 9)
+								{
+									int ii_debug = 1;
+								}
 								if (it->second.path_seq_no != least_gradient_cost_path_seq_no)  //for non-least cost path
 								{
 									it->second.path_gradient_cost_difference = it->second.path_gradient_cost - least_gradient_cost;
 
 									//if(it->second.path_gradient_cost_difference >0.0001f)
 									{
-										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001, least_gradient_cost);
+										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001, largest_gradient_cost);
+
+										total_OD_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
+										total_OD_travel_time += (it->second.path_gradient_cost * it->second.path_volume);
+
 									}
 
 #pragma omp critical
 									{
 										total_system_cost_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
+
+										if (it->second.path_gradient_cost_difference > 1000 && it->second.path_volume >10)
+										{
+											int idebug = 1;
+										} 
 										total_system_travel_cost += (it->second.path_gradient_cost * it->second.path_volume);
 									}
 
@@ -1267,24 +1319,33 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 										// regular drivers do not switch at all (except for those encounter the dramatic induced delay)
 										// real time and DMS users only switch when they see the DMS or pass through the incident on the original routes 
 
-										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume; // small changes 
+//										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume[assignment.active_scenario_index]; // small changes 
+										step_size = 1.0 / (inner_iteration_number + 2); 
+
+										if (step_size < 0.05)
+											step_size = 0.05;
 
 									}
 									else
 									{  // column updating step size
-										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume;
+										step_size = 1.0 / (inner_iteration_number + 2) ;
 									}
 
 
 									previous_path_volume = it->second.path_volume; //b
 
-									double flow_shift = step_size * max(0.0000, it->second.path_gradient_cost_relative_difference);  //c, must be positive
+									double flow_shift = 0;
+//									flow_shift = step_size * max(0.0000, it->second.path_gradient_cost_difference);  // version 1: absolution derviative fail:
+//									flow_shift = step_size * max(0.0000, it->second.path_gradient_cost_relative_difference);  // version 3: relative grad, normalized using least cost, not working
+
+									flow_shift = step_size* max(0.0000, it->second.path_gradient_cost_relative_difference* p_column_pool->od_volume[assignment.active_scenario_index]);  // version 3: relative grad * OD volume
 
 
-									if (it->second.path_gradient_cost_relative_difference > 3 * 60)  // difference more than 3 hours
-									{
-										flow_shift = it->second.path_volume;  //switch out
-									}
+
+									//if (it->second.path_gradient_cost_relative_difference > 3 * 60)  // difference more than 3 hours
+									//{
+									//	flow_shift = it->second.path_volume;  //switch out
+									//}
 
 									if (flow_shift > it->second.path_volume)
 									{
@@ -1298,26 +1359,26 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 									// special condition for sensitivity iteration 0: reset the route flow switing size  as 0: no route flow switching is alloed for this base case: 
 									// Discussion with Chongnan. 
-									if (b_sensitivity_analysis_flag == true)
-									{
-										if (p_column_pool->OD_impact_flag == 0)
-											// by default no switching
-										{
-											step_size = 0;
-											flow_shift = 0;
-										}
-										else
-										{  // p_column_pool->OD_impact_flag ==1 
-											// one more layer of checking
-											if (p_column_pool->at_od_impacted_flag_map.find(at) == p_column_pool->at_od_impacted_flag_map.end())
-											{ // for RT users, only one condition is used to mark at_od_impacted_flag_map
-											  // for DMS users, two conditions are used to mark at_od_impacted_flag_map
-												step_size = 0;
-												flow_shift = 0;
-											}
+									//if (b_sensitivity_analysis_flag == true)
+									//{
+									//	if (p_column_pool->OD_impact_flag == 0)
+									//		// by default no switching
+									//	{
+									//		step_size = 0;
+									//		flow_shift = 0;
+									//	}
+									//	else
+									//	{  // p_column_pool->OD_impact_flag ==1 
+									//		// one more layer of checking
+									//		if (p_column_pool->at_od_impacted_flag_map.find(at) == p_column_pool->at_od_impacted_flag_map.end())
+									//		{ // for RT users, only one condition is used to mark at_od_impacted_flag_map
+									//		  // for DMS users, two conditions are used to mark at_od_impacted_flag_map
+									//			step_size = 0;
+									//			flow_shift = 0;
+									//		}
 
-										}
-									}
+									//	}
+									//}
 
 									//recall that it->second.path_gradient_cost_difference >=0
 									// step 3.1: shift flow from nonshortest path to shortest path
@@ -1345,6 +1406,9 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 								{
 									int i_debug = 1;
 								}
+
+								total_OD_travel_time += least_gradient_cost * p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_volume;
+
 								p_column_pool->path_node_sequence_map[least_gradient_cost_path_node_sum_index].path_volume += total_switched_out_path_volume;
 
 								if (b_sensitivity_analysis_flag == false)
@@ -1371,6 +1435,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 						}
 
 
+						p_column_pool->relative_OD_gap = total_OD_gap / max(1,total_OD_travel_time);
 					}
 				}
 			}
@@ -1446,10 +1511,10 @@ void g_update_sa_volume_in_column_pool(Assignment& assignment, int before_and_af
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
-						p_column_pool->prev_od_volume = p_column_pool->od_volume;
+						p_column_pool->prev_od_volume = p_column_pool->od_volume[assignment.active_scenario_index];
 
 						column_vector_size = p_column_pool->path_node_sequence_map.size();
 
@@ -1519,10 +1584,10 @@ void g_update_odme_volume_in_column_pool(Assignment& assignment, int before_and_
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
-						p_column_pool->prev_od_volume = p_column_pool->od_volume;
+						p_column_pool->prev_od_volume = p_column_pool->od_volume[assignment.active_scenario_index];
 
 						column_vector_size = p_column_pool->path_node_sequence_map.size();
 
@@ -1589,7 +1654,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 
 						column_vector_size = p_column_pool->path_node_sequence_map.size();
@@ -1697,13 +1762,13 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 			{
 				dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].PCE_volume_per_period[0] << endl;
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_agent_types_per_period[0] << endl;
 			}
 		}
 	}
 }
 
-void g_column_regeneration(Assignment& assignment);
+void g_column_regeneration(Assignment& assignment, bool real_time_info_flag = true);
 
 void g_reset_link_volume_in_master_program_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume);
 void g_reset_link_volume_for_all_processors();
@@ -1747,7 +1812,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 					{
 						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-						if (p_column_pool->od_volume > 0)
+						if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 						{
 							column_vector_size = p_column_pool->path_node_sequence_map.size();
 
@@ -1861,7 +1926,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										for (int nl2 = 1; nl2 < it2->second.m_link_size; ++nl2)  // arc a // starting from 1 to exclude virtual link at the beginning
 										{
 											// compute it2->second.path_travel_time
-											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].travel_time_per_period[tau];
+											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].travel_time_per_period[tau][at];
 
 										}
 
@@ -1971,14 +2036,14 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											for (int nl0 = 0; nl0 < it->second.m_link_size; ++nl0)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].travel_time_per_period[tau];
+												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].travel_time_per_period[tau][at];
 
 											}
 											float alt_path_travel_time = 0;
 											for (int nl3 = 1; nl3 < link_seq_vector.size(); ++nl3)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].travel_time_per_period[tau];
+												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].travel_time_per_period[tau][at];
 
 											}
 
@@ -2017,6 +2082,50 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 }
 
+void g_column_pool_reset(Assignment& assignment) 
+{
+
+	//step 1: calculate shortest path at inner iteration of column flow updating
+#pragma omp parallel for
+	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+	{
+		CColumnVector* p_column_pool;
+
+		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
+		int column_vector_size;
+
+		int from_zone_sindex = g_zone_vector[orig].sindex;
+		if (from_zone_sindex == -1)
+			continue;
+
+		for (int dest = 0; dest < g_zone_vector.size(); ++dest) //d
+		{
+			int to_zone_sindex = g_zone_vector[dest].sindex;
+
+			if (to_zone_sindex == -1)
+				continue;
+
+			for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //m
+			{
+					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+					{
+						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+						if (p_column_pool->path_node_sequence_map.size() > 0)
+						{
+							p_column_pool->reset_column_pool();
+						}
+
+
+				} // tau
+			}  //agent type
+		} //dest
+	}  // orig
+
+
+	dtalog.output() << " updating";
+
+
+}
 
 void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in_min, int recording_flag = 0)
 {
@@ -2080,7 +2189,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 						if (p_column_pool->activity_zone_no_vector.size())   // case of activity zones
 						{
@@ -2148,7 +2257,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 							// add this unique path  // later we can add k activity paths
 							int path_count = p_column_pool->path_node_sequence_map.size();
 							p_column_pool->path_node_sequence_map[node_sum].path_seq_no = path_count;
-							p_column_pool->path_node_sequence_map[node_sum].path_volume = p_column_pool->od_volume;
+							p_column_pool->path_node_sequence_map[node_sum].path_volume = p_column_pool->od_volume[assignment.active_scenario_index];
 							p_column_pool->path_node_sequence_map[node_sum].path_toll = 0;
 
 

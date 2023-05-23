@@ -1,0 +1,443 @@
+File link_qvdf.csv does not exist. Please check.
+______
+Step 1.1: Reading section demand_period.csv...
+cumulative profile no. 0, ratio at slot  85 (7:5) = 0.0033333,CR 0.083333
+cumulative profile no. 0, ratio at slot  86 (7:10) = 0.0033333,CR 0.16667
+cumulative profile no. 0, ratio at slot  87 (7:15) = 0.0033333,CR 0.25
+cumulative profile no. 0, ratio at slot  88 (7:20) = 0.0033333,CR 0.33333
+cumulative profile no. 0, ratio at slot  89 (7:25) = 0.0033333,CR 0.41667
+cumulative profile no. 0, ratio at slot  90 (7:30) = 0.0033333,CR 0.5
+cumulative profile no. 0, ratio at slot  91 (7:35) = 0.0033333,CR 0.58333
+cumulative profile no. 0, ratio at slot  92 (7:40) = 0.0033333,CR 0.66667
+cumulative profile no. 0, ratio at slot  93 (7:45) = 0.0033333,CR 0.75
+cumulative profile no. 0, ratio at slot  94 (7:50) = 0.0033333,CR 0.83333
+cumulative profile no. 0, ratio at slot  95 (7:55) = 0.0033333,CR 0.91667
+cumulative profile no. 0, ratio at slot  96 (8:0) = 0.0033333,CR 1
+final cumulative profile ratio = 0.91667
+cumulative profile no. 0, ratio at slot  109 (9:5) = 0.0033333,CR 0.016667
+cumulative profile no. 0, ratio at slot  110 (9:10) = 0.0033333,CR 0.033333
+cumulative profile no. 0, ratio at slot  111 (9:15) = 0.0033333,CR 0.05
+cumulative profile no. 0, ratio at slot  112 (9:20) = 0.0033333,CR 0.066667
+cumulative profile no. 0, ratio at slot  113 (9:25) = 0.0033333,CR 0.083333
+cumulative profile no. 0, ratio at slot  114 (9:30) = 0.0033333,CR 0.1
+cumulative profile no. 0, ratio at slot  115 (9:35) = 0.0033333,CR 0.11667
+cumulative profile no. 0, ratio at slot  116 (9:40) = 0.0033333,CR 0.13333
+cumulative profile no. 0, ratio at slot  117 (9:45) = 0.0033333,CR 0.15
+cumulative profile no. 0, ratio at slot  118 (9:50) = 0.0033333,CR 0.16667
+cumulative profile no. 0, ratio at slot  119 (9:55) = 0.0033333,CR 0.18333
+cumulative profile no. 0, ratio at slot  120 (10:0) = 0.0033333,CR 0.2
+cumulative profile no. 0, ratio at slot  121 (10:5) = 0.0033333,CR 0.21667
+cumulative profile no. 0, ratio at slot  122 (10:10) = 0.0033333,CR 0.23333
+cumulative profile no. 0, ratio at slot  123 (10:15) = 0.0033333,CR 0.25
+cumulative profile no. 0, ratio at slot  124 (10:20) = 0.0033333,CR 0.26667
+cumulative profile no. 0, ratio at slot  125 (10:25) = 0.0033333,CR 0.28333
+cumulative profile no. 0, ratio at slot  126 (10:30) = 0.0033333,CR 0.3
+cumulative profile no. 0, ratio at slot  127 (10:35) = 0.0033333,CR 0.31667
+cumulative profile no. 0, ratio at slot  128 (10:40) = 0.0033333,CR 0.33333
+cumulative profile no. 0, ratio at slot  129 (10:45) = 0.0033333,CR 0.35
+cumulative profile no. 0, ratio at slot  130 (10:50) = 0.0033333,CR 0.36667
+cumulative profile no. 0, ratio at slot  131 (10:55) = 0.0033333,CR 0.38333
+cumulative profile no. 0, ratio at slot  132 (11:0) = 0.0033333,CR 0.4
+cumulative profile no. 0, ratio at slot  133 (11:5) = 0.0033333,CR 0.41667
+cumulative profile no. 0, ratio at slot  134 (11:10) = 0.0033333,CR 0.43333
+cumulative profile no. 0, ratio at slot  135 (11:15) = 0.0033333,CR 0.45
+cumulative profile no. 0, ratio at slot  136 (11:20) = 0.0033333,CR 0.46667
+cumulative profile no. 0, ratio at slot  137 (11:25) = 0.0033333,CR 0.48333
+cumulative profile no. 0, ratio at slot  138 (11:30) = 0.0033333,CR 0.5
+cumulative profile no. 0, ratio at slot  139 (11:35) = 0.0033333,CR 0.51667
+cumulative profile no. 0, ratio at slot  140 (11:40) = 0.0033333,CR 0.53333
+cumulative profile no. 0, ratio at slot  141 (11:45) = 0.0033333,CR 0.55
+cumulative profile no. 0, ratio at slot  142 (11:50) = 0.0033333,CR 0.56667
+cumulative profile no. 0, ratio at slot  143 (11:55) = 0.0033333,CR 0.58333
+cumulative profile no. 0, ratio at slot  144 (12:0) = 0.0033333,CR 0.6
+cumulative profile no. 0, ratio at slot  145 (12:5) = 0.0033333,CR 0.61667
+cumulative profile no. 0, ratio at slot  146 (12:10) = 0.0033333,CR 0.63333
+cumulative profile no. 0, ratio at slot  147 (12:15) = 0.0033333,CR 0.65
+cumulative profile no. 0, ratio at slot  148 (12:20) = 0.0033333,CR 0.66667
+cumulative profile no. 0, ratio at slot  149 (12:25) = 0.0033333,CR 0.68333
+cumulative profile no. 0, ratio at slot  150 (12:30) = 0.0033333,CR 0.7
+cumulative profile no. 0, ratio at slot  151 (12:35) = 0.0033333,CR 0.71667
+cumulative profile no. 0, ratio at slot  152 (12:40) = 0.0033333,CR 0.73333
+cumulative profile no. 0, ratio at slot  153 (12:45) = 0.0033333,CR 0.75
+cumulative profile no. 0, ratio at slot  154 (12:50) = 0.0033333,CR 0.76667
+cumulative profile no. 0, ratio at slot  155 (12:55) = 0.0033333,CR 0.78333
+cumulative profile no. 0, ratio at slot  156 (13:0) = 0.0033333,CR 0.8
+cumulative profile no. 0, ratio at slot  157 (13:5) = 0.0033333,CR 0.81667
+cumulative profile no. 0, ratio at slot  158 (13:10) = 0.0033333,CR 0.83333
+cumulative profile no. 0, ratio at slot  159 (13:15) = 0.0033333,CR 0.85
+cumulative profile no. 0, ratio at slot  160 (13:20) = 0.0033333,CR 0.86667
+cumulative profile no. 0, ratio at slot  161 (13:25) = 0.0033333,CR 0.88333
+cumulative profile no. 0, ratio at slot  162 (13:30) = 0.0033333,CR 0.9
+cumulative profile no. 0, ratio at slot  163 (13:35) = 0.0033333,CR 0.91667
+cumulative profile no. 0, ratio at slot  164 (13:40) = 0.0033333,CR 0.93333
+cumulative profile no. 0, ratio at slot  165 (13:45) = 0.0033333,CR 0.95
+cumulative profile no. 0, ratio at slot  166 (13:50) = 0.0033333,CR 0.96667
+cumulative profile no. 0, ratio at slot  167 (13:55) = 0.0033333,CR 0.98333
+cumulative profile no. 0, ratio at slot  168 (14:0) = 0.0033333,CR 1
+final cumulative profile ratio = 0.98333
+cumulative profile no. 0, ratio at slot  181 (15:5) = 0.0033333,CR 0.041667
+cumulative profile no. 0, ratio at slot  182 (15:10) = 0.0033333,CR 0.083333
+cumulative profile no. 0, ratio at slot  183 (15:15) = 0.0033333,CR 0.125
+cumulative profile no. 0, ratio at slot  184 (15:20) = 0.0033333,CR 0.16667
+cumulative profile no. 0, ratio at slot  185 (15:25) = 0.0033333,CR 0.20833
+cumulative profile no. 0, ratio at slot  186 (15:30) = 0.0033333,CR 0.25
+cumulative profile no. 0, ratio at slot  187 (15:35) = 0.0033333,CR 0.29167
+cumulative profile no. 0, ratio at slot  188 (15:40) = 0.0033333,CR 0.33333
+cumulative profile no. 0, ratio at slot  189 (15:45) = 0.0033333,CR 0.375
+cumulative profile no. 0, ratio at slot  190 (15:50) = 0.0033333,CR 0.41667
+cumulative profile no. 0, ratio at slot  191 (15:55) = 0.0033333,CR 0.45833
+cumulative profile no. 0, ratio at slot  192 (16:0) = 0.0033333,CR 0.5
+cumulative profile no. 0, ratio at slot  193 (16:5) = 0.0033333,CR 0.54167
+cumulative profile no. 0, ratio at slot  194 (16:10) = 0.0033333,CR 0.58333
+cumulative profile no. 0, ratio at slot  195 (16:15) = 0.0033333,CR 0.625
+cumulative profile no. 0, ratio at slot  196 (16:20) = 0.0033333,CR 0.66667
+cumulative profile no. 0, ratio at slot  197 (16:25) = 0.0033333,CR 0.70833
+cumulative profile no. 0, ratio at slot  198 (16:30) = 0.0033333,CR 0.75
+cumulative profile no. 0, ratio at slot  199 (16:35) = 0.0033333,CR 0.79167
+cumulative profile no. 0, ratio at slot  200 (16:40) = 0.0033333,CR 0.83333
+cumulative profile no. 0, ratio at slot  201 (16:45) = 0.0033333,CR 0.875
+cumulative profile no. 0, ratio at slot  202 (16:50) = 0.0033333,CR 0.91667
+cumulative profile no. 0, ratio at slot  203 (16:55) = 0.0033333,CR 0.95833
+cumulative profile no. 0, ratio at slot  204 (17:0) = 0.0033333,CR 1
+final cumulative profile ratio = 0.95833
+number of demand periods = 3
+Step 1.2: Reading link_type.csv
+number of link types = 4
+Step 1.3: Reading agent_type.csv...
+number of agent types = 9
+Step 1.3: Reading zone data in zone.csv...
+reading 1 access nodes from zone.csv.. 
+reading 2 access nodes from zone.csv.. 
+Step 1.4: Reading node data in node.csv...
+Reading node data at layer0
+number of nodes = 4
+number of multimodal activity nodes = 0
+number of zones = 2
+Step 1.5: Initializing O-D zone vector...
+number of zones = 2
+
+Reading file demand_file_list.csv...
+Step 1.6: Reading link data in link.csv... 
+link layer= 0
+number of links =4
+number of links =4
+,Reading file section [real_time_info] in setting.csv...
+Step 1.9: Reading file section [output_file_configuration] in setting.csv...
+dynamic_link_performance_sampling_interval_in_min= -1 min
+dynamic_link_performance_sampling_interval_hd_in_min= 15 min
+Step 2.0: Reading demand side scenario data...
+
+Reading file departure_time_profile.csv
+T6h0min=0.003242
+T6h5min=0
+T6h10min=0.003242
+T6h15min=0.003218
+T6h20min=0.003218
+T6h25min=0.003218
+T6h30min=0.003803
+T6h35min=0.003803
+T6h40min=0.003803
+T6h45min=0.004459
+T6h50min=0.004459
+T6h55min=0.004459
+T7h0min=0.005002
+T7h5min=0
+T7h10min=0.005002
+T7h15min=0.005207
+T7h20min=0.005207
+T7h25min=0.005207
+T7h30min=0.005677
+T7h35min=0.005677
+T7h40min=0.005677
+T7h45min=0.005994
+T7h50min=0.005994
+T7h55min=0.005994
+T8h0min=0.006018
+T8h5min=0.006018
+T8h10min=0
+T8h15min=0.005508
+T8h20min=0.005508
+T8h25min=0
+T8h30min=0.00529
+T8h35min=0.00529
+T8h40min=0.00529
+T8h45min=0.005058
+T8h50min=0.005058
+T8h55min=0
+T9h0min=0.004833
+cumulative profile no. 1, ratio at slot  73 (6:5) = 0.0033333,CR 0.01974
+cumulative profile no. 1, ratio at slot  74 (6:10) = 0.003242,CR 0.03894
+cumulative profile no. 1, ratio at slot  75 (6:15) = 0.003218,CR 0.057998
+cumulative profile no. 1, ratio at slot  76 (6:20) = 0.003218,CR 0.077055
+cumulative profile no. 1, ratio at slot  77 (6:25) = 0.003218,CR 0.096113
+cumulative profile no. 1, ratio at slot  78 (6:30) = 0.003803,CR 0.11863
+cumulative profile no. 1, ratio at slot  79 (6:35) = 0.003803,CR 0.14116
+cumulative profile no. 1, ratio at slot  80 (6:40) = 0.003803,CR 0.16368
+cumulative profile no. 1, ratio at slot  81 (6:45) = 0.004459,CR 0.19009
+cumulative profile no. 1, ratio at slot  82 (6:50) = 0.004459,CR 0.21649
+cumulative profile no. 1, ratio at slot  83 (6:55) = 0.004459,CR 0.2429
+cumulative profile no. 1, ratio at slot  84 (7:0) = 0.005002,CR 0.27252
+cumulative profile no. 1, ratio at slot  85 (7:5) = 0.0033333,CR 0.29226
+cumulative profile no. 1, ratio at slot  86 (7:10) = 0.005002,CR 0.32188
+cumulative profile no. 1, ratio at slot  87 (7:15) = 0.005207,CR 0.35272
+cumulative profile no. 1, ratio at slot  88 (7:20) = 0.005207,CR 0.38356
+cumulative profile no. 1, ratio at slot  89 (7:25) = 0.005207,CR 0.41439
+cumulative profile no. 1, ratio at slot  90 (7:30) = 0.005677,CR 0.44801
+cumulative profile no. 1, ratio at slot  91 (7:35) = 0.005677,CR 0.48163
+cumulative profile no. 1, ratio at slot  92 (7:40) = 0.005677,CR 0.51525
+cumulative profile no. 1, ratio at slot  93 (7:45) = 0.005994,CR 0.55075
+cumulative profile no. 1, ratio at slot  94 (7:50) = 0.005994,CR 0.58625
+cumulative profile no. 1, ratio at slot  95 (7:55) = 0.005994,CR 0.62175
+cumulative profile no. 1, ratio at slot  96 (8:0) = 0.006018,CR 0.65739
+cumulative profile no. 1, ratio at slot  97 (8:5) = 0.006018,CR 0.69303
+cumulative profile no. 1, ratio at slot  98 (8:10) = 0.0033333,CR 0.71277
+cumulative profile no. 1, ratio at slot  99 (8:15) = 0.005508,CR 0.74539
+cumulative profile no. 1, ratio at slot  100 (8:20) = 0.005508,CR 0.778
+cumulative profile no. 1, ratio at slot  101 (8:25) = 0.0033333,CR 0.79774
+cumulative profile no. 1, ratio at slot  102 (8:30) = 0.00529,CR 0.82907
+cumulative profile no. 1, ratio at slot  103 (8:35) = 0.00529,CR 0.8604
+cumulative profile no. 1, ratio at slot  104 (8:40) = 0.00529,CR 0.89173
+cumulative profile no. 1, ratio at slot  105 (8:45) = 0.005058,CR 0.92168
+cumulative profile no. 1, ratio at slot  106 (8:50) = 0.005058,CR 0.95164
+cumulative profile no. 1, ratio at slot  107 (8:55) = 0.0033333,CR 0.97138
+cumulative profile no. 1, ratio at slot  108 (9:0) = 0.004833,CR 1
+final cumulative profile ratio = 0.97138
+compute_cumulative_profile!
+allocating 4D memory for 0 zones,nM=2,nX=2,nY=9,nZ=3
+
+Reading file demand_file_list.csv...
+o_zone_id:1, d_zone_id: 2, value = 7000
+total demand volume is 7000
+Step 2.2: Reading supply side scenario data...
+reading 0 sa  capacity scenario.. 
+reading 0 dms scenario.. 
+Step 2: Assigning computing tasks to memory blocks...
+There are 54 SP networks in memory.
+There are 54 agent type*zones to be computed in CPU.
+
+Step 4: Column Generation for Traffic Assignment...
+Total Column Generation iteration: 40
+,# of column generation (shortest path finding) iterations=, 40
+
+
+Current iteration number:0
+Current CPU time: 0.003 s
+iteration: 0,systemTT: 0
+iteration: 0,systemTT: 0, least system TT:1.4e+05,gap=-100 %
+
+Current iteration number:1
+Current CPU time: 0.009 s
+iteration: 1,systemTT: 0
+iteration: 1,systemTT: 0, least system TT:1.4e+05,gap=-100 %
+
+Current iteration number:2
+Current CPU time: 0.013 s
+iteration: 2,systemTT: 3.3696e+05
+iteration: 2,systemTT: 3.3696e+05, least system TT:2.1e+05,gap=60.455 %
+
+Current iteration number:3
+Current CPU time: 0.016 s
+iteration: 3,systemTT: 3.3696e+05
+iteration: 3,systemTT: 3.3696e+05, least system TT:2.1e+05,gap=60.455 %
+
+Current iteration number:4
+Current CPU time: 0.018 s
+iteration: 4,systemTT: 1.9311e+05
+iteration: 4,systemTT: 1.9311e+05, least system TT:1.7891e+05,gap=7.9412 %
+
+Current iteration number:5
+Current CPU time: 0.021 s
+iteration: 5,systemTT: 2.1034e+05
+iteration: 5,systemTT: 2.1034e+05, least system TT:1.5231e+05,gap=38.095 %
+
+Current iteration number:6
+Current CPU time: 0.024 s
+iteration: 6,systemTT: 1.9288e+05
+iteration: 6,systemTT: 1.9288e+05, least system TT:1.6553e+05,gap=16.524 %
+
+Current iteration number:7
+Current CPU time: 0.027 s
+iteration: 7,systemTT: 1.9311e+05
+iteration: 7,systemTT: 1.9311e+05, least system TT:1.7891e+05,gap=7.9412 %
+
+Current iteration number:8
+Current CPU time: 0.03 s
+iteration: 8,systemTT: 1.984e+05
+iteration: 8,systemTT: 1.984e+05, least system TT:1.9127e+05,gap=3.7273 %
+
+Current iteration number:9
+Current CPU time: 0.032 s
+iteration: 9,systemTT: 2.0515e+05
+iteration: 9,systemTT: 2.0515e+05, least system TT:2.0232e+05,gap=1.3999 %
+
+Current iteration number:10
+Current CPU time: 0.035 s
+iteration: 10,systemTT: 2.1212e+05
+iteration: 10,systemTT: 2.1212e+05, least system TT:2.1208e+05,gap=0.021012 %
+
+Current iteration number:11
+Current CPU time: 0.038 s
+iteration: 11,systemTT: 2.1884e+05
+iteration: 11,systemTT: 2.1884e+05, least system TT:2.115e+05,gap=3.4723 %
+
+Current iteration number:12
+Current CPU time: 0.04 s
+iteration: 12,systemTT: 2.2513e+05
+iteration: 12,systemTT: 2.2513e+05, least system TT:2.1102e+05,gap=6.6847 %
+
+Current iteration number:13
+Current CPU time: 0.043 s
+iteration: 13,systemTT: 2.0515e+05
+iteration: 13,systemTT: 2.0515e+05, least system TT:2.0232e+05,gap=1.3999 %
+
+Current iteration number:14
+Current CPU time: 0.045 s
+iteration: 14,systemTT: 1.9544e+05
+iteration: 14,systemTT: 1.9544e+05, least system TT:1.8525e+05,gap=5.5019 %
+
+Current iteration number:15
+Current CPU time: 0.048 s
+iteration: 15,systemTT: 1.984e+05
+iteration: 15,systemTT: 1.984e+05, least system TT:1.9127e+05,gap=3.7273 %
+
+Current iteration number:16
+Current CPU time: 0.051 s
+iteration: 16,systemTT: 2.017e+05
+iteration: 16,systemTT: 2.017e+05, least system TT:1.9696e+05,gap=2.4046 %
+
+Current iteration number:17
+Current CPU time: 0.053 s
+iteration: 17,systemTT: 2.0515e+05
+iteration: 17,systemTT: 2.0515e+05, least system TT:2.0232e+05,gap=1.3999 %
+
+Current iteration number:18
+Current CPU time: 0.056 s
+iteration: 18,systemTT: 2.0865e+05
+iteration: 18,systemTT: 2.0865e+05, least system TT:2.0735e+05,gap=0.62526 %
+
+Current iteration number:19
+Current CPU time: 0.058 s
+iteration: 19,systemTT: 2.1212e+05
+iteration: 19,systemTT: 2.1212e+05, least system TT:2.1208e+05,gap=0.021012 %
+
+Current iteration number:20
+Current CPU time: 0.061 s
+iteration: 20,systemTT: 2.1553e+05
+iteration: 20,systemTT: 2.1553e+05, least system TT:2.1184e+05,gap=1.7428 %
+
+Current iteration number:21
+Current CPU time: 0.063 s
+iteration: 21,systemTT: 2.1884e+05
+iteration: 21,systemTT: 2.1884e+05, least system TT:2.115e+05,gap=3.4723 %
+
+Current iteration number:22
+Current CPU time: 0.066 s
+iteration: 22,systemTT: 2.0795e+05
+iteration: 22,systemTT: 2.0795e+05, least system TT:2.0637e+05,gap=0.76495 %
+
+Current iteration number:23
+Current CPU time: 0.068 s
+iteration: 23,systemTT: 2.0058e+05
+iteration: 23,systemTT: 2.0058e+05, least system TT:1.951e+05,gap=2.8047 %
+
+Current iteration number:24
+Current CPU time: 0.071 s
+iteration: 24,systemTT: 2.0284e+05
+iteration: 24,systemTT: 2.0284e+05, least system TT:1.9879e+05,gap=2.0394 %
+
+Current iteration number:25
+Current CPU time: 0.074 s
+iteration: 25,systemTT: 2.0515e+05
+iteration: 25,systemTT: 2.0515e+05, least system TT:2.0232e+05,gap=1.3999 %
+
+Current iteration number:26
+Current CPU time: 0.076 s
+iteration: 26,systemTT: 2.0748e+05
+iteration: 26,systemTT: 2.0748e+05, least system TT:2.0571e+05,gap=0.86203 %
+
+Current iteration number:27
+Current CPU time: 0.079 s
+iteration: 27,systemTT: 2.0981e+05
+iteration: 27,systemTT: 2.0981e+05, least system TT:2.0896e+05,gap=0.40728 %
+
+Current iteration number:28
+Current CPU time: 0.081 s
+iteration: 28,systemTT: 2.1212e+05
+iteration: 28,systemTT: 2.1212e+05, least system TT:2.1208e+05,gap=0.021012 %
+
+Current iteration number:29
+Current CPU time: 0.084 s
+iteration: 29,systemTT: 2.144e+05
+iteration: 29,systemTT: 2.144e+05, least system TT:2.1197e+05,gap=1.1472 %
+
+Current iteration number:30
+Current CPU time: 0.086 s
+iteration: 30,systemTT: 2.1664e+05
+iteration: 30,systemTT: 2.1664e+05, least system TT:2.1171e+05,gap=2.3288 %
+
+Current iteration number:31
+Current CPU time: 0.089 s
+iteration: 31,systemTT: 2.0915e+05
+iteration: 31,systemTT: 2.0915e+05, least system TT:2.0805e+05,gap=0.52965 %
+
+Current iteration number:32
+Current CPU time: 0.091 s
+iteration: 32,systemTT: 2.0342e+05
+iteration: 32,systemTT: 2.0342e+05, least system TT:1.9968e+05,gap=1.8688 %
+
+Current iteration number:33
+Current CPU time: 0.093 s
+iteration: 33,systemTT: 2.0515e+05
+iteration: 33,systemTT: 2.0515e+05, least system TT:2.0232e+05,gap=1.3999 %
+
+Current iteration number:34
+Current CPU time: 0.096 s
+iteration: 34,systemTT: 2.069e+05
+iteration: 34,systemTT: 2.069e+05, least system TT:2.0488e+05,gap=0.98805 %
+
+Current iteration number:35
+Current CPU time: 0.098 s
+iteration: 35,systemTT: 2.0865e+05
+iteration: 35,systemTT: 2.0865e+05, least system TT:2.0735e+05,gap=0.62526 %
+
+Current iteration number:36
+Current CPU time: 0.101 s
+iteration: 36,systemTT: 2.1039e+05
+iteration: 36,systemTT: 2.1039e+05, least system TT:2.0975e+05,gap=0.30479 %
+
+Current iteration number:37
+Current CPU time: 0.103 s
+iteration: 37,systemTT: 2.1212e+05
+iteration: 37,systemTT: 2.1212e+05, least system TT:2.1208e+05,gap=0.021012 %
+
+Current iteration number:38
+Current CPU time: 0.106 s
+iteration: 38,systemTT: 2.1384e+05
+iteration: 38,systemTT: 2.1384e+05, least system TT:2.1204e+05,gap=0.84575 %
+
+Current iteration number:39
+Current CPU time: 0.108 s
+iteration: 39,systemTT: 2.1553e+05
+iteration: 39,systemTT: 2.1553e+05, least system TT:2.1184e+05,gap=1.7428 %
+Step 5: Column Pool Updating
+Total Column Pool Updating iteration: 2
+column updating: iteration= 0, avg travel time = 29.308(min), optimization obj = 2832.2,Relative_gap=1.3454 %
+column updating: iteration= 1, avg travel time = 30.253(min), optimization obj = 161.04,Relative_gap=0.075958 %
+
+Step 6: OD demand matrix estimation ..
+File measurement.csv does not exist. # of ODME iterations = 0
+
+Done!
+CPU Running Time for the entire computing progcess: 0.005 s
+writing link_performance.csv..
+writing route_assignment.csv..
+writing link_background_volume.csv..
+writing data for 2  zones 
+writing demand.bin..
+writing data for 2  zones 
+Complete writing 0K binary demand pairs with CPU time 0 s.
+Output for assignment with 40 iterations. Traffic assignment completes!
+CPU Running Time for outputting simulation results: 0.006 s
+free memory..
+CPU Running Time for Entire Process: 0 min 0 sec
+done.

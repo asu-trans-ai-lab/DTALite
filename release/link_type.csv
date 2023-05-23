@@ -1,0 +1,4 @@
+link_type,name,type_code,traffic_flow_model,k_jam_km
+1,Highway/Expressway,f,kw,400
+2,Major arterial,a,spatial_queue,400
+100,connector,c,point_queue,400

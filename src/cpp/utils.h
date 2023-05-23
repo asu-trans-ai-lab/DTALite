@@ -106,6 +106,225 @@ public:
 static DTALog dtalog;
 
 
+template <typename T>
+T* Allocate1DDynamicArray(int nRows)
+{
+    T* dynamicVector;
+
+    dynamicVector = new (std::nothrow) T[nRows]();
+
+    if (dynamicVector == NULL)
+    {
+        exit(1);
+
+    }
+    return dynamicVector;
+}
+
+template <typename T>
+void Deallocate1DDynamicArray(T* dVector, int nRows)
+{
+    if (!dVector)
+        return;
+    delete[] dVector;
+}
+
+template <typename T>
+T** Allocate2DDynamicArray(int nRows, int nCols)
+{
+    T** dynamicArray;
+
+    dynamicArray = new (std::nothrow) T * [nRows];
+
+    if (!dynamicArray)
+    {
+        dtalog.output() << "Error: insufficient memory.";
+        g_program_stop();
+    }
+
+    for (int i = 0; i < nRows; ++i)
+    {
+        dynamicArray[i] = new (std::nothrow) T[nCols];
+
+        if (!dynamicArray[i])
+        {
+            dtalog.output() << "Error: insufficient memory.";
+            g_program_stop();
+        }
+    }
+
+    return dynamicArray;
+}
+
+template <typename T>
+void Deallocate2DDynamicArray(T** dArray, int nRows, int nCols)
+{
+    if (!dArray)
+        return;
+
+    for (int x = 0; x < nRows; ++x)
+        delete[] dArray[x];
+
+    delete[] dArray;
+}
+
+template <typename T>
+void Deallocate2DDynamicArray(T** dArray, int nRows)
+{
+    if (!dArray)
+        return;
+
+    for (int x = 0; x < nRows; ++x)
+        delete[] dArray[x];
+
+    delete[] dArray;
+}
+template <typename T>
+T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
+{
+    T*** dynamicArray = new (std::nothrow) T * *[nX];
+
+    if (!dynamicArray)
+    {
+        dtalog.output() << "Error: insufficient memory.";
+        g_program_stop();
+    }
+
+    for (int x = 0; x < nX; ++x)
+    {
+        if (x % 1000 == 0)
+        {
+            dtalog.output() << "allocating 3D memory for " << x << std::endl;
+        }
+
+        dynamicArray[x] = new (std::nothrow) T * [nY];
+
+        if (!dynamicArray[x])
+        {
+            dtalog.output() << "Error: insufficient memory.";
+            g_program_stop();
+        }
+
+        for (int y = 0; y < nY; ++y)
+        {
+            dynamicArray[x][y] = new (std::nothrow) T[nZ];
+            if (!dynamicArray[x][y])
+            {
+                dtalog.output() << "Error: insufficient memory.";
+                g_program_stop();
+            }
+        }
+    }
+
+    for (int x = 0; x < nX; ++x)
+        for (int y = 0; y < nY; ++y)
+            for (int z = 0; z < nZ; ++z)
+                dynamicArray[x][y][z] = 0;
+
+    return dynamicArray;
+}
+
+template <typename T>
+void Deallocate3DDynamicArray(T*** dArray, int nX, int nY)
+{
+    if (!dArray)
+        return;
+
+    for (int x = 0; x < nX; ++x)
+    {
+        for (int y = 0; y < nY; ++y)
+            delete[] dArray[x][y];
+
+        delete[] dArray[x];
+    }
+
+    delete[] dArray;
+}
+
+template <typename T>
+T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
+{
+    T**** dynamicArray = new (std::nothrow) T * **[nX];
+
+    if (!dynamicArray)
+    {
+        dtalog.output() << "Error: insufficient memory.";
+        g_program_stop();
+    }
+
+    if (nM == 0 || nX == 0 || nY == 0 || nZ == 0)
+    {
+        dtalog.output() << "allocating 4D memory but size = 0 in 1 dimension.";
+        g_program_stop();
+    }
+
+    for (int m = 0; m < nM; ++m)
+    {
+        if (m % 1000 == 0)
+        {
+            dtalog.output() << "allocating 4D memory for " << m << " zones,"
+                << "nM=" << nM << ","
+                << "nX=" << nX << ","
+                << "nY=" << nY << ","
+                << "nZ=" << nZ << std::endl;
+        }
+
+        dynamicArray[m] = new (std::nothrow) T * *[nX];
+
+        if (!dynamicArray[m])
+        {
+            dtalog.output() << "Error: insufficient memory.";
+            g_program_stop();
+        }
+
+        for (int x = 0; x < nX; ++x)
+        {
+            dynamicArray[m][x] = new (std::nothrow) T * [nY];
+
+            if (!dynamicArray[m][x])
+            {
+                dtalog.output() << "Error: insufficient memory.";
+                g_program_stop();
+            }
+
+            for (int y = 0; y < nY; ++y)
+            {
+                dynamicArray[m][x][y] = new (std::nothrow) T[nZ];
+                if (!dynamicArray[m][x][y])
+                {
+                    dtalog.output() << "Error: insufficient memory.";
+                    g_program_stop();
+                }
+            }
+        }
+    }
+
+    return dynamicArray;
+}
+
+template <typename T>
+void Deallocate4DDynamicArray(T**** dArray, int nM, int nX, int nY)
+{
+    if (!dArray)
+        return;
+
+    for (int m = 0; m < nM; ++m)
+    {
+        for (int x = 0; x < nX; ++x)
+        {
+            for (int y = 0; y < nY; ++y)
+                delete[] dArray[m][x][y];
+
+            delete[] dArray[m][x];
+        }
+
+        delete[] dArray[m];
+    }
+
+    delete[] dArray;
+}
+
+
 
 typedef struct
 {
@@ -159,6 +378,7 @@ public:
     std::vector<std::string> ParseLine(std::string line);
     bool GetValueByFieldName(std::string field_name, std::string& value, bool required_field = true);
     template <class T> bool GetValueByFieldName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
+    template <class T> bool GetValueByKeyName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
 };
 
 // Peiheng, 03/22/21, to avoid implicit instantiations in flash_dta.cpp and main_api.cpp for this template function only
@@ -205,19 +425,53 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
             return false;
         }
 
-        if (required_field)
-        {
-            if(NonnegativeFlag)
-            {
-                if (converted_value < 0)
-                    converted_value = 0;
-            }
-        }
+        //if (required_field)
+        //{
+        //    if(NonnegativeFlag)
+        //    {
+        //        if (converted_value < 0)
+        //            converted_value = 0;
+        //    }
+        //}
 
         value = converted_value;
         return true;
     }
 }
 
+template <class T>
+bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool required_field, bool NonnegativeFlag)
+{
+    ReadRecord();
+    std::string  field_name = "key";
 
+    if (FieldsIndices.find("key") == FieldsIndices.end())
+    {
+
+            dtalog.output() << "Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
+            g_program_stop();
+        return false;
+    }
+    if (FieldsIndices.find("value") == FieldsIndices.end())
+    {
+            dtalog.output() << "Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
+            g_program_stop();
+        return false;
+    }
+    else
+    {
+        do
+        {
+            std::string  key_name_record = "key";
+            GetValueByFieldName("key", key_name_record);
+
+            if (key_name_record == key_name)
+            {
+                GetValueByFieldName("value", value);
+                return true;
+            }
+        } while (ReadRecord());
+    }
+    return false; 
+}
 #endif

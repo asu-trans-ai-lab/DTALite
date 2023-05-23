@@ -53,33 +53,33 @@ using std::istringstream;
 
 void Assignment::GenerateDefaultMeasurementData()
 {
-	// step 1: read measurement.csv
+	// step 1: read sensor_data.csv
 	CDTACSVParser parser_measurement;
-	if (parser_measurement.OpenCSVFile("measurement.csv", false))
+	if (parser_measurement.OpenCSVFile("sensor_data.csv", false))
 	{
 		parser_measurement.CloseCSVFile();
 		return;
 	}
 
 
-	FILE* g_pFileModelLink = fopen("measurement.csv", "w");
+	FILE* g_pFileModelLink = fopen("sensor_data.csv", "w");
 
 	if (g_pFileModelLink != NULL)
 	{
-		fprintf(g_pFileModelLink, "measurement_id,measurement_type,o_zone_id,d_zone_id,from_node_id,to_node_id,count1,upper_bound_flag1,notes\n");
+		fprintf(g_pFileModelLink, "measurement_id,sensor_type,o_zone_id,d_zone_id,from_node_id,to_node_id,count1,upper_bound_flag1,notes\n");
 		//83	link			1	3	5000
 		int measurement_id = 1;
 		int sampling_rate = g_link_vector.size() / 100 + 1;
 		for (int i = 0; i < g_link_vector.size(); i++)
 		{
-			if (i % sampling_rate == 0 && g_link_vector[i].lane_capacity < 2500 && g_link_vector[i].link_type >= 1)
+			if (i % sampling_rate == 0 && g_link_vector[i].lane_capacity < 2500 && g_link_vector[i].link_type_si[0] >= 1)
 			{
 
 				fprintf(g_pFileModelLink, "%d,link,,,%d,%d,%f,0,generated from preprocssing based on 1/3 of link capacity\n",
 					measurement_id++,
 					g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
 					g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
-					g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes * 0.3333);
+					g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[0] * 0.3333);
 			}
 		}
 
@@ -88,25 +88,23 @@ void Assignment::GenerateDefaultMeasurementData()
 
 }
 // updates for OD re-generations
-void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysis_iterations)
+void Assignment::Demand_ODME(int OD_updating_iterations)
 {
 	int sensor_count = 0;
-	assignment.summary_file << "ODME stage" << endl;
-
 	if (OD_updating_iterations >= 1)
 	{
 //		GenerateDefaultMeasurementData();
-		// step 1: read measurement.csv
+		// step 1: read sensor_data.csv
 		CDTACSVParser parser_measurement;
 
-		if (parser_measurement.OpenCSVFile("measurement.csv", true))
+		if (parser_measurement.OpenCSVFile("sensor_data.csv", true))
 		{
 			while (parser_measurement.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 			{
-				string measurement_type;
-				parser_measurement.GetValueByFieldName("measurement_type", measurement_type);
+				string sensor_type;
+				parser_measurement.GetValueByFieldName("sensor_type", sensor_type);
 
-				if (measurement_type == "link")
+				if (sensor_type == "link")
 				{
 					int from_node_id;
 					if (!parser_measurement.GetValueByFieldName("from_node_id", from_node_id))
@@ -119,13 +117,13 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 					// add the to node id into the outbound (adjacent) node list
 					if (g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
-						dtalog.output() << "Error: from_node_id " << from_node_id << " in file measurement.csv is not defined in node.csv." << endl;
+						dtalog.output() << "Error: from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << endl;
 						//has not been defined
 						continue;
 					}
 					if (g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
-						dtalog.output() << "Error: to_node_id " << to_node_id << " in file measurement.csv is not defined in node.csv." << endl;
+						dtalog.output() << "Error: to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << endl;
 						//has not been defined
 						continue;
 					}
@@ -188,7 +186,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 						}
 					}
 
-					if (measurement_type == "production")
+					if (sensor_type == "production")
 					{
 						int o_zone_id;
 						if (!parser_measurement.GetValueByFieldName("o_zone_id", o_zone_id))
@@ -204,7 +202,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 						}
 					}
 
-					if (measurement_type == "attraction")
+					if (sensor_type == "attraction")
 					{
 						int o_zone_id;
 						if (!parser_measurement.GetValueByFieldName("d_zone_id", o_zone_id))
@@ -260,23 +258,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 
 			}
 
-			//if(s == OD_updating_iterations - sensitivity_analysis_iterations)
-			//{
-			//    //sensitivity analysis is activated SA iterations right before the end of entire ODME process to keep the route choice factors into account
-			//    // e.g. ODME 200: SA = 10: then the lane change occurs exactly once at iteration 200-10 = 190, the route choice change still happens from 190, 191,192, till 200
-			//    for (int i = 0; i < g_link_vector.size(); ++i)
-			//    {
-			//        for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-			//        {
-			//            // used in travel time calculation
-			//            if (g_link_vector[i].VDF_period[tau].sa_lanes_change != 0)  // we 
-			//            {
-			//                g_link_vector[i].VDF_period[tau].nlanes += g_link_vector[i].VDF_period[tau].sa_lanes_change; // apply the lane changes 
-			//            }
 
-			//        }
-			//    }
-			//}
 			prev_gap = gap;
 
 			int column_pool_counts = 0;
@@ -320,7 +302,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau, assginment period
 						{
 							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-							if (p_column_pool->od_volume > 0)
+							if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 							{
 								column_pool_counts++;
 
@@ -352,7 +334,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 											link_seq_no = it->second.path_link_vector[nl];
 											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-											double link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau];
+											double link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
 											path_travel_time += link_travel_time;
 
 											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // added with mustafa 12/24/2022, verified
@@ -537,7 +519,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations, int sensitivity_analysi
 		// very import: noted by Peiheng and Xuesong on 01/30/2022
 		double system_gap = 0;
 		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations, system_gap);
-		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].PCE_volume_per_period[tau] 
+		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] 
 	}
 
 

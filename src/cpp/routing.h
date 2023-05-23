@@ -94,8 +94,8 @@ public:
 		if (m_node_label_cost)  //7
 			delete[] m_node_label_cost;
 
-		if (m_link_PCE_volume_array)  //8
-			delete[] m_link_PCE_volume_array;
+		if (m_link_agent_type_volume_array)  //8
+			delete[] m_link_agent_type_volume_array;
 
 		if (m_link_person_volume_array)  //8
 			delete[] m_link_person_volume_array;
@@ -164,7 +164,7 @@ public:
 	// predecessor for this node points to the previous link that updates its label cost (as part of optimality condition) (for easy referencing)
 	int* m_link_predecessor;
 
-	double* m_link_PCE_volume_array;  // for VDF computing based on PCE
+	double* m_link_agent_type_volume_array;  // for VDF computing based on PCE
 	double* m_link_person_volume_array;  // person delay counting based on agent type
 
 	double** m_link_person_volume_per_grid_array;  // person delay counting based on grid_id
@@ -193,7 +193,7 @@ public:
 		m_link_predecessor = new int[number_of_nodes];  //6
 		m_node_label_cost = new double[number_of_nodes];  //7
 
-		m_link_PCE_volume_array = new double[number_of_links];  //8
+		m_link_agent_type_volume_array = new double[number_of_links];  //8
 		m_link_person_volume_array = new double[number_of_links];  //8
 
 
@@ -214,7 +214,7 @@ public:
 
 
 	
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau] + p_link->VDF_period[m_tau].penalty +
+			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][agent_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
 				p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60;
 
@@ -257,7 +257,7 @@ public:
 					p_link->VDF_period[m_tau].penalty = p_link->VDF_period[m_tau].RT_route_regeneration_penalty;
 				}
 
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau] + p_link->VDF_period[m_tau].penalty +
+			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][agent_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
 				p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60;
 
@@ -287,8 +287,8 @@ public:
 
 	void BuildNetwork(Assignment* p_assignment)  // build multimodal network
 	{
-		if (bBuildNetwork)
-			return;
+		//if (bBuildNetwork)
+		//	return;
 
 		int m_outgoing_link_seq_no_vector[MAX_LINK_SIZE_FOR_A_NODE];
 		int m_to_node_seq_no_vector[MAX_LINK_SIZE_FOR_A_NODE];
@@ -308,7 +308,16 @@ public:
 
 				int link_seq_no = g_node_vector[i].m_outgoing_link_seq_no_vector[j];
 				// only predefined allowed agent type can be considered
-				if (g_link_vector[link_seq_no].AllowAgentType(p_assignment->g_AgentTypeVector[m_agent_type_no].agent_type, m_tau))
+
+				// only predefined allowed agent type can be considered
+				//if (m_agent_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes_si[assignment.active_scenario_index] == 0)  // main mode of auto
+				//	continue; 
+
+				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index]; 
+				//if (m_agent_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_at[m_agent_type_no]==0)  // other modes
+				//	continue;
+
+				if (g_link_vector[link_seq_no].AllowAgentType(p_assignment->g_AgentTypeVector[m_agent_type_no].agent_type, m_tau, assignment.active_scenario_index))
 				{
 					m_outgoing_link_seq_no_vector[outgoing_link_size] = link_seq_no;
 					m_to_node_seq_no_vector[outgoing_link_size] = g_node_vector[i].m_to_node_seq_no_vector[j];
@@ -526,7 +535,7 @@ public:
 					continue;
 
 
-				ODvolume = pColumnVector->od_volume;
+				ODvolume = pColumnVector->od_volume[assignment.active_scenario_index];
 				volume = 0;
 				// this is contributed path volume from OD flow (O, D, k, per time period
 
@@ -573,7 +582,7 @@ public:
 								if (assignment.assignment_mode == lue)
 								{
 									// this is critical for parallel computing as we can write the volume to data
-									m_link_PCE_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
+									m_link_agent_type_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
 									m_link_person_volume_array[current_link_seq_no] += volume * OCC_ratio;
 
 
@@ -586,7 +595,7 @@ public:
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									//    << ": add volume " << volume << endl;
 
-									//if (m_link_PCE_volume_array[current_link_seq_no] > 7001)
+									//if (m_link_agent_type_volume_array[current_link_seq_no] > 7001)
 									//{
 									//    int idebug = 1;
 									//}
@@ -635,7 +644,7 @@ public:
 										// so we use a partial link penality approach to discover new alterantive routes for RT and DMS users. Xuesong and Mohammad 02/17/2023
 										for (int li = 0; li < l_node_size-1; ++li)
 										{
-											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau];
+											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau][m_agent_type_no];
 											g_link_vector[temp_path_link_vector[li]].VDF_period[m_tau].RT_route_regeneration_penalty = current_travel_time * 0.25;
 										}
 
@@ -762,7 +771,7 @@ public:
 				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea 
 					continue;
 
-				ODvolume = pColumnVector->od_volume;
+				ODvolume = pColumnVector->od_volume[assignment.active_scenario_index];
 				volume = ODvolume * k_path_prob;
 				// this is contributed path volume from OD flow (O, D, k, per time period
 
@@ -809,7 +818,7 @@ public:
 								if (assignment.assignment_mode == lue)
 								{
 									// this is critical for parallel computing as we can write the volume to data
-									m_link_PCE_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
+									m_link_agent_type_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
 									m_link_person_volume_array[current_link_seq_no] += volume * OCC_ratio;
 
 
@@ -822,7 +831,7 @@ public:
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									//    << ": add volume " << volume << endl;
 
-									//if (m_link_PCE_volume_array[current_link_seq_no] > 7001)
+									//if (m_link_agent_type_volume_array[current_link_seq_no] > 7001)
 									//{
 									//    int idebug = 1;
 									//}
@@ -908,7 +917,7 @@ public:
 	}
 
 	//major function 2: // time-dependent label correcting algorithm with double queue implementation
-	float optimal_label_correcting(int processor_id, Assignment* p_assignment, int iteration_k, int o_node_index, int d_node_no, bool pure_travel_time_cost, bool bsensitivity_analysis_flag)
+	float optimal_label_correcting(int processor_id, Assignment* p_assignment, int iteration_k, int o_node_index, int d_node_no, bool pure_travel_time_cost, bool bsensitivity_analysis_flag, bool real_time_info_flag)
 	{
 		int local_debugging_flag = 0;
 
@@ -986,7 +995,7 @@ public:
 
 		int from_node = -1;
 		int to_node = -1;
-		int link_sqe_no = -1;
+		int link_seq_no = -1;
 		double new_time = 0;
 		double new_distance = 0;
 		double new_to_node_cost = 0;
@@ -1016,21 +1025,22 @@ public:
 			for (int i = 0; i < NodeForwardStarArray[from_node].OutgoingLinkSize; ++i)
 			{
 				to_node = NodeForwardStarArray[from_node].OutgoingNodeNoArray[i];
-				link_sqe_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
+				link_seq_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
 
 				if (local_debugging_flag)
 					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << endl;
 
-				// if(map (pred_link_seq_no, link_sqe_no) is prohibitted )
+				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
+				 
 
-				//if (g_node_vector[from_node].node_id == 13621 && g_node_vector[to_node].node_id == 14997)
+
 				//{
-				//	float cost = m_link_genalized_cost_array[link_sqe_no];
+				//	float cost = m_link_genalized_cost_array[link_seq_no];
 				//	int debug = 1;
 				//	p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
 				//		<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
-				//		" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_sqe_no] = " << m_link_genalized_cost_array[link_sqe_no]
+				//		" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
 				//		<< endl;
 				//}
 
@@ -1040,7 +1050,7 @@ public:
 					{
 						string	movement_string;
 						string ib_link_id = g_link_vector[pred_link_seq_no].link_id;
-						string ob_link_id = g_link_vector[link_sqe_no].link_id;
+						string ob_link_id = g_link_vector[link_seq_no].link_id;
 						movement_string = ib_link_id + "->" + ob_link_id;
 
 						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
@@ -1053,14 +1063,26 @@ public:
 
 				//remark: the more complicated implementation can be found in paper Shortest Path Algorithms In Transportation Models: Classical and Innovative Aspects
 				//	A note on least time path computation considering delays and prohibitions for intersection movements
-
-				if (m_link_outgoing_connector_zone_seq_no_array[link_sqe_no] >= 0)
+		
+				if (g_node_vector[from_node].node_id == 5219 && g_node_vector[to_node].node_id == 1355)
 				{
-					if (m_link_outgoing_connector_zone_seq_no_array[link_sqe_no] != origin_zone)
+					int debug = 1;
+				}
+
+				if (m_link_outgoing_connector_zone_seq_no_array[link_seq_no] >= 0)
+				{
+					if (m_link_outgoing_connector_zone_seq_no_array[link_seq_no] != origin_zone)
 					{
 						// filter out for an outgoing connector with a centriod zone id different from the origin zone seq no
 						continue;
 					}
+				}
+
+				if (bsensitivity_analysis_flag == true && real_time_info_flag == false)
+				{
+					if (g_link_vector[link_seq_no].VDF_period[this->m_tau].SA_allowed_use[this->m_agent_type_no] == false)
+
+						continue;
 				}
 
 				//very important: only origin zone can access the outbound connectors,
@@ -1070,23 +1092,23 @@ public:
 				// Mark				new_distance = m_label_distance_array[from_node] + p_link->link_distance_VDF;
 				//float additional_cost = 0;
 
-				//if (g_link_vector[link_sqe_no].RT_travel_time > 1)  // used in real time routing only
+				//if (g_link_vector[link_seq_no].RT_travel_time > 1)  // used in real time routing only
 				//{
-				//    additional_cost = g_link_vector[link_sqe_no].RT_travel_time;
+				//    additional_cost = g_link_vector[link_seq_no].RT_travel_time;
 
-				//    //if (g_link_vector[link_sqe_no].RT_travel_time > 999)
+				//    //if (g_link_vector[link_seq_no].RT_travel_time > 999)
 				//    //    continue; //skip this link due to closure
 				//}
 
 
-				new_to_node_cost = m_node_label_cost[from_node] + m_link_genalized_cost_array[link_sqe_no];
+				new_to_node_cost = m_node_label_cost[from_node] + m_link_genalized_cost_array[link_seq_no];
 
 
 				if (local_debugging_flag)
 				{
 					p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
 						<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
-						" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_sqe_no] = " << m_link_genalized_cost_array[link_sqe_no]
+						" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
 						<< endl;
 
 				}
@@ -1106,7 +1128,7 @@ public:
 					// pointer to previous physical NODE INDEX from the current label at current node and time
 					m_node_predecessor[to_node] = from_node;
 					// pointer to previous physical NODE INDEX from the current label at current node and time
-					m_link_predecessor[to_node] = link_sqe_no;
+					m_link_predecessor[to_node] = link_seq_no;
 
 					if (local_debugging_flag)
 					{
@@ -1377,7 +1399,7 @@ public:
 				if (local_debugging_flag)
 					p_assignment->sp_log_file << "SP:  checking incoming node " << g_node_vector[from_node].node_id << endl;
 
-				// if(map (pred_link_seq_no, link_sqe_no) is prohibitted )
+				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
 
 				//remark: the more complicated implementation can be found in paper Shortest Path Algorithms In Transportation Models: Classical and Innovative Aspects
@@ -1396,6 +1418,7 @@ public:
 
 				if (g_link_vector[link_seq_no].VDF_period[this->m_tau].RT_allowed_use[this->m_agent_type_no] == false)
 					continue;
+
 
 				//very important: only origin zone can access the outbound connectors,
 				//the other zones do not have access to the outbound connectors
@@ -1601,7 +1624,7 @@ public:
 
 		std::map<int, int>::iterator it, it_begin, it_end;
 		int from_node, to_node;
-		int link_sqe_no;
+		int link_seq_no;
 		double new_time = 0;
 		double new_distance = 0;
 		double new_to_node_cost = 0;
@@ -1634,37 +1657,37 @@ public:
 			for (int i = 0; i < NodeForwardStarArray[from_node].OutgoingLinkSize; ++i)
 			{
 				to_node = NodeForwardStarArray[from_node].OutgoingNodeNoArray[i];
-				link_sqe_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
+				link_seq_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
 
-				if (link_id_visit_mapping.find(link_sqe_no) == link_id_visit_mapping.end())  // any link
+				if (link_id_visit_mapping.find(link_seq_no) == link_id_visit_mapping.end())  // any link
 				{
-					link_id_visit_mapping[link_sqe_no] = 1; // first time visit
+					link_id_visit_mapping[link_seq_no] = 1; // first time visit
 				}
 				else
 				{
-					link_id_visit_mapping[link_sqe_no] += 1;
+					link_id_visit_mapping[link_seq_no] += 1;
 
-					if (link_id_visit_mapping[link_sqe_no] >= 1)
+					if (link_id_visit_mapping[link_seq_no] >= 1)
 						continue; //skip this link if it has been visited
 				}
 
 
 
-				if (g_link_vector[link_sqe_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
+				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
 				{
-					if (negative_cost_link_id_visit_mapping.find(link_sqe_no) != negative_cost_link_id_visit_mapping.end())
+					if (negative_cost_link_id_visit_mapping.find(link_seq_no) != negative_cost_link_id_visit_mapping.end())
 					{
 						continue; // skip used negative cost links
 					}
 					else
 					{
-						negative_cost_link_id_visit_mapping[link_sqe_no] = 1;
+						negative_cost_link_id_visit_mapping[link_seq_no] = 1;
 					}
 
 				}
 
 				
-				if (g_link_vector[link_sqe_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
+				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
 				{
 					int idebug = 1;
 				}
@@ -1672,7 +1695,7 @@ public:
 				if (local_debugging_flag)
 					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << endl;
 
-				// if(map (pred_link_seq_no, link_sqe_no) is prohibitted )
+				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
 
 				if (g_node_vector[from_node].prohibited_movement_size >= 1)
@@ -1681,7 +1704,7 @@ public:
 					{
 						string	movement_string;
 						string ib_link_id = g_link_vector[pred_link_seq_no].link_id;
-						string ob_link_id = g_link_vector[link_sqe_no].link_id;
+						string ob_link_id = g_link_vector[link_seq_no].link_id;
 						movement_string = ib_link_id + "->" + ob_link_id;
 
 						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
@@ -1695,9 +1718,9 @@ public:
 				//remark: the more complicated implementation can be found in paper Shortest Path Algorithms In Transportation Models: Classical and Innovative Aspects
 				//	A note on least time path computation considering delays and prohibitions for intersection movements
 
-				if (m_link_outgoing_connector_zone_seq_no_array[link_sqe_no] >= 0)
+				if (m_link_outgoing_connector_zone_seq_no_array[link_seq_no] >= 0)
 				{
-					if (m_link_outgoing_connector_zone_seq_no_array[link_sqe_no] != origin_zone)
+					if (m_link_outgoing_connector_zone_seq_no_array[link_seq_no] != origin_zone)
 					{
 						// filter out for an outgoing connector with a centriod zone id different from the origin zone seq no
 						continue;
@@ -1712,7 +1735,7 @@ public:
 				float additional_cost = 0;
 
 
-				new_to_node_cost = m_node_label_cost[from_node] + m_link_genalized_cost_array[link_sqe_no] + additional_cost;
+				new_to_node_cost = m_node_label_cost[from_node] + m_link_genalized_cost_array[link_seq_no] + additional_cost;
 
 				if (local_debugging_flag)
 				{
@@ -1737,7 +1760,7 @@ public:
 					// pointer to previous physical NODE INDEX from the current label at current node and time
 					m_node_predecessor[to_node] = from_node;
 					// pointer to previous physical NODE INDEX from the current label at current node and time
-					m_link_predecessor[to_node] = link_sqe_no;
+					m_link_predecessor[to_node] = link_seq_no;
 
 					if (local_debugging_flag)
 					{

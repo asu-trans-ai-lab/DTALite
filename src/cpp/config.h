@@ -17,7 +17,10 @@
 #endif
 
 #ifdef BUILD_EXE
-    double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_iterations, int number_of_memory_blocks);
+    double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_iterations, int number_of_memory_blocks, int scenario_A_index, int scenario_index_size)
+        
+    int trace2od();
+
 #else
     #ifdef _WIN32
         #define DTALIBRARY_API __declspec(dllexport)
@@ -25,7 +28,8 @@
         #define DTALIBRARY_API
     #endif
 
-    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_output, int number_of_memory_blocks);
+    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_output, int number_of_memory_blocks, int scenario_A_index, int scenario_index_size);
+    extern "C" DTALIBRARY_API int trace2od();
 #endif
 
 #endif

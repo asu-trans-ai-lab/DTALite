@@ -1,0 +1,3 @@
+od_no,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,agent_type,demand_period,volume,connectivity_flag,s_x_coord,s_y_coord,t_x_coord,t_y_coord,path_FF_travel_time_min,distance_km,distance_mile,
+1,1,2,0,1,0,0,d,am,7000.00,0,0.017882,-0.125179,40.253933,0.053648
+1,2,1,1,0,0,0,d,am,7000.00,0,40.253933,0.053648,0.017882,-0.125179

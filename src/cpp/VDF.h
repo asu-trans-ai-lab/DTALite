@@ -54,7 +54,7 @@ using std::ofstream;
 class CPeriod_VDF
 {
 public:
-    CPeriod_VDF() : vdf_type{ q_vdf }, vdf_data_count{ 0 }, Q_cd{ 0.954946463 }, Q_n{ 1.141574427 }, Q_cp{ 0.400089684 }, Q_s{ 4 }, vf{ 60 }, v_congestion_cutoff{ 45 }, FFTT{ 1 }, BPR_period_capacity{ 1 }, peak_load_factor{ 1 }, queue_demand_factor{ -1 }, DOC{ 0 }, VOC{ 0 }, vt2{ -1 },
+    CPeriod_VDF() : vdf_type{ q_vdf }, vdf_data_count{ 0 }, Q_peak_load_factor{ 1.0 }, Q_cd{ 0.954946463 }, Q_n{ 1.141574427 }, Q_cp{ 0.400089684 }, Q_s{ 4 }, vf{ 60 }, v_congestion_cutoff{ 45 }, DOC{ 0 }, VOC{ 0 }, vt2{ -1 },
         alpha{ 0.39999993 }, beta{ 4 }, Q_alpha{ 0.272876961 }, Q_beta{ 4 }, rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, sa_lanes_change{ 0 }, LR_price{ 0 }, LR_RT_price{ 0 }, starting_time_in_hour{ 0 }, ending_time_in_hour{ 0 },
         volume_before_odme {0}, volume_after_odme {0},
 
@@ -68,9 +68,17 @@ public:
         for (int at = 0; at < MAX_AGNETTYPES; at++)
         {
             toll[at] = 0;
-            pce[at] = 1;
+            free_speed_at[at] = 0;
+            capacity_at[at] = 0;
+            FFTT_at[at] = 0;
+            VOC_at[at] = 0; 
+            lanes_at[at] = 0;
+            
+
             occ[at] = 1;
             RT_allowed_use[at] = true;
+            SA_allowed_use[at] = true;
+
         }
 
     }
@@ -138,18 +146,21 @@ public:
 
     }
 
-    double calculate_travel_time_based_on_QVDF(double volume, float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay])
+    double calculate_travel_time_based_on_QVDF(int at, double FFTT, double volume, double mode_hourly_capacity, double peak_load_factor,
+        
+        float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay])
     {
+
         // QVDF
             double dc_transition_ratio = 1;
 
              // step 1: calculate lane_based D based on plf and nlanes from link volume V over the analysis period  take nonnegative values
-            lane_based_D = max(0.0, volume) * queue_demand_factor / max(0.000001, nlanes);
+            lane_based_D = max(0.0, volume) * peak_load_factor / max(0.000001, nlanes);
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity, 
             // uncongested states D <C 
             // congested states D > C, leading to P > 1
-            DOC = lane_based_D / max(0.00001, lane_based_ultimate_hourly_capacity);
-     
+            DOC = lane_based_D / max(0.00001, mode_hourly_capacity);
+            
             //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
             // we could have a period based FFTT, so we need to convert FFTT to vfree
             // if we only have one period, then we can directly use vf and v_congestion_cutoff. 
@@ -183,8 +194,8 @@ public:
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity, 
             // uncongested states D <C 
             // congested states D > C, leading to P > 1
-            VOC = volume/ max(0.00001, BPR_period_capacity);
-
+            VOC = DOC;
+            VOC_at[at] = VOC;
             //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
             // we could have a period based FFTT, so we need to convert FFTT to vfree
             // if we only have one period, then we can directly use vf and v_congestion_cutoff. 
@@ -233,8 +244,8 @@ public:
            //           dtalog.output() << "nonpeak_hourly_flow = " << nonpeak_hourly_flow << endl;
 
            // setup the upper bound on nonpeak flow rates
-           if (nonpeak_hourly_flow > lane_based_ultimate_hourly_capacity)
-               nonpeak_hourly_flow = lane_based_ultimate_hourly_capacity;
+           if (nonpeak_hourly_flow > mode_hourly_capacity)
+               nonpeak_hourly_flow = mode_hourly_capacity;
 
            double nonpeak_avg_speed = (vf + v_congestion_cutoff) / 2.0; // later we will use piecewise approximation 
 
@@ -248,7 +259,7 @@ public:
            }
            // work on congested condition
            //step 4.3 compute mu
-           Q_mu = min(lane_based_ultimate_hourly_capacity, lane_based_D / P);
+           Q_mu = min(mode_hourly_capacity, lane_based_D / P);
 
            //use  as the lower speed compared to 8/15 values for the congested states 
 
@@ -371,14 +382,16 @@ public:
      e_VDF_type vdf_type;
     double DOC;
     double VOC;
+
     //updated BPR-X parameters
     double vt2;
     //peak hour factor
     double alpha;
     double beta;
     double ref_link_volume;
-    double BPR_period_capacity;
+//    double BPR_period_capacity_at[MAX_AGNETTYPES];
 
+    double Q_peak_load_factor;
     double Q_alpha;
     double Q_beta;
     double Q_cd;
@@ -412,19 +425,25 @@ public:
     double t2;
     double k_critical;
 
-    double peak_load_factor;  // peak load factor
-    double queue_demand_factor;  // queue_demand_factor
 
     double v_congestion_cutoff;
     double vf;
 
     double sa_volume;
     double sa_lanes_change;
+
+
     int network_design_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
     double toll[MAX_AGNETTYPES];
-    double pce[MAX_AGNETTYPES];
     double occ[MAX_AGNETTYPES];
+
+    double free_speed_at[MAX_AGNETTYPES];
+    double capacity_at[MAX_AGNETTYPES];
+    double FFTT_at[MAX_AGNETTYPES];
+    double lanes_at[MAX_AGNETTYPES];
+    
+    double VOC_at[MAX_AGNETTYPES];
 
     double dsr[MAX_AGNETTYPES]; // desired speed ratio with respect to free-speed
     double penalty;
@@ -432,7 +451,10 @@ public:
     double LR_price[MAX_AGNETTYPES];
     double LR_RT_price[MAX_AGNETTYPES];;
     bool   RT_allowed_use[MAX_AGNETTYPES];
-    string allowed_uses;
+    bool   SA_allowed_use[MAX_AGNETTYPES];
+    string allowed_uses[MAX_SCENARIOS];
+    string sa_allowed_uses;
+    
 
     double rho;
 //    double marginal_base;
@@ -451,9 +473,11 @@ public:
 
 //    double period_capacity;  // link based period_capacity  //depreciated; will not be used. 
     double lane_based_ultimate_hourly_capacity;
+    double lane_based_ultimate_hourly_cap_at[MAX_AGNETTYPES];
+
     double nlanes;
 
-    double FFTT;
+    // double FFTT;
     double P;
     double Severe_Congestion_P;
     double L;

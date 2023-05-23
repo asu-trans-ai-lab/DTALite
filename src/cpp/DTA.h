@@ -10,8 +10,9 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-
-constexpr auto MAX_AGNETTYPES = 5; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_SCENARIOS = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_LINKTTYPES = 100; 
 constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
 //constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 //constexpr auto MAX_TIMEPERIODS = 6; // time period set to 4: mid night, morning peak, mid-day and afternoon peak;
@@ -27,7 +28,7 @@ constexpr auto MAX_DAY_PerYear = 360; // max 96*3 5-min slots per day
 constexpr auto _default_saturation_flow_rate = 1800;
 
 constexpr auto MIN_PER_TIMESLOT = 5;
-constexpr auto simulation_discharge_period_in_min = 60;
+constexpr auto simulation_discharge_period_in_min = 10;
 
 
 /* make sure we change the following two parameters together*/
@@ -56,213 +57,6 @@ enum e_assignment_mode { lue = 0, path_based_assignment= 1, simulation_dta=2};
 // FILE* g_pFileOutputLog = nullptr;
 extern void g_OutputModelFiles(int mode);
 extern int g_related_zone_vector_size;
-template <typename T>
-T* Allocate1DDynamicArray(int nRows)
-{
-    T* dynamicVector;
-
-    dynamicVector = new (std::nothrow) T[nRows]();
-
-    if (dynamicVector == NULL)
-    {
-        exit(1);
-
-    }
-    return dynamicVector;
-}
-
-template <typename T>
-void Deallocate1DDynamicArray(T* dVector, int nRows)
-{
-    if (!dVector)
-        return;
-    delete[] dVector;
-}
-
-template <typename T>
-T** Allocate2DDynamicArray(int nRows, int nCols)
-{
-    T** dynamicArray;
-
-    dynamicArray = new (std::nothrow) T * [nRows];
-
-    if (!dynamicArray)
-    {
-        dtalog.output() << "Error: insufficient memory.";
-        g_program_stop();
-    }
-
-    for (int i = 0; i < nRows; ++i)
-    {
-        dynamicArray[i] = new (std::nothrow) T[nCols];
-
-        if (!dynamicArray[i])
-        {
-            dtalog.output() << "Error: insufficient memory.";
-            g_program_stop();
-        }
-    }
-
-    return dynamicArray;
-}
-
-template <typename T>
-void Deallocate2DDynamicArray(T** dArray, int nRows, int nCols)
-{
-    if (!dArray)
-        return;
-
-    for (int x = 0; x < nRows; ++x)
-        delete[] dArray[x];
-
-    delete[] dArray;
-}
-
-template <typename T>
-T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
-{
-    T*** dynamicArray = new (std::nothrow) T * *[nX];
-
-    if (!dynamicArray)
-    {
-        dtalog.output() << "Error: insufficient memory.";
-        g_program_stop();
-    }
-
-    for (int x = 0; x < nX; ++x)
-    {
-        if (x % 1000 == 0)
-        {
-            dtalog.output() << "allocating 3D memory for " << x << std::endl;
-        }
-
-        dynamicArray[x] = new (std::nothrow) T * [nY];
-
-        if (!dynamicArray[x])
-        {
-            dtalog.output() << "Error: insufficient memory.";
-            g_program_stop();
-        }
-
-        for (int y = 0; y < nY; ++y)
-        {
-            dynamicArray[x][y] = new (std::nothrow) T[nZ];
-            if (!dynamicArray[x][y])
-            {
-                dtalog.output() << "Error: insufficient memory.";
-                g_program_stop();
-            }
-        }
-    }
-
-    for (int x = 0; x < nX; ++x)
-        for (int y = 0; y < nY; ++y)
-            for (int z = 0; z < nZ; ++z)
-                dynamicArray[x][y][z] = 0;
-
-    return dynamicArray;
-}
-
-template <typename T>
-void Deallocate3DDynamicArray(T*** dArray, int nX, int nY)
-{
-    if (!dArray)
-        return;
-
-    for (int x = 0; x < nX; ++x)
-    {
-        for (int y = 0; y < nY; ++y)
-            delete[] dArray[x][y];
-
-        delete[] dArray[x];
-    }
-
-    delete[] dArray;
-}
-
-template <typename T>
-T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
-{
-    T**** dynamicArray = new (std::nothrow) T * **[nX];
-
-    if (!dynamicArray)
-    {
-        dtalog.output() << "Error: insufficient memory.";
-        g_program_stop();
-    }
-
-    if (nM == 0 || nX == 0 || nY == 0 || nZ == 0)
-    {
-        dtalog.output() << "allocating 4D memory but size = 0 in 1 dimension.";
-        g_program_stop();
-    }
-
-    for (int m = 0; m < nM; ++m)
-    {
-        if (m % 1000 == 0)
-        {
-            dtalog.output() << "allocating 4D memory for " << m << " zones,"
-                << "nM=" << nM << ","
-                << "nX=" << nX << ","
-                << "nY=" << nY << ","
-                << "nZ=" << nZ << std::endl;
-        }
-
-        dynamicArray[m] = new (std::nothrow) T * *[nX];
-
-        if (!dynamicArray[m])
-        {
-            dtalog.output() << "Error: insufficient memory.";
-            g_program_stop();
-        }
-
-        for (int x = 0; x < nX; ++x)
-        {
-            dynamicArray[m][x] = new (std::nothrow) T * [nY];
-
-            if (!dynamicArray[m][x])
-            {
-                dtalog.output() << "Error: insufficient memory.";
-                g_program_stop();
-            }
-
-            for (int y = 0; y < nY; ++y)
-            {
-                dynamicArray[m][x][y] = new (std::nothrow) T[nZ];
-                if (!dynamicArray[m][x][y])
-                {
-                    dtalog.output() << "Error: insufficient memory.";
-                    g_program_stop();
-                }
-            }
-        }
-    }
-
-    return dynamicArray;
-}
-
-template <typename T>
-void Deallocate4DDynamicArray(T**** dArray, int nM, int nX, int nY)
-{
-    if (!dArray)
-        return;
-
-    for (int m = 0; m < nM; ++m)
-    {
-        for (int x = 0; x < nX; ++x)
-        {
-            for (int y = 0; y < nY; ++y)
-                delete[] dArray[m][x][y];
-
-            delete[] dArray[m][x];
-        }
-
-        delete[] dArray[m];
-    }
-
-    delete[] dArray;
-}
-
 
 class CDemand_Period {
 public:
@@ -470,15 +264,16 @@ public:
 class CAgent_type {
 public:
     CAgent_type() : agent_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
-        PCE{ 1 }, OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }
+         OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }
     {
     }
+
+    int mode_specific_assignment_flag; 
 
     int agent_type_no;
     // dollar per hour
     float value_of_time;
     // link type, product consumption equivalent used, for travel time calculation
-    double PCE;
     double OCC;
     double DSR;
 
@@ -504,6 +299,28 @@ class CLinkType
 public:
     CLinkType() : link_type{ 1 }, number_of_links{ 0 }, traffic_flow_code{ spatial_queue }, k_jam{ 300 }, vdf_type{ q_vdf }
     {
+        for (int at = 0; at < MAX_AGNETTYPES; at++)
+        {
+            free_speed_at[at] = 60;
+            capacity_at[at] = 2000;
+            FFTT_at[at] = 1;
+            lanes_at[at] = 1;
+
+            for (int at2 = 0; at2 < MAX_AGNETTYPES; at2++)
+            {
+                meu_matrix[at][at2] = 1;
+            }
+        }
+
+
+        for (int tau = 0; tau < MAX_TIMEPERIODS; tau++)
+        {
+            for (int at = 0; at < MAX_AGNETTYPES; at++)
+            { 
+              peak_load_factor_period_at[tau][at] = 1;
+            }
+        }
+        
     }
 
     int link_type;
@@ -513,6 +330,17 @@ public:
     std::string type_code;
     e_VDF_type vdf_type;
     e_traffic_flow_model traffic_flow_code;
+
+    double free_speed_at[MAX_AGNETTYPES];
+    double lanes_at[MAX_AGNETTYPES];
+    double capacity_at[MAX_AGNETTYPES];
+    double FFTT_at[MAX_AGNETTYPES];
+    std::string allow_uses_period[MAX_TIMEPERIODS];
+    double peak_load_factor_period_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    double meu_matrix[MAX_AGNETTYPES][MAX_AGNETTYPES];
+
+
+
 };
 
 class CColumnPath {
@@ -613,12 +441,12 @@ public:
     int global_path_no;
     std::string path_id;
     // path volume
-    double path_volume;
-    double path_preload_volume;
-    double path_volume_before_ODME;
-    double path_volume_after_ODME;
-    double path_volume_before_sa;
-    double path_volume_after_sa;
+    double path_volume = 0;
+    double path_preload_volume = 0;
+    double path_volume_before_ODME = 0;
+    double path_volume_after_ODME = 0;
+    double path_volume_before_sa = 0;
+    double path_volume_after_sa = 0;
 
     std::vector<float> departure_time_in_min;
     int subarea_output_flag;
@@ -656,6 +484,7 @@ public:
     int m_link_size;
 
     std::vector <int> path_sensor_link_vector;  // added with mustafa, 12/24/2022. only contains with the links with measurements
+    std::vector <int> path_SA_link_vector;  // added with mustafa, 12/24/2022. only contains with the links with measurements
 
     int m_sensor_link_size;
    
@@ -668,7 +497,7 @@ class CAgentPath {
 public:
     CAgentPath() : path_id{ 0 }, node_sum{ -1 }, travel_time{ 0 }, distance{ 0 }, volume{ 0 }
    {
-    }
+   }
 
     std::string path_id;
     int node_sum;
@@ -688,11 +517,25 @@ class CColumnVector {
 
 public:
     // this is colletion of unique paths
-    CColumnVector() : cost{ 0 }, time{ 0 }, distance{ 0 }, od_volume{ 0 }, prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_agent_type_no{ 0 },
-        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }
+    CColumnVector() : cost{ 0 }, time{ 0 }, distance{ 0 },  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_agent_type_no{ 0 },
+        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, relative_OD_gap{ 0 }
     {
+
+        for (int si = 0; si < MAX_SCENARIOS; si++)
+            od_volume[si] = 0;
     }
 
+
+    void reset_column_pool()
+    {
+        path_node_sequence_map.clear();
+
+        cost = 0;
+        time = 0;
+        distance = 0;
+        relative_OD_gap = 0;
+
+    }
     bool subarea_passing_flag;
     
     std::map<int, bool> at_od_impacted_flag_map; // for each agent type
@@ -701,8 +544,9 @@ public:
     float time;
     float distance;
     // od volume
-    double od_volume;
+    double od_volume[MAX_SCENARIOS];
 
+    double relative_OD_gap; 
     std::map<int, double> od_volume_per_iteration_map;
 
     double prev_od_volume;
@@ -849,6 +693,19 @@ public:
     double desired_free_travel_time_ratio;
 };
 
+class DTAScenario {
+public:
+
+    DTAScenario() : scenario_index{ 0 }, year{ 2023 }, activation{ 1 }
+    {
+    }
+
+    int scenario_index;
+    int year;
+    std::string scenario_name;
+    std::string scenario_description;
+    int activation;
+};
 class Assignment {
 public:
     // default is UE
@@ -858,7 +715,9 @@ public:
         g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
         g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_agent_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
-        shortest_path_log_zone_id{ -1 }, g_number_of_analysis_districts{ 1 }
+        shortest_path_log_zone_id{ -1 }, g_number_of_analysis_districts{ 1 },
+        active_scenario_index{ 0 }
+
     {
         m_LinkCumulativeArrivalVector  = NULL;
         m_LinkCumulativeDepartureVector = NULL;
@@ -871,7 +730,7 @@ public:
         sp_log_file.open("log_label_correcting.txt");
         
         summary_file.open("final_summary.csv", std::fstream::out);
-        if (!summary_file.is_open())
+        if (summary_file &&!summary_file.is_open())
         {
             dtalog.output() << "File final_summary.csv cannot be open.";
             g_program_stop();
@@ -930,6 +789,10 @@ public:
         return t % g_number_of_in_memory_simulation_intervals;
     }
 
+
+    std::vector<DTAScenario> g_DTAscenario_vector;
+    std::map<int, int> g_active_DTAscenario_map;
+    
     std::vector<DTAGDPoint> g_subarea_shape_points;
     std::vector<DTAGDPoint> g_MRM_subarea_shape_points;
     
@@ -950,7 +813,7 @@ public:
 
     //OD demand estimation estimation
     void GenerateDefaultMeasurementData();
-    void Demand_ODME(int OD_updating_iterations, int sensitivity_analysis_iterations);
+    void Demand_ODME(int OD_updating_iterations);
     void Sensor_Vector_based_Demand_ODME(int OD_updating_iterations);
     void AllocateLinkMemory4Simulation();
     int update_real_time_info_path(CAgent_Simu* p_agent, int& impacted_flag_change, float updating_in_min);
@@ -966,6 +829,8 @@ public:
 
     double m_GridResolution;
     e_assignment_mode assignment_mode;
+
+    int active_scenario_index;
     int g_number_of_memory_blocks;
     int g_visual_distance_in_cells;
     float g_info_updating_freq_in_min;
@@ -1106,37 +971,48 @@ public:
     // construction
     CLink() :main_node_id{ -1 }, free_speed{ 100 }, v_congestion_cutoff{ 100 }, v_critical { 60 },
         length_in_meter{ 1 }, link_distance_VDF {0.001}, 
-        BWTT_in_simulation_interval{ 100 }, zone_seq_no_for_outgoing_connector{ -1 }, number_of_lanes{ 1 }, lane_capacity{ 1999 },
+        BWTT_in_simulation_interval{ 100 }, zone_seq_no_for_outgoing_connector{ -1 }, lane_capacity{ 1999 },
          free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 }, 
-        timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, link_type{ 2 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
+        timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
         cell_type{ -1 }, saturation_flow_rate{ 1800 }, dynamic_link_event_start_time_in_min{ 99999 }, b_automated_generated_flag{ false }, time_to_be_released{ -1 },
         RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, k_critical{ 45 }, vdf_type{ q_vdf }, 
         tmc_corridor_id{ -1 }, from_node_id{ -1 }, to_node_id{ -1 }, kjam{ 300 }, link_distance_km{ 0 }, link_distance_mile{ 0 }, meso_link_id{ -1 }, total_simulated_delay_in_min{ 0 }, 
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
-        layer_no { 0 }
+        layer_no{ 0 }, AB_flag {1}, BA_link_no {-1}
    {
-   
+        for (int si = 0; si < MAX_SCENARIOS; si++)
+        {
+            link_type_si[si] = 0;
+            number_of_lanes_si[si] = 0;
+            penalty_si_flag[si] = 0;
+
+            for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
+                for (int at = 0; at < MAX_AGNETTYPES; ++at)
+                {
+
+                    penalty_si_at[si][at][tau] = 0;
+                    recorded_volume_per_agent_type_per_period[tau][at][si] = 0;
+                    recorded_converted_MEU_volume_per_period_per_at[tau][at][si] = 0;
+                }
+
+        }
+
+
         for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
         {
-            PCE_volume_per_period[tau] = 0;
-            person_volume_per_period[tau] = 0;
+            total_volume_for_all_agent_types_per_period[tau] = 0;
+            total_person_volume_for_all_agent_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
-            travel_time_per_period[tau] = 0;
                        //cost_perhour[tau] = 0;
             for (int at = 0; at < MAX_AGNETTYPES; ++at)
             {
-                person_volume_per_period_per_at[tau][at] = 0;
+                volume_per_agent_type_per_period[tau][at] = 0; 
+                converted_MEU_volume_per_period_per_at[tau][at] = 0; 
+                travel_time_per_period[tau][at] = 0;
 
             }
            
         }
-
-
-        //for (int at = 0; at < MAX_AGNETTYPES; ++at)
-        //    for (int og = 0; og < MAX_ORIGIN_DISTRICTS; ++og)
-        //{
-        //    person_volume_per_district_per_at[og][at] = 0;
-        //}
 
     }
 
@@ -1162,7 +1038,7 @@ public:
     double get_generalized_first_order_gradient_cost_of_second_order_loss_for_agent_type(int tau, int agent_type_no)
     {
         // *60 as 60 min per hour
-        double generalized_cost = travel_time_per_period[tau] + VDF_period[tau].penalty + VDF_period[tau].toll[agent_type_no] / assignment.g_AgentTypeVector[agent_type_no].value_of_time * 60;
+        double generalized_cost = travel_time_per_period[tau][agent_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[agent_type_no] / assignment.g_AgentTypeVector[agent_type_no].value_of_time * 60;
 
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
@@ -1177,7 +1053,10 @@ public:
     int BWTT_in_simulation_interval;
     int zone_seq_no_for_outgoing_connector;
 
-    double number_of_lanes;
+    double number_of_lanes_si[MAX_SCENARIOS];
+    double penalty_si_at[MAX_SCENARIOS][MAX_AGNETTYPES][MAX_TIMEPERIODS];
+    double penalty_si_flag[MAX_SCENARIOS];
+
     double lane_capacity;
     double saturation_flow_rate;
 
@@ -1357,13 +1236,31 @@ public:
 
     }
 
-    bool AllowAgentType(std::string agent_type, int tau)
+    bool AllowAgentType(std::string agent_type, int tau, int active_si)
     {
-        if (VDF_period[tau].allowed_uses.size() == 0 || VDF_period[tau].allowed_uses == "all")  // if the allowed_uses is empty then all types are allowed.
+        if (VDF_period[tau].allowed_uses[active_si].size() == 0 || VDF_period[tau].allowed_uses[active_si] == "all")  // if the allowed_uses is empty then all types are allowed.
             return true;
         else
         {
-            if (VDF_period[tau].allowed_uses.find(agent_type) != std::string::npos)  // otherwise, only an agent type is listed in this "allowed_uses", then this agent type is allowed to travel on this link
+            if (VDF_period[tau].allowed_uses[active_si].find(agent_type) != std::string::npos)  // otherwise, only an agent type is listed in this "allowed_uses", then this agent type is allowed to travel on this link
+                return true;
+            else
+            {
+                return false;
+            }
+
+
+        }
+    }
+
+
+    bool SA_AllowAgentType(std::string agent_type, int tau)
+    {
+        if (VDF_period[tau].sa_allowed_uses.size() == 0 || VDF_period[tau].sa_allowed_uses == "all")  // if the allowed_uses is empty then all types are allowed.
+            return true;
+        else
+        {
+            if (VDF_period[tau].sa_allowed_uses.find(agent_type) != std::string::npos)  // otherwise, only an agent type is listed in this "sa_allowed_uses", then this agent type is allowed to travel on this link
                 return true;
             else
             {
@@ -1379,8 +1276,11 @@ public:
     int layer_no;
     int from_node_id;
     int to_node_id;
+    int AB_flag;  // 1 and -1; 
+    int BA_link_no;
 
-    int link_type;
+    int link_type_si[MAX_SCENARIOS];
+
     bool b_automated_generated_flag;
 
     int cell_type;  // 2 lane changing
@@ -1402,19 +1302,24 @@ public:
     //float travel_time;
 
     int subarea_id;
-    double PCE_volume_per_period[MAX_TIMEPERIODS];
     
-    double person_volume_per_period[MAX_TIMEPERIODS];
+    double total_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
+    double total_person_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
 
     double RT_flow_volume;
-    double background_PCE_volume_per_period[MAX_TIMEPERIODS];
+    double background_total_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
 
-    double  person_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
-    //double  person_volume_per_district_per_at[MAX_ORIGIN_DISTRICTS][MAX_AGNETTYPES];
+    double  volume_per_agent_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+
+    double  recorded_volume_per_agent_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+
+
     
 
     double  queue_link_distance_VDF_perslot[MAX_TIMEPERIODS];  // # of vehicles in the vertical point queue
-    double travel_time_per_period[MAX_TIMEPERIODS];
+    double travel_time_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
     double RT_waiting_time;
 
 //    std::map<int, float> RT_travel_time_map;
@@ -1472,7 +1377,6 @@ public:
 
         if (VDF_period_sum[tau].vdf_data_count == 0)
         {
-            VDF_period_sum[tau].queue_demand_factor = element.queue_demand_factor;
             VDF_period_sum[tau].Q_alpha = element.Q_alpha;
             VDF_period_sum[tau].Q_beta = element.Q_beta;
             VDF_period_sum[tau].Q_cp = element.Q_cp;
@@ -1482,7 +1386,6 @@ public:
         }
         else
         {
-            VDF_period_sum[tau].queue_demand_factor += element.queue_demand_factor;
             VDF_period_sum[tau].Q_alpha +=  element.Q_alpha;
             VDF_period_sum[tau].Q_beta +=  element.Q_beta;
             VDF_period_sum[tau].Q_cp += element.Q_cp;
@@ -1500,7 +1403,6 @@ public:
         float count = VDF_period_sum[tau].vdf_data_count;
         if(count>=1)
         {
-        VDF_period_sum[tau].queue_demand_factor /= count;
         VDF_period_sum[tau].Q_alpha /= count;
         VDF_period_sum[tau].Q_beta /= count;
         VDF_period_sum[tau].Q_cp /= count;

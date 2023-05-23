@@ -1,0 +1,1 @@
+agent_id,o_zone_id,d_zone_id,OD_index,path_id,#_of_links,diversion_flag,agent_type,demand_period,volume,toll,travel_time,distance,speed,departure_time_in_min,arrival_time_in_min,departure_time_slot_no,

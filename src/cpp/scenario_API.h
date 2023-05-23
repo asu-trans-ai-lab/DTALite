@@ -335,7 +335,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 	// we now know the number of links
 
-	assignment.summary_file << "step 2.2 read supply side scenario" << endl;
+	assignment.summary_file << ",read supply side scenario" << endl;
 	assignment.summary_file << ", # of records in supply_side_scenario.csv=," << sa_capacity_count + incident_count + dms_count << "," << endl;
 	assignment.summary_file << ", # of SA records in supply_side_scenario.csv=," << sa_capacity_count << "," << endl;
 	assignment.summary_file << ", # of incident records in supply_side_scenario.csv=," << incident_count << "," << endl;
@@ -351,7 +351,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 void g_load_demand_side_scenario_file(Assignment& assignment)
 {
-	dtalog.output() << "Step 2.1: Reading demand side scenario data..." << endl;
+	dtalog.output() << "Step 2.0: Reading demand side scenario data..." << endl;
 
 	CDTACSVParser parser;
 
