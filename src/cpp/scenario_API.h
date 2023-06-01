@@ -448,29 +448,29 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 
 //char lr_price_field_name[50];
 
-//for (int at = 0; at < assignment.g_AgentTypeVector.size(); at++)
+//for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 //{
 
 //	double LR_ini_price = 0;
 //	double LR_RT_price = 0;
 
-//	sprintf(lr_price_field_name, "lr_price_%s", assignment.g_AgentTypeVector[at].agent_type.c_str());
+//	sprintf(lr_price_field_name, "lr_price_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
 //	parser.GetValueByFieldName(lr_price_field_name, LR_ini_price, true, false);
 //	g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] = LR_ini_price;
 
 //	//if (capacity < 1)
 //	g_link_vector[link_seq_no].VDF_period[tau].RT_allowed_use[at] = false;
 
-//	if (assignment.g_AgentTypeVector[at].real_time_information >= 1)
+//	if (assignment.g_ModeTypeVector[at].real_time_information >= 1)
 //	{
-//		sprintf(lr_price_field_name, "lr_rt_price_%s", assignment.g_AgentTypeVector[at].agent_type.c_str());
+//		sprintf(lr_price_field_name, "lr_rt_price_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
 //		parser.GetValueByFieldName(lr_price_field_name, LR_RT_price, true, false);
 //		g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] = LR_RT_price;
 
 //		if (fabs(LR_RT_price) > 0.001)
 //		{
 //			dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
-//				<< assignment.g_AgentTypeVector[at].agent_type.c_str() << " at demand period " << demand_period.c_str() << endl;
+//				<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << endl;
 //		}
 
 //	}
@@ -478,7 +478,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //	if (fabs(LR_ini_price) > 0.001)
 //	{
 //		dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
-//			<< assignment.g_AgentTypeVector[at].agent_type.c_str() << " at demand period " << demand_period.c_str() << endl;
+//			<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << endl;
 //	}
 
 //}

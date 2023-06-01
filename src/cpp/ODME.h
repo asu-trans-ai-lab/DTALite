@@ -297,7 +297,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 					if (to_zone_sindex == -1)
 						continue;
 
-					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)  //at agent type
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //at agent type
 					{
 						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau, assginment period
 						{
@@ -519,7 +519,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		// very import: noted by Peiheng and Xuesong on 01/30/2022
 		double system_gap = 0;
 		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations, system_gap);
-		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_agent_types_per_period[tau] 
+		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] 
 	}
 
 

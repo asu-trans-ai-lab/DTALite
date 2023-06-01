@@ -50,7 +50,7 @@ using std::ofstream;
 using std::istringstream;
 
 
-void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_seq_no, float link_distance_VDF, int agent_type_no, int zone_seq_no = -1)
+void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_seq_no, float link_distance_VDF, int mode_type_no, int zone_seq_no = -1)
 {
 	// create a link object
 	CLink link;
@@ -77,7 +77,7 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 	link.lane_capacity = 999999;
 	link.link_spatial_capacity = 99999;
 	link.link_distance_VDF = link_distance_VDF;
-	link.free_speed = assignment.g_AgentTypeVector[agent_type_no].access_speed;
+	link.free_speed = assignment.g_ModeTypeVector[mode_type_no].access_speed;
 
 	for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 	{
@@ -89,7 +89,7 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 		link.VDF_period[tau].alpha = 0;
 		link.VDF_period[tau].beta = 0;
 
-		for (int at = 0; at < assignment.g_AgentTypeVector.size(); at++)
+		for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 		{
 		link.travel_time_per_period[tau][at] = link.free_flow_travel_time_in_min;
 		link.VDF_period[tau].FFTT_at[at] = link.free_flow_travel_time_in_min;
@@ -446,7 +446,7 @@ void g_grid_zone_generation(Assignment& assignment)
 				fprintf(g_pFileZone, "%f %f,", x_coord_left, y_coord_top);
 				fprintf(g_pFileZone, ")\",");
 
-				for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
 					fprintf(g_pFileZone, "%.2f,%.2f,", access_node_vector.size() * production_rate_per_activity_node, access_node_vector.size() * production_rate_per_activity_node);
 					break;  // one agent tyu
@@ -895,7 +895,7 @@ void g_trip_generation(Assignment& assignment)
 
 					g_zone_vector[d].gravity_est_attraction = 0;
 
-					//                            float cut_off = assignment.g_AgentTypeVector[at].trip_time_budget_in_min;
+					//                            float cut_off = assignment.g_ModeTypeVector[at].trip_time_budget_in_min;
 					float cut_off = 40;
 					if (g_zone_vector[d].gravity_attraction > 0)
 					{
@@ -943,7 +943,7 @@ void g_trip_generation(Assignment& assignment)
 					{
 						if (g_zone_vector[dest].gravity_attraction > 0)
 						{
-							//                                    float cut_off = assignment.g_AgentTypeVector[at].trip_time_budget_in_min;
+							//                                    float cut_off = assignment.g_ModeTypeVector[at].trip_time_budget_in_min;
 
 																//if (g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[dest] < cut_off)
 							{
@@ -986,7 +986,7 @@ void g_writing_demand_files(Assignment& assignment)
 	else
 	{
 
-		fprintf(g_pFileODMatrix, "demand_period,time_period,agent_type,o_zone_id,d_zone_id,volume,geometry\n");
+		fprintf(g_pFileODMatrix, "demand_period,time_period,mode_type,o_zone_id,d_zone_id,volume,geometry\n");
 		int demand_writing_log_count = 0;
 		// reset the estimated production and attraction
 		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
@@ -995,7 +995,7 @@ void g_writing_demand_files(Assignment& assignment)
 			{
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
 				{
-					for (int at = 0; at < assignment.g_AgentTypeVector.size(); ++at)
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
 						if (g_zone_vector[orig].gravity_production >= 0)
 						{
@@ -1011,7 +1011,7 @@ void g_writing_demand_files(Assignment& assignment)
 								{
 									fprintf(g_pFileODMatrix, "%s,%s,%s,%d,%d,%.4f,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DemandPeriodVector[tau].time_period.c_str(),
 
-										assignment.g_AgentTypeVector[at].agent_type.c_str(), g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
+										assignment.g_ModeTypeVector[at].mode_type.c_str(), g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
 
 									if (demand_writing_log_count < 100)
 									{
@@ -1069,7 +1069,7 @@ void g_writing_demand_files(Assignment& assignment)
 		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
 		{
 			////                fprintf(g_pFileODMatrix, "%s,%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
-			//                    assignment.g_AgentTypeVector[at].agent_type.c_str());
+			//                    assignment.g_ModeTypeVector[at].mode_type.c_str());
 			float total_production = 0;
 
 			fprintf(g_pFileODMatrix, "%d,", g_zone_vector[orig].zone_id);  // origin zone id 
@@ -1151,7 +1151,7 @@ void g_writing_demand_files(Assignment& assignment)
 	}
 	else
 	{
-		fprintf(g_pFileODMatrix, "agent_id,o_zone_id,d_zone_id,path_id,volume,activity_zone_sequence,activity_agent_type_sequence\n");  // first line
+		fprintf(g_pFileODMatrix, "agent_id,o_zone_id,d_zone_id,path_id,volume,activity_zone_sequence,activity_mode_type_sequence\n");  // first line
 
 		if (g_zone_vector.size() > 4)
 		{
@@ -1280,18 +1280,18 @@ void g_demand_file_generation(Assignment& assignment)
 void g_zone_to_access(Assignment& assignment)
 {
 	int debug_line_count = 0;
-	if (assignment.assignment_mode == 21 && assignment.g_AgentTypeVector.size() > 0)  //zone2connector
+	if (assignment.assignment_mode == 21 && assignment.g_ModeTypeVector.size() > 0)  //zone2connector
 	{
 		int at = 0;
 
-		if (assignment.g_AgentTypeVector[at].access_node_type.size() == 0)  // for each simple agent type
+		if (assignment.g_ModeTypeVector[at].access_node_type.size() == 0)  // for each simple agent type
 		{
 			// find the closest zone id
 
 			if (debug_line_count <= 20)
 			{
 
-				dtalog.output() << " connector generation condition 1: agent type " << assignment.g_AgentTypeVector[at].agent_type.c_str() << " has access node type" << assignment.g_AgentTypeVector[at].access_node_type.size() << endl;
+				dtalog.output() << " connector generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << endl;
 				// zone without multimodal access
 				debug_line_count++;
 			}
@@ -1330,7 +1330,7 @@ void g_zone_to_access(Assignment& assignment)
 						if (g_node_vector[i].is_activity_node == 2)  // is boundary
 						{
 
-							if (assignment.g_AgentTypeVector[at].access_node_type.find(g_node_vector[i].node_type) != string::npos)  // check allowed access code
+							if (assignment.g_ModeTypeVector[at].access_node_type.find(g_node_vector[i].node_type) != string::npos)  // check allowed access code
 							{
 
 								double zone_x = g_node_vector[a_k].x;
@@ -1377,7 +1377,7 @@ void g_zone_to_access(Assignment& assignment)
 							access_node_distance_vector_temp = access_node_distance_vector;
 							std::sort(access_node_distance_vector_temp.begin(), access_node_distance_vector_temp.end());
 
-							distance_k_cut_off_value = access_node_distance_vector_temp[max(0, assignment.g_AgentTypeVector[at].acecss_link_k - 1)];
+							distance_k_cut_off_value = access_node_distance_vector_temp[max(0, assignment.g_ModeTypeVector[at].acecss_link_k - 1)];
 							//distance_k can be dynamically determined based on the density of stops and stations at different areas, e.g.CBM vs. rual area
 						}
 
@@ -1391,7 +1391,7 @@ void g_zone_to_access(Assignment& assignment)
 								if (g_node_vector[access_node_seq_vector[an]].is_boundary == -1)
 									g_add_new_access_link(access_node_seq_vector[an], a_k, access_node_distance_vector[an], at, -1);
 
-								assignment.g_AgentTypeVector[at].zone_id_cover_map[zone_id] = true;
+								assignment.g_ModeTypeVector[at].zone_id_cover_map[zone_id] = true;
 							}
 						}
 

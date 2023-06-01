@@ -54,7 +54,7 @@ using std::ofstream;
 class CPeriod_VDF
 {
 public:
-    CPeriod_VDF() : vdf_type{ q_vdf }, vdf_data_count{ 0 }, Q_peak_load_factor{ 1.0 }, Q_cd{ 0.954946463 }, Q_n{ 1.141574427 }, Q_cp{ 0.400089684 }, Q_s{ 4 }, vf{ 60 }, v_congestion_cutoff{ 45 }, DOC{ 0 }, VOC{ 0 }, vt2{ -1 },
+    CPeriod_VDF() : vdf_type{ q_vdf }, vdf_data_count{ 0 }, Q_peak_load_factor{ 1.0 }, Q_cd{ 0.954946463 }, Q_n{ 1.141574427 }, Q_cp{ 0.400089684 }, Q_s{ 4 }, vf{ 60 }, v_congestion_cutoff{ 45 }, vt2{ -1 },
         alpha{ 0.39999993 }, beta{ 4 }, Q_alpha{ 0.272876961 }, Q_beta{ 4 }, rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, sa_lanes_change{ 0 }, LR_price{ 0 }, LR_RT_price{ 0 }, starting_time_in_hour{ 0 }, ending_time_in_hour{ 0 },
         volume_before_odme {0}, volume_after_odme {0},
 
@@ -71,7 +71,7 @@ public:
             free_speed_at[at] = 0;
             capacity_at[at] = 0;
             FFTT_at[at] = 0;
-            VOC_at[at] = 0; 
+            DOC_mode[at] = 0; 
             lanes_at[at] = 0;
             
 
@@ -159,7 +159,7 @@ public:
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity, 
             // uncongested states D <C 
             // congested states D > C, leading to P > 1
-            DOC = lane_based_D / max(0.00001, mode_hourly_capacity);
+            double DOC = lane_based_D / max(0.00001, mode_hourly_capacity);
             
             //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
             // we could have a period based FFTT, so we need to convert FFTT to vfree
@@ -194,14 +194,13 @@ public:
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity, 
             // uncongested states D <C 
             // congested states D > C, leading to P > 1
-            VOC = DOC;
-            VOC_at[at] = VOC;
+            DOC_mode[at] = DOC;
             //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
             // we could have a period based FFTT, so we need to convert FFTT to vfree
             // if we only have one period, then we can directly use vf and v_congestion_cutoff. 
 
             //step 3.2 calculate speed from VDF based on D/C ratio
-            avg_speed_BPR = vf / (1.0 + alpha * pow(VOC, beta));
+            avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
             avg_travel_time = FFTT * vf / max(0.1, avg_speed_BPR); // Mark: FFTT should be vctt
 
 
@@ -380,8 +379,8 @@ public:
      }
 
      e_VDF_type vdf_type;
-    double DOC;
-    double VOC;
+    //double DOC;
+    //double VOC;
 
     //updated BPR-X parameters
     double vt2;
@@ -443,7 +442,7 @@ public:
     double FFTT_at[MAX_AGNETTYPES];
     double lanes_at[MAX_AGNETTYPES];
     
-    double VOC_at[MAX_AGNETTYPES];
+    double DOC_mode[MAX_AGNETTYPES];
 
     double dsr[MAX_AGNETTYPES]; // desired speed ratio with respect to free-speed
     double penalty;

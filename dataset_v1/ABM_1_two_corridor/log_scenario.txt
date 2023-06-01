@@ -1,0 +1,4 @@
+scenario_type,demand_period,from_node,to_node,geometry,values
+reading record 1
+Error: from_node_id 63702 in file scenario.csv is not defined in node.csv
+Error: from_node_id 107201 in file scenario.csv is not defined in node.csv

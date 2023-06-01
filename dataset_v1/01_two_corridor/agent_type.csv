@@ -1,7 +1,0 @@
-first_column,agent_type,agent_type_index,name,vot,mode_specific_assignment,person_occupancy,headway_in_sec,real_time_info,comments,,,,,,,
-,d,0,passenger car,10,1,1,1.5,0,hist info,,,,,,,
-,b,3,bike,10,1,1,5,0,https://en.wikipedia.org/wiki/Passenger_car_equivalent,,,,,,,
-,w,4,pedestrian,10,1,1,3,0,,,,,,,,
-,,,,,,,,,m,5,motocycle,10,1,1,1.5,0
-,,,,,,,,,u,6,bus,10,1,10,3,0
-,,,,,,,,,e,7,escooter,10,1,1,5,0

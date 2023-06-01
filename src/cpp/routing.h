@@ -69,7 +69,7 @@ struct CNodeForwardStar {
 class NetworkForSP  // mainly for shortest path calculation
 {
 public:
-	NetworkForSP() : temp_path_node_vector_size{ MAX_LINK_SIZE_IN_A_PATH }, m_value_of_time{ 10 }, bBuildNetwork{ false }, m_memory_block_no{ 0 }, m_agent_type_no{ 0 }, m_tau{ 0 }, b_real_time_information{ false }, PCE_ratio{ 1 }, OCC_ratio{ 1 }, m_RT_dest_node{ -1 },
+	NetworkForSP() : temp_path_node_vector_size{ MAX_LINK_SIZE_IN_A_PATH }, m_value_of_time{ 10 }, bBuildNetwork{ false }, m_memory_block_no{ 0 }, m_mode_type_no{ 0 }, m_tau{ 0 }, b_real_time_information{ false }, m_RT_dest_node{ -1 },
 		m_RT_dest_zone{ -1 }, updating_time_in_min{ 0 }, l_number_of_links{ 1 }, number_of_origin_grids{ 1 }
 	{
 	}
@@ -94,8 +94,8 @@ public:
 		if (m_node_label_cost)  //7
 			delete[] m_node_label_cost;
 
-		if (m_link_agent_type_volume_array)  //8
-			delete[] m_link_agent_type_volume_array;
+		if (m_link_mode_type_volume_array)  //8
+			delete[] m_link_mode_type_volume_array;
 
 		if (m_link_person_volume_array)  //8
 			delete[] m_link_person_volume_array;
@@ -139,9 +139,8 @@ public:
 
 	bool b_real_time_information;
 	int m_tau; // assigned nodes for computing
-	int m_agent_type_no; // assigned nodes for computing
-	double PCE_ratio;
-	double OCC_ratio;
+	int m_mode_type_no; // assigned nodes for computing
+
 
 	CNodeForwardStar* NodeForwardStarArray;
 	CNodeForwardStar* NodeBackwardStarArray;
@@ -164,7 +163,7 @@ public:
 	// predecessor for this node points to the previous link that updates its label cost (as part of optimality condition) (for easy referencing)
 	int* m_link_predecessor;
 
-	double* m_link_agent_type_volume_array;  // for VDF computing based on PCE
+	double* m_link_mode_type_volume_array;  // for VDF computing based on PCE
 	double* m_link_person_volume_array;  // person delay counting based on agent type
 
 	double** m_link_person_volume_per_grid_array;  // person delay counting based on grid_id
@@ -193,7 +192,7 @@ public:
 		m_link_predecessor = new int[number_of_nodes];  //6
 		m_node_label_cost = new double[number_of_nodes];  //7
 
-		m_link_agent_type_volume_array = new double[number_of_links];  //8
+		m_link_mode_type_volume_array = new double[number_of_links];  //8
 		m_link_person_volume_array = new double[number_of_links];  //8
 
 
@@ -204,7 +203,7 @@ public:
 		m_link_outgoing_connector_zone_seq_no_array = new int[number_of_links]; //10
 	}
 
-	bool UpdateGeneralizedLinkCost(int agent_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
+	bool UpdateGeneralizedLinkCost(int mode_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
 	{
 		int link_cost_debug_flag = 1;
 		bool negative_cost_flag = false;
@@ -214,9 +213,9 @@ public:
 
 
 	
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][agent_type_no] + p_link->VDF_period[m_tau].penalty +
-				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
-				p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60;
+			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
+				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
+				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
 			if (p_link->link_id == "7742")
 			{
@@ -228,11 +227,11 @@ public:
 				dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 					g_node_vector[p_link->to_node_seq_no].node_id << ","
 					<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
-					<< assignment.g_AgentTypeVector[agent_type_no].agent_type.c_str() << " at demand period =" << m_tau <<
+					<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
 					",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
 					",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
-					",LR_price=" << p_link->VDF_period[m_tau].LR_price[agent_type_no] <<
-					", p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60 <<
+					",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
+					", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
 					endl;
 			}
 
@@ -243,7 +242,7 @@ public:
 	}
 
 
-	bool UpdateRTGeneralizedLinkCost(int agent_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
+	bool UpdateRTGeneralizedLinkCost(int mode_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
 	{
 		int link_cost_debug_flag = 1;
 		bool negative_cost_flag = false;
@@ -251,15 +250,15 @@ public:
 		{
 			CLink* p_link = &(g_link_vector[i]);
 
-				if (p_assignment->g_AgentTypeVector[agent_type_no].real_time_information == 1 /*RT users*/)
+				if (p_assignment->g_ModeTypeVector[mode_type_no].real_time_information == 1 /*RT users*/)
 				{
 
 					p_link->VDF_period[m_tau].penalty = p_link->VDF_period[m_tau].RT_route_regeneration_penalty;
 				}
 
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][agent_type_no] + p_link->VDF_period[m_tau].penalty +
-				p_link->VDF_period[m_tau].LR_price[agent_type_no] +
-				p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60;
+			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
+				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
+				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
 			if (p_link->link_id == "7742")
 			{
@@ -271,11 +270,11 @@ public:
 				dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 					g_node_vector[p_link->to_node_seq_no].node_id << ","
 					<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
-					<< assignment.g_AgentTypeVector[agent_type_no].agent_type.c_str() << " at demand period =" << m_tau <<
+					<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
 					",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
 					",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
-					",LR_price=" << p_link->VDF_period[m_tau].LR_price[agent_type_no] <<
-					", p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[agent_type_no] / m_value_of_time * 60 <<
+					",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
+					", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
 					endl;
 			}
 
@@ -310,14 +309,14 @@ public:
 				// only predefined allowed agent type can be considered
 
 				// only predefined allowed agent type can be considered
-				//if (m_agent_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes_si[assignment.active_scenario_index] == 0)  // main mode of auto
+				//if (m_mode_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes_si[assignment.active_scenario_index] == 0)  // main mode of auto
 				//	continue; 
 
 				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index]; 
-				//if (m_agent_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_at[m_agent_type_no]==0)  // other modes
+				//if (m_mode_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_at[m_mode_type_no]==0)  // other modes
 				//	continue;
 
-				if (g_link_vector[link_seq_no].AllowAgentType(p_assignment->g_AgentTypeVector[m_agent_type_no].agent_type, m_tau, assignment.active_scenario_index))
+				if (g_link_vector[link_seq_no].AllowModeType(p_assignment->g_ModeTypeVector[m_mode_type_no].mode_type, m_tau, assignment.active_scenario_index))
 				{
 					m_outgoing_link_seq_no_vector[outgoing_link_size] = link_seq_no;
 					m_to_node_seq_no_vector[outgoing_link_size] = g_node_vector[i].m_to_node_seq_no_vector[j];
@@ -387,7 +386,7 @@ public:
 			}
 		}
 
-		m_value_of_time = p_assignment->g_AgentTypeVector[m_agent_type_no].value_of_time;
+		m_value_of_time = p_assignment->g_ModeTypeVector[m_mode_type_no].value_of_time;
 		bBuildNetwork = true;
 	}
 
@@ -463,14 +462,14 @@ public:
 
 
 		int departure_time = m_tau;
-		int agent_type = m_agent_type_no;
+		int mode_type = m_mode_type_no;
 
 		if (g_node_vector[origin_node].m_outgoing_link_seq_no_vector.size() == 0)
 			return 0;
 
 		// given,  m_node_label_cost[i]; is the gradient cost , for this tree's, from its origin to the destination node i'.
 
-		//	fprintf(g_pFileDebugLog, "------------START: origin:  %d  ; Departure time: %d  ; demand type:  %d  --------------\n", origin_node + 1, departure_time, agent_type);
+		//	fprintf(g_pFileDebugLog, "------------START: origin:  %d  ; Departure time: %d  ; demand type:  %d  --------------\n", origin_node + 1, departure_time, mode_type);
 
 		//change of path flow is a function of cost gap (the updated node cost for the path generated at the previous iteration -m_node_label_cost[i] at the current iteration)
 		// current path flow - change of path flow,
@@ -526,7 +525,7 @@ public:
 				if (to_zone_sindex == -1)
 					continue;
 
-				pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau]);
+				pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type][m_tau]);
 
 				if (pColumnVector->bfixed_route) // with routing policy, no need to run MSA for adding new columns
 					continue;
@@ -582,12 +581,12 @@ public:
 								if (assignment.assignment_mode == lue)
 								{
 									// this is critical for parallel computing as we can write the volume to data
-									m_link_agent_type_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
-									m_link_person_volume_array[current_link_seq_no] += volume * OCC_ratio;
+									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
+									m_link_person_volume_array[current_link_seq_no] += volume;
 
 
 									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
-									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume * OCC_ratio;
+									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume ;
 									//cout << "node = " << g_node_vector[i].node_id 
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
@@ -595,7 +594,7 @@ public:
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									//    << ": add volume " << volume << endl;
 
-									//if (m_link_agent_type_volume_array[current_link_seq_no] > 7001)
+									//if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
 									//    int idebug = 1;
 									//}
@@ -628,7 +627,7 @@ public:
 							if (to_zone_sindex == -1)
 								continue;
 
-								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau].path_node_sequence_map.end())
+								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type][m_tau].path_node_sequence_map.end())
 								{
 									// add this unique path
 									int path_count = pColumnVector->path_node_sequence_map.size();
@@ -644,7 +643,7 @@ public:
 										// so we use a partial link penality approach to discover new alterantive routes for RT and DMS users. Xuesong and Mohammad 02/17/2023
 										for (int li = 0; li < l_node_size-1; ++li)
 										{
-											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau][m_agent_type_no];
+											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau][m_mode_type_no];
 											g_link_vector[temp_path_link_vector[li]].VDF_period[m_tau].RT_route_regeneration_penalty = current_travel_time * 0.25;
 										}
 
@@ -696,14 +695,14 @@ public:
 
 
 		int departure_time = m_tau;
-		int agent_type = m_agent_type_no;
+		int mode_type = m_mode_type_no;
 
 		if (g_node_vector[origin_node].m_outgoing_link_seq_no_vector.size() == 0)
 			return 0;
 
 		// given,  m_node_label_cost[i]; is the gradient cost , for this tree's, from its origin to the destination node i'.
 
-		//	fprintf(g_pFileDebugLog, "------------START: origin:  %d  ; Departure time: %d  ; demand type:  %d  --------------\n", origin_node + 1, departure_time, agent_type);
+		//	fprintf(g_pFileDebugLog, "------------START: origin:  %d  ; Departure time: %d  ; demand type:  %d  --------------\n", origin_node + 1, departure_time, mode_type);
 		float k_path_prob = 1;
 		k_path_prob = float(1) / float(iteration_number_outterloop + 1);  //XZ: use default value as MSA, this is equivalent to 1/(n+1)
 		// MSA to distribute the continuous flow
@@ -763,7 +762,7 @@ public:
 				if (to_zone_sindex == -1)
 					continue;
 
-				pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau]);
+				pColumnVector = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type][m_tau]);
 
 				if (pColumnVector->bfixed_route) // with routing policy, no need to run MSA for adding new columns
 					continue;
@@ -818,12 +817,12 @@ public:
 								if (assignment.assignment_mode == lue)
 								{
 									// this is critical for parallel computing as we can write the volume to data
-									m_link_agent_type_volume_array[current_link_seq_no] += volume * PCE_ratio;  // for this network object volume from OD demand table
-									m_link_person_volume_array[current_link_seq_no] += volume * OCC_ratio;
+									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
+									m_link_person_volume_array[current_link_seq_no] += volume;
 
 
 									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
-									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume * OCC_ratio;
+									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume;
 									//cout << "node = " << g_node_vector[i].node_id 
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
@@ -831,7 +830,7 @@ public:
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									//    << ": add volume " << volume << endl;
 
-									//if (m_link_agent_type_volume_array[current_link_seq_no] > 7001)
+									//if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
 									//    int idebug = 1;
 									//}
@@ -867,7 +866,7 @@ public:
 							if (b_sensitivity_analysis_flag == false)
 							{
 
-								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][agent_type][m_tau].path_node_sequence_map.end())
+								if (pColumnVector->path_node_sequence_map.find(node_sum) == assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type][m_tau].path_node_sequence_map.end())
 								{
 									// add this unique path
 									int path_count = pColumnVector->path_node_sequence_map.size();
@@ -927,11 +926,11 @@ public:
 		if (iteration_k == 0)
 			BuildNetwork(p_assignment);  // based on agent type and link type
 
-		int agent_type = m_agent_type_no; // assigned nodes for computing
+		int mode_type = m_mode_type_no; // assigned nodes for computing
 		int origin_node = m_origin_node_vector[o_node_index]; // assigned nodes for computing
 		int origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
-		bool negative_cost_flag = UpdateGeneralizedLinkCost(agent_type, p_assignment, origin_zone, iteration_k, bsensitivity_analysis_flag);
+		bool negative_cost_flag = UpdateGeneralizedLinkCost(mode_type, p_assignment, origin_zone, iteration_k, bsensitivity_analysis_flag);
 
 		//if (iteration_k == 1) 
 		//{
@@ -1080,7 +1079,7 @@ public:
 
 				if (bsensitivity_analysis_flag == true && real_time_info_flag == false)
 				{
-					if (g_link_vector[link_seq_no].VDF_period[this->m_tau].SA_allowed_use[this->m_agent_type_no] == false)
+					if (g_link_vector[link_seq_no].VDF_period[this->m_tau].SA_allowed_use[this->m_mode_type_no] == false)
 
 						continue;
 				}
@@ -1203,7 +1202,7 @@ public:
 			}
 		}
 
-		//agent_type = m_agent_type_no; // assigned nodes for computing
+		//mode_type = m_mode_type_no; // assigned nodes for computing
 		//origin_node = m_origin_node_vector[o_node_index]; // assigned nodes for computing
 		//origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
@@ -1214,7 +1213,7 @@ public:
 	       {
 
 	       std::string s_iteration = std::to_string(iteration_k);
-	       std::string s_agent_type = p_assignment->g_AgentTypeVector [agent_type].agent_type;
+	       std::string s_mode_type = p_assignment->g_ModeTypeVector [mode_type].mode_type;
 	       std::string s_origin_zone = std::to_string(g_zone_vector[origin_zone].zone_id);
 
 	       for (int i = 0; i < p_assignment->g_number_of_nodes; ++i)
@@ -1222,7 +1221,7 @@ public:
 	           std::string s_node = std::to_string(g_node_vector[i].node_id);
 	           std::string map_key;
 
-	           map_key = s_iteration+ "," + s_agent_type + "," + s_origin_zone + "," + s_node;
+	           map_key = s_iteration+ "," + s_mode_type + "," + s_origin_zone + "," + s_node;
 
 	           g_node_vector[i].pred_per_iteration_map[map_key] = m_node_predecessor[i];
 	           g_node_vector[i].label_cost_per_iteration_map[map_key] = m_node_label_cost[i];
@@ -1243,7 +1242,7 @@ public:
 
 		int local_debugging_flag = 0;
 		int departure_time = m_tau;
-		int agent_type = m_agent_type_no;
+		int mode_type = m_mode_type_no;
 
 		int number_of_nodes = assignment.g_number_of_nodes;
 		int number_of_links = assignment.g_number_of_links;
@@ -1323,7 +1322,7 @@ public:
 
 		int SE_loop_count = 0;
 
-		int agent_type = m_agent_type_no; // assigned nodes for computing
+		int mode_type = m_mode_type_no; // assigned nodes for computing
 
   //      if (g_zone_vector[dest_zone].zone_id == p_assignment->shortest_path_log_zone_id)
 	 //   local_debugging_flag = 1;
@@ -1416,7 +1415,7 @@ public:
 					int idebug = 1;
 				}
 
-				if (g_link_vector[link_seq_no].VDF_period[this->m_tau].RT_allowed_use[this->m_agent_type_no] == false)
+				if (g_link_vector[link_seq_no].VDF_period[this->m_tau].RT_allowed_use[this->m_mode_type_no] == false)
 					continue;
 
 
@@ -1545,7 +1544,7 @@ public:
 			}
 		}
 
-		//agent_type = m_agent_type_no; // assigned nodes for computing
+		//mode_type = m_mode_type_no; // assigned nodes for computing
 		//origin_node = m_origin_node_vector[o_node_index]; // assigned nodes for computing
 		//origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
@@ -1554,7 +1553,7 @@ public:
 		if (g_zone_vector[dest_zone].zone_id == p_assignment->shortest_path_log_zone_id && p_assignment->g_origin_demand_array.find(dest_zone) != p_assignment->g_origin_demand_array.end())
 		{
 			std::string s_demand_period = p_assignment->g_DemandPeriodVector[m_tau].demand_period.c_str();
-			std::string s_agent_type = p_assignment->g_AgentTypeVector[agent_type].agent_type;
+			std::string s_mode_type = p_assignment->g_ModeTypeVector[mode_type].mode_type;
 			std::string s_dest_zone = std::to_string(g_zone_vector[dest_zone].zone_id);
 
 			for (int i = 0; i < p_assignment->g_number_of_nodes; ++i)
@@ -1562,7 +1561,7 @@ public:
 				std::string s_node = std::to_string(g_node_vector[i].node_id);
 				std::string map_key;
 
-				map_key = s_demand_period + "," + s_agent_type + "," + s_dest_zone + "," + s_node;
+				map_key = s_demand_period + "," + s_mode_type + "," + s_dest_zone + "," + s_node;
 
 				g_node_vector[i].pred_RT_map[map_key] = m_node_predecessor[i];
 				g_node_vector[i].label_cost_RT_map[map_key] = m_node_label_cost[i];
@@ -1578,7 +1577,7 @@ public:
 		int local_debugging_flag = 1;
 		int SE_loop_count = 0;
 
-		int agent_type = m_agent_type_no; // assigned nodes for computing
+		int mode_type = m_mode_type_no; // assigned nodes for computing
 		int origin_node = m_origin_node_vector[o_node_index]; // assigned nodes for computing
 		int origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
@@ -1673,7 +1672,7 @@ public:
 
 
 
-				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
+				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_mode_type_no] < -1) // negative cost
 				{
 					if (negative_cost_link_id_visit_mapping.find(link_seq_no) != negative_cost_link_id_visit_mapping.end())
 					{
@@ -1687,7 +1686,7 @@ public:
 				}
 
 				
-				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_agent_type_no] < -1) // negative cost
+				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_mode_type_no] < -1) // negative cost
 				{
 					int idebug = 1;
 				}

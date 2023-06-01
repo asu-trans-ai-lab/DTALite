@@ -1721,7 +1721,7 @@ public:
     std::vector<int> m_origin_zone_seq_no_vector;
 
     int tau;             // assigned nodes for computing
-    int m_agent_type_no; // assigned nodes for computing
+    int m_mode_type_no; // assigned nodes for computing
     double m_value_of_time;
 
     int m_threadNo; // internal thread number

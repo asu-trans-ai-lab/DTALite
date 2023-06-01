@@ -1,3 +1,0 @@
-scenario_type,demand_period,from_node,to_node,geometry,values
-AM,9,10,"LINESTRING (-112.079717 33.668347,-112.062351 33.668466,)"sa,number_of_lanes_changed=0.400000,
-AM,3,4,"LINESTRING (-112.203112 33.667556,-112.182704 33.667637,)"

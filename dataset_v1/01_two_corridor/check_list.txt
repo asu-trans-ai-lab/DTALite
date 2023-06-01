@@ -1,0 +1,35 @@
+check 1: two corridor
+
+demand = 7000
+link volume: check
+route assignment
+
+check the route flow = demand 
+
+Experiment #1
+settings:
+section	key	value
+assignment	number_of_iterations	1
+assignment	route_output	0
+
+link performance should have 7000 for two links on one route:
+
+Experiment #2
+number_of_iterations	1
+route_output	1
+
+route_assignment should have 7000 for one routes 
+
+
+Experiment #3
+section	key	value
+assignment	number_of_iterations	2
+assignment	route_output	1
+
+
+route_assignment should have 7000 for one routes travel_time
+travel time =48.1367
+
+
+
+check 2: SF

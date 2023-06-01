@@ -300,7 +300,7 @@ void Assignment::STTrafficSimulation()
 
 	AllocateLinkMemory4Simulation();
 
-	int agent_type_size = g_AgentTypeVector.size();
+	int mode_type_size = g_ModeTypeVector.size();
 	int zone_size = g_zone_vector.size();
 	int demand_period_size = g_DemandPeriodVector.size();
 	int system_information_activation_time_in_min = 999999;
@@ -314,15 +314,15 @@ void Assignment::STTrafficSimulation()
 
 			system_information_activation_time_in_min = min(g_link_vector[li].dynamic_link_event_start_time_in_min, system_information_activation_time_in_min);
 
-			for (int at = 0; at < agent_type_size; ++at)
+			for (int at = 0; at < mode_type_size; ++at)
 			{
 				for (int tau = 0; tau < demand_period_size; ++tau)
 				{
-					if (p_link->AllowAgentType(g_AgentTypeVector[at].agent_type, tau, active_scenario_index) == false)
+					if (p_link->AllowModeType(g_ModeTypeVector[at].mode_type, tau, active_scenario_index) == false)
 					{
 						p_link->VDF_period[tau].RT_allowed_use[at] = false;  // follow the general rule of allow_uses, such HOV, special lanes
 					}
-					if (p_link->SA_AllowAgentType(g_AgentTypeVector[at].agent_type, tau) == false)
+					if (p_link->SA_AllowModeType(g_ModeTypeVector[at].mode_type, tau) == false)
 					{
 						p_link->VDF_period[tau].SA_allowed_use[at] = false;  // follow the general rule of allow_uses, such HOV, special lanes
 					}
@@ -363,7 +363,7 @@ void Assignment::STTrafficSimulation()
 			continue;
 
 
-		for (int at = 0; at < agent_type_size; ++at)
+		for (int at = 0; at < mode_type_size; ++at)
 		{
 			for (int dest = 0; dest < zone_size; ++dest)
 			{
@@ -465,11 +465,11 @@ void Assignment::STTrafficSimulation()
 								{
 									p_agent->p_RTNetwork = assignment.g_rt_network_pool[dest][at][tau];
 								}
-								p_agent->PCE_unit_size = 1; //  max(1, (int)(assignment.g_AgentTypeVector[at].PCE + 0.5));  // convert a possible floating point pce to an integer value for simulation
-								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_AgentTypeVector[at].DSR));
-								p_agent->time_headway = (int)(assignment.g_AgentTypeVector[at].time_headway_in_sec / number_of_seconds_per_interval + 0.5);
+								p_agent->PCE_unit_size = 1; //  max(1, (int)(assignment.g_ModeTypeVector[at].PCE + 0.5));  // convert a possible floating point pce to an integer value for simulation
+								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].DSR));
+								p_agent->time_headway = (int)(assignment.g_ModeTypeVector[at].time_headway_in_sec / number_of_seconds_per_interval + 0.5);
 								p_agent->agent_id = g_agent_simu_vector.size();
-								p_agent->agent_type_no = assignment.g_AgentTypeVector[at].agent_type_no;
+								p_agent->mode_type_no = assignment.g_ModeTypeVector[at].mode_type_no;
 								p_agent->departure_time_in_min = time_stamp;
 
 								p_agent->path_travel_time_in_min = g_LoadingEndTimeInMin - p_agent->departure_time_in_min;  // by default
@@ -1259,9 +1259,9 @@ void Assignment::STTrafficSimulation()
 						if (t >= system_information_activation_time_in_simu_interval && p_agent->impacted_flag == 1 && p_agent->m_current_link_seq_no >= 1 && p_agent->info_receiving_flag == 0)
 						{  // touch the physical road, and receive no information so far : info_receiving_flag =0;
 
-							int agent_type_no = p_agent->agent_type_no;
-							//requre agent_type_no be sequential
-							if (agent_type_no-1 < g_AgentTypeVector.size() && g_AgentTypeVector[p_agent->agent_type_no - 1].real_time_information)  // modeling response uniformly
+							int mode_type_no = p_agent->mode_type_no;
+							//requre mode_type_no be sequential
+							if (mode_type_no-1 < g_ModeTypeVector.size() && g_ModeTypeVector[p_agent->mode_type_no - 1].real_time_information)  // modeling response uniformly
 							{
 								rerouting_decision_flag = true;
 								p_agent->info_receiving_flag = 3;

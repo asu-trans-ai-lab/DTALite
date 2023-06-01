@@ -1,0 +1,4 @@
+first column,activity_travel_pattern_index,activity_travel_pattern_id,number_of_trips,demand_period_chain,mode_chain
+,1,external_auto,1,am,auto
+,2,external_park_ride,2,am;am,auto;bike
+,3,external_bike_walk,2,am;am,auto;walk

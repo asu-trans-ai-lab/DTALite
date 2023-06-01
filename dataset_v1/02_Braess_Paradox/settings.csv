@@ -1,0 +1,7 @@
+section,key,value
+assignment,number_of_iterations,20
+assignment,route_output,1
+assignment,simulation_output,0
+cpu,number_of_memory_blocks,4
+,length_unit,meter
+,speed_unit,kmph

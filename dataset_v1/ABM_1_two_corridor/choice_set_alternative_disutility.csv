@@ -1,0 +1,2 @@
+choice_graph_id,choice_location_index,choice_set_id,choice_alternative_id,activity_pattern,travel_time,travel_cost,probability
+,origin_zone_100,1,,1,HBW_Park_ride,,

@@ -1,0 +1,107 @@
+A: shape file 
+
+B: basic
+node:
+node_id, x_coord, y_coord, zone_id
+
+geometry (option)
+
+zone_id centroid for a zone,
+
+a zone can contain multiple nodes 
+
+node_type	ctrl_type, reserved for DTA simulation
+
+
+ 
+link
+
+from_node_id	to_node_id
+
+link_type
+
+lanes = baseline
+
+setting.csv
+sensivity_analysis_lanes= 
+
+lanes_2025= 0 to indicate in this "sensivity analysis after" scenario, 
+
+lanes = 2
+lanes_2025 = 3: increase number of lanes
+
+lanes = 3
+lanes_2025 = 2: decrease number of lanes
+
+
+length: meter
+
+free_speed: km, 
+
+capacity
+# of vehicles per hour per lane 
+
+geometry
+
+use NEXTA open and save, generate geometry based on nodes, offset 
+
+dir_flag
+= 0: rail single track, pedestrian
+= 2: two way links 
+= 1: one way
+
+allowed_uses: basic field
+
+
+VDF_allowed_usesk
+
+C: additinonal input for DTA
+
+1. link type
+type_code, f, a, c (connectors)
+traffic flow mode: DTA
+k_jam km 
+
+
+2. setting.csv
+section, key,value, 
+
+
+
+3. zone.csv (required), good pratice, do not put zone_id in node.csv
+
+zone_id, access_node_vector, ABM (priority) then, read node.csv
+
+node, 
+
+
+trip generation, trip distribution 
+
+first column, unix, windows, mac OS.
+
+
+4.demand in nexta, demand.csv 
+o_zone_id
+d_zone_id
+volume
+
+geometry (optional)
+ 
+measurement.csv
+
+--> sensor_data.csv
+CBI tool-> link_qvdf.csv
+readings.csv
+id.csv
+
+
+O: output
+
+1. link
+2. route
+3. agent
+4. trajectory
+5. corridor before after (scenario)
+6. subarea_related_zones
+7. final summary
+

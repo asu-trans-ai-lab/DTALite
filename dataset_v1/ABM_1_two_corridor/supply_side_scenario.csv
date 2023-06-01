@@ -1,0 +1,3 @@
+scenario_type,from_node_id,to_node_id,lanes,demand_period,activation
+sa,63702,93601,0.01,AM,0
+dms,107201,107300,,AM,0

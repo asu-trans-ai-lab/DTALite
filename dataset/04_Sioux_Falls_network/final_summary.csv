@@ -15,13 +15,13 @@ Step 1: read network node.csv, link.csv, zone.csv
 ,info_updating_freq_in_min= 5 min
 ,visual_distance_in_cells= 5 cells
 , # of demand side records in demand_side_scenario.csv=,0,
-Step 2.1: read demand, defined in [demand_file_list] in settings.csv.
+Step 2: read demand, defined in [demand_file_list] in settings.csv.
 ,o_zone_id,d_zone_id,inside_flag_from,inside_flag_to,volume
 ,file_sequence_no=,1,file_name =, demand.csv,demand_period =, AM,departure_time_profile_no=,0,cumulative demand =, 360600
 ,total demand =, 360600
 ,from_flag,to_flag,volume
 ,from_flag,to_flag,volume
-,0=not related, 1=signficiantly related external but not in cutoff, 2= cut-off external, 3= inside
+step 3: Focusing Approach,0=not related, 1=signficiantly related external but not in cutoff, 2= cut-off external, 3= inside
 ,0,1,2,3,
 0,0,0,0,0
 1,0,0,0,0
@@ -128,12 +128,13 @@ Step 2.1: read demand, defined in [demand_file_list] in settings.csv.
 ,,98,22,11,3,3,p,AM,1100
 ,,99,20,15,3,3,p,AM,1100
 ,,100,23,14,3,3,p,AM,1100
-step 2.2 read supply side scenario
+,read supply side scenario
 , # of records in supply_side_scenario.csv=,0,
 , # of SA records in supply_side_scenario.csv=,0,
 , # of incident records in supply_side_scenario.csv=,0,
 , # of dms records in supply_side_scenario.csv=,0,
-Step 3: check OD connectivity and accessibility in od_performance.csv
+Step 4: Column Generation for Traffic Assignment
+     Check OD connectivity and accessibility in od_performance.csv
 , # of connected OD pairs =, 528
 , # of OD/agent_type/demand_type columns without paths =, 0
 Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
@@ -177,7 +178,8 @@ Iteration, CPU Running Time, # of agents, Avg Travel Time(min),  Avg UE gap %
 37,0,360600,23.486,5.62362
 38,0,360600,23.4091,5.49024
 39,0,360600,23.3436,5.38431
-Step 4: Column Generation for Traffic Assignment
+Step 5: column pool-based flow updating for traffic assignment 
+,# of flow updating iterations=,20
 column updating
 column updating: iteration= 0, avg travel time = 23.1695(min), optimization obj = 402315,Relative_gap=4.49131 %
 column updating: iteration= 1, avg travel time = 20.6203(min), optimization obj = 146586,Relative_gap=1.94052 %
@@ -199,11 +201,10 @@ column updating: iteration= 16, avg travel time = 20.5119(min), optimization obj
 column updating: iteration= 17, avg travel time = 20.5144(min), optimization obj = 16244.6,Relative_gap=0.219511 %
 column updating: iteration= 18, avg travel time = 20.5165(min), optimization obj = 15740.4,Relative_gap=0.212684 %
 column updating: iteration= 19, avg travel time = 20.5188(min), optimization obj = 15525.4,Relative_gap=0.209761 %
-Step 6: column pool-based flow updating for traffic assignment 
-,# of flow updating iterations=,20
-ODME stage
-Step 4.3: OD estimation 
+Step 6: ODME stage
 ,# of ODME_iterations=,0
+Step 7: perform sensivity analysis if supply_side_scenario.csv is provided. 
+Step 8: traffic simulataion. 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
 ,VMT=,2141.65,VKT=,3445.92

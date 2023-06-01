@@ -52,7 +52,7 @@ using std::istringstream;
 class VehicleScheduleNetworks {
 
 public:
-	int m_agent_type_no;
+	int m_mode_type_no;
 	int m_time_interval_size;  // 1440
 
 	std::vector<CNode> m_node_vector;  // local copy of node vector, based on agent type and origin node
@@ -78,12 +78,12 @@ public:
 
 				int link_seq_no = g_node_vector[i].m_outgoing_link_seq_no_vector[j];
 
-				if (assignment.g_LinkTypeMap[g_link_vector[link_seq_no].link_type].AllowAgentType(assignment.g_AgentTypeVector[m_agent_type_no].agent_type))  // only predefined allowed agent type can be considered
+				if (assignment.g_LinkTypeMap[g_link_vector[link_seq_no].link_type].AllowModeType(assignment.g_ModeTypeVector[m_mode_type_no].mode_type))  // only predefined allowed agent type can be considered
 				{
 					int from_node_seq_no = g_link_vector[link_seq_no].from_node_seq_no;
 					node.m_outgoing_link_seq_no_vector.push_back(link_seq_no);
 
-					g_passenger_link_profit[link_seq_no] = g_link_vector[link_seq_no].get_generalized_first_order_gradient_cost_of_second_order_loss_for_agent_type(tau, m_agent_type_no);
+					g_passenger_link_profit[link_seq_no] = g_link_vector[link_seq_no].get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(tau, m_mode_type_no);
 
 					if (shortest_path_debugging_flag && assignment.g_pFileDebugLog != NULL)
 						fprintf(assignment.g_pFileDebugLog, "DP iteration %d: link %d->%d:  profit %.3f\n",
@@ -366,7 +366,7 @@ public:
 
 							new_element.current_node_no = to_node;
 
-							new_element.LabelCost += g_link_vector[link_seq_no].travel_time_per_period[demand_time_period_no] / 60.0 * assignment.g_AgentTypeVector[m_agent_type_no].value_of_time; // 60.0 is to convert hour to 60 min as VOT is denoted as dollars per hour
+							new_element.LabelCost += g_link_vector[link_seq_no].travel_time_per_period[demand_time_period_no] / 60.0 * assignment.g_ModeTypeVector[m_mode_type_no].value_of_time; // 60.0 is to convert hour to 60 min as VOT is denoted as dollars per hour
 							if (g_passenger_link_profit.find(link_seq_no) != g_passenger_link_profit.end())
 							{
 								new_element.LabelCost += g_passenger_link_profit[link_seq_no];// + negative cost
@@ -407,7 +407,7 @@ public:
 //
 //void g_column_pool_real_time_updating(Assignment& assignment, int column_updating_iterations)
 //{
-//	int agent_type_size = assignment.g_AgentTypeVector.size();
+//	int mode_type_size = assignment.g_ModeTypeVector.size();
 //	int zone_size = g_zone_vector.size();
 //	int demand_period_size = assignment.g_DemandPeriodVector.size();
 //
@@ -434,7 +434,7 @@ public:
 //			for (int tau = 0; tau < demand_period_size; ++tau)
 //			{
 //				// used in travel time calculation
-//				g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau] = 0;
+//				g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau] = 0;
 //			}
 //
 //			if (g_node_vector[g_link_vector[i].from_node_seq_no].subarea_id >= 1 && g_node_vector[g_link_vector[i].to_node_seq_no].node_id >= 1)
@@ -453,7 +453,7 @@ public:
 //		for (int orig = 0; orig < zone_size; ++orig)
 //		{
 //
-//			for (int at = 0; at < agent_type_size; ++at)
+//			for (int at = 0; at < mode_type_size; ++at)
 //			{
 //				for (int dest = 0; dest < zone_size; ++dest)
 //				{
@@ -504,7 +504,7 @@ public:
 //									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 //									{
 //										int link_seq_no = it->second.path_link_vector[nl];
-//										g_link_vector[link_seq_no].background_total_volume_for_all_agent_types_per_period[tau] += it->second.path_volume;
+//										g_link_vector[link_seq_no].background_total_volume_for_all_mode_types_per_period[tau] += it->second.path_volume;
 //									}
 //								}
 //
@@ -545,8 +545,8 @@ public:
 //
 //				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 //				{
-//					double volume = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-//					double major_path_link_volume = g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau];
+//					double volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+//					double major_path_link_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau];
 //					double ratio = major_path_link_volume / max(volume, 0.000001);
 //
 //					if (volume < 0.0000001)
@@ -557,8 +557,8 @@ public:
 //						g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
 //						g_node_vector[g_link_vector[i].from_node_seq_no].cell_str.c_str(),
 //						assignment.g_DemandPeriodVector[tau].time_period.c_str(),
-//						g_link_vector[i].total_volume_for_all_agent_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
-//						g_link_vector[i].background_total_volume_for_all_agent_types_per_period[tau],
+//						g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
+//						g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau],
 //						major_path_link_volume,
 //						ratio,
 //						g_link_vector[i].geometry.c_str());
@@ -580,7 +580,7 @@ public:
 //		if (g_zone_vector[orig].zone_id % 100 == 0)
 //			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
 //
-//		for (int at = 0; at < agent_type_size; ++at)
+//		for (int at = 0; at < mode_type_size; ++at)
 //		{
 //			for (int dest = 0; dest < zone_size; ++dest)
 //			{
@@ -589,7 +589,7 @@ public:
 //					p_column_pool = &(assignment.g_column_pool[orig][dest][at][tau]);
 //					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0 ||
 //						(assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end()
-//							&& assignment.g_AgentTypeVector[at].real_time_information >= 1)
+//							&& assignment.g_ModeTypeVector[at].real_time_information >= 1)
 //						)
 //
 //					{
@@ -597,15 +597,15 @@ public:
 //						int information_type = 0;
 //
 //						if (assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end()
-//							&& assignment.g_AgentTypeVector[at].real_time_information >= 1)
+//							&& assignment.g_ModeTypeVector[at].real_time_information >= 1)
 //						{
 //							p_column_pool->od_volume[assignment.active_scenario_index] = 1;  // reset the volume as 1 to enable visualization 
 //
 //						}
 //
 //
-//	for (int at = 0; at < assignment.g_AgentTypeVector.size(); at++)  //m
-//		if (assignment.g_AgentTypeVector[at].flow_type == 2)  // we only take into account the MAS generated agent volume into the link volume and link resource in this second optimization stage.
+//	for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)  //m
+//		if (assignment.g_ModeTypeVector[at].flow_type == 2)  // we only take into account the MAS generated agent volume into the link volume and link resource in this second optimization stage.
 //		{
 //			for (int o = 0; o < g_zone_vector.size(); o++)  // o
 //				for (int d = 0; d < g_zone_vector.size(); d++) //d
@@ -618,12 +618,12 @@ public:
 //								{
 //									// internal step 1: test shortest path travel time 
 //									g_RoutingNetwork.m_origin_node = agent_path.o_node_no;
-//									g_RoutingNetwork.m_agent_type_no = at;
+//									g_RoutingNetwork.m_mode_type_no = at;
 //									g_RoutingNetwork.tau = tau;
 //									float route_trip_time = g_RoutingNetwork.optimal_label_correcting(assignment, 0, agent_path.d_node_no, true);
 //
 //									VehicleScheduleNetworks vsn;
-//									vsn.m_agent_type_no = at;
+//									vsn.m_mode_type_no = at;
 //									vsn.m_time_interval_size = max(max(route_trip_time * 1.5, route_trip_time + 10), max(assignment.g_DemandPeriodVector[tau].get_time_horizon_in_min() * 1.5, assignment.g_DemandPeriodVector[tau].get_time_horizon_in_min() + 10));
 //									vsn.AllocateVSNMemory(assignment.g_number_of_nodes);
 //									vsn.BuildNetwork(assignment, tau, iteration_number);

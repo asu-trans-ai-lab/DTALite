@@ -201,10 +201,10 @@ public:
     float cumulative_departure_time_ratio[MAX_TIMESLOT_PerPeriod];
 };
 
-class CAgentType_District
+class CModeType_District
 {
 public:
-    CAgentType_District() : count_of_links{ 0 },
+    CModeType_District() : count_of_links{ 0 },
         total_od_volume{ 0 }, total_person_distance_km{ 0 }, total_person_distance_mile{ 0 }, total_person_travel_time{ 0 }, avg_travel_time {0}, avg_travel_distance_km {0}, avg_travel_distance_mile{ 0 }
     {}
 
@@ -231,46 +231,46 @@ public:
         if (at >= MAX_AGNETTYPES)
             return;
 
-        data_by_agent_type[at].total_od_volume += od_volume;
+        data_by_mode_type[at].total_od_volume += od_volume;
 
     }
 
-    void record_link_2_district_data(CAgentType_District element, int at)
+    void record_link_2_district_data(CModeType_District element, int at)
     {
         if (at >= MAX_AGNETTYPES)
             return;
 
-        data_by_agent_type[at].count_of_links += 1;
-        data_by_agent_type[at].total_person_travel_time += element.total_person_travel_time;
-        data_by_agent_type[at].total_person_distance_km += element.total_person_distance_km;
-        data_by_agent_type[at].total_person_distance_mile += element.total_person_distance_mile;
+        data_by_mode_type[at].count_of_links += 1;
+        data_by_mode_type[at].total_person_travel_time += element.total_person_travel_time;
+        data_by_mode_type[at].total_person_distance_km += element.total_person_distance_km;
+        data_by_mode_type[at].total_person_distance_mile += element.total_person_distance_mile;
 
     }
 
     void computer_avg_value(int at)
     {
-        float count = data_by_agent_type[at].count_of_links;
+        float count = data_by_mode_type[at].count_of_links;
         if (count >= 1)
         {
-            data_by_agent_type[at].avg_travel_distance_km = data_by_agent_type[at].total_person_distance_km/ max(1,data_by_agent_type[at].total_od_volume);
-            data_by_agent_type[at].avg_travel_distance_mile = data_by_agent_type[at].total_person_distance_mile / max(1, data_by_agent_type[at].total_od_volume);
-            data_by_agent_type[at].avg_travel_time = data_by_agent_type[at].total_person_travel_time / max(1, data_by_agent_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_distance_km = data_by_mode_type[at].total_person_distance_km/ max(1,data_by_mode_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_distance_mile = data_by_mode_type[at].total_person_distance_mile / max(1, data_by_mode_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_time = data_by_mode_type[at].total_person_travel_time / max(1, data_by_mode_type[at].total_od_volume);
         }
     }
 
-    CAgentType_District data_by_agent_type[MAX_AGNETTYPES];
+    CModeType_District data_by_mode_type[MAX_AGNETTYPES];
 };
 
-class CAgent_type {
+class Cmode_type {
 public:
-    CAgent_type() : agent_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
+    Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
          OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }
     {
     }
 
     int mode_specific_assignment_flag; 
 
-    int agent_type_no;
+    int mode_type_no;
     // dollar per hour
     float value_of_time;
     // link type, product consumption equivalent used, for travel time calculation
@@ -279,7 +279,7 @@ public:
 
     float time_headway_in_sec;
     int real_time_information;
-    std::string agent_type;
+    std::string mode_type;
     int number_of_allowed_links;
 
     std::string display_code;
@@ -493,11 +493,82 @@ public:
     std::vector<int> agent_simu_id_vector;
 };
 
+class CActivityTravelPattern {
+public:
+    int activity_travel_pattern_index;
+    std::string activity_travel_pattern_id;
+    std::string mode_chain_str;
+    std::string demand_period_chain_str;
+    int number_of_trips;
+    std::vector<std::string> demand_period_chain;
+    std::vector<int> demand_period_vector;
+    std::vector<std::string> mode_chain;
+    std::vector<int> mode_vector;
+    CActivityTravelPattern() : number_of_trips{ 0 }
+    {}
+};
+
+struct SChoiceAlt {
+public:
+    int mode_no;
+    int demand_peroid_no;
+    int o_zone_no;
+    int d_zone_no;
+    float volume;
+};
+class CChoiceAlt {
+public:
+    CChoiceAlt() : volume{ 0 } {}
+    std::string multi_dim_choice_id;
+    std::string activity_zone_chain_str;
+
+    int choice_alternative_id;
+    std::string activity_travel_pattern_id;
+    std::vector<int> activity_zone_chain;
+
+    std::vector<SChoiceAlt> activity_chain;
+    float volume;
+};
+
+
+class CChoiceSet {
+public:
+    CChoiceSet() : demand_volume{ 0 }, avg_travel_time{ 0 }, avg_travel_cost{ 0 }
+    {
+    
+    }
+    int active_scenario_index;
+    int choice_set_index;
+    std::string multi_dim_choice_id;
+    std::string mode_tag, demand_period_tag, spatial_tag, travel_purpose_tag, data_tag;
+
+    //mode_tag: This could be used to categorize models based on the type of travel mode they focus on or include.For example, the tags could be 'car', 'public_transit', 'cycling', 'walking', 'ridesharing', 'autonomous_vehicles', etc.
+    //
+    //demand_period_tag : This tag could indicate the temporal scope of the model.It could be 'short_term' (for daily or within - day models), 'long_term' (for models dealing with decisions that have long - term impacts like vehicle ownership or residential location), or 'peak' and 'off_peak' (for models specifically focused on peak or off - peak travel periods).
+    //
+    //spatial_tag : This tag would denote the geographic scale of the model.Tags could include 'neighborhood', 'city', 'metropolitan', 'regional', 'national', or 'global'.
+    //
+    //travel_purpose_tag : This tag would categorize models based on the travel purpose they represent.For example, tags could be 'work', 'education', 'shopping', 'leisure', 'personal_business', etc.
+    //
+    //data_tag : This tag would classify models based on the type of data they require.Possible tags could be 'individual_level', 'household_level', 'aggregate_level', 'revealed_preference', 'stated_preference', 'big_data', 'GPS_data', etc.
+
+
+    std::vector<CChoiceAlt> choice_alt_vector;
+    float demand_volume; 
+    float avg_travel_time;
+    float avg_travel_cost;
+
+public:
+
+
+};
+
+
 class CAgentPath {
 public:
     CAgentPath() : path_id{ 0 }, node_sum{ -1 }, travel_time{ 0 }, distance{ 0 }, volume{ 0 }
-   {
-   }
+    {
+    }
 
     std::string path_id;
     int node_sum;
@@ -517,7 +588,7 @@ class CColumnVector {
 
 public:
     // this is colletion of unique paths
-    CColumnVector() : cost{ 0 }, time{ 0 }, distance{ 0 },  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_agent_type_no{ 0 },
+    CColumnVector() : avg_cost{ 0 }, avg_time{ 0 }, distance{ 0 },  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_mode_type_no{ 0 },
         departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, relative_OD_gap{ 0 }
     {
 
@@ -530,8 +601,8 @@ public:
     {
         path_node_sequence_map.clear();
 
-        cost = 0;
-        time = 0;
+        avg_cost = 0;
+        avg_time = 0;
         distance = 0;
         relative_OD_gap = 0;
 
@@ -540,8 +611,8 @@ public:
     
     std::map<int, bool> at_od_impacted_flag_map; // for each agent type
 
-    float cost;
-    float time;
+    float avg_cost;
+    float avg_time;
     float distance;
     // od volume
     double od_volume[MAX_SCENARIOS];
@@ -556,10 +627,10 @@ public:
     std::vector<int> activity_zone_no_vector;
 
     std::string  activity_zone_sequence;
-    std::string activity_agent_type_sequence;
-    std::vector<int>  activity_agent_type_no_vector;
+    std::string activity_mode_type_sequence;
+    std::vector<int>  activity_mode_type_no_vector;
 
-    int activity_agent_type_no;
+    int activity_mode_type_no;
     int departure_time_profile_no;
     int m_passing_sensor_flag;
     // first key is the sum of node id;. e.g. node 1, 3, 2, sum of those node ids is 6, 1, 4, 2 then node sum is 7.
@@ -588,7 +659,7 @@ public:
     int o_node_id;
     int d_node_id;
 
-    std::string agent_type;
+    std::string mode_type;
     std::string demand_period;
 
     std::vector<int> path_node_vector;
@@ -610,7 +681,7 @@ public:
     CAgent_Simu() : agent_vector_seq_no{ -1 }, path_toll{ 0 }, departure_time_in_min{ 0 }, m_bGenereated{ false }, m_bCompleteTrip{ false },
         path_travel_time_in_min{ 0 }, path_distance{ 0 }, diverted_flag{ 0 }, time_headway{ number_of_simu_interval_reaction_time }, PCE_unit_size{ 1 }, impacted_flag{ -1 }, impacted_link_seq_no{ 99999 },
         info_receiving_flag{ 0 }, desired_free_travel_time_ratio{ 1.0 }, waiting_time_in_min{ 0 }, max_link_waiting_time_in_min{ 0 },
-        max_waiting_time_link_no{ -1 }, p_RTNetwork{ NULL }, agent_type_no{ 0 },
+        max_waiting_time_link_no{ -1 }, p_RTNetwork{ NULL }, mode_type_no{ 0 },
         departure_time_in_simu_interval{ 0 }, arrival_time_in_min{ 0 }, m_current_link_seq_no{ 0 }, m_path_link_seq_no_vector_size{ 0 }
     {
     }
@@ -662,7 +733,7 @@ public:
     bool m_bGenereated;
     bool m_bCompleteTrip;
 
-    int agent_type_no;
+    int mode_type_no;
     int agent_id;
 
     // for column pool index
@@ -710,10 +781,10 @@ class Assignment {
 public:
     // default is UE
     Assignment() : assignment_mode{ lue }, g_number_of_memory_blocks{ 4 }, g_number_of_threads{ 1 }, g_info_updating_freq_in_min{ 5 }, g_visual_distance_in_cells{ 5 },
-        g_link_type_file_loaded{ true }, g_agent_type_file_loaded{ false }, total_route_demand_volume{ 0 },
+        g_link_type_file_loaded{ true }, g_mode_type_file_loaded{ false }, total_route_demand_volume{ 0 },
         total_demand_volume{ 0.0 }, g_column_pool{ nullptr }, g_number_of_in_memory_simulation_intervals{ 500 },
         g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
-        g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_agent_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
+        g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_mode_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
         shortest_path_log_zone_id{ -1 }, g_number_of_analysis_districts{ 1 },
         active_scenario_index{ 0 }
@@ -744,10 +815,10 @@ public:
     ~Assignment()
     {
         if (g_column_pool)
-            Deallocate4DDynamicArray(g_column_pool, g_related_zone_vector_size, g_related_zone_vector_size, g_number_of_agent_types);
+            Deallocate4DDynamicArray(g_column_pool, g_related_zone_vector_size, g_related_zone_vector_size, g_number_of_mode_types);
         
         if(g_rt_network_pool)
-            Deallocate3DDynamicArray(g_rt_network_pool, g_number_of_zones, g_number_of_agent_types);
+            Deallocate3DDynamicArray(g_rt_network_pool, g_number_of_zones, g_number_of_mode_types);
 
         sp_log_file.close();
         
@@ -759,20 +830,20 @@ public:
         DeallocateLinkMemory4Simulation();
     }
 
-    void InitializeDemandMatrix(int number_of_signficant_zones, int number_of_zones, int number_of_agent_types, int number_of_time_periods)
+    void InitializeDemandMatrix(int number_of_signficant_zones, int number_of_zones, int number_of_mode_types, int number_of_time_periods)
     {
         total_demand_volume = 0.0;
         g_number_of_zones = number_of_zones;
-        g_number_of_agent_types = number_of_agent_types;
+        g_number_of_mode_types = number_of_mode_types;
 
-        g_column_pool = Allocate4DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_agent_types), number_of_time_periods);
+        g_column_pool = Allocate4DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_mode_types), number_of_time_periods);
 
         for (int i = 0; i < number_of_zones; ++i)
         {
             g_origin_demand_array[i] = 0.0;
         }
 
-        for (int i = 0; i < number_of_agent_types; ++i)
+        for (int i = 0; i < number_of_mode_types; ++i)
         {
             for (int tau = 0; tau < g_number_of_demand_periods; ++tau)
             { 
@@ -848,7 +919,7 @@ public:
     int shortest_path_log_zone_id;
 
     bool g_link_type_file_loaded;
-    bool g_agent_type_file_loaded;
+    bool g_mode_type_file_loaded;
 
     float total_demand_volume;
     float total_route_demand_volume;
@@ -868,7 +939,7 @@ public:
     int g_number_of_timing_arcs;
     int g_number_of_nodes;
     int g_number_of_zones;
-    int g_number_of_agent_types;
+    int g_number_of_mode_types;
 
     std::map<int, int> node_seq_no_2_zone_id_mapping;  // this is used to mark if this zone_id has been identified or not
     std::map<int, int> zone_seq_no_2_info_mapping;  // this is used to mark if this zone_id has been identified or not
@@ -901,13 +972,18 @@ public:
     int g_LoadingStartTimeInMin;
     int g_LoadingEndTimeInMin;
 
-    std::vector<CAgent_type> g_AgentTypeVector;
+    std::vector<Cmode_type> g_ModeTypeVector;
+
+
+    std::map<std::string, CActivityTravelPattern> g_ActivityTravelPatternMap;
+    std::map<std::string, CChoiceSet> g_ChoiceSetMap;
+    
 
     int g_number_of_analysis_districts;
     std::map<int, CLinkType> g_LinkTypeMap;
 
     std::map<std::string, int> demand_period_to_seqno_mapping;
-    std::map<std::string, int> agent_type_2_seqno_mapping;
+    std::map<std::string, int> mode_type_2_seqno_mapping;
 
 
     std::map<int, double> o_district_id_factor_map;
@@ -983,7 +1059,7 @@ public:
         for (int si = 0; si < MAX_SCENARIOS; si++)
         {
             link_type_si[si] = 0;
-            number_of_lanes_si[si] = 0;
+            number_of_lanes_si[si] = 1;  // default all open 
             penalty_si_flag[si] = 0;
 
             for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
@@ -991,7 +1067,7 @@ public:
                 {
 
                     penalty_si_at[si][at][tau] = 0;
-                    recorded_volume_per_agent_type_per_period[tau][at][si] = 0;
+                    recorded_volume_per_mode_type_per_period[tau][at][si] = 0;
                     recorded_converted_MEU_volume_per_period_per_at[tau][at][si] = 0;
                 }
 
@@ -1000,13 +1076,13 @@ public:
 
         for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
         {
-            total_volume_for_all_agent_types_per_period[tau] = 0;
-            total_person_volume_for_all_agent_types_per_period[tau] = 0;
+            total_volume_for_all_mode_types_per_period[tau] = 0;
+            total_person_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
                        //cost_perhour[tau] = 0;
             for (int at = 0; at < MAX_AGNETTYPES; ++at)
             {
-                volume_per_agent_type_per_period[tau][at] = 0; 
+                volume_per_mode_type_per_period[tau][at] = 0; 
                 converted_MEU_volume_per_period_per_at[tau][at] = 0; 
                 travel_time_per_period[tau][at] = 0;
 
@@ -1027,22 +1103,22 @@ public:
 
     void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int vdf_type);
 
-    void calculate_marginal_cost_for_agent_type(int tau, int agent_type_no, float PCE_agent_type)
+    void calculate_marginal_cost_for_mode_type(int tau, int mode_type_no, float PCE_mode_type)
     {
         // volume * dervative
         // BPR_term: volume * FFTT * alpha * (beta) * power(v/c, beta-1),
 
-//        travel_marginal_cost_per_period[tau][agent_type_no] = VDF_period[tau].marginal_base * PCE_agent_type;
+//        travel_marginal_cost_per_period[tau][mode_type_no] = VDF_period[tau].marginal_base * PCE_mode_type;
     }
 
-    double get_generalized_first_order_gradient_cost_of_second_order_loss_for_agent_type(int tau, int agent_type_no)
+    double get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(int tau, int mode_type_no)
     {
         // *60 as 60 min per hour
-        double generalized_cost = travel_time_per_period[tau][agent_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[agent_type_no] / assignment.g_AgentTypeVector[agent_type_no].value_of_time * 60;
+        double generalized_cost = travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
 
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
-        //    generalized_cost += travel_marginal_cost_per_period[tau][agent_type_no];
+        //    generalized_cost += travel_marginal_cost_per_period[tau][mode_type_no];
 
         return generalized_cost;
     }
@@ -1236,13 +1312,13 @@ public:
 
     }
 
-    bool AllowAgentType(std::string agent_type, int tau, int active_si)
+    bool AllowModeType(std::string mode_type, int tau, int active_si)
     {
         if (VDF_period[tau].allowed_uses[active_si].size() == 0 || VDF_period[tau].allowed_uses[active_si] == "all")  // if the allowed_uses is empty then all types are allowed.
             return true;
         else
         {
-            if (VDF_period[tau].allowed_uses[active_si].find(agent_type) != std::string::npos)  // otherwise, only an agent type is listed in this "allowed_uses", then this agent type is allowed to travel on this link
+            if (VDF_period[tau].allowed_uses[active_si].find(mode_type) != std::string::npos)  // otherwise, only an agent type is listed in this "allowed_uses", then this agent type is allowed to travel on this link
                 return true;
             else
             {
@@ -1254,13 +1330,13 @@ public:
     }
 
 
-    bool SA_AllowAgentType(std::string agent_type, int tau)
+    bool SA_AllowModeType(std::string mode_type, int tau)
     {
         if (VDF_period[tau].sa_allowed_uses.size() == 0 || VDF_period[tau].sa_allowed_uses == "all")  // if the allowed_uses is empty then all types are allowed.
             return true;
         else
         {
-            if (VDF_period[tau].sa_allowed_uses.find(agent_type) != std::string::npos)  // otherwise, only an agent type is listed in this "sa_allowed_uses", then this agent type is allowed to travel on this link
+            if (VDF_period[tau].sa_allowed_uses.find(mode_type) != std::string::npos)  // otherwise, only an agent type is listed in this "sa_allowed_uses", then this agent type is allowed to travel on this link
                 return true;
             else
             {
@@ -1303,16 +1379,16 @@ public:
 
     int subarea_id;
     
-    double total_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
-    double total_person_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
+    double total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
+    double total_person_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
 
     double RT_flow_volume;
-    double background_total_volume_for_all_agent_types_per_period[MAX_TIMEPERIODS];
+    double background_total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
 
-    double  volume_per_agent_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
     double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
 
-    double  recorded_volume_per_agent_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
     double  recorded_converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
 
 
@@ -1468,7 +1544,7 @@ public:
 class CNode
 {
 public:
-    CNode() : zone_id{ -1 }, zone_org_id{ -1 }, layer_no{ 0 }, MRM_gate_flag{ -1 }, prohibited_movement_size{ 0 }, node_seq_no{ -1 }, subarea_id{ -1 }, is_activity_node{ 0 }, agent_type_no{ -1 }, is_boundary{ 0 }, access_distance{ 0.04 }
+    CNode() : zone_id{ -1 }, zone_org_id{ -1 }, layer_no{ 0 }, MRM_gate_flag{ -1 }, prohibited_movement_size{ 0 }, node_seq_no{ -1 }, subarea_id{ -1 }, is_activity_node{ 0 }, mode_type_no{ -1 }, is_boundary{ 0 }, access_distance{ 0.04 }
     {
     }
 
@@ -1484,7 +1560,7 @@ public:
     int zone_org_id;
     float access_distance;
     std::string node_type;
-    std::string agent_type_str;
+    std::string mode_type_str;
     int subarea_id;
     int prohibited_movement_size;
     // sequence number
@@ -1497,7 +1573,7 @@ public:
 
     int is_activity_node;
     int is_boundary;
-    int agent_type_no;
+    int mode_type_no;
 
     double x;
     double y;
@@ -1754,7 +1830,7 @@ extern std::map<std::string, CInfoCell> g_info_cell_map;
 
 void g_assign_RT_computing_tasks_to_memory_blocks(Assignment& assignment);
 void g_load_demand_side_scenario_file(Assignment& assignment);
-extern void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int internal_to_node_seq_no, string agent_type_str, int zone_seq_no);
+extern void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int internal_to_node_seq_no, string mode_type_str, int zone_seq_no);
 extern double g_Find_PPP_RelativeAngle(const DTAGDPoint* p1, const DTAGDPoint* p2, const DTAGDPoint* p3, const DTAGDPoint* p4);
 extern double g_GetPoint2LineDistance(const DTAGDPoint* pt, const DTAGDPoint* FromPt, const DTAGDPoint* ToPt);
 extern double g_GetPoint2Point_Distance(const DTAGDPoint* p1, const DTAGDPoint* p2);
