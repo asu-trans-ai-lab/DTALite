@@ -201,14 +201,14 @@ public:
     float cumulative_departure_time_ratio[MAX_TIMESLOT_PerPeriod];
 };
 
-class CModeType_District
+class CModeType_Summary
 {
 public:
-    CModeType_District() : count_of_links{ 0 },
+    CModeType_Summary() : count{ 0 },
         total_od_volume{ 0 }, total_person_distance_km{ 0 }, total_person_distance_mile{ 0 }, total_person_travel_time{ 0 }, avg_travel_time {0}, avg_travel_distance_km {0}, avg_travel_distance_mile{ 0 }
     {}
 
-    int count_of_links;
+    int count;
     double total_od_volume;
     double total_person_distance_km;
     double total_person_distance_mile;
@@ -216,6 +216,45 @@ public:
     double avg_travel_time;
     double avg_travel_distance_km;
     double avg_travel_distance_mile;
+};
+
+class CSystem_Summary
+{
+public:
+
+    void record_mode_volume(int tau, int at, double od_volume)
+    {
+        if (at >= MAX_AGNETTYPES)
+            return;
+
+        data_by_demand_period_mode_type[tau][at].total_od_volume += od_volume;
+
+    }
+
+    void record_mode_od_data(CModeType_Summary element, int tau, int at)
+    {
+        if (at >= MAX_AGNETTYPES)
+            return;
+
+        data_by_demand_period_mode_type[tau][at].count += 1;
+        data_by_demand_period_mode_type[tau][at].total_person_travel_time += element.total_person_travel_time;
+        data_by_demand_period_mode_type[tau][at].total_person_distance_km += element.total_person_distance_km;
+        data_by_demand_period_mode_type[tau][at].total_person_distance_mile += element.total_person_distance_mile;
+
+    }
+
+    void computer_avg_value(int tau, int at)
+    {
+        float count = data_by_demand_period_mode_type[tau][at].count;
+        if (count >= 1)
+        {
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
+        }
+    }
+
+    CModeType_Summary data_by_demand_period_mode_type[MAX_TIMEPERIODS][MAX_AGNETTYPES];
 };
 
 
@@ -235,12 +274,12 @@ public:
 
     }
 
-    void record_link_2_district_data(CModeType_District element, int at)
+    void record_link_2_district_data(CModeType_Summary element, int at)
     {
         if (at >= MAX_AGNETTYPES)
             return;
 
-        data_by_mode_type[at].count_of_links += 1;
+        data_by_mode_type[at].count += 1;
         data_by_mode_type[at].total_person_travel_time += element.total_person_travel_time;
         data_by_mode_type[at].total_person_distance_km += element.total_person_distance_km;
         data_by_mode_type[at].total_person_distance_mile += element.total_person_distance_mile;
@@ -249,7 +288,7 @@ public:
 
     void computer_avg_value(int at)
     {
-        float count = data_by_mode_type[at].count_of_links;
+        float count = data_by_mode_type[at].count;
         if (count >= 1)
         {
             data_by_mode_type[at].avg_travel_distance_km = data_by_mode_type[at].total_person_distance_km/ max(1,data_by_mode_type[at].total_od_volume);
@@ -258,7 +297,7 @@ public:
         }
     }
 
-    CModeType_District data_by_mode_type[MAX_AGNETTYPES];
+    CModeType_Summary data_by_mode_type[MAX_AGNETTYPES];
 };
 
 class Cmode_type {
@@ -825,7 +864,7 @@ public:
         summary_file.close();
         summary_file2.close();
         summary_corridor_file.close();
-        summary_district_file.close();
+        summary_system_file.close();
         simu_log_file.close();
         DeallocateLinkMemory4Simulation();
     }
@@ -1033,7 +1072,7 @@ public:
     std::ofstream summary_file;
     std::ofstream summary_file2;
     std::ofstream summary_corridor_file;
-    std::ofstream summary_district_file;
+    std::ofstream summary_system_file;
 
 };
 

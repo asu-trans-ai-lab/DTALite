@@ -1304,6 +1304,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 						int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[from_zone_seq_no];
 						g_district_info_base0_map[analysis_district_id].record_origin_2_district_volume(mode_type_no, demand_value);
+						g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, demand_value);
 
 						assignment.total_demand[mode_type_no][demand_period_no] += demand_value;
 						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].od_volume[si] += demand_value;
@@ -1385,7 +1386,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 							int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[from_zone_seq_no];
 							g_district_info_base0_map[analysis_district_id].record_origin_2_district_volume(mode_type_no, agent_path_element.volume);
-
+							g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, agent_path_element.volume);
 							//apply for both agent csv and routing policy
 							assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][mode_type_no][demand_period_no].bfixed_route = true;
 
@@ -1633,6 +1634,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 									assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][mode_type_no][demand_period_no].od_volume[si] += volume;
 									assignment.total_demand_volume += volume;
 									assignment.g_origin_demand_array[from_zone_seq_no] += volume;
+									g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, volume);
 								}
 								//end of trip leg loop
 

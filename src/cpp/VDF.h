@@ -201,13 +201,11 @@ public:
 
             //step 3.2 calculate speed from VDF based on D/C ratio
             avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
-            avg_travel_time = FFTT * vf / max(0.1, avg_speed_BPR); // Mark: FFTT should be vctt
+            avg_travel_time = FFTT * (1+ alpha * pow(DOC, beta)); // Mark: FFTT should be vctt
 
 
 
-            if (vdf_type == bpr_vdf)  // pure BPR form
-                avg_travel_time = FFTT * vf / max(0.1, avg_speed_BPR); // Mark: FFTT should be vctt
-            else if (vdf_type == q_vdf) //QVDF form
+            if (vdf_type == q_vdf) //QVDF form
             {
                  avg_travel_time = FFTT * vf / max(0.1, avg_queue_speed); // Mark: FFTT should be vctt
 

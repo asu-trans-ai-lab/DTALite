@@ -110,6 +110,7 @@ std::vector<CLink> g_link_vector;
 std::map<string, CVDF_Type> g_vdf_type_map;
 std::map<string, CCorridorInfo>  g_corridor_info_base0_map, g_corridor_info_SA_map;
 std::map<int, CAnalysisDistrict>  g_district_info_base0_map, g_district_info_SA_map;
+std::map<int, CSystem_Summary>  g_scenario_summary_map;
 std::vector<COZone> g_zone_vector;
 int g_related_zone_vector_size;
 
@@ -633,7 +634,7 @@ void  CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conge
 				
 
 
-				if (link_id == "10")
+				if (link_id == "1003" && link_volume_to_be_assigned >0)
 				{
 					int idebug = 1;
 				}
@@ -1425,8 +1426,6 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	g_output_simulation_result(assignment);
 	}
 
-	g_OutputSummaryFiles(assignment);
-
 
 	// end of scenario computing, clean the memory 
 	g_column_pool_reset(assignment);
@@ -1434,6 +1433,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	g_output_accessibility_result(assignment);
 	g_output_assignment_summary_result(assignment, 0);
 	g_output_2_way_assignment_summary_result(assignment, 0);
+	g_OutputSummaryFiles(assignment);
 	// at the end of simulation 
 	// validation step if reading data are available
 	bool b_sensor_reading_data_available = false;
