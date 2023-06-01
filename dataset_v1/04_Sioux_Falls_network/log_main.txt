@@ -341,111 +341,111 @@ Total Column Generation iteration: 20
 
 
 Current iteration number:0
-Current CPU time: 0.003 s
+Current CPU time: 0.002 s
 iteration: 0,systemTT: 0
-iteration: 0,systemTT: 0, least system TT:3298.4,gap=-100 %
+iteration: 0,systemTT: 0, least system TT:3.1761e+06,gap=-100 %
 
 Current iteration number:1
-Current CPU time: 0.03 s
+Current CPU time: 0.006 s
 iteration: 1,systemTT: 0
-iteration: 1,systemTT: 0, least system TT:3298.4,gap=-100 %
+iteration: 1,systemTT: 0, least system TT:3.1761e+06,gap=-100 %
 
 Current iteration number:2
-Current CPU time: 0.04 s
-iteration: 2,systemTT: 2.0904e+07
-iteration: 2,systemTT: 2.0904e+07, least system TT:7019.1,gap=2.9772e+05 %
+Current CPU time: 0.009 s
+iteration: 2,systemTT: 7.2313e+11
+iteration: 2,systemTT: 7.2313e+11, least system TT:6.882e+06,gap=1.0507e+07 %
 
 Current iteration number:3
-Current CPU time: 0.05 s
-iteration: 3,systemTT: 2.0904e+07
-iteration: 3,systemTT: 2.0904e+07, least system TT:7019.1,gap=2.9772e+05 %
+Current CPU time: 0.012 s
+iteration: 3,systemTT: 7.2313e+11
+iteration: 3,systemTT: 7.2313e+11, least system TT:6.882e+06,gap=1.0507e+07 %
 
 Current iteration number:4
-Current CPU time: 0.058 s
-iteration: 4,systemTT: 2.8136e+07
-iteration: 4,systemTT: 2.8136e+07, least system TT:9137.4,gap=3.0782e+05 %
+Current CPU time: 0.015 s
+iteration: 4,systemTT: 7.6937e+11
+iteration: 4,systemTT: 7.6937e+11, least system TT:9.0185e+06,gap=8.5309e+06 %
 
 Current iteration number:5
-Current CPU time: 0.068 s
-iteration: 5,systemTT: 3.0653e+07
-iteration: 5,systemTT: 3.0653e+07, least system TT:8798.8,gap=3.4827e+05 %
+Current CPU time: 0.018 s
+iteration: 5,systemTT: 1.8571e+12
+iteration: 5,systemTT: 1.8571e+12, least system TT:8.8728e+06,gap=2.093e+07 %
 
 Current iteration number:6
-Current CPU time: 0.077 s
-iteration: 6,systemTT: 3.102e+07
-iteration: 6,systemTT: 3.102e+07, least system TT:9014,gap=3.4403e+05 %
+Current CPU time: 0.021 s
+iteration: 6,systemTT: 1.495e+12
+iteration: 6,systemTT: 1.495e+12, least system TT:8.6938e+06,gap=1.7196e+07 %
 
 Current iteration number:7
-Current CPU time: 0.086 s
-iteration: 7,systemTT: 3.1926e+07
-iteration: 7,systemTT: 3.1926e+07, least system TT:10114,gap=3.1555e+05 %
+Current CPU time: 0.025 s
+iteration: 7,systemTT: 9.6723e+11
+iteration: 7,systemTT: 9.6723e+11, least system TT:9.8298e+06,gap=9.8397e+06 %
 
 Current iteration number:8
-Current CPU time: 0.095 s
-iteration: 8,systemTT: 3.133e+07
-iteration: 8,systemTT: 3.133e+07, least system TT:10367,gap=3.021e+05 %
+Current CPU time: 0.029 s
+iteration: 8,systemTT: 7.5757e+11
+iteration: 8,systemTT: 7.5757e+11, least system TT:1.0221e+07,gap=7.4116e+06 %
 
 Current iteration number:9
-Current CPU time: 0.103 s
-iteration: 9,systemTT: 3.0697e+07
-iteration: 9,systemTT: 3.0697e+07, least system TT:10543,gap=2.9107e+05 %
+Current CPU time: 0.033 s
+iteration: 9,systemTT: 7.215e+11
+iteration: 9,systemTT: 7.215e+11, least system TT:1.0432e+07,gap=6.9161e+06 %
 
 Current iteration number:10
-Current CPU time: 0.11 s
-iteration: 10,systemTT: 3.0239e+07
-iteration: 10,systemTT: 3.0239e+07, least system TT:10413,gap=2.9028e+05 %
+Current CPU time: 0.037 s
+iteration: 10,systemTT: 7.4069e+11
+iteration: 10,systemTT: 7.4069e+11, least system TT:1.0316e+07,gap=7.1797e+06 %
 
 Current iteration number:11
-Current CPU time: 0.118 s
-iteration: 11,systemTT: 3.0382e+07
-iteration: 11,systemTT: 3.0382e+07, least system TT:10289,gap=2.9517e+05 %
+Current CPU time: 0.041 s
+iteration: 11,systemTT: 7.9721e+11
+iteration: 11,systemTT: 7.9721e+11, least system TT:1.0217e+07,gap=7.803e+06 %
 
 Current iteration number:12
-Current CPU time: 0.126 s
-iteration: 12,systemTT: 3.0297e+07
-iteration: 12,systemTT: 3.0297e+07, least system TT:9853.8,gap=3.0737e+05 %
+Current CPU time: 0.045 s
+iteration: 12,systemTT: 8.5248e+11
+iteration: 12,systemTT: 8.5248e+11, least system TT:9.783e+06,gap=8.7138e+06 %
 
 Current iteration number:13
-Current CPU time: 0.133 s
-iteration: 13,systemTT: 2.9986e+07
-iteration: 13,systemTT: 2.9986e+07, least system TT:9616.1,gap=3.1173e+05 %
+Current CPU time: 0.049 s
+iteration: 13,systemTT: 8.4537e+11
+iteration: 13,systemTT: 8.4537e+11, least system TT:9.5224e+06,gap=8.8775e+06 %
 
 Current iteration number:14
-Current CPU time: 0.141 s
-iteration: 14,systemTT: 2.9587e+07
-iteration: 14,systemTT: 2.9587e+07, least system TT:9547.6,gap=3.0978e+05 %
+Current CPU time: 0.053 s
+iteration: 14,systemTT: 7.9491e+11
+iteration: 14,systemTT: 7.9491e+11, least system TT:9.4382e+06,gap=8.4222e+06 %
 
 Current iteration number:15
-Current CPU time: 0.148 s
-iteration: 15,systemTT: 2.9234e+07
-iteration: 15,systemTT: 2.9234e+07, least system TT:9439.7,gap=3.0959e+05 %
+Current CPU time: 0.057 s
+iteration: 15,systemTT: 7.4064e+11
+iteration: 15,systemTT: 7.4064e+11, least system TT:9.3411e+06,gap=7.9287e+06 %
 
 Current iteration number:16
-Current CPU time: 0.155 s
-iteration: 16,systemTT: 2.8916e+07
-iteration: 16,systemTT: 2.8916e+07, least system TT:9284.9,gap=3.1133e+05 %
+Current CPU time: 0.061 s
+iteration: 16,systemTT: 7.0118e+11
+iteration: 16,systemTT: 7.0118e+11, least system TT:9.1942e+06,gap=7.6263e+06 %
 
 Current iteration number:17
-Current CPU time: 0.164 s
-iteration: 17,systemTT: 2.8739e+07
-iteration: 17,systemTT: 2.8739e+07, least system TT:9155.5,gap=3.138e+05 %
+Current CPU time: 0.064 s
+iteration: 17,systemTT: 6.8368e+11
+iteration: 17,systemTT: 6.8368e+11, least system TT:9.0739e+06,gap=7.5345e+06 %
 
 Current iteration number:18
-Current CPU time: 0.172 s
-iteration: 18,systemTT: 2.8507e+07
-iteration: 18,systemTT: 2.8507e+07, least system TT:9013,gap=3.1619e+05 %
+Current CPU time: 0.067 s
+iteration: 18,systemTT: 6.7997e+11
+iteration: 18,systemTT: 6.7997e+11, least system TT:8.9117e+06,gap=7.63e+06 %
 
 Current iteration number:19
-Current CPU time: 0.181 s
-iteration: 19,systemTT: 2.8216e+07
-iteration: 19,systemTT: 2.8216e+07, least system TT:8911.3,gap=3.1654e+05 %
+Current CPU time: 0.071 s
+iteration: 19,systemTT: 6.7939e+11
+iteration: 19,systemTT: 6.7939e+11, least system TT:8.7951e+06,gap=7.7246e+06 %
 Step 5: Column Pool Updating
 Total Column Pool Updating iteration: 2
-column updating: iteration= 0, avg travel time = 0.026625(min), optimization obj = 860.37,Relative_gap=8.853 %
-column updating: iteration= 1, avg travel time = 0.025691(min), optimization obj = 728.92,Relative_gap=7.8064 %
+column updating: iteration= 0, avg travel time = 26.44(min), optimization obj = 9.0695e+05,Relative_gap=8.5646 %
+column updating: iteration= 1, avg travel time = 21.419(min), optimization obj = 4.2844e+05,Relative_gap=5.3448 %
 
 Done!
-CPU Running Time for the entire computing progcess: 0.024 s
+CPU Running Time for the entire computing progcess: 0.007 s
 writing link_performance_s0.csv
 writing route_assignment.csv..
 writing link_background_volume.csv..
@@ -461,7 +461,7 @@ Please check the connectivity of OD pairs and in network and field allow_uses in
 writing link_performances_summary.csv..
 writing link_performances_summary_2way.csv..
 Output for assignment with 20 iterations. Traffic assignment completes!
-CPU Running Time for outputting simulation results: 0.135 s
+CPU Running Time for outputting simulation results: 0.055 s
 free memory..
 CPU Running Time for Entire Process: 0 min 0 sec
 done.
