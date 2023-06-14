@@ -221,19 +221,19 @@ public:
 			{
 				int idebug = 1;
 			}
-			if (p_link->travel_time_per_period[m_tau] < 0)
-			{
+			// if (p_link->travel_time_per_period[m_tau] < 0)
+			// {
 
-				dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
-					g_node_vector[p_link->to_node_seq_no].node_id << ","
-					<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
-					<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
-					",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
-					",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
-					",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
-					", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
-					endl;
-			}
+			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
+			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
+			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
+			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
+			// 		",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
+			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
+			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
+			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
+			// 		endl;
+			// }
 
 			//route_choice_cost 's unit is min
 		}
@@ -264,19 +264,19 @@ public:
 			{
 				int idebug = 1;
 			}
-			if (p_link->travel_time_per_period[m_tau] < 0)
-			{
+			// if (p_link->travel_time_per_period[m_tau] < 0)
+			// {
 
-				dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
-					g_node_vector[p_link->to_node_seq_no].node_id << ","
-					<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
-					<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
-					",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
-					",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
-					",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
-					", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
-					endl;
-			}
+			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
+			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
+			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
+			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
+			// 		",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
+			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
+			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
+			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
+			// 		endl;
+			// }
 
 			//route_choice_cost 's unit is min
 		}

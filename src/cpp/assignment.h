@@ -1435,7 +1435,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 						}
 
 
-						p_column_pool->relative_OD_gap = total_OD_gap / max(1,total_OD_travel_time);
+						p_column_pool->relative_OD_gap = total_OD_gap / max(1.0, total_OD_travel_time);
 					}
 				}
 			}

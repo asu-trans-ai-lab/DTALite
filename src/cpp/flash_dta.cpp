@@ -181,6 +181,141 @@ int main()
 
 	CDTACSVParser parser_settings;
 
+	parser_settings.IsFirstLineHeader = true;
+	if (parser_settings.OpenCSVFile("settings.csv", true))
+	{
+				std::string assignment_mode_str;
+
+				int number_of_iterations=  1;
+				if (parser_settings.GetValueByKeyName("number_of_iterations", number_of_iterations, false) == true)
+					column_generation_iterations = number_of_iterations; // update
+
+				// these are the assignment modes
+				// two usually methods are ue (user equilibrium) and dta (dynamic traffic assignment)
+				// the main difference of these two methods are different output in link_performance.csv
+				// for basic uses set assignment mode to 'ue'
+				// for more detailed link performances (one minute) set 'dta'1
+				assignment_mode = 1;
+
+				if (CheckMeasurementFileExist() == true)
+				{
+					column_updating_iterations = 5;
+					ODME_iterations = 100;
+				}
+				else
+					ODME_iterations = 0;
+
+
+				if (CheckSupplySideScenarioFileExist() == true)
+					sensitivity_analysis_iterations = 10;
+				else
+					sensitivity_analysis_iterations = -1;
+
+				int route_output = 1;
+				int route_output_value = -1;
+
+				int s = -1;
+				if (parser_settings.GetValueByKeyName("route_output", route_output_value, false, false) == true)
+				{ 
+					route_output = route_output_value;
+
+					if (route_output == 0)   // reset back to lue mode
+						assignment_mode = 0;
+				}
+
+				simulation_output = 1;  //default
+				int simulation_output_value = -1; 
+				if (parser_settings.GetValueByKeyName("simulation_output", simulation_output_value, false, false))
+				{
+					simulation_output = simulation_output_value;
+					if (simulation_output == 1)
+						assignment_mode = 2;
+				}
+
+				// the start interation of generating signals, if there is no signals set this number larger than the itertion number
+				int number_of_memory_blocks_values = 1;
+
+				if(parser_settings.GetValueByKeyName("number_of_memory_blocks", number_of_memory_blocks_values, false, false))
+				{ 
+					number_of_memory_blocks = number_of_memory_blocks_values;
+					dtalog.output() << "number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << std::endl;
+				}
+
+
+
+
+				//if (parser_settings.GetValueByKeyName("scenario_index_size", scenario_index_size, false, false))
+				//{
+				//	dtalog.output() << "scenario_index_size = " << scenario_index_size << " in settings.csv." << std::endl;
+
+				//	if(scenario_index_size>=1)
+				//	{ 
+				//		sensitivity_analysis_iterations = 10; // 10 iterations 
+				//	}
+				//}
+
+				double number_of_seconds_per_interval_input = 0.25;
+				//parser_settings.GetValueByFieldName("number_of_seconds_per_interval", number_of_seconds_per_interval_input, false, false);
+
+				//if (number_of_seconds_per_interval_input > 0.0001)
+				//	number_of_seconds_per_interval = number_of_seconds_per_interval_input;
+
+
+
+			if (parser_settings.SectionName == "[log]")
+			{
+				parser_settings.GetValueByFieldName("sig", dtalog.log_sig(), false);
+				parser_settings.GetValueByFieldName("odme", dtalog.log_odme(), false);
+				parser_settings.GetValueByFieldName("path", dtalog.log_path(), false);
+				parser_settings.GetValueByFieldName("ue", dtalog.log_ue(), false);
+			}
+
+		
+		
+
+	}
+
+
+	// scenario
+	// 
+	// obtain initial flow values
+	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, scenario_A_index, scenario_index_size);
+
+	return 0;
+}
+
+void DTALiteAPI()
+{
+	// reset all the log files to defult 0: not output; if want to output these logs set to 1
+	dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
+	dtalog.debug_level() = 0;
+	dtalog.log_sig() = 0;
+	dtalog.log_odme() = 0;
+	dtalog.log_path() = 0;
+	dtalog.log_dta() = 0;
+	dtalog.log_ue() = 0;
+
+	int column_generation_iterations = 0;
+	int column_updating_iterations = 2;
+	int ODME_iterations = 0;
+	int sensitivity_analysis_iterations = 0;
+	int number_of_memory_blocks = 4;
+	float info_updating_freq_in_min = 5;
+	int simulation_output = 1;
+
+	int signal_updating_output = 0;
+	// generate link performance and agent file
+	int assignment_mode = 1;
+	bool flag_default = false;
+	int default_volume = 1;
+	int link_length_in_meter_flag = 0;
+	int scenario_A_index = 0;
+	int scenario_index_size = -1;
+
+	write_default_setting_file_if_not_exist();
+
+	CDTACSVParser parser_settings;
+
 
 	if (parser_settings.OpenCSVFile("settings.csv", false))
 	{
@@ -278,6 +413,4 @@ int main()
 	// 
 	// obtain initial flow values
 	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, scenario_A_index, scenario_index_size);
-
-	return 0;
 }

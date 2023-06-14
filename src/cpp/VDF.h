@@ -215,7 +215,7 @@ public:
             {
                 float s_bar = 1.0 / 60.0 * red_time * red_time / (2 * cycle_length); // 60.0 is used to convert sec to min
                 double lambda = lane_based_D;
-                float uniform_delay = s_bar / max(1 - lambda / saturation_flow_rate, 0.1f);
+                float uniform_delay = s_bar / max(1 - lambda / saturation_flow_rate, 0.1);
                 avg_travel_time = uniform_delay + FFTT;
             }
 

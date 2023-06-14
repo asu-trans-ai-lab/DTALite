@@ -245,14 +245,14 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 				it_s->second.computer_avg_value(tau, at);
 
-					assignment.summary_system_file <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].count << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_km << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_mile << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].total_person_travel_time << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_km << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile << "," <<
-						it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_time << "," << endl;
+				assignment.summary_system_file <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].count << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_km << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_mile << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_travel_time << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_km << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_time << "," << endl;
 
 			}
 		}
@@ -772,12 +772,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					g_link_vector[i].VDF_period[tau].DOC_mode[0],
 					g_link_vector[i].VDF_period[tau].lane_based_ultimate_hourly_capacity,
 					g_link_vector[i].VDF_period[tau].queue_length,
-					max(0, g_link_vector[i].total_simulated_delay_in_min));
+					max(0.0, g_link_vector[i].total_simulated_delay_in_min));
 
 
 				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
 
-					max(0, g_link_vector[i].total_simulated_delay_in_min) / max(1, vehicle_volume),
+					max(0.0, g_link_vector[i].total_simulated_delay_in_min) / max(1.0f, vehicle_volume),
 					g_link_vector[i].VDF_period[tau].Q_peak_load_factor,
 					g_link_vector[i].VDF_period[tau].nlanes,
 					g_link_vector[i].VDF_period[tau].lane_based_D,
@@ -1327,8 +1327,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									int impacted_path_flag = it->second.impacted_path_flag;  //NA by default
 
 
-									double volume_before_ODME = max(0, it->second.path_volume_before_ODME);
-									double volume_after_ODME = max(0, it->second.path_volume_after_ODME);
+									double volume_before_ODME = max(0.0, it->second.path_volume_before_ODME);
+									double volume_after_ODME = max(0.0, it->second.path_volume_after_ODME);
 									double volume = it->second.path_volume;
 
 									double volume_diff_ODME = 0;
@@ -1338,8 +1338,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										volume_diff_ODME = volume_after_ODME - volume_before_ODME;
 									}
 
-									double volume_before_sa = max(0, it->second.path_volume_before_sa);
-									double volume_after_sa = max(0, it->second.path_volume_after_sa);
+									double volume_before_sa = max(0.0, it->second.path_volume_before_sa);
+									double volume_after_sa = max(0.0, it->second.path_volume_after_sa);
 									double volume_diff_sa = 0;
 
 									if (volume_before_sa >= -0.000001)

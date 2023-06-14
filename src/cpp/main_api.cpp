@@ -302,7 +302,7 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 			assignment.summary_file << ",Iteration,Avg Travel Time(min)" << endl;
 		}
 
-		double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
+		double Avg_Travel_Time = total_system_travel_time / max(1.0f, assignment.total_demand_volume);
 
 		assignment.summary_file << iteration_number << "," << Avg_Travel_Time << "," << endl;
 		// link based computing mode, we have to collect link volume from all processors.
@@ -931,6 +931,14 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			parser_scenario_index_file_list.GetValueByFieldName("scenario_name", element.scenario_name);
 			assignment.g_active_DTAscenario_map[element.scenario_index] = assignment.g_DTAscenario_vector.size();
 			assignment.g_DTAscenario_vector.push_back(element);
+
+			if (assignment.g_DTAscenario_vector.size() > MAX_SCENARIOS - 1)
+			{
+				assignment.summary_file << "Error: " << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS -1 << ". Users have too many scenarios now as " << assignment.g_DTAscenario_vector.size() << ". Please contact the developer to obtain a version with larger scenario size if needed." << endl;
+				dtalog.output() << "Error: " << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS-1 << ". Users have too many scenarios now as " << assignment.g_DTAscenario_vector.size() << ". Please contact the developer to obtain a version with larger scenario size if needed." << endl;
+				g_program_stop();
+
+			}
 			assignment.summary_file << "scenario_index=" << element.scenario_index << ",scenario_name=," << element.scenario_name.c_str() << endl;
 
 			}
@@ -1177,7 +1185,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 				double CPU_Running_Time = cumulative_cp / 1000.0;
 				int number_of_agents = 0;
-				double Avg_Travel_Time = total_system_travel_time / max(1, assignment.total_demand_volume);
+				double Avg_Travel_Time = total_system_travel_time / max(1.0f, assignment.total_demand_volume);
 
 				dtalog.output() << "iteration: " << iteration_number << ",systemTT: " << total_system_travel_time << ", least system TT:" <<
 					total_least_system_travel_time << ",gap=" << relative_gap * 100 << " %" << endl;

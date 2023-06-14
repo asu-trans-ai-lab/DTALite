@@ -233,7 +233,7 @@ double g_pre_read_demand_file(Assignment& assignment)
 				int line_no = 0;
 				int file_format = 0;
 
-				fopen_s(&pFile, "demand.bin", "rb");
+				fopen_ss(&pFile, "demand.bin", "rb");
 				if (pFile != NULL)
 				{
 					file_format = 2;
@@ -487,7 +487,7 @@ void g_create_subarea_related_zone_structure()
 
 
 		// use the following rule to determine how many zones to keep as origin zones, we still keep all destination zones
-		int cutoff_zone_size = min(g_zone_vector.size(), max(related_external_zone_count_with_significant_volume * 0.25, 100));
+		int cutoff_zone_size = min(g_zone_vector.size(), static_cast<size_t>(max(related_external_zone_count_with_significant_volume * 0.25, 100.0)));
 
 
 		if (cutoff_zone_size + inside_zone_count < g_zone_vector.size())  // additional handling  remaining zones are still greater than 1000
@@ -517,7 +517,7 @@ void g_create_subarea_related_zone_structure()
 				std::sort(origin_zone_volume_vector.begin(), origin_zone_volume_vector.end());
 
 				// determine the cut off value;
-				int cut_off_zone_index = max(0, origin_zone_volume_vector.size() - cutoff_zone_size);
+				int cut_off_zone_index = 0 ? origin_zone_volume_vector.size() - cutoff_zone_size <= 0 : origin_zone_volume_vector.size() - cutoff_zone_size;
 
 				volume_cut_off_value = origin_zone_volume_vector[cut_off_zone_index];
 
@@ -552,7 +552,7 @@ void g_create_subarea_related_zone_structure()
 		assignment.summary_file << ",second stage cut off, cut off zone = all inside zones + significant external related zones " << endl;
 		assignment.summary_file << ",# cut off zone size = " << cutoff_zone_size << ", total_related_demand_from_external_cutoff  = " << total_related_demand_from_external_cutoff << endl;
 		assignment.summary_file << ",cut off volume threshold to determine significance = " << volume_cut_off_value << ", external origin zones with volume larger than this threadshold will be kept" << endl;
-		double cut_off_demand_ratio = total_related_demand_from_external_cutoff / max(1, total_related_demand_from_external);
+		double cut_off_demand_ratio = total_related_demand_from_external_cutoff / max(1.0, total_related_demand_from_external);
 		assignment.summary_file << ", remaining external related demand percentage after the cut off  = " << cut_off_demand_ratio * 100 << " %" << endl;
 
 
@@ -810,7 +810,7 @@ void g_create_subarea_related_zone_structure()
 
 
 
-	double related_ratio = total_related_demand / max(1, total_demand);
+	double related_ratio = total_related_demand / max(1.0, total_demand);
 	dtalog.output() << "total demand = " << total_demand << " total subarea-related demand = " << total_related_demand << " ("
 		<< related_ratio * 100 << " % )" << endl;
 
@@ -1108,7 +1108,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					}
 					else
 					{
-						fopen_s(&pFile, "demand.bin", "rb");
+						fopen_ss(&pFile, "demand.bin", "rb");
 						if (pFile != NULL)
 						{
 							file_format = 2;
@@ -3768,7 +3768,7 @@ void g_read_input_data(Assignment& assignment)
 						if (link.VDF_period[tau].effective_green_time < 0)
 							link.VDF_period[tau].effective_green_time = link.VDF_period[tau].cycle_length;
 
-						link.VDF_period[tau].red_time = max(1, link.VDF_period[tau].cycle_length - link.VDF_period[tau].effective_green_time);
+						link.VDF_period[tau].red_time = max(1.0f, link.VDF_period[tau].cycle_length - link.VDF_period[tau].effective_green_time);
 						parser_link.GetValueByFieldName("red_time", link.VDF_period[tau].red_time, false);
 						parser_link.GetValueByFieldName("green_time", link.VDF_period[tau].effective_green_time, false);
 

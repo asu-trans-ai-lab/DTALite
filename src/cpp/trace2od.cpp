@@ -2094,7 +2094,7 @@ public:
             int i;
             for (i = 0; i < number_of_nodes; i++) //Initialization for all non-origin nodes
             {
-                if (g_mm_node_vector[i].bInsideFlag = false)
+                if (g_mm_node_vector[i].bInsideFlag == false)
                     continue;
 
                 for (int t = 0; t < g_TimeRangeInterval; t++)

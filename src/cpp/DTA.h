@@ -10,9 +10,8 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-constexpr auto MAX_SCENARIOS = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_SCENARIOS = 100; 
 constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
-constexpr auto MAX_LINKTTYPES = 100; 
 constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
 //constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 //constexpr auto MAX_TIMEPERIODS = 6; // time period set to 4: mid night, morning peak, mid-day and afternoon peak;
@@ -248,9 +247,9 @@ public:
         float count = data_by_demand_period_mode_type[tau][at].count;
         if (count >= 1)
         {
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(1, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
         }
     }
 
@@ -291,9 +290,9 @@ public:
         float count = data_by_mode_type[at].count;
         if (count >= 1)
         {
-            data_by_mode_type[at].avg_travel_distance_km = data_by_mode_type[at].total_person_distance_km/ max(1,data_by_mode_type[at].total_od_volume);
-            data_by_mode_type[at].avg_travel_distance_mile = data_by_mode_type[at].total_person_distance_mile / max(1, data_by_mode_type[at].total_od_volume);
-            data_by_mode_type[at].avg_travel_time = data_by_mode_type[at].total_person_travel_time / max(1, data_by_mode_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_distance_km = data_by_mode_type[at].total_person_distance_km/ max(1.0,data_by_mode_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_distance_mile = data_by_mode_type[at].total_person_distance_mile / max(1.0, data_by_mode_type[at].total_od_volume);
+            data_by_mode_type[at].avg_travel_time = data_by_mode_type[at].total_person_travel_time / max(1.0, data_by_mode_type[at].total_od_volume);
         }
     }
 
