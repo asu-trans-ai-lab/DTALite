@@ -1,0 +1,3 @@
+DTALite Log           
+ file settings.csv does not exist. Please check the file.
+DTALite Program stops. Press any key to terminate. Thanks!

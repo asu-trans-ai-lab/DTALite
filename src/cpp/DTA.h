@@ -1105,8 +1105,11 @@ public:
                 {
 
                     penalty_si_at[si][at][tau] = 0;
-                    recorded_volume_per_mode_type_per_period[tau][at][si] = 0;
-                    recorded_converted_MEU_volume_per_period_per_at[tau][at][si] = 0;
+                    recorded_volume_per_period_per_at[tau][at][si] = 0;
+                    recorded_MEU_per_period_per_at[tau][at][si] = 0;
+                    recorded_capacity_per_period_per_at[tau][at][si] = 0;
+                    recorded_DOC_per_period_per_at[tau][at][si] = 0;
+                    recorded_TT_per_period_per_at[tau][at][si] = 0;
                 }
 
         }
@@ -1426,9 +1429,13 @@ public:
     double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
     double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
 
-    double  recorded_volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
-    double  recorded_converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
 
+    // added by Xuesong 0603 2023
+    double  recorded_capacity_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
 
     
 

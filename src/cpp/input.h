@@ -1719,7 +1719,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 	assignment.summary_file << ",from_flag,to_flag,volume" << endl;
 	assignment.summary_file << ",from_flag,to_flag,volume" << endl;
-	assignment.summary_file << "step 3: Focusing Approach,0=not related, 1=significantly related external but not in cutoff, 2= cut-off external, 3= inside" << endl;
+	assignment.summary_file << "FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly related external but not in cutoff, 2= cut-off external, 3= inside" << endl;
 	assignment.summary_file << ",";
 	for (int subare_inside_flag_to = 0; subare_inside_flag_to <= 3; subare_inside_flag_to++)
 		assignment.summary_file << subare_inside_flag_to << ",";
@@ -1739,7 +1739,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 	std::sort(ODStateVector.begin(), ODStateVector.end());
 
-	assignment.summary_file << ",top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume" << endl;
+	assignment.summary_file << "FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume" << endl;
 
 	for (int k = 0; k < min(size_t(100), ODStateVector.size()); k++)
 	{
