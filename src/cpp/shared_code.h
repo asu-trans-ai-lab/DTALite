@@ -1,4 +1,3 @@
-
 float g_read_float(FILE* f)
 {
     if (feof(f) == 1)
@@ -213,4 +212,3 @@ string g_time_coding(float time_stamp)
 
     return strm.str();
 }
-

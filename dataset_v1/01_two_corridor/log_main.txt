@@ -1,8 +1,10 @@
-_____________
-Step 1: Reading input data
-_____________
-Step 1.1: Reading section demand_period.csv...
-cumulative profile no. 0, ratio at slot  85 (7:5) = 0.0033333,CR 0.083333
+DTALite Log           
+Step 0: Reading setting.csv.
+number_of_iterations20 in setting.csv.
+route_output = 1 in setting.csv.
+simulation_output = 0 in setting.csv.
+number_of_memory_blocks = 4 in settings.csv.
+ 0.083333
 cumulative profile no. 0, ratio at slot  86 (7:10) = 0.0033333,CR 0.16667
 cumulative profile no. 0, ratio at slot  87 (7:15) = 0.0033333,CR 0.25
 cumulative profile no. 0, ratio at slot  88 (7:20) = 0.0033333,CR 0.33333
@@ -19,34 +21,27 @@ number of demand periods = 1
 Step 1.2: Reading mode_type.csv...
 number of mode types = 1
 Step 1.3: Reading activity_travel_pattern.csv...
-Error: File activity_travel_pattern.csv cannot be opened.
- It might be currently used and locked by EXCEL.
+Warning: File activity_travel_pattern.csv cannot be opened. Note that, file activity_travel_pattern.csv is optional.
+
 Step 1.3: Reading link_type.csv
-Error: Field link_type 250 has been defined more than once in file link_type.csv
-Error: Field link_type 252 has been defined more than once in file link_type.csv
-Error: Field link_type 253 has been defined more than once in file link_type.csv
-Error: Field link_type 254 has been defined more than once in file link_type.csv
-Error: Field link_type 255 has been defined more than once in file link_type.csv
-number of link types = 40
-Step 1.3: Reading zone data in zone.csv...
+number of link types = 7
+Step 1.31: Reading zone data in zone.csv...
 reading 0 access nodes from zone.csv.. 
 reading 0 access nodes from zone.csv.. 
 Step 1.4: Reading node data in node.csv...
-Reading node data at layer0
+Reading node data 
 number of nodes = 4
 number of multimodal activity nodes = 0
-number of zones = 2
+Note: One can add mode_type in node.csv to denote transit stations as part of efforts for modleing multmodal activities
 Step 1.5: Initializing O-D zone vector...
 number of zones = 2
 
 Reading file demand_file_list.csv...
 Step 1.6: Reading link data in link.csv... 
-link layer= 0
 number of links =8
 number of links =8
-Step 2.0: Reading demand side scenario data...
 
-Reading file departure_time_profile.csv
+Step 2.0: Reading file departure_time_profile.csv
 T6h0min=0.003242
 T6h5min=0
 T6h10min=0.003242
@@ -121,267 +116,200 @@ cumulative profile no. 1, ratio at slot  106 (8:50) = 0.005058,CR 0.95164
 cumulative profile no. 1, ratio at slot  107 (8:55) = 0.0033333,CR 0.97138
 cumulative profile no. 1, ratio at slot  108 (9:0) = 0.004833,CR 1
 final cumulative profile ratio = 0.97138
-compute_cumulative_profile!
-allocating 4D memory for 0 zones,nM=2,nX=2,nY=1,nZ=1
+allocating 4D memory for no.0 zone,nM=2,nX=2,nY=1,nZ=1
 
-Reading file demand_file_list.csv...
-reading demand file for 0
+Step 2.1: Reading file demand_file_list.csv...
+reading demand file for scenario index =0
 o_zone_id:1, d_zone_id: 2, value = 7000
 o_zone_id:2, d_zone_id: 1, value = 7000
-total demand volume is 14000
-reading demand file for 0
+cumulative total demand volume is 14000
+reading demand file for scenario index =0
 o_zone_id:1, d_zone_id: 2, value = 7000
 o_zone_id:2, d_zone_id: 1, value = 7000
-total demand volume is 14000
+cumulative total demand volume is 14000
 Step 2.2: Reading supply side scenario data...
 reading 0 sa  capacity scenario.. 
 reading 0 dms scenario.. 
-Step 2: Assigning computing tasks to memory blocks...
+Step 3: Assigning computing tasks to memory blocks...
 There are 2 SP networks in memory.
 There are 2 agent type*zones to be computed in CPU.
 
 Step 4: Column Generation for Traffic Assignment...
-Total Column Generation iteration: 20
-,# of column generation (shortest path finding) iterations=, 20
+Total number of column generation iteration = 20
 
+_________________________
+global scenario index =0
+_________________________
 
-Current iteration number:0
-Current CPU time: 0.002 s
-iteration: 0,systemTT: 0
-iteration: 0,systemTT: 0, least system TT:2.8e+05,gap=-100 %
+Current iteration number = No. 011296CPU time: 0.003 s
+,system wide travel time (TT) = 0, least system TT = 2.8e+05,gap = -100 %
 
-Current iteration number:1
-Current CPU time: 0.004 s
-iteration: 1,systemTT: 0
-iteration: 1,systemTT: 0, least system TT:2.8e+05,gap=-100 %
+Current iteration number = No. 111296CPU time: 0.004 s
+,system wide travel time (TT) = 0, least system TT = 2.8e+05,gap = -100 %
 
-Current iteration number:2
-Current CPU time: 0.006 s
-iteration: 2,systemTT: 6.7392e+05
-iteration: 2,systemTT: 6.7392e+05, least system TT:4.2e+05,gap=60.455 %
+Current iteration number = No. 211296CPU time: 0.006 s
+,system wide travel time (TT) = 6.7392e+05, least system TT = 4.2e+05,gap = 60.455 %
 
-Current iteration number:3
-Current CPU time: 0.009 s
-iteration: 3,systemTT: 6.7392e+05
-iteration: 3,systemTT: 6.7392e+05, least system TT:4.2e+05,gap=60.455 %
+Current iteration number = No. 311296CPU time: 0.008 s
+,system wide travel time (TT) = 6.7392e+05, least system TT = 4.2e+05,gap = 60.455 %
 
-Current iteration number:4
-Current CPU time: 0.011 s
-iteration: 4,systemTT: 3.8623e+05
-iteration: 4,systemTT: 3.8623e+05, least system TT:3.5781e+05,gap=7.9412 %
+Current iteration number = No. 411296CPU time: 0.009 s
+,system wide travel time (TT) = 3.8623e+05, least system TT = 3.5781e+05,gap = 7.9412 %
 
-Current iteration number:5
-Current CPU time: 0.014 s
-iteration: 5,systemTT: 4.2067e+05
-iteration: 5,systemTT: 4.2067e+05, least system TT:3.0462e+05,gap=38.095 %
+Current iteration number = No. 511296CPU time: 0.011 s
+,system wide travel time (TT) = 4.2067e+05, least system TT = 3.0462e+05,gap = 38.095 %
 
-Current iteration number:6
-Current CPU time: 0.016 s
-iteration: 6,systemTT: 3.8576e+05
-iteration: 6,systemTT: 3.8576e+05, least system TT:3.3106e+05,gap=16.524 %
+Current iteration number = No. 611296CPU time: 0.013 s
+,system wide travel time (TT) = 3.8576e+05, least system TT = 3.3106e+05,gap = 16.524 %
 
-Current iteration number:7
-Current CPU time: 0.018 s
-iteration: 7,systemTT: 3.8623e+05
-iteration: 7,systemTT: 3.8623e+05, least system TT:3.5781e+05,gap=7.9412 %
+Current iteration number = No. 711296CPU time: 0.015 s
+,system wide travel time (TT) = 3.8623e+05, least system TT = 3.5781e+05,gap = 7.9412 %
 
-Current iteration number:8
-Current CPU time: 0.021 s
-iteration: 8,systemTT: 3.968e+05
-iteration: 8,systemTT: 3.968e+05, least system TT:3.8254e+05,gap=3.7273 %
+Current iteration number = No. 811296CPU time: 0.017 s
+,system wide travel time (TT) = 3.968e+05, least system TT = 3.8254e+05,gap = 3.7273 %
 
-Current iteration number:9
-Current CPU time: 0.023 s
-iteration: 9,systemTT: 4.1031e+05
-iteration: 9,systemTT: 4.1031e+05, least system TT:4.0464e+05,gap=1.3999 %
+Current iteration number = No. 911296CPU time: 0.018 s
+,system wide travel time (TT) = 4.1031e+05, least system TT = 4.0464e+05,gap = 1.3999 %
 
-Current iteration number:10
-Current CPU time: 0.025 s
-iteration: 10,systemTT: 4.2425e+05
-iteration: 10,systemTT: 4.2425e+05, least system TT:4.2416e+05,gap=0.021012 %
+Current iteration number = No. 1011296CPU time: 0.02 s
+,system wide travel time (TT) = 4.2425e+05, least system TT = 4.2416e+05,gap = 0.021012 %
 
-Current iteration number:11
-Current CPU time: 0.027 s
-iteration: 11,systemTT: 4.3768e+05
-iteration: 11,systemTT: 4.3768e+05, least system TT:4.2299e+05,gap=3.4723 %
+Current iteration number = No. 1111296CPU time: 0.022 s
+,system wide travel time (TT) = 4.3768e+05, least system TT = 4.2299e+05,gap = 3.4723 %
 
-Current iteration number:12
-Current CPU time: 0.029 s
-iteration: 12,systemTT: 4.5026e+05
-iteration: 12,systemTT: 4.5026e+05, least system TT:4.2205e+05,gap=6.6847 %
+Current iteration number = No. 1211296CPU time: 0.023 s
+,system wide travel time (TT) = 4.5026e+05, least system TT = 4.2205e+05,gap = 6.6847 %
 
-Current iteration number:13
-Current CPU time: 0.031 s
-iteration: 13,systemTT: 4.1031e+05
-iteration: 13,systemTT: 4.1031e+05, least system TT:4.0464e+05,gap=1.3999 %
+Current iteration number = No. 1311296CPU time: 0.025 s
+,system wide travel time (TT) = 4.1031e+05, least system TT = 4.0464e+05,gap = 1.3999 %
 
-Current iteration number:14
-Current CPU time: 0.033 s
-iteration: 14,systemTT: 3.9088e+05
-iteration: 14,systemTT: 3.9088e+05, least system TT:3.7049e+05,gap=5.5019 %
+Current iteration number = No. 1411296CPU time: 0.026 s
+,system wide travel time (TT) = 3.9088e+05, least system TT = 3.7049e+05,gap = 5.5019 %
 
-Current iteration number:15
-Current CPU time: 0.035 s
-iteration: 15,systemTT: 3.968e+05
-iteration: 15,systemTT: 3.968e+05, least system TT:3.8254e+05,gap=3.7273 %
+Current iteration number = No. 1511296CPU time: 0.028 s
+,system wide travel time (TT) = 3.968e+05, least system TT = 3.8254e+05,gap = 3.7273 %
 
-Current iteration number:16
-Current CPU time: 0.037 s
-iteration: 16,systemTT: 4.034e+05
-iteration: 16,systemTT: 4.034e+05, least system TT:3.9393e+05,gap=2.4046 %
+Current iteration number = No. 1611296CPU time: 0.031 s
+,system wide travel time (TT) = 4.034e+05, least system TT = 3.9393e+05,gap = 2.4046 %
 
-Current iteration number:17
-Current CPU time: 0.04 s
-iteration: 17,systemTT: 4.1031e+05
-iteration: 17,systemTT: 4.1031e+05, least system TT:4.0464e+05,gap=1.3999 %
+Current iteration number = No. 1711296CPU time: 0.033 s
+,system wide travel time (TT) = 4.1031e+05, least system TT = 4.0464e+05,gap = 1.3999 %
 
-Current iteration number:18
-Current CPU time: 0.042 s
-iteration: 18,systemTT: 4.173e+05
-iteration: 18,systemTT: 4.173e+05, least system TT:4.1471e+05,gap=0.62526 %
+Current iteration number = No. 1811296CPU time: 0.034 s
+,system wide travel time (TT) = 4.173e+05, least system TT = 4.1471e+05,gap = 0.62526 %
 
-Current iteration number:19
-Current CPU time: 0.044 s
-iteration: 19,systemTT: 4.2425e+05
-iteration: 19,systemTT: 4.2425e+05, least system TT:4.2416e+05,gap=0.021012 %
+Current iteration number = No. 1911296CPU time: 0.036 s
+,system wide travel time (TT) = 4.2425e+05, least system TT = 4.2416e+05,gap = 0.021012 %
 Step 5: Column Pool Updating
-Total Column Pool Updating iteration: 2
+Total number of column pool updating iterations = 2
 column updating: iteration= 0, avg travel time = 31.263(min), optimization obj = 14687,Relative_gap=3.2896 %
 column updating: iteration= 1, avg travel time = 30.36(min), optimization obj = 601.99,Relative_gap=0.14154 %
 
-Done!
-CPU Running Time for the entire computing progcess: 0.003 s
+Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+Step 7: perform sensivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+CPU Running Time for the entire computing progress = 0.005 s
+Step 9: record corridor performance summary
+Step 10: output assignment result
 writing link_performance_s0.csv
 writing route_assignment.csv..
 writing link_background_volume.csv..
 writing data for 2  zones 
 writing demand.bin..
 writing data for 2  zones 
-Complete writing 0K binary demand pairs with CPU time 0.001 s.
+Complete writing 0K binary demand pairs with CPU time 0 s.
 writing choice_set_output.csv..
- updating
-Current iteration number:0
-Current CPU time: 0.007 s
-iteration: 0,systemTT: 3.1904e+05
-iteration: 0,systemTT: 3.1904e+05, least system TT:2.8905e+05,gap=10.374 %
+ updating_________________________
+global scenario index =1
+_________________________
 
-Current iteration number:1
-Current CPU time: 0.009 s
-iteration: 1,systemTT: 0
-iteration: 1,systemTT: 0, least system TT:2.8e+05,gap=-100 %
+Current iteration number = No. 011296CPU time: 0.008 s
+,system wide travel time (TT) = 3.1904e+05, least system TT = 2.8905e+05,gap = 10.374 %
 
-Current iteration number:2
-Current CPU time: 0.01 s
-iteration: 2,systemTT: 3.0462e+05
-iteration: 2,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 111296CPU time: 0.01 s
+,system wide travel time (TT) = 0, least system TT = 2.8e+05,gap = -100 %
 
-Current iteration number:3
-Current CPU time: 0.012 s
-iteration: 3,systemTT: 3.0462e+05
-iteration: 3,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 211296CPU time: 0.012 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:4
-Current CPU time: 0.014 s
-iteration: 4,systemTT: 3.0462e+05
-iteration: 4,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 311296CPU time: 0.013 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:5
-Current CPU time: 0.016 s
-iteration: 5,systemTT: 3.0462e+05
-iteration: 5,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 411296CPU time: 0.015 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:6
-Current CPU time: 0.018 s
-iteration: 6,systemTT: 3.0462e+05
-iteration: 6,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 511296CPU time: 0.017 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:7
-Current CPU time: 0.02 s
-iteration: 7,systemTT: 3.0462e+05
-iteration: 7,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 611296CPU time: 0.019 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:8
-Current CPU time: 0.022 s
-iteration: 8,systemTT: 3.0462e+05
-iteration: 8,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 711296CPU time: 0.02 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:9
-Current CPU time: 0.024 s
-iteration: 9,systemTT: 3.0462e+05
-iteration: 9,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 811296CPU time: 0.022 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:10
-Current CPU time: 0.027 s
-iteration: 10,systemTT: 3.0462e+05
-iteration: 10,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 911296CPU time: 0.024 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:11
-Current CPU time: 0.029 s
-iteration: 11,systemTT: 3.0462e+05
-iteration: 11,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1011296CPU time: 0.025 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:12
-Current CPU time: 0.031 s
-iteration: 12,systemTT: 3.0462e+05
-iteration: 12,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1111296CPU time: 0.027 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:13
-Current CPU time: 0.034 s
-iteration: 13,systemTT: 3.0462e+05
-iteration: 13,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1211296CPU time: 0.029 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:14
-Current CPU time: 0.036 s
-iteration: 14,systemTT: 3.0462e+05
-iteration: 14,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1311296CPU time: 0.03 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:15
-Current CPU time: 0.038 s
-iteration: 15,systemTT: 3.0462e+05
-iteration: 15,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1411296CPU time: 0.032 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:16
-Current CPU time: 0.04 s
-iteration: 16,systemTT: 3.0462e+05
-iteration: 16,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1511296CPU time: 0.034 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:17
-Current CPU time: 0.042 s
-iteration: 17,systemTT: 3.0462e+05
-iteration: 17,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1611296CPU time: 0.035 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:18
-Current CPU time: 0.045 s
-iteration: 18,systemTT: 3.0462e+05
-iteration: 18,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1711296CPU time: 0.037 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 
-Current iteration number:19
-Current CPU time: 0.047 s
-iteration: 19,systemTT: 3.0462e+05
-iteration: 19,systemTT: 3.0462e+05, least system TT:3.0462e+05,gap=-3.8216e-14 %
+Current iteration number = No. 1811296CPU time: 0.039 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
+
+Current iteration number = No. 1911296CPU time: 0.04 s
+,system wide travel time (TT) = 3.0462e+05, least system TT = 3.0462e+05,gap = -3.8216e-14 %
 Step 5: Column Pool Updating
-Total Column Pool Updating iteration: 2
+Total number of column pool updating iterations = 2
 column updating: iteration= 0, avg travel time = 21.759(min), optimization obj = 0,Relative_gap=0 %
 column updating: iteration= 1, avg travel time = 21.759(min), optimization obj = 0,Relative_gap=0 %
 
-Done!
-CPU Running Time for the entire computing progcess: 0.002 s
+Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+Step 7: perform sensivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+CPU Running Time for the entire computing progress = 0.005 s
+Step 9: record corridor performance summary
+Step 10: output assignment result
 writing link_performance_s1.csv
 writing route_assignment.csv..
 writing link_background_volume.csv..
 writing data for 2  zones 
 writing demand.bin..
 writing data for 2  zones 
-Complete writing 0K binary demand pairs with CPU time 0.001 s.
+Complete writing 0K binary demand pairs with CPU time 0 s.
 writing choice_set_output.csv..
  updatingwriting od_performance.csv..
 writing data for 2  zones 
 , # of connected OD pairs = 0
 Please check the connectivity of OD pairs and in network and field allow_uses in link.csv.
+Please check the model_shortest_path_tree.csv file.
 writing link_performances_summary.csv..
 writing link_performances_summary_2way.csv..
 Output for assignment with 20 iterations. Traffic assignment completes!
 CPU Running Time for outputting simulation results: 0.011 s
 free memory..
-CPU Running Time for Entire Process: 0 min 0 sec
+CPU Running Time for Entire Process: 0 min 6 sec
 done.

@@ -17,6 +17,10 @@
 #include "pch.h"
 #endif
 
+#include "config.h"
+#include "utils.h"
+#include "DTA.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,23 +37,15 @@
 #include <vector>
 #include <map>
 #include <omp.h>
-#include "config.h"
-#include "utils.h"
-
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
 using std::ifstream;
 using std::ofstream;
 using std::istringstream;
-
-#include "DTA.h"
-
 
 void Assignment::GenerateDefaultMeasurementData()
 {
@@ -117,13 +113,13 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 					// add the to node id into the outbound (adjacent) node list
 					if (g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
-						dtalog.output() << "Error: from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << endl;
+						dtalog.output() << "Error: from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
 						//has not been defined
 						continue;
 					}
 					if (g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
-						dtalog.output() << "Error: to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << endl;
+						dtalog.output() << "Error: to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
 						//has not been defined
 						continue;
 					}
@@ -159,15 +155,15 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 							if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // data exist
 							{
 								if (upper_bound_flag == 0)
-								{  // over write only if the new data are acutal counts, 
+								{  // over write only if the new data are acutal counts,
 
 									g_link_vector[link_seq_no].VDF_period[tau].obs_count = count;
 									g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag = upper_bound_flag;
 									sensor_count++;
 								}
-								else  // if the new data are upper bound, skip it and keep the actual counts 
+								else  // if the new data are upper bound, skip it and keep the actual counts
 								{
-									// do nothing 
+									// do nothing
 								}
 
 
@@ -181,7 +177,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 						}
 						else
 						{
-							dtalog.output() << "Error: Link " << from_node_id << "->" << to_node_id << " in file timing.csv is not defined in link.csv." << endl;
+							dtalog.output() << "Error: Link " << from_node_id << "->" << to_node_id << " in file timing.csv is not defined in link.csv." << '\n';
 							continue;
 						}
 					}
@@ -224,7 +220,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 			parser_measurement.CloseCSVFile();
 		}
 
-		assignment.summary_file << "ODME stage: # of sensors =," << sensor_count << endl;
+		assignment.summary_file << "ODME stage: # of sensors =," << sensor_count << '\n';
 
 		// step 1: input the measurements of
 		// Pi
@@ -251,9 +247,9 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 			double gap_increase = gap - prev_gap;
 
-			if (s >= 5 && gap_increase > 0.01)  // convergency criterion  // comment out to maintain consistency 
-			{ 
-				assignment.summary_file << "ODME stage terminates with gap increase = " << gap_increase*100 << "% at iteration = " << s <<  endl;
+			if (s >= 5 && gap_increase > 0.01)  // convergency criterion  // comment out to maintain consistency
+			{
+				assignment.summary_file << "ODME stage terminates with gap increase = " << gap_increase*100 << "% at iteration = " << s <<  '\n';
 			    break;
 
 			}
@@ -312,7 +308,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 								it_begin = p_column_pool->path_node_sequence_map.begin();
 								it_end = p_column_pool->path_node_sequence_map.end();
 
-								//stage 1: least cost 
+								//stage 1: least cost
 								double least_cost = 999999;
 								int least_cost_path_seq_no = -1;
 								int least_cost_path_node_sum_index = -1;
@@ -326,7 +322,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									path_distance = 0;
 									path_travel_time = 0;
 
-									if (s == 0) // perform computing of path travel time for the first iteration 
+									if (s == 0) // perform computing of path travel time for the first iteration
 									{
 
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a along the path
@@ -339,7 +335,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // added with mustafa 12/24/2022, verified
 											{
-												it->second.measurement_flag = 1;  // this path column has measurement 
+												it->second.measurement_flag = 1;  // this path column has measurement
 												it->second.path_sensor_link_vector.push_back(link_seq_no);
 											}
 										}
@@ -425,7 +421,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 											}
 
 											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 1 && g_link_vector[link_seq_no].VDF_period[tau].est_count_dev > 0)
-											{// we only consider the over capaity value here to penalize the path flow 
+											{// we only consider the over capaity value here to penalize the path flow
 												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
 												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
 											}
@@ -434,7 +430,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 										}
 									}
 
-									// statistics collection 
+									// statistics collection
 
 									if (it->second.measurement_flag >= 1)
 										column_path_with_sensor_counts++;
@@ -449,7 +445,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 									double change = step_size * (weight_of_measurements * it->second.path_gradient_cost + (1 - weight_of_measurements) * it->second.UE_gap);
 
-									//dtalog.output() <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << endl;
+									//dtalog.output() <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << '\n';
 
 									float bound = 0.1;
 									float change_lower_bound = it->second.path_volume * bound * (-1);
@@ -477,7 +473,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 											<< " A," << g_zone_vector[orig].est_attraction_dev
 											<< "proposed change = " << step_size * it->second.path_gradient_cost
 											<< "actual change = " << change
-											<< "new vol = " << it->second.path_volume << endl;
+											<< "new vol = " << it->second.path_volume << '\n';
 									}
 								}  // end of loop for all paths in the column pools
 
@@ -506,11 +502,11 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 				dtalog.output() << "count of all column pool vectors=" << column_pool_counts << ", "
 					<< "count of all paths =" << column_path_counts << ", "
 					<< "count of column_pools with sensors = " << column_pool_with_sensor_counts << "(" << percentage_of_OD_columns_with_sensors << "%), "
-					<< "count of column_paths with sensors = " << column_path_with_sensor_counts << " (" << percentage_of_paths_with_sensors << "%)" << endl;
+					<< "count of column_paths with sensors = " << column_path_with_sensor_counts << " (" << percentage_of_paths_with_sensors << "%)" << '\n';
 
 			}
 
-			dtalog.output() << "total_system_demand =" << total_system_demand << ", "; 
+			dtalog.output() << "total_system_demand =" << total_system_demand << ", ";
 
 		}
 
@@ -519,7 +515,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		// very import: noted by Peiheng and Xuesong on 01/30/2022
 		double system_gap = 0;
 		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations, system_gap);
-		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] 
+		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau]
 	}
 
 

@@ -64,7 +64,6 @@ struct basic_teestream : public std::basic_ostream<C, T>
 {
     basic_teestream() : debug_level{ 0 }, log_sig{ 0 }, log_odme{ 0 }, log_path{ 0 } , log_ue{ 0 }
     {
-    
     }
     // add more controls of the debug logs
     int debug_level;

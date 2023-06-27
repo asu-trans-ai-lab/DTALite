@@ -21,7 +21,6 @@
 #include <cmath>
 #include <stack>
 
-using std::endl;
 using std::string;
 using std::vector;
 using std::ofstream;
@@ -35,29 +34,24 @@ using std::pow;
 using std::sqrt;
 using std::min;
 using std::fmin;
-
 #include "shared_code.h"
 
 void g_program_stop()
 {
-    dtalog.output() << "DTALite Program stops. Press any key to terminate. Thanks!" << endl;
-    getchar();
-    exit(0);
+    dtalog.output() << "DTALite Program stops!" << std::endl;
+    exit(1);
 }
 
 void g_program_exit()
 {
-    dtalog.output() << "DTALite Program completes. Thanks!" << endl;
-
+    dtalog.output() << "DTALite Program completes!" << std::endl;
     exit(0);
 }
-
 
 void fopen_ss(FILE** file, const char* fileName, const char* mode)
 {
     *file = fopen(fileName, mode);
 }
-
 
 //split the string by "_"
 vector<string> split(const string &s, const string &seperator)
@@ -280,7 +274,7 @@ bool CDTACSVParser::OpenCSVFile(string fileName, bool b_required)
     {
         if (b_required)
         {
-            dtalog.output() << "File " << fileName << " does not exist. Please check." << std::endl;
+            dtalog.output() << "File " << fileName << " does not exist. Please check." << '\n';
             //g_program_stop();
         }
         return false;
@@ -476,7 +470,7 @@ bool CDTACSVParser::GetValueByFieldName(string field_name, string& value, bool r
     {
         if (required_field)
         {
-            dtalog.output() << "Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << std::endl;
+            dtalog.output() << "Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -708,10 +702,10 @@ int g_test_point_in_polygon(DTAGDPoint Pt, std::vector<DTAGDPoint> V)
     int    cn = 0;    // the  crossing number counter
 
     // loop through all edges of the polygon
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
     {    // edge from V[i]  to V[i+1]
         if (((V[i].y <= Pt.y) && (V[i+1].y > Pt.y))     // an upward crossing
-            || ((V[i].y > Pt.y) && (V[i+1].y <= Pt.y))) 
+            || ((V[i].y > Pt.y) && (V[i+1].y <= Pt.y)))
         { // a downward crossing
                 // compute  the actual edge-ray intersect x-coordinate
             float vt = (float)(Pt.y - V[i].y) / (V[i+1].y - V[i].y);
@@ -841,13 +835,13 @@ void g_find_convex_hull(std::vector<DTAGDPoint> points, std::vector<DTAGDPoint> 
     while (!S.empty())
     {
         DTAGDPoint p = S.top();
-//        cout << "(" << p.x << ", " << p.y << ")" << endl;
+//        cout << "(" << p.x << ", " << p.y << ")" << '\n';
         points_in_polygon.push_back(p);
         S.pop();
     }
 
     if(points_in_polygon.size() > 0)
-    { 
+    {
     points_in_polygon.push_back(points_in_polygon[0]);
     }
 }
@@ -916,7 +910,6 @@ double g_GetPoint2LineDistance(const DTAGDPoint* pt, const DTAGDPoint* FromPt, c
 
     if (U < 0.0 || U > 1.0)
         return min(distance_0, distance_2); // intersection does not fall within the segment
-    else  // intersect 
+    else  // intersect
         return distance_1;
 }
-

@@ -17,6 +17,9 @@
 #include "pch.h"
 #endif
 
+#include "config.h"
+#include "utils.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,21 +36,15 @@
 #include <vector>
 #include <map>
 #include <omp.h>
-#include "config.h"
-#include "utils.h"
-
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
 using std::ifstream;
 using std::ofstream;
 using std::istringstream;
-
 
 struct CNodeForwardStar {
 	CNodeForwardStar() : OutgoingLinkNoArray{ nullptr }, OutgoingNodeNoArray{ nullptr }, OutgoingLinkSize{ 0 }
@@ -212,7 +209,7 @@ public:
 			CLink* p_link = &(g_link_vector[i]);
 
 
-	
+
 			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
 				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
@@ -232,7 +229,7 @@ public:
 			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
 			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
 			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
-			// 		endl;
+			// 		'\n';
 			// }
 
 			//route_choice_cost 's unit is min
@@ -275,7 +272,7 @@ public:
 			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
 			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
 			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
-			// 		endl;
+			// 		'\n';
 			// }
 
 			//route_choice_cost 's unit is min
@@ -310,9 +307,9 @@ public:
 
 				// only predefined allowed agent type can be considered
 				//if (m_mode_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes_si[assignment.active_scenario_index] == 0)  // main mode of auto
-				//	continue; 
+				//	continue;
 
-				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index]; 
+				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
 				//if (m_mode_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_at[m_mode_type_no]==0)  // other modes
 				//	continue;
 
@@ -325,7 +322,7 @@ public:
 
 					if (outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE)
 					{
-						dtalog.output() << " Error: outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << endl;
+						dtalog.output() << " Error: outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << '\n';
 						// output the log
 
 						g_OutputModelFiles(1);
@@ -354,19 +351,19 @@ public:
 		// after dynamic arrays are created for forward star
 		if (dtalog.debug_level() == 2)
 		{
-			dtalog.output() << "add outgoing link data into dynamic array" << endl;
+			dtalog.output() << "add outgoing link data into dynamic array" << '\n';
 
 			for (int i = 0; i < g_node_vector.size(); ++i)
 			{
 				if (g_node_vector[i].zone_org_id > 0) // for each physical node
 				{ // we need to make sure we only create two way connectors between nodes and zones
 					dtalog.output() << "node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
-						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << endl;
+						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 					for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; j++)
 					{
 						int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
-						dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << endl;
+						dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 					}
 				}
 				else
@@ -374,12 +371,12 @@ public:
 					if (dtalog.debug_level() == 3)
 					{
 						dtalog.output() << "node id= " << g_node_vector[i].node_id << " with "
-							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << endl;
+							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 						for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; ++j)
 						{
 							int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
-							dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << endl;
+							dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 						}
 					}
 				}
@@ -457,7 +454,7 @@ public:
 
 		//if (assignment.g_number_of_nodes >= 100000 && m_origin_zone_seq_no % 100 == 0)
 		//{
-		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << endl;
+		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << '\n';
 		//}
 
 
@@ -530,7 +527,7 @@ public:
 				if (pColumnVector->bfixed_route) // with routing policy, no need to run MSA for adding new columns
 					continue;
 
-				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea 
+				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea
 					continue;
 
 
@@ -561,7 +558,7 @@ public:
 
 						if (l_node_size >= temp_path_node_vector_size)
 						{
-							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << endl;
+							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
 							g_program_stop();
 						}
 
@@ -587,12 +584,12 @@ public:
 
 									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
 									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume ;
-									//cout << "node = " << g_node_vector[i].node_id 
+									//dtalog.output() << "node = " << g_node_vector[i].node_id
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
 									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//    << ": add volume " << volume << endl;
+									//    << ": add volume " << volume << '\n';
 
 									//if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
@@ -634,7 +631,7 @@ public:
 									pColumnVector->path_node_sequence_map[node_sum].path_seq_no = path_count;
 									pColumnVector->path_node_sequence_map[node_sum].path_volume = 0;
 									pColumnVector->path_node_sequence_map[node_sum].b_RT_new_path_flag = 1;
-									
+
 									pColumnVector->path_node_sequence_map[node_sum].path_toll = m_node_label_cost[i];
 
 #pragma omp critical
@@ -655,7 +652,7 @@ public:
 									{
 										for (int li = 0; li < l_node_size; ++li)
 										{
-											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << endl;
+											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << '\n';
 										}
 
 									}
@@ -673,7 +670,7 @@ public:
 								}
 
 								pColumnVector->path_node_sequence_map[node_sum].path_volume += volume;  // we add 1/K * OD volume to a new path or an existing path with same node sum.
-	
+
 						}
 					}
 				}
@@ -690,7 +687,7 @@ public:
 
 		//if (assignment.g_number_of_nodes >= 100000 && m_origin_zone_seq_no % 100 == 0)
 		//{
-		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << endl;
+		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << '\n';
 		//}
 
 
@@ -767,7 +764,7 @@ public:
 				if (pColumnVector->bfixed_route) // with routing policy, no need to run MSA for adding new columns
 					continue;
 
-				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea 
+				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea
 					continue;
 
 				ODvolume = pColumnVector->od_volume[assignment.active_scenario_index];
@@ -797,7 +794,7 @@ public:
 
 						if (l_node_size >= temp_path_node_vector_size)
 						{
-							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << endl;
+							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
 							g_program_stop();
 						}
 
@@ -823,12 +820,12 @@ public:
 
 									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
 									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume;
-									//cout << "node = " << g_node_vector[i].node_id 
+									//dtalog.output() << "node = " << g_node_vector[i].node_id
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
 									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
 									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//    << ": add volume " << volume << endl;
+									//    << ": add volume " << volume << '\n';
 
 									//if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
@@ -878,7 +875,7 @@ public:
 									{
 										for (int li = 0; li < l_node_size; ++li)
 										{
-											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << endl;
+											assignment.sp_log_file << "backtrace from zone_id =" << g_node_vector[i].zone_id << ", index: " << li << " node_id = " << g_node_vector[temp_path_node_vector[li]].node_id << '\n';
 										}
 
 									}
@@ -932,7 +929,7 @@ public:
 
 		bool negative_cost_flag = UpdateGeneralizedLinkCost(mode_type, p_assignment, origin_zone, iteration_k, bsensitivity_analysis_flag);
 
-		//if (iteration_k == 1) 
+		//if (iteration_k == 1)
 		//{
 		//    if (g_zone_vector[origin_zone].zone_id == p_assignment->shortest_path_log_zone_id)
 		//        local_debugging_flag = 1;
@@ -941,21 +938,21 @@ public:
 
 		if (negative_cost_flag == true && bsensitivity_analysis_flag == true)
 		{
-			dtalog.output() << "Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << endl;
+			dtalog.output() << "Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 			local_debugging_flag = 0;
 			negative_cost_label_correcting(processor_id, p_assignment, iteration_k, o_node_index, d_node_no);
 			return true;
 		}
 
 		if (p_assignment->g_number_of_nodes >= 1000 && origin_zone % 97 == 0)
-			dtalog.output() << "label correcting for zone " << origin_zone << " in processor " << processor_id << endl;
+			dtalog.output() << "label correcting for zone " << origin_zone << " in processor " << processor_id << '\n';
 
 		if (dtalog.debug_level() >= 2)
-			dtalog.output() << "SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << endl;
+			dtalog.output() << "SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 
 		if (local_debugging_flag == 1)
 		{
-			p_assignment->sp_log_file << " beginning of SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << endl;
+			p_assignment->sp_log_file << " beginning of SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 		}
 
 		int number_of_nodes = p_assignment->g_number_of_nodes;
@@ -1014,7 +1011,7 @@ public:
 			if (local_debugging_flag)
 			{
 				p_assignment->sp_log_file << "SP:scan SE node: " << g_node_vector[from_node].node_id << " with "
-					<< NodeForwardStarArray[from_node].OutgoingLinkSize << " outgoing link(s). " << endl;
+					<< NodeForwardStarArray[from_node].OutgoingLinkSize << " outgoing link(s). " << '\n';
 			}
 			//scan all outbound nodes of the current node
 
@@ -1027,11 +1024,11 @@ public:
 				link_seq_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
 
 				if (local_debugging_flag)
-					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << endl;
+					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << '\n';
 
 				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
-				 
+
 
 
 				//{
@@ -1040,7 +1037,7 @@ public:
 				//	p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
 				//		<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
 				//		" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
-				//		<< endl;
+				//		<< '\n';
 				//}
 
 				if (g_node_vector[from_node].prohibited_movement_size >= 1)
@@ -1054,7 +1051,7 @@ public:
 
 						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
 						{
-							dtalog.output() << "prohibited movement " << movement_string << " will not be used " << endl;
+							dtalog.output() << "prohibited movement " << movement_string << " will not be used " << '\n';
 							continue;
 						}
 					}
@@ -1062,7 +1059,7 @@ public:
 
 				//remark: the more complicated implementation can be found in paper Shortest Path Algorithms In Transportation Models: Classical and Innovative Aspects
 				//	A note on least time path computation considering delays and prohibitions for intersection movements
-		
+
 				if (g_node_vector[from_node].node_id == 5219 && g_node_vector[to_node].node_id == 1355)
 				{
 					int debug = 1;
@@ -1108,7 +1105,7 @@ public:
 					p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
 						<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
 						" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
-						<< endl;
+						<< '\n';
 
 				}
 
@@ -1117,7 +1114,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP:  updating node: " << g_node_vector[to_node].node_id << " current cost:" << m_node_label_cost[to_node]
-							<< " new cost " << new_to_node_cost << endl;
+							<< " new cost " << new_to_node_cost << '\n';
 					}
 
 					// update cost label and node/time predecessor
@@ -1132,7 +1129,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP: add node " << g_node_vector[to_node].node_id << " new cost:" << new_to_node_cost
-							<< " into SE List " << g_node_vector[to_node].node_id << endl;
+							<< " into SE List " << g_node_vector[to_node].node_id << '\n';
 					}
 
 					// deque updating rule for m_node_status_array
@@ -1183,7 +1180,7 @@ public:
 		if (local_debugging_flag)
 		{
 			p_assignment->sp_log_file << "SPtree at iteration k = " << iteration_k << " origin node: "
-				<< g_node_vector[origin_node].node_id << endl;
+				<< g_node_vector[origin_node].node_id << '\n';
 
 			//Initialization for all non-origin nodes
 			for (int i = 0; i < p_assignment->g_number_of_nodes; ++i)
@@ -1197,7 +1194,7 @@ public:
 				if (m_node_label_cost[i] < 9999)
 				{
 					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost " << m_node_label_cost[i] << "time "
-						<< m_label_time_array[i] << "node_pred_id " << node_pred_id << endl;
+						<< m_label_time_array[i] << "node_pred_id " << node_pred_id << '\n';
 				}
 			}
 		}
@@ -1300,7 +1297,7 @@ public:
 		}
 		if(path_link_vector.size() <= 2)
 		{
-		p_assignment->simu_log_file << "forward tracing " << endl;
+		p_assignment->simu_log_file << "forward tracing " << '\n';
 		}
 
 		return  m_node_label_cost[origin_node];
@@ -1329,11 +1326,11 @@ public:
 
 
 		if (dtalog.debug_level() >= 2)
-			dtalog.output() << "Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << endl;
+			dtalog.output() << "Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
 
 		if (local_debugging_flag == 0)
 		{
-			p_assignment->sp_log_file << " beginning of SP   " << ": dest node: " << g_node_vector[destination_node].node_id << endl;
+			p_assignment->sp_log_file << " beginning of SP   " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
 		}
 
 		int number_of_nodes = p_assignment->g_number_of_nodes;
@@ -1383,7 +1380,7 @@ public:
 			if (local_debugging_flag)
 			{
 				p_assignment->sp_log_file << "SP:scan SE node: " << g_node_vector[to_node].node_id << " with "
-					<< g_node_vector[to_node].m_incoming_link_seq_no_vector.size() << " outgoing link(s). " << endl;
+					<< g_node_vector[to_node].m_incoming_link_seq_no_vector.size() << " outgoing link(s). " << '\n';
 			}
 			//scan all inbound nodes of the current node
 
@@ -1396,7 +1393,7 @@ public:
 				from_node = g_link_vector[link_seq_no].from_node_seq_no;
 
 				if (local_debugging_flag)
-					p_assignment->sp_log_file << "SP:  checking incoming node " << g_node_vector[from_node].node_id << endl;
+					p_assignment->sp_log_file << "SP:  checking incoming node " << g_node_vector[from_node].node_id << '\n';
 
 				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
@@ -1429,8 +1426,8 @@ public:
 				//    if (g_node_vector[from_node].node_id == 21497 &&
 				//        g_node_vector[to_node].node_id == 21498)
 				//    {
-				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << endl;
-				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << endl;
+				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
+				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
 
 				//        if (g_link_vector[link_seq_no].RT_waiting_time >= 10 && g_node_vector[to_node].node_id == 21498)
 				//        {
@@ -1456,7 +1453,7 @@ public:
 					////     "avg travel time = " << g_link_vector[link_seq_no].VDF_period[m_tau].avg_travel_time <<
 					////    ",RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time <<
 					////    "allow_uses = " << g_link_vector[link_seq_no].VDF_period[this->m_tau].RT_allowed_use[this->m_tau]
-					//    << endl;
+					//    << '\n';
 
 				}
 
@@ -1465,7 +1462,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP:  updating node: " << g_node_vector[to_node].node_id << " current cost:" << m_node_label_cost[to_node]
-							<< " new cost " << new_from_node_cost << endl;
+							<< " new cost " << new_from_node_cost << '\n';
 					}
 
 					m_node_label_cost[from_node] = new_from_node_cost;
@@ -1477,7 +1474,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP: add node " << g_node_vector[from_node].node_id << " new cost:" << new_from_node_cost
-							<< " into SE List " << g_node_vector[from_node].node_id << endl;
+							<< " into SE List " << g_node_vector[from_node].node_id << '\n';
 					}
 
 					// deque updating rule for m_node_status_array
@@ -1526,7 +1523,7 @@ public:
 		if (local_debugging_flag)
 		{
 			p_assignment->sp_log_file << "SPtree at dest node: "
-				<< g_node_vector[destination_node].node_id << endl;
+				<< g_node_vector[destination_node].node_id << '\n';
 
 			//Initialization for all non-origin nodes
 			for (int i = 0; i < p_assignment->g_number_of_nodes; ++i)
@@ -1539,7 +1536,7 @@ public:
 
 				if (m_node_label_cost[i] < 9999)
 				{
-					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost " << m_node_label_cost[i] << "node_pred_id " << node_pred_id << endl;
+					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost " << m_node_label_cost[i] << "node_pred_id " << node_pred_id << '\n';
 				}
 			}
 		}
@@ -1582,7 +1579,7 @@ public:
 		int origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
 
 		if (local_debugging_flag)
-			p_assignment->sp_log_file << "SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << endl;
+			p_assignment->sp_log_file << "SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 
 		int number_of_nodes = p_assignment->g_number_of_nodes;
 		//Initialization for all non-origin nodes
@@ -1646,7 +1643,7 @@ public:
 			if (local_debugging_flag)
 			{
 				p_assignment->sp_log_file << "SP:scan SE node: " << g_node_vector[from_node].node_id << " with "
-					<< NodeForwardStarArray[from_node].OutgoingLinkSize << " outgoing link(s). " << endl;
+					<< NodeForwardStarArray[from_node].OutgoingLinkSize << " outgoing link(s). " << '\n';
 			}
 			//scan all outbound nodes of the current node
 
@@ -1685,14 +1682,14 @@ public:
 
 				}
 
-				
+
 				if (g_link_vector[link_seq_no].VDF_period[m_tau].LR_price[m_mode_type_no] < -1) // negative cost
 				{
 					int idebug = 1;
 				}
 
 				if (local_debugging_flag)
-					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << endl;
+					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << '\n';
 
 				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
@@ -1708,7 +1705,7 @@ public:
 
 						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
 						{
-							p_assignment->sp_log_file << "prohibited movement " << movement_string << " will not be used " << endl;
+							p_assignment->sp_log_file << "prohibited movement " << movement_string << " will not be used " << '\n';
 							continue;
 						}
 					}
@@ -1739,7 +1736,7 @@ public:
 				if (local_debugging_flag)
 				{
 					p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
-						<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost << endl;
+						<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost << '\n';
 				}
 
 
@@ -1749,7 +1746,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP:  updating node: " << g_node_vector[to_node].node_id << " current cost:" << m_node_label_cost[to_node]
-							<< " new cost " << new_to_node_cost << endl;
+							<< " new cost " << new_to_node_cost << '\n';
 					}
 
 					// update cost label and node/time predecessor
@@ -1764,7 +1761,7 @@ public:
 					if (local_debugging_flag)
 					{
 						p_assignment->sp_log_file << "SP: add node " << g_node_vector[to_node].node_id << " new cost:" << new_to_node_cost
-							<< " into SE List " << g_node_vector[to_node].node_id << endl;
+							<< " into SE List " << g_node_vector[to_node].node_id << '\n';
 					}
 
 					// deque updating rule for m_node_status_array
@@ -1815,7 +1812,7 @@ public:
 		if (local_debugging_flag)
 		{
 			p_assignment->sp_log_file << "SPtree at iteration k = " << iteration_k << " origin node: "
-				<< g_node_vector[origin_node].node_id << endl;
+				<< g_node_vector[origin_node].node_id << '\n';
 
 			//Initialization for all non-origin nodes
 			for (int i = 0; i < p_assignment->g_number_of_nodes; ++i)
@@ -1829,7 +1826,7 @@ public:
 				if (m_node_label_cost[i] < 9999)
 				{
 					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost " << m_node_label_cost[i] << "time "
-						<< m_label_time_array[i] << "node_pred_id " << node_pred_id << endl;
+						<< m_label_time_array[i] << "node_pred_id " << node_pred_id << '\n';
 				}
 			}
 		}

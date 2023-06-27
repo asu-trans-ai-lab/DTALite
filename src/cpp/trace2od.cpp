@@ -13,7 +13,6 @@
 #include "config.h"
 #include "utils.h"
 
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -21,33 +20,26 @@
 #include <vector>
 #include <map>
 #include <cstdio>
+#include <cstring>
 //#include <omp.h>
-//#include <time.h>
 #include <ctime>
-//#include <math.h>
 #include <cmath>
-using std::cout;
-using std::endl;
+
 using std::max;
-
-
 
 #define MAX_LABEL_COST_ 999999
 #define MAX_GRID_SIZE_ 1000
-
-
 #define PI_ 3.1415
-float g_NonHitDistanceRatio = 10;
 
-float g_GridResolution = 0.05;  // in terms of long/lat 
+float g_NonHitDistanceRatio = 10;
+float g_GridResolution = 0.05;  // in terms of long/lat
 float g_TimeResolution_inMin = 0.05;  //min --> 3 seconds
 float g_SampleTimeResolution_inMin = 0.05; //min --> 3 seconds
 float g_StartTimeinMin = 999999;
 float g_EndTimeinMin = 0;
+
 int g_TimeRangeInterval = 10;
-
 int g_time_dependent_computing_mode = 0;
-
 int g_max_number_of_threads = 4;
 int g_number_of_nodes = 0;
 int g_number_of_links = 0;
@@ -95,9 +87,7 @@ double g_bottom = 1000000000;
 
 void g_Program_stop()
 {
-
-    cout << "Program stops. Press any key to terminate. Thanks!" << endl;
-    getchar();
+    dtalog.output() << "Program stops!" << std::endl;
     exit(0);
 };
 
@@ -162,7 +152,7 @@ float g_GetTimeInMinFromInterval(int time_interval)
 
 double g_findMedian(vector<int> a, int n)
 {
-    // source: https://www.geeksforgeeks.org/finding-median-of-unsorted-array-in-linear-time-using-c-stl/ 
+    // source: https://www.geeksforgeeks.org/finding-median-of-unsorted-array-in-linear-time-using-c-stl/
      // If size of the arr[] is even
     if (n % 2 == 0) {
 
@@ -902,7 +892,7 @@ public:
 
         g_grid_size = max((m_right - m_left) / g_GridResolution + 2, (m_top - m_bottom) / g_GridResolution + 2);
 
-         cout << "g_GridResolution= " << g_GridResolution << ", grid size = " << g_grid_size << endl;
+         dtalog.output() << "g_GridResolution= " << g_GridResolution << ", grid size = " << g_grid_size << '\n';
 
 
         // put nodes into grid cell
@@ -963,7 +953,7 @@ public:
 
 
         // if the node id still has no assigned zone id, use the corresponding zone id from its grid cell
-        for (int i = 0; i < g_mm_node_vector.size(); i++)  // assign a zone id 
+        for (int i = 0; i < g_mm_node_vector.size(); i++)  // assign a zone id
         {
             if (g_mm_node_vector[i].zone_id <= 0)
             {
@@ -1284,7 +1274,7 @@ public:
 
     void output_TD_label_cost()
     {
-        for (int l = 0; l < g_mm_link_vector.size(); l++) // 
+        for (int l = 0; l < g_mm_link_vector.size(); l++) //
         {
             if (g_mm_link_vector[l].likelihood_distance < 998)
             {
@@ -1354,7 +1344,7 @@ public:
             std::vector<int> time_interval_vector;
 
 
-            // find median 
+            // find median
             for (g = 1; g < g_agent_vector[agent_no].m_GPSPointVector.size(); g++) // for each GPS point
             {
                 g_agent_vector[agent_no].m_GPSPointVector[g].interval_in_second = g_agent_vector[agent_no].m_GPSPointVector[g].global_time_in_second - g_agent_vector[agent_no].m_GPSPointVector[g - 1].global_time_in_second;
@@ -1373,16 +1363,16 @@ public:
                 g_agent_vector[agent_no].sampling_rate_in_min = g_SampleTimeResolution_inMin;
 
 
-            // find excessive dwell time 
+            // find excessive dwell time
 
-            // find median 
+            // find median
             float ratio_excessive = 5;
             for (g = 1; g < g_agent_vector[agent_no].m_GPSPointVector.size(); g++) // for each GPS point
             {
 
                 if (g_agent_vector[agent_no].m_GPSPointVector[g].interval_in_second > g_agent_vector[agent_no].sampling_rate_in_min * 60 * ratio_excessive)
                 {
-                    float time_stamp_in_min = g_agent_vector[agent_no].m_GPSPointVector[g - 1].global_time_in_second / 60.0;  // previous GPS point 
+                    float time_stamp_in_min = g_agent_vector[agent_no].m_GPSPointVector[g - 1].global_time_in_second / 60.0;  // previous GPS point
                     int timestamp_in_interval = g_GetTimeInterval(time_stamp_in_min);
                     int dwell_time_interval = g_agent_vector[agent_no].m_GPSPointVector[g].interval_in_second / 60.0 / g_TimeResolution_inMin;
 
@@ -1515,7 +1505,7 @@ public:
                         }
 
                         double p2l_distance = g_GetPoint2LineDistance(&m_GridMatrix[x_i][y_i].m_GPSPointVector[g].pt, &g_mm_node_vector[g_mm_link_vector[l].from_node_seq_no].pt, &g_mm_node_vector[g_mm_link_vector[l].to_node_seq_no].pt,
-                            1, true);  // recacluate the point 2 line distance, without intersection requirement 
+                            1, true);  // recacluate the point 2 line distance, without intersection requirement
 
                         // we consider GPS segment to the link shape point segment distance
                         for (int p = 0; p < g_mm_link_vector[l].m_PointVector.size(); p++)
@@ -1634,7 +1624,7 @@ public:
 
         if (g_pFileGrid == NULL)
         {
-            cout << "File grid.csv cannot be opened." << endl;
+            dtalog.output() << "File grid.csv cannot be opened." << '\n';
             g_Program_stop();
         }
         else
@@ -1688,7 +1678,7 @@ public:
         for (int l = 0; l < g_mm_link_vector.size(); l++)
         {
 
-            if (g_mm_link_vector[l].hit_count >= 1 && g_mm_link_vector[l].use_count == 0)// subgradient algorithm for adjusting price 
+            if (g_mm_link_vector[l].hit_count >= 1 && g_mm_link_vector[l].use_count == 0)// subgradient algorithm for adjusting price
             {
                 g_mm_link_vector[l].balance = g_mm_link_vector[l].use_count - g_mm_link_vector[l].hit_count;
 
@@ -1704,7 +1694,7 @@ public:
         }
 
         fprintf(g_pFileLog, "LR balance count = %d \n", balance_count);
-        cout << "balance_count = " << balance_count << endl;
+        dtalog.output() << "balance_count = " << balance_count << '\n';
         return balance_count;
 
 
@@ -1946,8 +1936,8 @@ public:
         }
 
 
-        cout << "origin_node_id =" << g_mm_node_vector[origin_node_no].node_id << "; "
-            << "destination_node_id =" << g_mm_node_vector[destination_node_no].node_id << endl;
+        dtalog.output() << "origin_node_id =" << g_mm_node_vector[origin_node_no].node_id << "; "
+            << "destination_node_id =" << g_mm_node_vector[destination_node_no].node_id << '\n';
 
         //Initialization for origin node at the preferred departure time, at departure time, cost = 0, otherwise, the delay at origin node
         m_label_time_array[origin_node_no] = g_agent_vector[agent_no].start_time_in_min;
@@ -2065,7 +2055,7 @@ public:
             return 0; //step 1: find the origin and destination nodes
 
 
-        int LR_iteration_size = 1;  // step 2: LR 
+        int LR_iteration_size = 1;  // step 2: LR
 
         int balance_count = 0;
 
@@ -2114,8 +2104,8 @@ public:
                 return 0;
             }
 
-            cout << "origin_node_no =" << g_mm_node_vector[origin_node_no].node_id << "; "
-                << "destination_node_no =" << g_mm_node_vector[destination_node_no].node_id << endl;
+            dtalog.output() << "origin_node_no =" << g_mm_node_vector[origin_node_no].node_id << "; "
+                << "destination_node_no =" << g_mm_node_vector[destination_node_no].node_id << '\n';
 
             fprintf(g_pFileLog, "OD node id: %d -> %d\n", g_mm_node_vector[origin_node_no].node_id, g_mm_node_vector[destination_node_no].node_id);
 
@@ -2177,7 +2167,7 @@ public:
                     for (int travel_time_in_interval = min_FFTT_in_interval; travel_time_in_interval < max_TT_in_interval; travel_time_in_interval += step_size) //++1 might give more precise travel time
                     {
                         int final_tt_in_interval = travel_time_in_interval;
-                        //dynamic step size 
+                        //dynamic step size
                         //float ratio = travel_time_in_interval * 1.0 / FFTT_in_interval;
                         //if (ratio > 5 && travel_time_in_interval* g_TimeResolution_inMin>=2)
                         //{
@@ -2185,7 +2175,7 @@ public:
                         //}
 
                          //last stage
-                        //if (travel_time_in_interval == max_TT_in_interval-1 && g_mm_link_vector[link].Possible_Dwell_time_in_min>=1 && 
+                        //if (travel_time_in_interval == max_TT_in_interval-1 && g_mm_link_vector[link].Possible_Dwell_time_in_min>=1 &&
                         //    (timestamp_in_min>g_mm_link_vector[link].dwell_start_time_in_min && timestamp_in_min < g_mm_link_vector[link].dwell_start_time_in_min+1))
                         //{
                         //    final_tt_in_interval = g_mm_link_vector[link].Possible_Dwell_time_in_min/ g_TimeResolution_inMin;  // hour
@@ -2324,7 +2314,7 @@ public:
         {
             CAgent* p_agent = &(g_agent_vector[m_agent_vector[i]]);
 
-            cout << "agent_id =" << p_agent->agent_id.c_str() << endl;
+            dtalog.output() << "agent_id =" << p_agent->agent_id.c_str() << '\n';
 
             return_value = optimal_label_correcting(p_agent->agent_no, p_agent->allowed_link_type_code, p_agent->blocked_link_type_code);
 
@@ -2345,7 +2335,7 @@ public:
 
                 if (l_node_size >= 10000)
                 {
-                    cout << "Error: l_node_size >= temp_path_node_vector_size" << endl;
+                    dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
                     g_Program_stop();
                 }
 
@@ -2383,7 +2373,7 @@ public:
         {
             CAgent* p_agent = &(g_agent_vector[m_agent_vector[i]]);
 
-            cout << "agent_id =" << p_agent->agent_id.c_str() << endl;
+            dtalog.output() << "agent_id =" << p_agent->agent_id.c_str() << '\n';
 
 
             return_value = time_dependent_label_correcting(p_agent->agent_no);
@@ -2523,6 +2513,7 @@ vector<double> g_timestr2second(string str)
 
     return output_global_second;
 }
+
 int timestr2second(string time_str)
 { //hhmmss
     string hh = time_str.substr(0, 2);
@@ -2627,7 +2618,7 @@ void g_DetermineResolution()
 
         g_GridResolution = temp_resolution;
 
-        cout << "g_GridResolution = " << temp_resolution << endl;
+        dtalog.output() << "g_GridResolution = " << temp_resolution << '\n';
 
         parser.CloseCSVFile();
     }
@@ -2650,7 +2641,7 @@ void g_ReadInputData()
 
             if (g_internal_node_seq_no_map.find(node_id) != g_internal_node_seq_no_map.end())
             {
-                cout << "warning: duplicate definition of node " << node_id << " was detected\n";
+                dtalog.output() << "warning: duplicate definition of node " << node_id << " was detected\n";
                 continue;
             }
 
@@ -2689,12 +2680,12 @@ void g_ReadInputData()
             g_mm_node_vector.push_back(node);
             g_internal_node_seq_no_map[node_id] = node.node_seq_no;
             if (g_number_of_nodes % 1000 == 0)
-                cout << "reading " << g_number_of_nodes << " nodes.. " << endl;
+                dtalog.output() << "reading " << g_number_of_nodes << " nodes.. " << '\n';
         }
 
         //in this map matching process for planning model, for each node, we need to assign a zone id internally.so that for the map matched path, we can always find the origin zoneand destination zone along the path.
 
-        for (int i = 0; i < g_mm_node_vector.size(); i++)  // assign a zone id 
+        for (int i = 0; i < g_mm_node_vector.size(); i++)  // assign a zone id
         {
             if (g_mm_node_vector[i].zone_id <= 0)
             {
@@ -2707,12 +2698,12 @@ void g_ReadInputData()
             }
         }
 
-        cout << "number of nodes = " << g_number_of_nodes << endl;
+        dtalog.output() << "number of nodes = " << g_number_of_nodes << '\n';
         parser.CloseCSVFile();
     }
     else
     {
-        cout << "Cannot open file node.csv" << endl;
+        dtalog.output() << "Cannot open file node.csv" << '\n';
         g_Program_stop();
     }
 
@@ -2749,12 +2740,12 @@ void g_ReadInputData()
 
             if (g_internal_node_seq_no_map.find(link.from_node_id) == g_internal_node_seq_no_map.end())
             {
-                cout << "warning: from_node_id " << link.from_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
+                dtalog.output() << "warning: from_node_id " << link.from_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
                 continue;
             }
             if (g_internal_node_seq_no_map.find(link.to_node_id) == g_internal_node_seq_no_map.end())
             {
-                cout << "warning: to_node_id " << link.to_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
+                dtalog.output() << "warning: to_node_id " << link.to_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
                 continue;
             }
 
@@ -2814,15 +2805,15 @@ void g_ReadInputData()
             g_mm_link_vector.push_back(link);
 
             if (g_number_of_links % 1000 == 0)
-                cout << "reading " << g_number_of_links << " links.. " << endl;
+                dtalog.output() << "reading " << g_number_of_links << " links.. " << '\n';
         }
 
-        cout << "number of links = " << g_number_of_links << endl;
+        dtalog.output() << "number of links = " << g_number_of_links << '\n';
         parser_link.CloseCSVFile();
     }
     else
     {
-        cout << "Cannot open file link.csv" << endl;
+        dtalog.output() << "Cannot open file link.csv" << '\n';
         g_Program_stop();
     }
 
@@ -2907,8 +2898,8 @@ bool g_ReadInputTrajectoryCSVFile()
 
         }
 
-        cout << "number of agents = " << g_agent_vector.size() << endl;
-        cout << "number of GPS points = " << gps_point_count << endl;
+        dtalog.output() << "number of agents = " << g_agent_vector.size() << '\n';
+        dtalog.output() << "number of GPS points = " << gps_point_count << '\n';
 
         gps_parser.CloseCSVFile();
 
@@ -2928,7 +2919,7 @@ void g_OutputCell2ZoneCSVFile()
 
     if (g_pFileCell2Zone == NULL)
     {
-        cout << "File cell2zone.csv cannot be opened." << endl;
+        dtalog.output() << "File cell2zone.csv cannot be opened." << '\n';
         g_Program_stop();
     }
     else
@@ -2957,7 +2948,7 @@ void g_OutputDemandCSVFile()
 
     if (g_pFileAgent == NULL)
     {
-        cout << "File agent.csv cannot be opened." << endl;
+        dtalog.output() << "File agent.csv cannot be opened." << '\n';
         //  g_Program_stop();
     }
     else
@@ -3046,7 +3037,7 @@ bool g_LikelyRouteFinding()
     int number_of_threads = 1;
     g_pNetworkVector = new NetworkForSP[number_of_threads]; // create n copies of network, each for a subset of agents to use
 
-    cout << "number of CPU threads = " << number_of_threads << endl;
+    dtalog.output() << "number of CPU threads = " << number_of_threads << '\n';
 
     NetworkForSP* p_Network;
 
@@ -3072,7 +3063,7 @@ bool g_LikelyRouteFinding()
 
     }
 
-    cout << "End of Sequential Optimization Process. " << endl;
+    dtalog.output() << "End of Sequential Optimization Process. " << '\n';
     fprintf(g_pFileLog, "end of optimization process\n");
     return true;
 }
@@ -3089,7 +3080,7 @@ int trace2od()
 
     if (g_pFileLog == NULL)
     {
-        cout << "File log.txt cannot be opened." << endl;
+        dtalog.output() << "File log.txt cannot be opened." << '\n';
         g_Program_stop();
 
     }
@@ -3101,9 +3092,9 @@ int trace2od()
     //  g_OutputLinklikelihoodCSVFile();
     end_t = clock();
     total_t = (end_t - start_t);
-    cout << "CPU Running Time = " << total_t / 1000.0 << " seconds" << endl;
-    cout << "free memory.." << endl;
-    cout << "done." << endl;
+    dtalog.output() << "CPU Running Time = " << total_t / 1000.0 << " seconds" << '\n';
+    dtalog.output() << "free memory.." << '\n';
+    dtalog.output() << "done." << '\n';
 
     //g_mm_node_vector.clear();
     //g_mm_link_vector.clear();
@@ -3112,4 +3103,3 @@ int trace2od()
     fclose(g_pFileLog);
     return 1;
 }
-

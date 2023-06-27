@@ -3,7 +3,7 @@
 
 #include <sstream>
 using std::istringstream;
-
+using std::string;
 
 CDTAGeometry::CDTAGeometry(string s)
 {
@@ -146,7 +146,6 @@ CDTAGeometry::CDTAGeometry(string s)
 		default:
 			break;
 	}
-
 }
 
 CDTAGeometry::~CDTAGeometry(void)
@@ -190,7 +189,7 @@ bool CDTAGeometry::ReadLineStringCoordinates(string s)
 		std::getline(sub_ss,tmp,' ');
 		istringstream x_ss(tmp);
 		x_ss >> coordinate.X;
-		
+
 		std::getline(sub_ss,tmp,' ');
 		istringstream y_ss(tmp);
 		y_ss >> coordinate.Y;
@@ -223,7 +222,6 @@ bool CDTAGeometry::ReadPolygonCoordinates(string s)
 		istringstream x_ss(tmp);
 		x_ss >> coordinate.X;
 
-
 		std::getline(sub_ss, tmp, ' ');
 		istringstream y_ss(tmp);
 		y_ss >> coordinate.Y;
@@ -233,6 +231,7 @@ bool CDTAGeometry::ReadPolygonCoordinates(string s)
 	}
 	return true;
 }
+
 bool CDTAGeometry::ReadPointCoordinate(string s)
 {
 	CCoordinate coordinate;
@@ -253,5 +252,3 @@ bool CDTAGeometry::ReadPointCoordinate(string s)
 
 	return true;
 }
-
-

@@ -34,12 +34,15 @@ struct DTAGDPoint //geometry data
     double x;
     double y;
 };
+
 void g_program_stop();
 void g_program_exit();
+
 bool g_get_line_polygon_intersection(
     double Ax, double Ay,
     double Bx, double By,
     std::vector<DTAGDPoint> subarea_shape_points);
+
 void g_find_convex_hull(std::vector<DTAGDPoint> points, std::vector<DTAGDPoint> &points_in_polygon);
 int g_test_point_in_polygon(DTAGDPoint Pt, std::vector<DTAGDPoint> V);
 
@@ -56,6 +59,7 @@ std::vector<float> g_time_parser(std::string str);
 float g_timestamp_parser(std::string str);
 std::string g_time_coding(float time_stamp);
 bool g_read_a_line(FILE* f);
+
 // Peiheng, 04/01/21, this is just a temporary fix on logging in DTALite
 // it creates another global variable (i.e. dtalog right after class DTALog)
 // shared by all translation units, which is really bad. This is a common issue
@@ -73,10 +77,10 @@ class DTALog{
 public:
 
     DTALog() : logfile{ "log_main.txt" }, ts{ std::cout, logfile }, db{ 0 }, sig{ 0 }, odme{ 0 }, path{ 0 }, dta{ 0 }, ue{ 0 }
-{
-}
+    {
+    }
 
-~DTALog() = default;
+    ~DTALog() = default;
 
 #ifdef BUILD_EXE
     teestream& output() {return ts;}
@@ -194,7 +198,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
     {
         if (x % 1000 == 0)
         {
-            dtalog.output() << "allocating 3D memory for " << x << std::endl;
+            dtalog.output() << "allocating 3D memory for " << x << '\n';
         }
 
         dynamicArray[x] = new (std::nothrow) T * [nY];
@@ -262,11 +266,11 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
     {
         if (m % 1000 == 0)
         {
-            dtalog.output() << "allocating 4D memory for " << m << " zones,"
+            dtalog.output() << "allocating 4D memory for no." << m << " zone,"
                 << "nM=" << nM << ","
                 << "nX=" << nX << ","
                 << "nY=" << nY << ","
-                << "nZ=" << nZ << std::endl;
+                << "nZ=" << nZ << '\n';
         }
 
         dynamicArray[m] = new (std::nothrow) T * *[nX];
@@ -390,7 +394,7 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
     {
         if (required_field)
         {
-            dtalog.output() << "Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
+            dtalog.output() << "Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -447,15 +451,15 @@ bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool requi
 
     if (FieldsIndices.find("key") == FieldsIndices.end())
     {
-
-            dtalog.output() << "Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
-            g_program_stop();
+        dtalog.output() << "Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        g_program_stop();
         return false;
     }
+
     if (FieldsIndices.find("value") == FieldsIndices.end())
     {
-            dtalog.output() << "Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << std::endl;
-            g_program_stop();
+        dtalog.output() << "Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        g_program_stop();
         return false;
     }
     else
@@ -472,6 +476,7 @@ bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool requi
             }
         } while (ReadRecord());
     }
-    return false; 
+    return false;
 }
+
 #endif

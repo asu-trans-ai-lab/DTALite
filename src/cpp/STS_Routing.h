@@ -1,5 +1,5 @@
 /* Portions Copyright 2019-2021 Xuesong Zhou and Peiheng Li, Cafer Avci
- 
+
  * If you help write or modify the code, please also list your names here.
  * The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL
  * and further prevent a violation of the GPL.
@@ -17,6 +17,9 @@
 #include "pch.h"
 #endif
 
+#include "config.h"
+#include "utils.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,21 +36,15 @@
 #include <vector>
 #include <map>
 #include <omp.h>
-#include "config.h"
-#include "utils.h"
-
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
 using std::ifstream;
 using std::ofstream;
 using std::istringstream;
-
 
 class VehicleScheduleNetworks {
 
@@ -68,7 +65,7 @@ public:
 
 		for (int i = 0; i < assignment.g_number_of_nodes; i++) //Initialization for all non-origin nodes
 		{
-			CNode node;  // create a node object 
+			CNode node;  // create a node object
 
 			node.node_id = g_node_vector[i].node_id;
 			node.node_seq_no = g_node_vector[i].node_seq_no;
@@ -425,7 +422,7 @@ public:
 //	if (assignment.major_path_volume_threshold > 0.00001)  // performing screening of path flow pattern
 //	{
 //
-//		//initialization 
+//		//initialization
 //		bool b_subarea_mode = false;
 //
 //		int number_of_links = g_link_vector.size();
@@ -484,7 +481,7 @@ public:
 //										}
 //
 //									}
-//									// 
+//									//
 //									if (insubarea_flag && it->second.path_volume > assignment.major_path_volume_threshold)
 //									{
 //										subarea_output_flag = 1;
@@ -519,7 +516,7 @@ public:
 //		}
 //
 //		/// output background_link_volume.csv
-//		dtalog.output() << "writing link_performance.csv.." << endl;
+//		dtalog.output() << "writing link_performance.csv.." << '\n';
 //
 //		int b_debug_detail_flag = 0;
 //		FILE* g_pFileLinkMOE = nullptr;
@@ -527,7 +524,7 @@ public:
 //		fopen_ss(&g_pFileLinkMOE, "link_background_volume.csv", "w");
 //		if (!g_pFileLinkMOE)
 //		{
-//			dtalog.output() << "File link_background_volume.csv cannot be opened." << endl;
+//			dtalog.output() << "File link_background_volume.csv cannot be opened." << '\n';
 //			g_program_stop();
 //		}
 //		else
@@ -572,13 +569,13 @@ public:
 //		}
 //
 //
-//	} // end of path flow pattern screening 
-//	dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+//	} // end of path flow pattern screening
+//	dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 //
 //	for (int orig = 0; orig < zone_size; ++orig)
 //	{
 //		if (g_zone_vector[orig].zone_id % 100 == 0)
-//			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+//			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 //
 //		for (int at = 0; at < mode_type_size; ++at)
 //		{
@@ -599,7 +596,7 @@ public:
 //						if (assignment.zone_seq_no_2_info_mapping.find(orig) != assignment.zone_seq_no_2_info_mapping.end()
 //							&& assignment.g_ModeTypeVector[at].real_time_information >= 1)
 //						{
-//							p_column_pool->od_volume[assignment.active_scenario_index] = 1;  // reset the volume as 1 to enable visualization 
+//							p_column_pool->od_volume[assignment.active_scenario_index] = 1;  // reset the volume as 1 to enable visualization
 //
 //						}
 //
@@ -616,7 +613,7 @@ public:
 //							{
 //								CAgentPath agent_path = assignment.g_column_pool[o][d][at][tau].discrete_agent_path_vector[ai];
 //								{
-//									// internal step 1: test shortest path travel time 
+//									// internal step 1: test shortest path travel time
 //									g_RoutingNetwork.m_origin_node = agent_path.o_node_no;
 //									g_RoutingNetwork.m_mode_type_no = at;
 //									g_RoutingNetwork.tau = tau;

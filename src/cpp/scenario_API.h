@@ -17,6 +17,10 @@
 #include "pch.h"
 #endif
 
+#include "config.h"
+#include "DTA.h"
+#include "utils.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,14 +37,9 @@
 #include <vector>
 #include <map>
 #include <omp.h>
-#include "config.h"
-#include "utils.h"
-
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
@@ -48,11 +47,9 @@ using std::ifstream;
 using std::ofstream;
 using std::istringstream;
 
-#include "DTA.h"
-
 void g_load_supply_side_scenario_file(Assignment& assignment)
 {
-	dtalog.output() << "Step 2.2: Reading supply side scenario data..." << endl;
+	dtalog.output() << "Step 2.2: Reading supply side scenario data..." << '\n';
 
 	CDTACSVParser parser;
 
@@ -82,7 +79,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			int from_node_id = 0;
 			if (!parser.GetValueByFieldName("from_node_id", from_node_id))
 			{
-				dtalog.output() << "Error: from_node_id in file scenario.csv is not defined." << endl;
+				dtalog.output() << "Error: from_node_id in file scenario.csv is not defined." << '\n';
 				fprintf(g_pFileModel_LC, "Error: from_node_id %d in file scenario.csv is not defined\n", from_node_id);
 				continue;
 			}
@@ -90,7 +87,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			int to_node_id = 0;
 			if (!parser.GetValueByFieldName("to_node_id", to_node_id))
 			{
-				dtalog.output() << "Error: to_node_id in file scenario.csv is not defined." << endl;
+				dtalog.output() << "Error: to_node_id in file scenario.csv is not defined." << '\n';
 				fprintf(g_pFileModel_LC, "Error: to_node_id %d in file scenario.csv is not defined\n", to_node_id);
 
 				continue;
@@ -104,13 +101,13 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 			if (assignment.g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
-				dtalog.output() << "Error: from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << endl;
+				dtalog.output() << "Error: from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				fprintf(g_pFileModel_LC, "Error: from_node_id %d in file scenario.csv is not defined in node.csv\n", from_node_id);
 				continue;
 			}
 			if (assignment.g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
-				dtalog.output() << "Error: to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << endl;
+				dtalog.output() << "Error: to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				fprintf(g_pFileModel_LC, "Error: to_node_id %d in file scenario.csv is not defined in node.csv\n", to_node_id);
 				//has not been defined
 				continue;
@@ -130,7 +127,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() << "Error: Link " << from_node_id << "->" << to_node_id << " in file supply_side_scenario.csv is not defined in link.csv." << endl;
+				dtalog.output() << "Error: Link " << from_node_id << "->" << to_node_id << " in file supply_side_scenario.csv is not defined in link.csv." << '\n';
 				fprintf(g_pFileModel_LC, "Error: link %d-> %d in file scenario.csv is not defined in link.csv\n", from_node_id, to_node_id);
 				continue;
 			}
@@ -184,7 +181,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 				if (assignment.node_seq_no_2_zone_id_mapping.find(g_link_vector[link_seq_no].to_node_seq_no) == assignment.node_seq_no_2_zone_id_mapping.end())
 				{
-					cout << "information zone has not been defined!" << endl;
+					dtalog.output() << "information zone has not been defined!" << '\n';
 					g_program_stop();
 
 				}
@@ -210,14 +207,14 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			//	string time_period;
 			//	if (!parser.GetValueByFieldName("time_period", time_period))
 			//	{
-			//		dtalog.output() << "Error: Field time_window in file scenario.csv cannot be read." << endl;
+			//		dtalog.output() << "Error: Field time_window in file scenario.csv cannot be read." << '\n';
 			//		g_program_stop();
 			//		break;
 			//	}
 
 
 
-			//	//input_string includes the start and end time of a time period with 
+			//	//input_string includes the start and end time of a time period with
 
 			//	global_minute_vector = g_time_parser(time_period); //global_minute_vector incldue the starting and ending time
 			//	if (global_minute_vector.size() == 2)
@@ -312,7 +309,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			//{
 			//	if (scenario_type.size() >= 1)
 			//	{
-			//		dtalog.output() << "Error: scenario_type = " << scenario_type << " is not supported. Currently DTALite supports scenario_type such as sa, incident, dms" << endl;
+			//		dtalog.output() << "Error: scenario_type = " << scenario_type << " is not supported. Currently DTALite supports scenario_type such as sa, incident, dms" << '\n';
 			//		g_program_stop();
 			//	}
 			//}
@@ -322,9 +319,9 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 
 	}
-	// allocate 
-	dtalog.output() << "reading " << sa_capacity_count << " sa  capacity scenario.. " << endl;
-	dtalog.output() << "reading " << dms_count << " dms scenario.. " << endl;
+	// allocate
+	dtalog.output() << "reading " << sa_capacity_count << " sa  capacity scenario.. " << '\n';
+	dtalog.output() << "reading " << dms_count << " dms scenario.. " << '\n';
 
 	if (incident_count >= 1)
 	{
@@ -335,11 +332,11 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 	// we now know the number of links
 
-	assignment.summary_file << ",read supply side scenario" << endl;
-	assignment.summary_file << ", # of records in supply_side_scenario.csv=," << sa_capacity_count + incident_count + dms_count << "," << endl;
-	assignment.summary_file << ", # of SA records in supply_side_scenario.csv=," << sa_capacity_count << "," << endl;
-	assignment.summary_file << ", # of incident records in supply_side_scenario.csv=," << incident_count << "," << endl;
-	assignment.summary_file << ", # of dms records in supply_side_scenario.csv=," << dms_count << "," << endl;
+	assignment.summary_file << ",read supply side scenario" << '\n';
+	assignment.summary_file << ", # of records in supply_side_scenario.csv=," << sa_capacity_count + incident_count + dms_count << "," << '\n';
+	assignment.summary_file << ", # of SA records in supply_side_scenario.csv=," << sa_capacity_count << "," << '\n';
+	assignment.summary_file << ", # of incident records in supply_side_scenario.csv=," << incident_count << "," << '\n';
+	assignment.summary_file << ", # of dms records in supply_side_scenario.csv=," << dms_count << "," << '\n';
 
 	//if (capacity_count > 0 || sa_capacity_count > 0)
 	//{
@@ -351,7 +348,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 void g_load_demand_side_scenario_file(Assignment& assignment)
 {
-	dtalog.output() << "Step 2.0: Reading demand side scenario data..." << endl;
+	dtalog.output() << "Step 2.0: Reading demand side scenario data..." << '\n';
 
 	CDTACSVParser parser;
 
@@ -384,7 +381,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() <<"demand_period" << "is not defined in settings.csv." << endl;
+				dtalog.output() <<"demand_period" << "is not defined in settings.csv." << '\n';
 				g_program_stop();
 			}
 
@@ -394,9 +391,9 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 
 			string scenario_type;
 			parser.GetValueByFieldName("scenario_type", scenario_type);
-			// o_distrct_id_factor_map, 
-			// d_district_id_factor_map, 
-			// od_district_id_factor_map 
+			// o_distrct_id_factor_map,
+			// d_district_id_factor_map,
+			// od_district_id_factor_map
 
 			if (scenario_type == "o_based")
 			{
@@ -408,7 +405,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			}else if (scenario_type == "od_based")
 			{
 				int od_district_key = o_district_id * 1000 + d_district_id;
-			
+
 				assignment.od_district_id_factor_map[od_district_key] = scale_factor;
 			}else if (scenario_type == "sa_o_based")
 			{
@@ -427,21 +424,21 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() << "scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << endl;
-				dtalog.output() << scenario_type.c_str() << "is not supported." << endl;
+				dtalog.output() << "scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
+				dtalog.output() << scenario_type.c_str() << "is not supported." << '\n';
 				g_program_stop();
 			}
-			
+
 			demand_scenario_count++;
 
-			dtalog.output() << "reading " << demand_scenario_count << " demand side scenario(s).. " << endl;
+			dtalog.output() << "reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
 
 		}
 	}
 	parser.CloseCSVFile();
 
 	// we now know the number of links
-	assignment.summary_file << ", # of demand side records in demand_side_scenario.csv=," << demand_scenario_count << "," << endl;
+	assignment.summary_file << ", # of demand side records in demand_side_scenario.csv=," << demand_scenario_count << "," << '\n';
 
 }
 
@@ -470,7 +467,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //		if (fabs(LR_RT_price) > 0.001)
 //		{
 //			dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
-//				<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << endl;
+//				<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //		}
 
 //	}
@@ -478,7 +475,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //	if (fabs(LR_ini_price) > 0.001)
 //	{
 //		dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
-//			<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << endl;
+//			<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //	}
 
 //}

@@ -40,8 +40,6 @@
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
@@ -135,7 +133,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 
 									// MSA updating for the existing column pools
 									// if iteration_index = 0; then update no flow discount is used (for the column pool case)
-									OCC_ratio = g_link_vector[link_seq_no].VDF_period[tau].occ[at];  // updated on 08/16/2021 for link dependent and agent type dependent pce factor mainly for trucks 
+									OCC_ratio = g_link_vector[link_seq_no].VDF_period[tau].occ[at];  // updated on 08/16/2021 for link dependent and agent type dependent pce factor mainly for trucks
 #pragma omp critical
 									{
 										g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume ;
@@ -170,7 +168,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 											continue;
 										}
 									}
-									//only real time information == 0, or 2 as DMS with virtual information zone as the origin 
+									//only real time information == 0, or 2 as DMS with virtual information zone as the origin
 									if (!p_column_pool->bfixed_route && b_self_reducing_path_volume)
 									{
 										//after link volumn "tally", self-deducting the path volume by 1/(k+1) (i.e. keep k/(k+1) ratio of previous flow) so that the following shortes path will be receiving 1/(k+1) flow
@@ -489,7 +487,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
-						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
@@ -498,7 +496,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
-				{  // upper bound constraints 
+				{  // upper bound constraints
 					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
 						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
@@ -520,7 +518,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
-	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << endl;
+	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << '\n';
 	//        }
 
 	//        total_gap += abs(g_zone_vector[orig].est_attraction_dev);
@@ -534,7 +532,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
-	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << endl;
+	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << '\n';
 	//        }
 
 	//        total_gap += abs(g_zone_vector[orig].est_production_dev);
@@ -549,7 +547,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< endl;
+		<< '\n';
 
 	dtalog.output() << "ODME #" << iteration_no
 		<< ", link MAE= " << total_gap / max(1, total_link_count)
@@ -558,7 +556,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< endl;
+		<< '\n';
 	double gap = sub_total_gap_link_count / max(1, total_link_count);
 	system_gap = sub_total_system_gap_count / max(1, total_link_count);
 
@@ -592,7 +590,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-				{ 
+				{
 					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
@@ -724,7 +722,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
-						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
@@ -733,7 +731,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
-				{  // upper bound constraints 
+				{  // upper bound constraints
 					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
 						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
@@ -753,7 +751,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 		//"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		//",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		//" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		endl;
+		'\n';
 
 	dtalog.output() << "ODME #" << iteration_no
 		<< ", link MAE= " << total_gap / max(1, total_link_count)
@@ -762,7 +760,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< endl;
+		<< '\n';
 	double gap = sub_total_gap_link_count / max(1, total_link_count);
 	system_gap = sub_total_system_gap_count / max(1, total_link_count);
 
@@ -795,7 +793,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-				{ 
+				{
 					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
@@ -965,7 +963,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 					dtalog.output() << "link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
-						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << endl;
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
@@ -974,7 +972,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
-				{  // upper bound constraints 
+				{  // upper bound constraints
 					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
 						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
@@ -996,7 +994,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
-	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << endl;
+	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << '\n';
 	//        }
 
 	//        total_gap += abs(g_zone_vector[orig].est_attraction_dev);
@@ -1010,7 +1008,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
-	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << endl;
+	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << '\n';
 	//        }
 
 	//        total_gap += abs(g_zone_vector[orig].est_production_dev);
@@ -1025,7 +1023,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< endl;
+		<< '\n';
 
 	dtalog.output() << "ODME #" << iteration_no
 		<< ", link MAE= " << total_gap / max(1, total_link_count)
@@ -1034,7 +1032,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
 		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< endl;
+		<< '\n';
 	double gap = sub_total_gap_link_count / max(1, total_link_count);
 	system_gap = sub_total_system_gap_count / max(1, total_link_count);
 
@@ -1072,7 +1070,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 	// step 0
 
 
-//   assignment.summary_file << ",iteration,key,o,d,at,tau,volume,"<< endl;
+//   assignment.summary_file << ",iteration,key,o,d,at,tau,volume,"<< '\n';
 	//step 1: calculate shortest path at inner iteration of column flow updating
 #pragma omp parallel for
 	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
@@ -1177,7 +1175,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							int iii_debug = 1;
 							}
 						}
-						
+
 						for (it = it_begin; it != it_end; ++it)
 						{
 							path_toll = 0;
@@ -1185,9 +1183,9 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							path_distance = 0;
 							path_travel_time = 0;
 
-					//		cout << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id  <<  "; path_id" << it->second.path_seq_no << endl;
+					//		dtalog << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id  <<  "; path_id" << it->second.path_seq_no << '\n';
 							/// <summary>
-							/// 
+							///
 							if (b_sensitivity_analysis_flag && assignment.g_ModeTypeVector[at].real_time_information == 1)  //real time information
 							{
 								for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
@@ -1282,7 +1280,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 							for (it = it_begin; it != it_end; ++it)
 							{
-		//						cout << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id << "; path_id" << it->second.path_seq_no << endl;
+		//						dtalog << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id << "; path_id" << it->second.path_seq_no << '\n';
 
 								if (it->second.path_seq_no == 9)
 								{
@@ -1308,7 +1306,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 										if (it->second.path_gradient_cost_difference > 1000 && it->second.path_volume >10)
 										{
 											int idebug = 1;
-										} 
+										}
 										total_system_travel_cost += (it->second.path_gradient_cost * it->second.path_volume);
 									}
 
@@ -1317,10 +1315,10 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 										// during SA stage,
 										// regular drivers do not switch at all (except for those encounter the dramatic induced delay)
-										// real time and DMS users only switch when they see the DMS or pass through the incident on the original routes 
+										// real time and DMS users only switch when they see the DMS or pass through the incident on the original routes
 
-//										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume[assignment.active_scenario_index]; // small changes 
-										step_size = 1.0 / (inner_iteration_number + 2); 
+//										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume[assignment.active_scenario_index]; // small changes
+										step_size = 1.0 / (inner_iteration_number + 2);
 
 										if (step_size < 0.05)
 											step_size = 0.05;
@@ -1357,8 +1355,8 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 										int idebug = 1;
 									}
 
-									// special condition for sensitivity iteration 0: reset the route flow switing size  as 0: no route flow switching is alloed for this base case: 
-									// Discussion with Chongnan. 
+									// special condition for sensitivity iteration 0: reset the route flow switing size  as 0: no route flow switching is alloed for this base case:
+									// Discussion with Chongnan.
 									//if (b_sensitivity_analysis_flag == true)
 									//{
 									//	if (p_column_pool->OD_impact_flag == 0)
@@ -1368,7 +1366,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 									//		flow_shift = 0;
 									//	}
 									//	else
-									//	{  // p_column_pool->OD_impact_flag ==1 
+									//	{  // p_column_pool->OD_impact_flag ==1
 									//		// one more layer of checking
 									//		if (p_column_pool->at_od_impacted_flag_map.find(at) == p_column_pool->at_od_impacted_flag_map.end())
 									//		{ // for RT users, only one condition is used to mark at_od_impacted_flag_map
@@ -1384,7 +1382,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 									// step 3.1: shift flow from nonshortest path to shortest path
 									it->second.path_volume = max(0.0, it->second.path_volume - flow_shift);
 									//d
-									// 
+									//
 									//we use min(step_size to ensure a path is not switching more than 1/n proportion of flow
 									it->second.path_switch_volume = (previous_path_volume - it->second.path_volume);
 
@@ -1446,11 +1444,11 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 	assignment.summary_file << "column updating: iteration= " << inner_iteration_number << ", avg travel time = " <<
 		avg_travel_time << "(min), optimization obj = " << total_system_cost_gap
-		<< ",Relative_gap=" << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << endl;
+		<< ",Relative_gap=" << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << '\n';
 
 	dtalog.output() << "column updating: iteration= " << inner_iteration_number << ", avg travel time = " <<
 		avg_travel_time << "(min), optimization obj = " << total_system_cost_gap
-		<< ",Relative_gap=" << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << endl;
+		<< ",Relative_gap=" << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << '\n';
 
 	string stage_str;
 	stage_str = "column updating";
@@ -1462,7 +1460,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 		",total_system_demand," << total_system_demand <<
 		",avg travel time," << avg_travel_time <<
 		",optimization obj," << total_system_cost_gap <<
-		",relative_gap," << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << "," << endl;
+		",relative_gap," << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << "," << '\n';
 }
 
 void g_reset_RT_link_penalty_in_column_pool(Assignment& assignment)  // after
@@ -1647,7 +1645,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
 				//if (assignment.g_ModeTypeVector[at].real_time_information != 0)  // users with information, continue;
-				//	continue; 
+				//	continue;
 
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
@@ -1707,7 +1705,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 	stage_str = "classification";
 
 	//	assignment.summary_file2 << stage_str.c_str() << ",impact_OD_counts," << impact_OD_counts <<
-	//		",impact_OD_counts_with_detour," << impact_OD_counts_detour << endl;
+	//		",impact_OD_counts_with_detour," << impact_OD_counts_detour << '\n';
 
 
 
@@ -1749,7 +1747,7 @@ CColumnPath* g_add_new_column(CColumnVector* pColumnVector, std::vector <int> li
 
 void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations, bool sensitivity_analysis_flag = false)
 {
-	assignment.summary_file << "column updating" << endl;
+	assignment.summary_file << "column updating" << '\n';
 
 	// column_updating_iterations is internal numbers of column updating
 	for (int n = 0; n < column_updating_iterations; ++n)
@@ -1762,7 +1760,7 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 			{
 				dtalog.output() << "link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << endl;
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
 			}
 		}
 	}
@@ -1776,7 +1774,7 @@ void g_fetch_link_volume_for_all_processors();
 
 void g_column_pool_route_modification(Assignment& assignment, int inner_iteration_number)  // for DMS users
 {
-
+	int output_flag = 0;
 	//step 1: calculate shortest path at inner iteration of column flow updating
 #pragma omp parallel for
 	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
@@ -1807,7 +1805,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
-				if (assignment.g_ModeTypeVector[at].real_time_information == 2)   // case of DMS 
+				if (assignment.g_ModeTypeVector[at].real_time_information == 2)   // case of DMS
 				{
 					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 					{
@@ -1843,14 +1841,13 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									link_seq_no = it->second.path_link_vector[nl];
 									CLink* p_current_link = &(g_link_vector[link_seq_no]);
 
-
 									if (b_passing_information_zone == false &&
 										p_current_link->VDF_period[tau].network_design_flag == 2 /*DMS link*/ &&
 										assignment.node_seq_no_2_zone_id_mapping.find(p_current_link->to_node_seq_no) != assignment.node_seq_no_2_zone_id_mapping.end())
 										// this node been defined as zone
 									{
 
-										cout << "nl= " << nl << " link sequence = " << link_seq_no << endl;
+										dtalog.output() << "nl= " << nl << " link sequence = " << link_seq_no << '\n';
 										p_column_pool->OD_impact_flag = 1;
 										p_column_pool->at_od_impacted_flag_map[at];
 
@@ -1900,15 +1897,15 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										continue;
 
 									//step 2: fetch the related column pool from the information node/zone
-									p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau 
+									p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
 									//             scan through the map with different node sum for different continuous paths
 									// part C subpath
 
 									if (p_2_stage_column_pool->path_node_sequence_map.size() == 0)  // if there is no path available int the precomputed column pool
 									{
-										cout << "if there is no path available int the precomputed column pool";
+										dtalog.output() << "if there is no path available int the precomputed column pool";
 										g_program_stop();
-										continue;  // 
+										continue;  //
 
 									}
 
@@ -1919,7 +1916,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									it_end2 = p_2_stage_column_pool->path_node_sequence_map.end();
 
 									bool b_sa_column_found_flag = false;
-									// check non-diverted path travel time 
+									// check non-diverted path travel time
 									float non_diverted_path_travel_time = 999999; // default value
 									for (it2 = it_begin2; it2 != it_end2; ++it2)
 									{
@@ -1977,8 +1974,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 												{
 													link_seq_vector.push_back(it2->second.path_link_vector[nl2]);
 													// construct sub path C
-													cout << "reroute B: l=" << nl2 << "," << g_node_vector[g_link_vector[it2->second.path_link_vector[nl2]].to_node_seq_no].node_id << endl;
-
+													dtalog.output() << "reroute B: l=" << nl2 << "," << g_node_vector[g_link_vector[it2->second.path_link_vector[nl2]].to_node_seq_no].node_id << '\n';
 												}
 
 												b_sa_column_found_flag = true;
@@ -1990,10 +1986,10 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									// re-assmble the path vector of path_link_vector only if a feasible sa column is found.
 									if (b_sa_column_found_flag == true && it->second.path_link_vector != NULL)
 									{
-										// copy the updated path (stage1 + stage 2) back to the path link vector 
+										// copy the updated path (stage1 + stage 2) back to the path link vector
 										bool b_optional_DMS_flag = true;
 
-										//required diversion									
+										//required diversion
 										if (b_optional_DMS_flag == false)
 										{
 											delete it->second.path_link_vector;
@@ -2005,7 +2001,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 											it->second.m_link_size = link_seq_vector.size();
 
-											// copy the updated path (stage1 + stage 2) back to the path node vector 
+											// copy the updated path (stage1 + stage 2) back to the path node vector
 											delete it->second.path_node_vector;
 											it->second.path_node_vector = new int[link_seq_vector.size() + 1];
 
@@ -2019,18 +2015,17 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											for (int l = 0; l < link_seq_vector.size(); l++)
 											{
 												it->second.path_node_vector[l + 1] = g_link_vector[link_seq_vector[l]].to_node_seq_no;
-												cout << "reroute: l=" << l << "," << g_node_vector[g_link_vector[link_seq_vector[l]].to_node_seq_no].node_id << endl;
-
+												dtalog.output() << "reroute: l=" << l << "," << g_node_vector[g_link_vector[link_seq_vector[l]].to_node_seq_no].node_id << '\n';
 											}
 											it->second.m_node_size = link_seq_vector.size() + 1;
 
-											it->second.impacted_path_flag = 2; // diverted 
+											it->second.impacted_path_flag = 2; // diverted
 										}
 										else
 										{  //optional detour
 
 											// add a new path to p_column_pool->path_node_sequence_map
-											// simple logit model 
+											// simple logit model
 
 											float base_path_travel_time = 0;
 											for (int nl0 = 0; nl0 < it->second.m_link_size; ++nl0)  // arc a // starting from 1 to exclude virtual link at the beginning
@@ -2057,6 +2052,12 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 										}
 									}
+
+									if(output_flag == 0)
+									{
+										dtalog.output() << " route modification for DMS or real time information users" << '\n'; 
+										output_flag = 1;
+									}
 									p_2_stage_column_pool->information_type = 1;
 
 									// path D as A + C
@@ -2077,12 +2078,12 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 	}  // orig
 
 
-	dtalog.output() << " updating";
+
 
 
 }
 
-void g_column_pool_reset(Assignment& assignment) 
+void g_column_pool_reset(Assignment& assignment)
 {
 
 	//step 1: calculate shortest path at inner iteration of column flow updating
@@ -2122,14 +2123,13 @@ void g_column_pool_reset(Assignment& assignment)
 	}  // orig
 
 
-	dtalog.output() << " updating";
 
 
 }
 
 void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in_min, int recording_flag = 0)
 {
-	//dtalog.output() << "Begin the computing of " << g_NetworkForRTSP_vector.size() << " RTSP networks in CPU." << endl;
+	//dtalog.output() << "Begin the computing of " << g_NetworkForRTSP_vector.size() << " RTSP networks in CPU." << '\n';
 
 	clock_t start_t0, end_t0, total_t0;
 
@@ -2152,8 +2152,8 @@ void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in
 	int second = total_t0 / 1000.0;
 	int min = second / 60;
 	int sec = second - min * 60;
-	//dtalog.output() << "CPU Running Time for RT shortest path: " << min << " min " << sec << " sec" << endl;
-	assignment.summary_file << ", RT shortest path at time =," << current_time_in_min << "min" << endl;
+	//dtalog.output() << "CPU Running Time for RT shortest path: " << min << " min " << sec << " sec" << '\n';
+	assignment.summary_file << ", RT shortest path at time =," << current_time_in_min << "min" << '\n';
 
 }
 
@@ -2219,7 +2219,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 									continue;
 
 								//step 2: fetch the related column pool from the information node/zone
-								p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][aat][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau 
+								p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][aat][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
 								//             scan through the map with different node sum for different continuous paths
 
 								std::map<int, CColumnPath>::iterator it2, it_begin2, it_end2;
@@ -2228,7 +2228,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 								it_end2 = p_2_stage_column_pool->path_node_sequence_map.end();
 
 
-								for (it2 = it_begin2; it2 != it_end2; ++it2)  // we can still have k-path from the info zone to to final destination so we need to random select one 
+								for (it2 = it_begin2; it2 != it_end2; ++it2)  // we can still have k-path from the info zone to to final destination so we need to random select one
 								{
 
 									for (int nl = 1; nl < it2->second.m_link_size - 1; ++nl)  // arc a // exclude virtual link in the beginning and at the end;
@@ -2271,7 +2271,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 							}
 							p_column_pool->path_node_sequence_map[node_sum].m_link_size = link_seq_vector.size();
 
-							// copy the updated path (stage1 + stage 2) back to the path node vector 
+							// copy the updated path (stage1 + stage 2) back to the path node vector
 
 							// first node
 							p_column_pool->path_node_sequence_map[node_sum].path_node_vector[0] = g_link_vector[link_seq_vector[0]].from_node_seq_no;
@@ -2293,5 +2293,5 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 	}  // orig
 
 
-	dtalog.output() << " updating";
+
 }

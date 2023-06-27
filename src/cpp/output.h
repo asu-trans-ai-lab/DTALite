@@ -17,6 +17,10 @@
 #include "pch.h"
 #endif
 
+#include "config.h"
+#include "utils.h"
+#include "DTA.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -33,22 +37,15 @@
 #include <vector>
 #include <map>
 #include <omp.h>
-#include "config.h"
-#include "utils.h"
-
 
 using std::max;
 using std::min;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 using std::map;
 using std::ifstream;
 using std::ofstream;
 using std::istringstream;
-
-#include "DTA.h"
 
 void g_record_corridor_performance_summary(Assignment& assignment, int base_case_flag)
 {
@@ -65,11 +62,11 @@ void g_record_corridor_performance_summary(Assignment& assignment, int base_case
 			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
 				continue;
 
-			float speed = g_link_vector[i].free_speed;  // default speed 
+			float speed = g_link_vector[i].free_speed;  // default speed
 			if (g_link_vector[i].VDF_period[tau].avg_travel_time > 0.001f)
 				speed = g_link_vector[i].free_speed / max(0.000001, g_link_vector[i].VDF_period[tau].avg_travel_time) * g_link_vector[i].VDF_period[tau].FFTT_at[0];
 
-			float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed 
+			float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed
 			float vehicle_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
 			float person_volume = g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
 			//VMT,VHT,PMT,PHT,PDT
@@ -172,13 +169,13 @@ void g_record_corridor_performance_summary(Assignment& assignment, int base_case
 
 void g_OutputSummaryFiles(Assignment& assignment)
 {
-	// if 
+	// if
 	if (g_corridor_info_base0_map.size() > 0)
 	{
 
 		assignment.summary_corridor_file.open("corridor_performance.csv", std::fstream::out);
 
-		assignment.summary_corridor_file << "tmc_corridor_name,demand_period,links,vol0,speed0,DoC0,max_P0,vol,speed,Doc,P,diff_vol,diff_spd,diff_Doc,diff_P,d%_vol,d%_spd," << endl;
+		assignment.summary_corridor_file << "tmc_corridor_name,demand_period,links,vol0,speed0,DoC0,max_P0,vol,speed,Doc,P,diff_vol,diff_spd,diff_Doc,diff_P,d%_vol,d%_spd," << '\n';
 
 		std::map<string, CCorridorInfo>::iterator it;
 		for (it = g_corridor_info_base0_map.begin(); it != g_corridor_info_base0_map.end(); ++it)
@@ -219,7 +216,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 					}
 
-					assignment.summary_corridor_file << endl;
+					assignment.summary_corridor_file << '\n';
 				}
 			}
 		}
@@ -231,7 +228,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 	assignment.summary_system_file.open("system_performance_summary.csv", std::fstream::out);
 
-	assignment.summary_system_file << "first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min," << endl;
+	assignment.summary_system_file << "first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min," << '\n';
 	int mode_type_size = assignment.g_ModeTypeVector.size();
 	std::map<int, CSystem_Summary>::iterator it_s;
 	for (it_s = g_scenario_summary_map.begin(); it_s != g_scenario_summary_map.end(); ++it_s)
@@ -256,7 +253,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_travel_time << "," <<
 					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_km << "," <<
 					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile << "," <<
-					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_time << "," << endl;
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_time << "," << '\n';
 
 			}
 		}
@@ -265,7 +262,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 	//////////////////////////////
 	//assignment.summary_system_file.open("analysis_district_performance.csv", std::fstream::out);
-	//assignment.summary_system_file << "district_id,mode_type,od_volume,number_of_links,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_time,SA_total_travel_time_min,SA_avg_distance_km_,SA_avg_distance_mile,SA_avg_time,SA_distance_diff_perc,SA_time_diff_perc,geometry," << endl;
+	//assignment.summary_system_file << "district_id,mode_type,od_volume,number_of_links,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_time,SA_total_travel_time_min,SA_avg_distance_km_,SA_avg_distance_mile,SA_avg_time,SA_distance_diff_perc,SA_time_diff_perc,geometry," << '\n';
 	//mode_type_size = assignment.g_ModeTypeVector.size();
 	//std::map<int, CAnalysisDistrict>::iterator it;
 
@@ -319,7 +316,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 	//			assignment.summary_system_file << "))\"";
 
-	//			assignment.summary_system_file << endl;
+	//			assignment.summary_system_file << '\n';
 	//		}
 	//	}
 }
@@ -328,7 +325,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 
 void g_output_dynamic_queue_profile()  // generated from VDF, from numerical queue evolution calculation
 {
-	dtalog.output() << "writing link_queue_profile.csv.." << endl;
+	dtalog.output() << "writing link_queue_profile.csv.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -339,7 +336,7 @@ void g_output_dynamic_queue_profile()  // generated from VDF, from numerical que
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << endl;
+		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -554,17 +551,17 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 	if (subarea_id == 0)
 	{
-		assignment.summary_file << "Output Link Performance:" << endl;
+		assignment.summary_file << "Output Link Performance:" << '\n';
 
 		char link_performance_file_name[50];
 		int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 		sprintf(link_performance_file_name, "link_performance_s%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
 
-		dtalog.output() << "writing link_performance_s" << assignment.active_scenario_index << ".csv" << endl;
+		dtalog.output() << "writing link_performance_s" << assignment.active_scenario_index << ".csv" << '\n';
 		fopen_ss(&g_pFileLinkMOE, link_performance_file_name, "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_s" << assignment.active_scenario_index << ".csv" << "cannot be opened." << endl;
+			dtalog.output() << "File link_performance_s" << assignment.active_scenario_index << ".csv" << "cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -572,13 +569,13 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 	}
 	else
 	{
-		assignment.summary_file << "Output subarea Link Performance:" << endl;
+		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << endl;
+		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << endl;
+			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -674,13 +671,13 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 
 
-				float speed = g_link_vector[i].free_speed;  // default speed 
+				float speed = g_link_vector[i].free_speed;  // default speed
 
 
 				if (g_link_vector[i].VDF_period[tau].avg_travel_time > 0.001f)
 					speed = g_link_vector[i].free_speed / max(0.000001, g_link_vector[i].VDF_period[tau].avg_travel_time) * g_link_vector[i].VDF_period[tau].FFTT_at[0];
 
-				float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed 
+				float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed
 				float vehicle_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
 				float ref_volume_diff = 0;
 
@@ -777,12 +774,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					g_link_vector[i].VDF_period[tau].lane_based_ultimate_hourly_capacity,
 					g_link_vector[i].VDF_period[tau].lane_based_ultimate_hourly_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index],
 					g_link_vector[i].VDF_period[tau].queue_length,
-					max(0, g_link_vector[i].total_simulated_delay_in_min));
+					max(0.0, g_link_vector[i].total_simulated_delay_in_min));
 
 
 				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
 
-					max(0, g_link_vector[i].total_simulated_delay_in_min) / max(1, vehicle_volume),
+					max(0.0, g_link_vector[i].total_simulated_delay_in_min) / max(1.0f, vehicle_volume),
 					g_link_vector[i].VDF_period[tau].Q_peak_load_factor,
 					g_link_vector[i].VDF_period[tau].nlanes,
 					g_link_vector[i].VDF_period[tau].lane_based_D,
@@ -862,23 +859,23 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		fclose(g_pFileLinkMOE);
 	}
 
-	assignment.summary_file << ",ref_link_vol_count=," << ref_volume_count << "," << "MAPE=," << total_ref_volume_dev_abs_percentage / max(1, ref_volume_count) << "%" << endl;
+	assignment.summary_file << ",ref_link_vol_count=," << ref_volume_count << "," << "MAPE=," << total_ref_volume_dev_abs_percentage / max(1, ref_volume_count) << "%" << '\n';
 
-	assignment.summary_file << ",VMT=," << total_VMT << "," << "VKT=," << total_VMT * 1.6090 << endl;
-	assignment.summary_file << ",VHT=," << total_VHT << endl;
+	assignment.summary_file << ",VMT=," << total_VMT << "," << "VKT=," << total_VMT * 1.6090 << '\n';
+	assignment.summary_file << ",VHT=," << total_VHT << '\n';
 	assignment.summary_file << ",network vehicle speed (MPH) =," << total_VMT / max(0.0001, total_VHT) << ",";
-	assignment.summary_file << ",network vehicle speed (KPH) =," << total_VMT * 1.609 / max(0.0001, total_VHT) << endl;
+	assignment.summary_file << ",network vehicle speed (KPH) =," << total_VMT * 1.609 / max(0.0001, total_VHT) << '\n';
 
 	assignment.summary_file << ",PMT=," << total_PMT << ",";
-	assignment.summary_file << "PKT=," << total_PMT * 1.609 << endl;
-	assignment.summary_file << ",PHT=," << total_PHT << endl;
+	assignment.summary_file << "PKT=," << total_PMT * 1.609 << '\n';
+	assignment.summary_file << ",PHT=," << total_PHT << '\n';
 	assignment.summary_file << ",network person speed (MPH) =," << total_PMT / max(0.0001, total_PHT) << ",";
-	assignment.summary_file << ",network person speed (KPH) =," << total_PMT * 1.609 / max(0.0001, total_PHT) << endl;
+	assignment.summary_file << ",network person speed (KPH) =," << total_PMT * 1.609 / max(0.0001, total_PHT) << '\n';
 
 
-	assignment.summary_file << ",simple avg link volume=," << total_link_volume / max(1, MOE_count) << endl;
-	assignment.summary_file << ",simple avg link speed=," << total_link_speed / max(1, MOE_count) << endl;
-	assignment.summary_file << ",simple avg link speed ratio=," << total_link_speed_ratio / max(1, MOE_count) << endl;
+	assignment.summary_file << ",simple avg link volume=," << total_link_volume / max(1, MOE_count) << '\n';
+	assignment.summary_file << ",simple avg link speed=," << total_link_speed / max(1, MOE_count) << '\n';
+	assignment.summary_file << ",simple avg link speed ratio=," << total_link_speed_ratio / max(1, MOE_count) << '\n';
 
 
 
@@ -898,11 +895,11 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		FILE* g_pFilePathMOE = nullptr;
 		fopen_ss(&g_pFilePathMOE, route_assignment_file_name, "w");
-		dtalog.output() << "writing route_assignment.csv.." << endl;
+		dtalog.output() << "writing route_assignment.csv.." << '\n';
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << endl;
+			dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -911,7 +908,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		//// stage 1: column updating
 		//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_column_updating_iterations); iteration_number++)
-		//{ 
+		//{
 		//    fprintf(g_pFilePathMOE, "TT_%d,", iteration_number);
 		//}
 
@@ -975,7 +972,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		if (assignment.major_path_volume_threshold > 0.00001)  // performing screening of path flow pattern
 		{
-			//initialization 
+			//initialization
 			bool b_subarea_mode = false;
 
 			int number_of_links = g_link_vector.size();
@@ -1038,7 +1035,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 											}
 
 										}
-										// 
+										//
 										if (insubarea_flag && it->second.path_volume > assignment.major_path_volume_threshold)
 										{
 											subarea_output_flag = 1;
@@ -1071,7 +1068,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 			}
 
 			/// output background_link_volume.csv
-			dtalog.output() << "writing link_background_volume.csv.." << endl;
+			dtalog.output() << "writing link_background_volume.csv.." << '\n';
 
 			int b_debug_detail_flag = 0;
 			FILE* g_pFileLinkMOE = nullptr;
@@ -1082,7 +1079,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				fopen_ss(&g_pFileLinkMOE, "link_background_volume.csv", "w");
 				if (!g_pFileLinkMOE)
 				{
-					dtalog.output() << "File link_background_volume.csv cannot be opened." << endl;
+					dtalog.output() << "File link_background_volume.csv cannot be opened." << '\n';
 					g_program_stop();
 				}
 				else
@@ -1129,8 +1126,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 			}
 
 
-		} // end of path flow pattern screening 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+		} // end of path flow pattern screening
+		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 
 
@@ -1139,7 +1136,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			int from_zone_sindex = g_zone_vector[orig].sindex;
 			if (from_zone_sindex == -1)
@@ -1165,7 +1162,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					{
 						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 
-						if (p_column_pool->OD_impact_flag == 1 && assignment.g_ModeTypeVector[at].real_time_information == 0)  // as long as regular users of this OD pair is impacted. 
+						if (p_column_pool->OD_impact_flag == 1 && assignment.g_ModeTypeVector[at].real_time_information == 0)  // as long as regular users of this OD pair is impacted.
 						{
 							global_od_impact_flag_across_all_mode_types = 1;
 						}
@@ -1209,7 +1206,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								path_toll = 0;
@@ -1228,14 +1225,14 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 								if (it->second.m_link_size >= MAX_LINK_SIZE_IN_A_PATH - 2)
 								{
-									dtalog.output() << "error: it->second.m_link_size < MAX_LINK_SIZE_IN_A_PATH" << endl;
-									dtalog.output() << "o= " << g_zone_vector[orig].zone_id << endl;
-									dtalog.output() << "d= " << g_zone_vector[dest].zone_id << endl;
-									dtalog.output() << "agent type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() << endl;
+									dtalog.output() << "error: it->second.m_link_size < MAX_LINK_SIZE_IN_A_PATH" << '\n';
+									dtalog.output() << "o= " << g_zone_vector[orig].zone_id << '\n';
+									dtalog.output() << "d= " << g_zone_vector[dest].zone_id << '\n';
+									dtalog.output() << "agent type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() << '\n';
 
 									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 									{
-										dtalog.output() << "node no." << nl << " =" << g_node_vector[it->second.path_node_vector[nl]].node_id << endl;
+										dtalog.output() << "node no." << nl << " =" << g_node_vector[it->second.path_node_vector[nl]].node_id << '\n';
 									}
 
 									g_program_stop();
@@ -1315,7 +1312,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									virtual_last_link_delta = 1;
 								}
 
-								if (p_column_pool->activity_zone_no_vector.size() > 0)  // with activity zones 
+								if (p_column_pool->activity_zone_no_vector.size() > 0)  // with activity zones
 								{
 									virtual_first_link_delta = 0;
 									virtual_last_link_delta = 0;
@@ -1332,8 +1329,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									int impacted_path_flag = it->second.impacted_path_flag;  //NA by default
 
 
-									double volume_before_ODME = max(0, it->second.path_volume_before_ODME);
-									double volume_after_ODME = max(0, it->second.path_volume_after_ODME);
+									double volume_before_ODME = max(0.0, it->second.path_volume_before_ODME);
+									double volume_after_ODME = max(0.0, it->second.path_volume_after_ODME);
 									double volume = it->second.path_volume;
 
 									double volume_diff_ODME = 0;
@@ -1343,8 +1340,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										volume_diff_ODME = volume_after_ODME - volume_before_ODME;
 									}
 
-									double volume_before_sa = max(0, it->second.path_volume_before_sa);
-									double volume_after_sa = max(0, it->second.path_volume_after_sa);
+									double volume_before_sa = max(0.0, it->second.path_volume_before_sa);
+									double volume_after_sa = max(0.0, it->second.path_volume_after_sa);
 									double volume_diff_sa = 0;
 
 									if (volume_before_sa >= -0.000001)
@@ -1430,7 +1427,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									//    fprintf(g_pFilePathMOE, "%.2f;", path_time_vector[nt+1]- path_time_vector[nt]);
 
 									//fprintf(g_pFilePathMOE, ",");
-									// output the TT and vol of column updating 
+									// output the TT and vol of column updating
 
 									// stage 1:
 									//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_column_updating_iterations); iteration_number++)
@@ -1481,7 +1478,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 									}
 
-									//stage III: 
+									//stage III:
 
 									// output the TT and vol of sensitivity analysis
 									for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations; iteration_number++)
@@ -1590,11 +1587,11 @@ void g_output_choice_set_result(Assignment& assignment)
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, route_assignment_file_name, "w");
-	dtalog.output() << "writing choice_set_output.csv.." << endl;
+	dtalog.output() << "writing choice_set_output.csv.." << '\n';
 
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << endl;
+		dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -1647,7 +1644,7 @@ void g_output_choice_set_result(Assignment& assignment)
 					for (it_p = it_begin_p; it_p != it_end_p; ++it_p)
 					{  // first path in the column pool
 
-						for (int nl = 0; nl < it_p->second.m_link_size; ++nl)  // for each link in the route 
+						for (int nl = 0; nl < it_p->second.m_link_size; ++nl)  // for each link in the route
 						{
 
 							int link_seq_no = it_p->second.path_link_vector[nl];
@@ -1674,7 +1671,7 @@ void g_output_choice_set_result(Assignment& assignment)
 
 						alt_travel_time += path_travel_time;
 						alt_travel_cost += path_distance;
-						break;  // at the first path 
+						break;  // at the first path
 					}
 
 
@@ -1726,7 +1723,7 @@ void g_output_choice_set_result(Assignment& assignment)
 					}
 				}
 
-			}  // for each alternative's trip leg 
+			}  // for each alternative's trip leg
 			fprintf(g_pFilePathMOE, ")\"");
 
 			fprintf(g_pFilePathMOE, "\n");
@@ -1756,13 +1753,13 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 
 	if (subarea_id == 0)
 	{
-		assignment.summary_file << "Output Link Performance Summary" << endl;
+		assignment.summary_file << "Output Link Performance Summary" << '\n';
 
-		dtalog.output() << "writing link_performances_summary.csv.." << endl;
+		dtalog.output() << "writing link_performances_summary.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "link_performance_summary.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_summary.csv cannot be opened." << endl;
+			dtalog.output() << "File link_performance_summary.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -1770,13 +1767,13 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 	}
 	else
 	{
-		assignment.summary_file << "Output subarea Link Performance:" << endl;
+		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << endl;
+		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << endl;
+			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -1946,7 +1943,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 
 
 
-			float speed = g_link_vector[i].free_speed;  // default speed 
+			float speed = g_link_vector[i].free_speed;  // default speed
 
 
 			fprintf(g_pFileLinkMOE, "%s,%s,%d,%d,",
@@ -2141,13 +2138,13 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 
 	if (subarea_id == 0)
 	{
-		assignment.summary_file << "Output 2 Way Link Performance Summary" << endl;
+		assignment.summary_file << "Output 2 Way Link Performance Summary" << '\n';
 
-		dtalog.output() << "writing link_performances_summary_2way.csv.." << endl;
+		dtalog.output() << "writing link_performances_summary_2way.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "link_performance_summary_2way.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_summary2_way.csv cannot be opened." << endl;
+			dtalog.output() << "File link_performance_summary2_way.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -2155,13 +2152,13 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 	}
 	else
 	{
-		assignment.summary_file << "Output subarea Link Performance:" << endl;
+		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << endl;
+		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << endl;
+			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -2321,7 +2318,7 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 
 
 
-		float speed = g_link_vector[i].free_speed;  // default speed 
+		float speed = g_link_vector[i].free_speed;  // default speed
 
 
 		fprintf(g_pFileLinkMOE, "%s,%s,%d,%d,",
@@ -2511,14 +2508,16 @@ void g_output_accessibility_result(Assignment& assignment)
 {
 	if (assignment.assignment_mode == lue)
 	{
-		dtalog.output() << "link based user equilibrum mode: no od_performance.csv output.." << endl;
+		dtalog.output() << "link based user equilibrum mode: no od_performance.csv output.." << '\n';
 		return;
 	}
+
+	dtalog.output() << "output od_performance.csv.." << '\n';
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
 
-	dtalog.output() << "writing od_performance.csv.." << endl;
+	dtalog.output() << "writing od_performance.csv.." << '\n';
 
 	double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
@@ -2526,7 +2525,7 @@ void g_output_accessibility_result(Assignment& assignment)
 
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File od_performance.csv cannot be opened." << endl;
+		dtalog.output() << "File od_performance.csv cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -2567,7 +2566,7 @@ void g_output_accessibility_result(Assignment& assignment)
 	if (assignment.major_path_volume_threshold > 0.00001)  // performing screening of path flow pattern
 	{
 
-		//initialization 
+		//initialization
 		bool b_subarea_mode = false;
 
 		int number_of_links = g_link_vector.size();
@@ -2632,7 +2631,7 @@ void g_output_accessibility_result(Assignment& assignment)
 										}
 
 									}
-									// 
+									//
 									if (insubarea_flag && it->second.path_volume > assignment.major_path_volume_threshold)
 									{
 										subarea_output_flag = 1;
@@ -2667,8 +2666,8 @@ void g_output_accessibility_result(Assignment& assignment)
 		}
 
 
-	} // end of path flow pattern screening 
-	dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+	} // end of path flow pattern screening
+	dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 	int number_of_connected_OD_pairs = 0;
 
@@ -2685,7 +2684,7 @@ void g_output_accessibility_result(Assignment& assignment)
 			continue;
 
 		if (g_zone_vector[orig].zone_id % 100 == 0)
-			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 		for (int dest = 0; dest < zone_size; ++dest)
 		{
 			int to_zone_sindex = g_zone_vector[dest].sindex;
@@ -2771,7 +2770,7 @@ void g_output_accessibility_result(Assignment& assignment)
 							{
 								end_t = clock();
 								iteration_t = end_t - start_t;
-								dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+								dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 							}
 
 							path_toll = 0;
@@ -2941,26 +2940,26 @@ void g_output_accessibility_result(Assignment& assignment)
 
 	if (column_pool_ready_flag)
 	{
-		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance.csv" << endl;
-		assignment.summary_file << ", # of connected OD pairs =, " << l_origin_destination_map.size() << endl;
-		assignment.summary_file << ", # of OD/mode_type/demand_type columns without paths =, " << l_origin_destination_disconnected_map.size() << endl;
-		dtalog.output() << ", # of connected OD pairs = " << l_origin_destination_map.size() << endl;
+		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance.csv" << '\n';
+		assignment.summary_file << ", # of connected OD pairs =, " << l_origin_destination_map.size() << '\n';
+		assignment.summary_file << ", # of OD/mode_type/demand_type columns without paths =, " << l_origin_destination_disconnected_map.size() << '\n';
+//		dtalog.output() << ", # of connected OD pairs = " << l_origin_destination_map.size() << '\n';  // to be checked, Xuesong, 2023
 
 	}
-	if (l_origin_destination_map.size() == 0)
-	{
-		g_OutputModelFiles(10); // label cost tree
-		dtalog.output() << "Please check the connectivity of OD pairs and in network and field allow_uses in link.csv." << endl;
-		cout << "Please check the model_shortest_path_tree.csv file." << endl;
-		//			g_program_stop();
-	}
+	//if (l_origin_destination_map.size() == 0)
+	//{
+	//	g_OutputModelFiles(10); // label cost tree
+	//	dtalog.output() << "Please check the connectivity of OD pairs and in network and field allow_uses in link.csv." << '\n';
+	//	dtalog.output() << "Please check the model_shortest_path_tree.csv file." << '\n';
+	//	//			g_program_stop();
+	//}
 
 
 }
 
 void g_output_dynamic_link_performance(Assignment& assignment, int output_mode = 1)
 {
-	//dtalog.output() << "writing dynamic_waiting_performance_profile.csv.." << endl;
+	//dtalog.output() << "writing dynamic_waiting_performance_profile.csv.." << '\n';
 
 	//int b_debug_detail_flag = 0;
 	//FILE* g_pFileLinkMOE = nullptr;
@@ -2971,7 +2970,7 @@ void g_output_dynamic_link_performance(Assignment& assignment, int output_mode =
 
 	//if (!g_pFileLinkMOE)
 	//{
-	//    dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << endl;
+	//    dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
 	//    g_program_stop();
 	//}
 
@@ -3033,8 +3032,8 @@ void g_output_dynamic_link_performance(Assignment& assignment, int output_mode =
 
 void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 {
-	dtalog.output() << "writing td_link_performance.csv.." << endl;
-	cout << "writing td_link_performance.csv.." << endl;
+	dtalog.output() << "writing td_link_performance.csv.." << '\n';
+	dtalog.output() << "writing td_link_performance.csv.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -3045,7 +3044,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << endl;
+		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -3180,7 +3179,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 
 void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 {
-	dtalog.output() << "writing log_dynamic_link_state.txt.." << endl;
+	dtalog.output() << "writing log_dynamic_link_state.txt.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -3191,7 +3190,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << endl;
+		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -3205,7 +3204,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 		for (unsigned li = 0; li < g_link_vector.size(); ++li)
 		{
 
-			if (g_link_vector[li].timing_arc_flag)  // only output the capaicty for signalized data 
+			if (g_link_vector[li].timing_arc_flag)  // only output the capaicty for signalized data
 			{
 				// reset for signalized links (not freeway links as type code != 'f' for the case of freeway workzones)
 				// only for the loading period
@@ -3227,7 +3226,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 
 					if (print_out_flag == false && next_state == current_state && t < assignment.g_number_of_loading_intervals_in_sec - 2)
 					{
-						// do nothing 
+						// do nothing
 					}
 					else
 					{  // change of state
@@ -3268,7 +3267,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 
 
 			}
-			if (g_link_vector[li].m_link_pedefined_capacity_map_in_sec.size() > 0)  // only output the capaicty for signalized data 
+			if (g_link_vector[li].m_link_pedefined_capacity_map_in_sec.size() > 0)  // only output the capaicty for signalized data
 			{
 				// reset for signalized links (not freeway links as type code != 'f' for the case of freeway workzones)
 				// only for the loading period
@@ -3303,7 +3302,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //    }
 //    else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 //    {
-//        dtalog.output() << "writing agent.csv.." << endl;
+//        dtalog.output() << "writing agent.csv.." << '\n';
 //
 //        double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 //        FILE* g_pFileAgent = nullptr;
@@ -3311,7 +3310,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //
 //        if (!g_pFileAgent)
 //        {
-//            dtalog.output() << "File agent.csv cannot be opened." << endl;
+//            dtalog.output() << "File agent.csv cannot be opened." << '\n';
 //            g_program_stop();
 //        }
 //
@@ -3341,12 +3340,12 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //
 //        std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 //
-//        dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+//        dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 //
 //        for (int orig = 0; orig < zone_size; ++orig)
 //        {
 //            if (g_zone_vector[orig].zone_id % 100 == 0)
-//                dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+//                dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 //
 //            for (int at = 0; at < mode_type_size; ++at)
 //            {
@@ -3368,7 +3367,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //                                {
 //                                    end_t = clock();
 //                                    iteration_t = end_t - start_t;
-//                                    dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+//                                    dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 //                                }
 //
 //                                if (count % sampling_step != 0)
@@ -3385,7 +3384,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //
 //                                // assignment_mode = 1, path flow mode
 //                                {
-//                                    // assignment_mode = 2, simulated agent flow mode //DTA simulation 
+//                                    // assignment_mode = 2, simulated agent flow mode //DTA simulation
 //
 //                                    for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
 //                                    {
@@ -3400,7 +3399,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 //
 //                                        if (it->second.m_link_size >= MAX_LINK_SIZE_IN_A_PATH -1)
 //                                        {
-//                                            dtalog.output() << "error: it->second.m_link_size >= MAX_LINK_SIZE_IN_A_PATH-1" << endl;
+//                                            dtalog.output() << "error: it->second.m_link_size >= MAX_LINK_SIZE_IN_A_PATH-1" << '\n';
 //                                            g_program_stop();
 //                                        }
 //
@@ -3461,8 +3460,8 @@ void g_output_agent_csv(Assignment& assignment)
 	}
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
-		dtalog.output() << "writing agent.csv.." << endl;
-		assignment.summary_file << ",summary by multi-modal agents,mode_type,#_agents,avg_distance,avg_travel_time_in_min,avg_free_speed," << endl;
+		dtalog.output() << "writing agent.csv.." << '\n';
+		assignment.summary_file << ",summary by multi-modal agents,mode_type,#_agents,avg_distance,avg_travel_time_in_min,avg_free_speed," << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 		FILE* g_pFilePathMOE = nullptr;
@@ -3470,7 +3469,7 @@ void g_output_agent_csv(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File agent.csv cannot be opened." << endl;
+			dtalog.output() << "File agent.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -3500,7 +3499,7 @@ void g_output_agent_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 
 
@@ -3513,7 +3512,7 @@ void g_output_agent_csv(Assignment& assignment)
 			for (int orig = 0; orig < zone_size; ++orig)
 			{
 				if (g_zone_vector[orig].zone_id % 100 == 0)
-					dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+					dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 				int from_zone_sindex = g_zone_vector[orig].sindex;
 				if (from_zone_sindex == -1)
@@ -3562,7 +3561,7 @@ void g_output_agent_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -3600,7 +3599,7 @@ void g_output_agent_csv(Assignment& assignment)
 
 								// assignment_mode = 1, path flow mode
 								{
-									// assignment_mode = 2, simulated agent flow mode //DTA simulation 
+									// assignment_mode = 2, simulated agent flow mode //DTA simulation
 
 									agent_count += it->second.agent_simu_id_vector.size();
 									for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
@@ -3731,30 +3730,30 @@ void g_output_agent_csv(Assignment& assignment)
 			}
 
 			assignment.summary_file << ",," << assignment.g_ModeTypeVector[at].mode_type.c_str() << "," << agent_count << "," << total_agent_distance / max(1, agent_count)
-				<< "," << total_agent_travel_time / max(1, agent_count) << "," << total_agent_distance / max(0.0001, total_agent_travel_time / 60.0) << endl;
+				<< "," << total_agent_travel_time / max(1, agent_count) << "," << total_agent_distance / max(0.0001, total_agent_travel_time / 60.0) << '\n';
 
 
 		}
 		fclose(g_pFilePathMOE);
 	}
-	assignment.summary_file << ",total_impacted_vehicles=," << total_impacted_vehicle_count << "," << endl;
+	assignment.summary_file << ",total_impacted_vehicles=," << total_impacted_vehicle_count << "," << '\n';
 	assignment.summary_file << ",total_diverted_vehicle_count=," << total_diverted_vehicle_count << "," <<
 		",precentage=," << total_diverted_vehicle_count * 100.0 / max(total_impacted_vehicle_count, 1) <<
 		"%, avg travel time =, " << total_diverted_vehicle_travel_time / max(1, total_diverted_vehicle_count) <<
 		", avg distance =, " << total_diverted_vehicle_travel_distance / max(1, total_diverted_vehicle_count) <<
-		endl;
+		'\n';
 
 	assignment.summary_file << ",total_diverted_DMS_veh_count=," << total_diverted_DMS_vehicle_count << "," <<
 		",precentage=," << total_diverted_DMS_vehicle_count * 100.0 / max(total_impacted_vehicle_count, 1) <<
 		"%, avg travel time =, " << total_diverted_DMS_vehicle_travel_time / max(1, total_diverted_DMS_vehicle_count) <<
 		", avg distance =, " << total_diverted_DMS_vehicle_travel_distance / max(1, total_diverted_DMS_vehicle_count) <<
-		endl;
+		'\n';
 
 	assignment.summary_file << ",total_non_diverted_vehicle_count=," << total_non_diverted_vehicle_count << "," <<
 		",precentage=," << total_non_diverted_vehicle_count * 100.0 / max(total_impacted_vehicle_count, 1) <<
 		"%, avg travel time =, " << total_non_diverted_vehicle_travel_time / max(1, total_non_diverted_vehicle_count) <<
 		", avg distance =, " << total_non_diverted_vehicle_travel_distance / max(1, total_non_diverted_vehicle_count) <<
-		endl;
+		'\n';
 }
 
 void g_output_trajectory_csv(Assignment& assignment)
@@ -3769,7 +3768,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
 		int total_number_of_nodes = 0;
-		dtalog.output() << "writing trajectory.csv.." << endl;
+		dtalog.output() << "writing trajectory.csv.." << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 		FILE* g_pFilePathMOE = nullptr;
@@ -3777,7 +3776,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trajectory.csv cannot be opened." << endl;
+			dtalog.output() << "File trajectory.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -3809,7 +3808,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -3818,7 +3817,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 				continue;
 
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			for (int at = 0; at < mode_type_size; ++at)
 			{
@@ -3844,7 +3843,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -3884,7 +3883,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 								// assignment_mode = 1, path flow mode
 								{
-									// assignment_mode = 2, simulated agent flow mode //DTA simulation 
+									// assignment_mode = 2, simulated agent flow mode //DTA simulation
 
 									for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
 									{
@@ -4005,7 +4004,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 			}
 		}
 		fclose(g_pFilePathMOE);
-		assignment.summary_file << ", # of simulated agents in trajectory.csv=," << count << ",avg # of nodes per agent=" << total_number_of_nodes * 1.0 / max(1, count) << endl;
+		assignment.summary_file << ", # of simulated agents in trajectory.csv=," << count << ",avg # of nodes per agent=" << total_number_of_nodes * 1.0 / max(1, count) << '\n';
 	}
 
 	int b_trace_file = false;
@@ -4015,7 +4014,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 	{
 		FILE* g_pFilePathMOE = nullptr;
 		fopen_ss(&g_pFilePathMOE, "trace.csv", "w");
-		dtalog.output() << "writing trace.csv.." << endl;
+		dtalog.output() << "writing trace.csv.." << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
@@ -4023,7 +4022,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trace.csv cannot be opened." << endl;
+			dtalog.output() << "File trace.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -4052,7 +4051,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -4084,7 +4083,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -4111,14 +4110,14 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 								int virtual_link_delta = 1;
 
-								// Xuesong: 11/20/2021, need to check again 
+								// Xuesong: 11/20/2021, need to check again
 								// fixed routes have physical nodes always, without virtual connectors
 								//if (p_column_pool->bfixed_route)
 								//    virtual_link_delta = 0;
 
 								// assignment_mode = 1, path flow mode
 								{
-									// assignment_mode = 2, simulated agent flow mode //DTA simulation 
+									// assignment_mode = 2, simulated agent flow mode //DTA simulation
 
 									for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
 									{
@@ -4208,7 +4207,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 	}
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
-		dtalog.output() << "writing trajectory.bin.." << endl;
+		dtalog.output() << "writing trajectory.bin.." << '\n';
 
 		int path_node_vector[MAX_LINK_SIZE_IN_A_PATH];
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
@@ -4217,7 +4216,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trajectory.bin cannot be opened." << endl;
+			dtalog.output() << "File trajectory.bin cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -4263,7 +4262,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -4272,7 +4271,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 				continue;
 
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			for (int at = 0; at < mode_type_size; ++at)
 			{
@@ -4297,7 +4296,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s" << endl;
+									dtalog.output() << "writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -4335,7 +4334,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 								// assignment_mode = 1, path flow mode
 								{
-									// assignment_mode = 2, simulated agent flow mode //DTA simulation 
+									// assignment_mode = 2, simulated agent flow mode //DTA simulation
 
 									for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
 									{
@@ -4417,7 +4416,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		end_t = clock();
 		iteration_t = end_t - start_t;
-		dtalog.output() << "Comlete writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s." << endl;
+		dtalog.output() << "Comlete writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s." << '\n';
 		fclose(g_pFilePathMOE);
 	}
 
@@ -4426,14 +4425,14 @@ void g_output_trajectory_bin(Assignment& assignment)
 void g_output_demand_bin(Assignment& assignment)
 {
 
-	dtalog.output() << "writing demand.bin.." << endl;
+	dtalog.output() << "writing demand.bin.." << '\n';
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, "output_demand.bin", "wb");
 
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File demand.bin cannot be opened." << endl;
+		dtalog.output() << "File demand.bin cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -4460,7 +4459,7 @@ void g_output_demand_bin(Assignment& assignment)
 
 	std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-	dtalog.output() << "writing data for " << zone_size << "  zones " << endl;
+	dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
 
 	for (int orig = 0; orig < zone_size; ++orig)
 	{
@@ -4469,7 +4468,7 @@ void g_output_demand_bin(Assignment& assignment)
 			continue;
 
 		if (g_zone_vector[orig].zone_id % 100 == 0)
-			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << endl;
+			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 		for (int at = 0; at < mode_type_size; ++at)
 		{
@@ -4502,7 +4501,7 @@ void g_output_demand_bin(Assignment& assignment)
 
 	end_t = clock();
 	iteration_t = end_t - start_t;
-	dtalog.output() << "Complete writing " << count / 1000 << "K binary demand pairs with CPU time " << iteration_t / 1000.0 << " s." << endl;
+	dtalog.output() << "Complete writing " << count / 1000 << "K binary demand pairs with CPU time " << iteration_t / 1000.0 << " s." << '\n';
 	fclose(g_pFilePathMOE);
 }
 
@@ -4562,7 +4561,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_node.csv cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
+			dtalog.output() << "Error: File model_node.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 
@@ -4638,7 +4637,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
+			dtalog.output() << "Error: File model_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 		}
@@ -4713,7 +4712,7 @@ void g_OutputModelFiles(int mode)
 			}
 			else
 			{
-				dtalog.output() << "Error: File access_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
+				dtalog.output() << "Error: File access_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 				g_program_stop();
 
 			}
@@ -4729,7 +4728,7 @@ void g_OutputModelFiles(int mode)
 
 		//if (g_pFileZone == NULL)
 		//{
-		//    cout << "File model_cell.csv cannot be opened." << endl;
+		//    dtalog.output() << "File model_cell.csv cannot be opened." << '\n';
 		//    g_program_stop();
 		//}
 		//else
@@ -4827,7 +4826,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_label_cost_tree.csv cannot be opened.\n It might be currently used and locked by EXCEL." << endl;
+			dtalog.output() << "Error: File model_label_cost_tree.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 
