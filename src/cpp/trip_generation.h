@@ -223,14 +223,14 @@ void g_grid_zone_generation(Assignment& assignment)
 		parser.CloseCSVFile();
 	}
 
-	dtalog.output() << "Step 1.4.1: QEM mode for creating node 2 zone mapping" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.4.1: mode for creating node 2 zone mapping" << '\n';
 
 	FILE* g_pFileZone = nullptr;
 	g_pFileZone = fopen("zone.csv", "w");
 
 	if (g_pFileZone == NULL)
 	{
-		dtalog.output() << "File zone.csv cannot be opened." << '\n';
+		dtalog.output() << "[WARNING] File zone.csv cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -326,7 +326,7 @@ void g_grid_zone_generation(Assignment& assignment)
 
 	assignment.m_GridResolution = temp_resolution;
 
-	dtalog.output() << "Step 1.4.2: Grid Resolution " << assignment.m_GridResolution << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.4.2: Grid Resolution " << assignment.m_GridResolution << '\n';
 
 	int activity_node_count = 0;
 	// check # of access nodes
@@ -460,7 +460,7 @@ void g_grid_zone_generation(Assignment& assignment)
 		}
 	}
 
-	dtalog.output() << "Step 1.4.3: creating " << assignment.cell_id_mapping.size() << " zones." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.4.3: creating " << assignment.cell_id_mapping.size() << " zones." << '\n';
 	fclose(g_pFileZone);
 
 }
@@ -537,15 +537,15 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 	}
 	else
 	{
-		assignment.summary_file << "If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
+		assignment.summary_file << "[NOTE] If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
 		//dtalog.output() << "If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
 
 		//g_program_stop();
 		return false;
 	}
 
-	assignment.summary_file << "# of zones defined in TAZ.csv=,"<< l_TAZ_vector.size() << '\n';
-	dtalog.output() << "# of zones defined in TAZ.csv=," << l_TAZ_vector.size() << '\n';
+	assignment.summary_file << "[DATA INFO] # of zones defined in TAZ.csv=,"<< l_TAZ_vector.size() << '\n';
+	dtalog.output() << "[DATA INFO] # of zones defined in TAZ.csv=," << l_TAZ_vector.size() << '\n';
 
 	std::vector<CNode> l_node_vector; // l as local
 
@@ -578,7 +578,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 
 
 
-	dtalog.output() << "Step 1.4.0: QEM mode for creating TAZ 2 zone mapping with " << l_TAZ_vector.size() << " TAZ and " << l_node_vector.size() << " nodes." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.4.0: QEM mode for creating TAZ 2 zone mapping with " << l_TAZ_vector.size() << " TAZ and " << l_node_vector.size() << " nodes." << '\n';
 
 	// step 3:
 	FILE* g_pFileZone = nullptr;
@@ -586,7 +586,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 
 	if (g_pFileZone == NULL)
 	{
-		dtalog.output() << "File zone.csv cannot be opened." << '\n';
+		dtalog.output() << "[WARNING] File zone.csv cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -738,11 +738,11 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 
 	}
 
-	dtalog.output() << "Step 1.4.3: creating " << l_TAZ_vector.size() << " zones." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.4.3: creating " << l_TAZ_vector.size() << " zones." << '\n';
 	fclose(g_pFileZone);
 
-	assignment.summary_file << "# of zones created based on zone definition in TAZ.csv=," << l_TAZ_vector.size() << '\n';
-	assignment.summary_file << "# of access nodes created based on node.csv and zone definition in TAZ.csv=," << access_node_size << '\n';
+	assignment.summary_file << "[DATA INFO] # of zones created based on zone definition in TAZ.csv=," << l_TAZ_vector.size() << '\n';
+	assignment.summary_file << "[DATA INFO] # of access nodes created based on node.csv and zone definition in TAZ.csv=," << access_node_size << '\n';
 
 
 	return true;
@@ -755,7 +755,7 @@ void g_create_zone_vector(Assignment& assignment)
 {
 	std::map<int, int> waring_message_link_type_map;
 	// initialize zone vector
-	dtalog.output() << "Step 1.5: Initializing O-D zone vector..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.5: Initializing O-D zone vector..." << '\n';
 
 	std::map<int, int>::iterator it;
 
@@ -775,7 +775,7 @@ void g_create_zone_vector(Assignment& assignment)
 		ozone.cell_x = g_node_vector[it->second].x;
 		ozone.cell_y = g_node_vector[it->second].y;
 
-		dtalog.output() << "create zone id = " << ozone.zone_id << " with representive node id " << it->second << ",x = " << g_node_vector[it->second].x << ",y=" <<
+		dtalog.output() << "[DATA INFO] create zone id = " << ozone.zone_id << " with representive node id " << it->second << ",x = " << g_node_vector[it->second].x << ",y=" <<
 			ozone.cell_y << '\n';
 
 
@@ -801,77 +801,84 @@ void g_create_zone_vector(Assignment& assignment)
 
 }
 
-
+// This function calculates the distance between all pair of zones, and based on this,
+// it calculates and assigns trips between these zones
 void g_trip_generation(Assignment& assignment)
 {
 
-
-	// accessibility
+	// Accessibility Calculation
+	// Iterate through all pairs of origin and destination zones
 	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
 	{
 		for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
 		{
+			// Avoid calculating distance from the zone to itself
 			if (orig != dest)
 			{
+				// Calculate distance in miles between origin and destination zones
 				float distance_in_mile = g_calculate_p2p_distance_in_meter_from_latitude_longitude(g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y, g_zone_vector[dest].cell_x, g_zone_vector[dest].cell_y) / 1609.0;
+
+				// Store the calculated distance in the corresponding cell of the distance matrix
 				g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[dest] = distance_in_mile;
-				float travel_time_in_min = distance_in_mile / 30 * 60;  // default speed as 30 miles per hour
+
+				// Calculate travel time in minutes assuming the default speed is 30 miles per hour
+				float travel_time_in_min = distance_in_mile / 30 * 60;
+
+				// Store the calculated travel time in the corresponding cell of the travel time matrix
 				g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[dest] = travel_time_in_min;
+			}
+		}
+	}
+
+
+	FILE* g_pFileODMatrix = nullptr;
+	fopen_ss(&g_pFileODMatrix, "gc_distance.csv", "w");
+
+	if (!g_pFileODMatrix)
+	{
+		dtalog.output() << "File gc_distance.csv cannot be opened." << '\n';
+		g_program_stop();
+	}
+	else
+	{
+
+		fprintf(g_pFileODMatrix, "o_zone_id,d_zone_id,distance,geometry\n");
+		int demand_writing_log_count = 0;
+		// reset the estimated production and attraction
+		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
+		{
+			for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
+			{
+				if (g_zone_vector[orig].gravity_production >= 0)
+				{
+					if (g_zone_vector[dest].gravity_attraction > 0)
+					{
+						float value = -1;
+						if (g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map.find(dest) != g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map.end())
+						{
+							value = g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[dest];
+						}
+
+						if (value > 0.000001)
+						{
+							fprintf(g_pFileODMatrix, "%d,%d,%.4f,", g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
+
+							fprintf(g_pFileODMatrix, "\"LINESTRING (");
+
+							fprintf(g_pFileODMatrix, "%f %f,", g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y);
+							fprintf(g_pFileODMatrix, "%f %f,", g_zone_vector[dest].cell_x, g_zone_vector[dest].cell_y);
+							fprintf(g_pFileODMatrix, ")\"");
+							fprintf(g_pFileODMatrix, "\n");
+						}
+
+					}
+				}
 			}
 
 		}
 
+		fclose(g_pFileODMatrix);
 	}
-
-
-	//FILE* g_pFileODMatrix = nullptr;
-	//fopen_ss(&g_pFileODMatrix, "gc_distance.csv", "w");
-
-	//if (!g_pFileODMatrix)
-	//{
-	//	dtalog.output() << "File gc_distance.csv cannot be opened." << '\n';
-	//	g_program_stop();
-	//}
-	//else
-	//{
-
-	//	fprintf(g_pFileODMatrix, "o_zone_id,d_zone_id,distance,geometry\n");
-	//	int demand_writing_log_count = 0;
-	//	// reset the estimated production and attraction
-	//	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
-	//	{
-	//		for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
-	//		{
-	//			if (g_zone_vector[orig].gravity_production >= 0)
-	//			{
-	//				if (g_zone_vector[dest].gravity_attraction > 0)
-	//				{
-	//					float value = -1;
-	//					if (g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map.find(dest) != g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map.end())
-	//					{
-	//						value = g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[dest];
-	//					}
-
-	//					if (value > 0.000001)
-	//					{
-	//						fprintf(g_pFileODMatrix, "%d,%d,%.4f,", g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
-
-	//						fprintf(g_pFileODMatrix, "\"LINESTRING (");
-
-	//						fprintf(g_pFileODMatrix, "%f %f,", g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y);
-	//						fprintf(g_pFileODMatrix, "%f %f,", g_zone_vector[dest].cell_x, g_zone_vector[dest].cell_y);
-	//						fprintf(g_pFileODMatrix, ")\"");
-	//						fprintf(g_pFileODMatrix, "\n");
-	//					}
-
-	//				}
-	//			}
-	//		}
-
-	//	}
-
-	//	fclose(g_pFileODMatrix);
-	//}
 
 	int out_of_bound_log_count = 0;
 	int trip_accessibility_log_count = 0;
@@ -917,7 +924,7 @@ void g_trip_generation(Assignment& assignment)
 						{
 							if (out_of_bound_log_count < 10)
 							{
-								dtalog.output() << "out of bound: " << ",o:" << orig << ",d:" << d <<
+								dtalog.output() << "[DATA INFO] out of bound: " << ",o:" << orig << ",d:" << d <<
 									", gc distance = " << g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[d] <<
 									", travel time =" << g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[d] <<
 									",value = " << exp_disutility << '\n';
@@ -930,7 +937,7 @@ void g_trip_generation(Assignment& assignment)
 				}
 			}
 
-			dtalog.output() << "o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
+			dtalog.output() << "[DATA INFO] o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
 
 			if (count > 0)
 			{
@@ -968,32 +975,30 @@ void g_trip_generation(Assignment& assignment)
 	}
 
 }
+
+
 void g_writing_demand_files(Assignment& assignment)
 {
-	dtalog.output() << "writing demand.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing demand.csv.." << '\n';
 
 	FILE* g_pFileODMatrix = nullptr;
 	fopen_ss(&g_pFileODMatrix, "demand.csv", "w");
 
 	if (!g_pFileODMatrix)
 	{
-		dtalog.output() << "File demand.csv cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File demand.csv cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
 	{
 
-		fprintf(g_pFileODMatrix, "demand_period,time_period,mode_type,o_zone_id,d_zone_id,volume,geometry\n");
+		fprintf(g_pFileODMatrix, "o_zone_id,d_zone_id,volume,geometry\n");
 		int demand_writing_log_count = 0;
 		// reset the estimated production and attraction
 		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
 		{
 			for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
 			{
-				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
-				{
-					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-					{
 						if (g_zone_vector[orig].gravity_production >= 0)
 						{
 							if (g_zone_vector[dest].gravity_attraction > 0)
@@ -1006,14 +1011,8 @@ void g_writing_demand_files(Assignment& assignment)
 
 								if (value > 0.000001)
 								{
-									fprintf(g_pFileODMatrix, "%s,%s,%s,%d,%d,%.4f,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DemandPeriodVector[tau].time_period.c_str(),
+									fprintf(g_pFileODMatrix, "%d,%d,%.4f,", g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
 
-										assignment.g_ModeTypeVector[at].mode_type.c_str(), g_zone_vector[orig].zone_id, g_zone_vector[dest].zone_id, value);
-
-									if (demand_writing_log_count < 100)
-									{
-										dtalog.output() << "orig= " << g_zone_vector[orig].zone_id << " dest= " << g_zone_vector[dest].zone_id << ":" << value << '\n';
-									}
 									demand_writing_log_count++;
 
 									fprintf(g_pFileODMatrix, "\"LINESTRING (");
@@ -1025,10 +1024,8 @@ void g_writing_demand_files(Assignment& assignment)
 								}
 
 							}
-						}
-
 					}
-				}
+
 			}
 		}
 
@@ -1038,231 +1035,6 @@ void g_writing_demand_files(Assignment& assignment)
 
 	return;
 
-	// skip input demand matrix files
-	////////////////////////////
-	dtalog.output() << "writing input_matrix.csv.." << '\n';
-
-
-	fopen_ss(&g_pFileODMatrix, "input_matrix.csv", "w");
-
-	if (!g_pFileODMatrix)
-	{
-		dtalog.output() << "File input_matrix.csv cannot be opened." << '\n';
-		g_program_stop();
-	}
-	else
-	{
-		fprintf(g_pFileODMatrix, "od,");  // first line
-		for (int d = 0; d < g_zone_vector.size(); ++d)
-		{
-			fprintf(g_pFileODMatrix, "%d,", g_zone_vector[d].zone_id);
-		}
-
-		fprintf(g_pFileODMatrix, "\n");  // return key at the first line
-
-//            fprintf(g_pFileODMatrix, "subtotal_est,subtotal_target,ratio_diff\n");
-
-			// reset the estimated production and attraction
-		for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
-		{
-			////                fprintf(g_pFileODMatrix, "%s,%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
-			//                    assignment.g_ModeTypeVector[at].mode_type.c_str());
-			float total_production = 0;
-
-			fprintf(g_pFileODMatrix, "%d,", g_zone_vector[orig].zone_id);  // origin zone id
-
-			for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
-			{
-				float value = 0;
-				if (g_zone_vector[orig].gravity_production >= 0 && g_zone_vector[dest].gravity_attraction > 0)
-				{
-					value = g_zone_vector[orig].m_ODMatrix.value_map[dest];
-				}
-				total_production += value;
-				fprintf(g_pFileODMatrix, "%f,", value);
-
-			}
-			fprintf(g_pFileODMatrix, "\n");  // return key at each line
-			//                float percentage_difference = (total_production - g_zone_vector[orig].gravity_production) / max(0.001, g_zone_vector[orig].gravity_production);
-//                fprintf(g_pFileODMatrix, "%f,%f,%f\n", total_production, g_zone_vector[orig].gravity_production, percentage_difference);
-
-		}
-
-		//            fprintf(g_pFileODMatrix, "est,");
-
-					//for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
-					//{
-					//    fprintf(g_pFileODMatrix, "%f,", g_zone_vector[dest].gravity_est_attraction);
-					//}
-					//fprintf(g_pFileODMatrix, "\n");
-					//fprintf(g_pFileODMatrix, "target,");
-
-					//for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
-					//{
-					//    fprintf(g_pFileODMatrix, "%f,", g_zone_vector[dest].gravity_attraction);
-					//}
-
-					//fprintf(g_pFileODMatrix, "\n");
-					//fprintf(g_pFileODMatrix, "ratio_diff,");
-
-					//for (int dest = 0; dest < g_zone_vector.size(); ++dest)  // d
-					//{
-					//    float percentage_difference = (g_zone_vector[dest].gravity_est_attraction - g_zone_vector[dest].gravity_attraction) / max(0.001, g_zone_vector[dest].gravity_attraction);
-
-					//    fprintf(g_pFileODMatrix, "%f,", percentage_difference);
-					//}
-		fprintf(g_pFileODMatrix, "\n");
-
-	}
-
-
-	fclose(g_pFileODMatrix);
-
-
-
-	////////////////////set reference half of link capacity as link volume
-
-	//for (int l = 0; l < g_link_vector.size(); ++l)
-	//{
-	//    if(g_link_vector[l].lane_capacity >=800 && g_link_vector[l].lane_capacity < 2000) // remark: link_type = -1 is virtual connector
-	//    {
-	//        g_link_vector[l].obs_count = g_link_vector[l].lane_capacity * g_link_vector[l].number_of_lanes/2;
-	//    }
-	//
-	//}
-
-
-	/// <summary>
-	/// // write input_activity_plan.csv
-	/// </summary>
-	/// <param name="assignment"></param>
-
-	dtalog.output() << "writing input_activity_plan.csv.." << '\n';
-
-	fopen_ss(&g_pFileODMatrix, "input_activity_plan.csv", "w");
-
-	if (!g_pFileODMatrix)
-	{
-		dtalog.output() << "File input_activity_plan.csv cannot be opened." << '\n';
-		g_program_stop();
-	}
-	else
-	{
-		fprintf(g_pFileODMatrix, "agent_id,o_zone_id,d_zone_id,path_id,volume,activity_zone_sequence,activity_mode_type_sequence\n");  // first line
-
-		if (g_zone_vector.size() > 4)
-		{
-			fprintf(g_pFileODMatrix, "10000,%d,%d,0,100,%d;%d,auto;walk\n",
-				g_zone_vector[0].zone_id,
-				g_zone_vector[1].zone_id,
-				g_zone_vector[2].zone_id,
-				g_zone_vector[3].zone_id
-			);  // first line
-
-
-		}
-
-
-		fclose(g_pFileODMatrix);
-	}
-
-	/// <summary>
-	/// / write input_demand_path.csv sample
-	/// </summary>
-	/// <param name="assignment"></param>
-	/// <summary>
-	dtalog.output() << "writing input_demand_path.csv.." << '\n';
-
-	fopen_ss(&g_pFileODMatrix, "input_demand_path.csv", "w");
-
-	if (!g_pFileODMatrix)
-	{
-		dtalog.output() << "File input_demand_path.csv cannot be opened." << '\n';
-		g_program_stop();
-	}
-	else
-	{
-		fprintf(g_pFileODMatrix, "path_id,o_zone_id,d_zone_id,volume,node_sequence\n");  // first line
-
-		if (g_zone_vector.size() >= 2)
-		{
-			fprintf(g_pFileODMatrix, "1,%d,%d,0,",
-				g_zone_vector[0].zone_id,
-				g_zone_vector[1].zone_id
-			);  // first line
-
-
-			CDTACSVParser parser;
-			if (parser.OpenCSVFile("link.csv", true))
-			{
-				while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
-				{
-
-					int from_node_id = 0;
-					int to_node_id = 0 ;
-					if (!parser.GetValueByFieldName("from_node_id", from_node_id))
-						continue;
-
-					if (!parser.GetValueByFieldName("to_node_id", to_node_id))
-						continue;
-
-					fprintf(g_pFileODMatrix, "%d;%d,",
-						from_node_id,
-						to_node_id);
-					break; // first link
-				}
-
-				// fprintf(g_pFileOutputLog, "number of nodes =,%d\n", assignment.g_number_of_nodes);
-				parser.CloseCSVFile();
-			}
-
-
-			fprintf(g_pFileODMatrix, "\n");
-
-		}
-
-
-		fclose(g_pFileODMatrix);
-	}
-
-	/// / write input_demand_column_format.csv sample
-	/// </summary>
-	/// <param name="assignment"></param>
-	///
-	///
-	dtalog.output() << "writing input_demand_column.csv.." << '\n';
-
-	fopen_ss(&g_pFileODMatrix, "input_demand_column.csv", "w");
-
-	if (!g_pFileODMatrix)
-	{
-		dtalog.output() << "File input_demand_column.csv cannot be opened." << '\n';
-		g_program_stop();
-	}
-	else
-	{
-		fprintf(g_pFileODMatrix, "o_zone_id,d_zone_id,volume,\n");  // first line
-
-		if (g_zone_vector.size() > 2)
-		{
-			fprintf(g_pFileODMatrix, "%d,%d,0\n",
-				g_zone_vector[0].zone_id,
-				g_zone_vector[1].zone_id
-			);  // first line
-
-
-		}
-
-
-		fclose(g_pFileODMatrix);
-	}
-
-
-	for (int z = 0; z < g_zone_vector.size(); ++z)  // d
-	{
-		g_zone_vector[z].obs_production = -1;
-		g_zone_vector[z].obs_attraction = -1;  // invalidate the data, we will focus on link count data first
-	}
 }
 
 void g_demand_file_generation(Assignment& assignment)
@@ -1288,7 +1060,7 @@ void g_zone_to_access(Assignment& assignment)
 			if (debug_line_count <= 20)
 			{
 
-				dtalog.output() << " connector generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
+				dtalog.output() << "[DATA INFO] connector generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
 				// zone without multimodal access
 				debug_line_count++;
 			}
@@ -1305,7 +1077,7 @@ void g_zone_to_access(Assignment& assignment)
 					if (debug_line_count <= 20)
 					{
 
-						dtalog.output() << " connector generation generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
+						dtalog.output() << "[DATA INFO] connector generation generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
 						// zone without multimodal access
 						debug_line_count++;
 					}

@@ -142,7 +142,7 @@ T** Allocate2DDynamicArray(int nRows, int nCols)
 
     if (!dynamicArray)
     {
-        dtalog.output() << "Error: insufficient memory.";
+        dtalog.output() << "[ERROR] insufficient memory.";
         g_program_stop();
     }
 
@@ -152,7 +152,7 @@ T** Allocate2DDynamicArray(int nRows, int nCols)
 
         if (!dynamicArray[i])
         {
-            dtalog.output() << "Error: insufficient memory.";
+            dtalog.output() << "[ERROR] insufficient memory.";
             g_program_stop();
         }
     }
@@ -190,7 +190,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
 
     if (!dynamicArray)
     {
-        dtalog.output() << "Error: insufficient memory.";
+        dtalog.output() << "[ERROR] insufficient memory.";
         g_program_stop();
     }
 
@@ -198,14 +198,14 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
     {
         if (x % 1000 == 0)
         {
-            dtalog.output() << "allocating 3D memory for " << x << '\n';
+            dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
         }
 
         dynamicArray[x] = new (std::nothrow) T * [nY];
 
         if (!dynamicArray[x])
         {
-            dtalog.output() << "Error: insufficient memory.";
+            dtalog.output() << "[ERROR] insufficient memory.";
             g_program_stop();
         }
 
@@ -214,7 +214,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
             dynamicArray[x][y] = new (std::nothrow) T[nZ];
             if (!dynamicArray[x][y])
             {
-                dtalog.output() << "Error: insufficient memory.";
+                dtalog.output() << "[ERROR] insufficient memory.";
                 g_program_stop();
             }
         }
@@ -252,13 +252,13 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
 
     if (!dynamicArray)
     {
-        dtalog.output() << "Error: insufficient memory.";
+        dtalog.output() << "[ERROR] insufficient memory.";
         g_program_stop();
     }
 
     if (nM == 0 || nX == 0 || nY == 0 || nZ == 0)
     {
-        dtalog.output() << "allocating 4D memory but size = 0 in 1 dimension.";
+        dtalog.output() << "[ERROR] allocating 4D memory but size = 0 in 1 dimension.";
         g_program_stop();
     }
 
@@ -266,18 +266,18 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
     {
         if (m % 1000 == 0)
         {
-            dtalog.output() << "allocating 4D memory for no." << m << " zone,"
-                << "nM=" << nM << ","
-                << "nX=" << nX << ","
-                << "nY=" << nY << ","
-                << "nZ=" << nZ << '\n';
+            dtalog.output() << "[DATA INFO] allocating 4D memory for no." << m << " zone,"
+                << "nM = " << nM << ","
+                << "nX = " << nX << ","
+                << "nY = " << nY << ","
+                << "nZ = " << nZ << '\n';
         }
 
         dynamicArray[m] = new (std::nothrow) T * *[nX];
 
         if (!dynamicArray[m])
         {
-            dtalog.output() << "Error: insufficient memory.";
+            dtalog.output() << "[ERROR] insufficient memory.";
             g_program_stop();
         }
 
@@ -287,7 +287,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
 
             if (!dynamicArray[m][x])
             {
-                dtalog.output() << "Error: insufficient memory.";
+                dtalog.output() << "[ERROR] insufficient memory.";
                 g_program_stop();
             }
 
@@ -296,7 +296,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
                 dynamicArray[m][x][y] = new (std::nothrow) T[nZ];
                 if (!dynamicArray[m][x][y])
                 {
-                    dtalog.output() << "Error: insufficient memory.";
+                    dtalog.output() << "[ERROR] insufficient memory.";
                     g_program_stop();
                 }
             }
@@ -394,7 +394,7 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
     {
         if (required_field)
         {
-            dtalog.output() << "Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+            dtalog.output() << "[DATA INFO] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -451,14 +451,14 @@ bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool requi
 
     if (FieldsIndices.find("key") == FieldsIndices.end())
     {
-        dtalog.output() << "Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        dtalog.output() << "[DATA INFO] Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
         g_program_stop();
         return false;
     }
 
     if (FieldsIndices.find("value") == FieldsIndices.end())
     {
-        dtalog.output() << "Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        dtalog.output() << "[DATA INFO] Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
         g_program_stop();
         return false;
     }

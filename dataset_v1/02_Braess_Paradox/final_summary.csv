@@ -1,11 +1,11 @@
-Step 0: reading scenario_index_list.csv
-scenario_index=0,scenario_name=,no_build
-scenario_index=1,scenario_name=,build
-Step 1.1: Reading demand_period.csv...
+[PROCESS INFO] Step 0: reading scenario_index_list.csv
+[STATUS INFO] scenario_index=0,scenario_name=,no_build
+[STATUS INFO] scenario_index=1,scenario_name=,build
+[PROCESS INFO] Step 1.1: Reading demand_period.csv...
 ,demand_period= 1,= am,time_period=0700_0800
-Step 1.2: Reading file mode_type.csv...
+[PROCESS INFO] Step 1.2: Reading file mode_type.csv...
 mode_type =, auto, real time info flag = 0
-Step 1.25: Reading optional activity_travel_pattern.csv...
+[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv...
 link_type =, 1, link_type_name = highway
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 2, link_type_name = arterial
@@ -78,18 +78,12 @@ link_type =, 264, link_type_name = y_cc_cc
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 265, link_type_name = y_cc_oth
 ,mode_type= auto,cap= 2000,free_speed=60
-Warining: link_type =250 has been defined more than once in file link_type.csv
-Warining: link_type =252 has been defined more than once in file link_type.csv
-Warining: link_type =253 has been defined more than once in file link_type.csv
-Warining: link_type =254 has been defined more than once in file link_type.csv
-Warining: link_type =255 has been defined more than once in file link_type.csv
 link_type =, 110, link_type_name = n_mp_n
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 111, link_type_name = n_mp_mp
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 101, link_type_name = n_n_mp
 ,mode_type= auto,cap= 2000,free_speed=60
-Warining: link_type =100 has been defined more than once in file link_type.csv
 link_type =, 102, link_type_name = 
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 103, link_type_name = 
@@ -148,14 +142,9 @@ link_type =, 164, link_type_name =
 ,mode_type= auto,cap= 2000,free_speed=60
 link_type =, 165, link_type_name = 
 ,mode_type= auto,cap= 2000,free_speed=60
-Warining: link_type =150 has been defined more than once in file link_type.csv
-Warining: link_type =152 has been defined more than once in file link_type.csv
-Warining: link_type =153 has been defined more than once in file link_type.csv
-Warining: link_type =154 has been defined more than once in file link_type.csv
-Warining: link_type =155 has been defined more than once in file link_type.csv
 , number of activity nodes defined in node.csv=, 4
 , number of boundary activity nodes defined in node.csv=, 0
-Step 1: read network node.csv, link.csv, zone.csv 
+[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
 ,# of nodes = ,8
 ,# of links =,5
 ,# of zones =,4
@@ -232,9 +221,9 @@ Step 1: read network node.csv, link.csv, zone.csv
 ,,263,y_cc_ws,0,0,0,0,0,0,0,
 ,,264,y_cc_cc,0,0,0,0,0,0,0,
 ,,265,y_cc_oth,0,0,0,0,0,0,0,
-Step 2.1: read demand, defined in demand_file_list.csv.
-reading demand file for scenario index = 0
-reading demand file for scenario index = 1
+[PROCESS INFO] Step 2.1: read demand, defined in demand_file_list.csv.
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 1
 ,total demand =, 4000
 ,from_flag,to_flag,volume
 ,from_flag,to_flag,volume
@@ -251,80 +240,86 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 , # of SA records in supply_side_scenario.csv=,0,
 , # of incident records in supply_side_scenario.csv=,0,
 , # of dms records in supply_side_scenario.csv=,0,
-Step 4: Column Generation for Traffic Assignment
-,Total number of column generation iterations =, 0
-,Total number of column generation iterations =, 0
-Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
+[PROCESS INFO]Step 4: Column Generation for Traffic Assignment
+,Total number of column generation iterations =, 20
+,Total number of column generation iterations =, 20
+[DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
 0,0,4000,0,-100
-Step 5: column pool-based flow updating for traffic assignment 
+1,0,4000,0,-100
+2,0,4000,85.0103,88.8685
+3,0,4000,85.0103,88.8685
+4,0,4000,67.2326,15.2354
+5,0,4000,65.0103,1.1192e-14
+6,0,4000,65.8103,7.86752
+7,0,4000,65.0103,1.1192e-14
+8,0,4000,65.4185,5.25364
+9,0,4000,66.2603,10.4149
+10,0,4000,65.2573,3.93249
+11,0,4000,65.0103,1.1192e-14
+12,0,4000,65.1756,3.13879
+13,0,4000,65.0103,1.1192e-14
+14,0,4000,65.1287,2.6103
+15,0,4000,65.4185,5.25364
+16,0,4000,65.0992,2.2335
+17,0,4000,65.0103,1.1192e-14
+18,0,4000,65.0795,1.95144
+19,0,4000,65.0103,1.1192e-14
+[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,2
 column updating
-column updating: iteration= 0, avg travel time = 85.0103(min), optimization obj = 0,Relative_gap=0 %
-column updating: iteration= 1, avg travel time = 85.0103(min), optimization obj = 0,Relative_gap=0 %
-Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
-Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-, system - wide information activation time = 99999 in min
-, # of simulated agents in agent.csv=,4000,
-,simu time=,0 min, CA =,0,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,10 min, CA =,79,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,20 min, CA =,232,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,30 min, CA =,385,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,40 min, CA =,565,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,50 min, CA =,760,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,60 min, CA =,971,CD=,10, speed=,54.681, travel time =,49.388,CI=,0,CR=,0
-,simu time=,70 min, CA =,1169,CD=,27, speed=,48.946, travel time =,55.176,CI=,0,CR=,0
-,summary by multi-modal agents,mode_type,#_agents,avg_distance,avg_travel_time_in_min,avg_free_speed,
-,,auto,4000,45.01,376.75,7.1682
-,total_impacted_vehicles=,0,
-,total_diverted_vehicle_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-,total_diverted_DMS_veh_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-,total_non_diverted_vehicle_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-Step 9: record corridor performance summary
+[DATA INFO] column updating: iteration = 0, avg travel time = 65.2103(min), optimization obj = 8800, Relative_gap = 3.27913 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 65.0428(min), optimization obj = 3354.59, Relative_gap = 1.27907 %
+[PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[PROCESS INFO] Step 9: record corridor performance summary
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,1.119e+05,VKT=,1.8004e+05
-,VHT=,5667.3
-,network vehicle speed (MPH) =,19.744,,network vehicle speed (KPH) =,31.768
-,PMT=,1.119e+05,PKT=,1.8004e+05
-,PHT=,5667.3
-,network person speed (MPH) =,19.744,,network person speed (KPH) =,31.768
+,VMT=,111896,VKT=,180040
+,VHT=,4334.77
+,network vehicle speed (MPH) =,25.8135,,network vehicle speed (KPH) =,41.534
+,PMT=,111896,PKT=,180040
+,PHT=,4334.77
+,network person speed (MPH) =,25.8135,,network person speed (KPH) =,41.534
 ,simple avg link volume=,1600
-,simple avg link speed=,48.003
-,simple avg link speed ratio=,0.80005
-Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,4000,85.01,112.36
-Step 5: column pool-based flow updating for traffic assignment 
+,simple avg link speed=,36.012
+,simple avg link speed ratio=,0.6002
+[DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
+0,0,4000,65.0218,62.4314
+1,0,4000,0,-100
+2,0,4000,80.0303,3.6366e-14
+3,0,4000,80.0303,3.6366e-14
+4,0,4000,80.0303,3.6366e-14
+5,0,4000,80.0303,3.6366e-14
+6,0,4000,80.0303,3.6366e-14
+7,0,4000,80.0303,3.6366e-14
+8,0,4000,80.0303,3.6366e-14
+9,0,4000,80.0303,3.6366e-14
+10,0,4000,80.0303,3.6366e-14
+11,0,4000,80.0303,3.6366e-14
+12,0,4000,80.0303,3.6366e-14
+13,0,4000,80.0303,3.6366e-14
+14,0,4000,80.0303,3.6366e-14
+15,0,4000,80.0303,3.6366e-14
+16,0,4000,80.0303,3.6366e-14
+17,0,4000,80.0303,3.6366e-14
+18,0,4000,80.0303,3.6366e-14
+19,0,4000,80.0303,3.6366e-14
+[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,2
 column updating
-column updating: iteration= 0, avg travel time = 80.03(min), optimization obj = 0,Relative_gap=0 %
-column updating: iteration= 1, avg travel time = 80.03(min), optimization obj = 0,Relative_gap=0 %
-Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
-Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-, system - wide information activation time = 99999 in min
-, # of simulated agents in agent.csv=,8000,
-,simu time=,0 min, CA =,0,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,10 min, CA =,158,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,20 min, CA =,464,CD=,0, speed=,60, travel time =,0,CI=,0,CR=,0
-,simu time=,30 min, CA =,770,CD=,7, speed=,130.97, travel time =,20.619,CI=,0,CR=,0
-,simu time=,40 min, CA =,1130,CD=,26, speed=,107.48, travel time =,25.126,CI=,0,CR=,0
-,simu time=,50 min, CA =,1520,CD=,38, speed=,93.937, travel time =,28.749,CI=,0,CR=,0
-,simu time=,60 min, CA =,1943,CD=,55, speed=,80.555, travel time =,33.525,CI=,0,CR=,0
-,simu time=,70 min, CA =,2339,CD=,262, speed=,59.838, travel time =,45.132,CI=,0,CR=,0
-,summary by multi-modal agents,mode_type,#_agents,avg_distance,avg_travel_time_in_min,avg_free_speed,
-,,auto,4000,0.03002,379.58,0.0047453
-,total_impacted_vehicles=,0,
-,total_diverted_vehicle_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-,total_diverted_DMS_veh_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-,total_non_diverted_vehicle_count=,0,,precentage=,0%, avg travel time =, 0, avg distance =, 0
-Step 9: record corridor performance summary
+[DATA INFO] column updating: iteration = 0, avg travel time = 80.0303(min), optimization obj = 0, Relative_gap = 0 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 80.0303(min), optimization obj = 0, Relative_gap = 0 %
+[PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[PROCESS INFO] Step 9: record corridor performance summary
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,74.58,VKT=,120
-,VHT=,5335.3
-,network vehicle speed (MPH) =,0.013979,,network vehicle speed (KPH) =,0.022492
-,PMT=,74.58,PKT=,120
-,PHT=,5335.3
-,network person speed (MPH) =,0.013979,,network person speed (KPH) =,0.022492
+,VMT=,74.5805,VKT=,120
+,VHT=,5335.33
+,network vehicle speed (MPH) =,0.0139786,,network vehicle speed (KPH) =,0.0224916
+,PMT=,74.5805,PKT=,120
+,PHT=,5335.33
+,network person speed (MPH) =,0.0139786,,network person speed (KPH) =,0.0224916
 ,simple avg link volume=,2400
 ,simple avg link speed=,36.006
 ,simple avg link speed ratio=,0.6001

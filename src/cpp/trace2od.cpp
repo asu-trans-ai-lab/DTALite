@@ -87,7 +87,7 @@ double g_bottom = 1000000000;
 
 void g_Program_stop()
 {
-    dtalog.output() << "Program stops!" << std::endl;
+    dtalog.output() << "[STATUS INFO] Program stops!" << std::endl;
     exit(0);
 };
 
@@ -892,7 +892,7 @@ public:
 
         g_grid_size = max((m_right - m_left) / g_GridResolution + 2, (m_top - m_bottom) / g_GridResolution + 2);
 
-         dtalog.output() << "g_GridResolution= " << g_GridResolution << ", grid size = " << g_grid_size << '\n';
+         dtalog.output() << "[DATA INFO] g_GridResolution= " << g_GridResolution << ", grid size = " << g_grid_size << '\n';
 
 
         // put nodes into grid cell
@@ -1624,7 +1624,7 @@ public:
 
         if (g_pFileGrid == NULL)
         {
-            dtalog.output() << "File grid.csv cannot be opened." << '\n';
+            dtalog.output() << "[ERROR] File grid.csv cannot be opened." << '\n';
             g_Program_stop();
         }
         else
@@ -1694,7 +1694,7 @@ public:
         }
 
         fprintf(g_pFileLog, "LR balance count = %d \n", balance_count);
-        dtalog.output() << "balance_count = " << balance_count << '\n';
+        dtalog.output() << "[DATA INFO] balance_count = " << balance_count << '\n';
         return balance_count;
 
 
@@ -1936,7 +1936,7 @@ public:
         }
 
 
-        dtalog.output() << "origin_node_id =" << g_mm_node_vector[origin_node_no].node_id << "; "
+        dtalog.output() << "[DATA INFO] origin_node_id =" << g_mm_node_vector[origin_node_no].node_id << "; "
             << "destination_node_id =" << g_mm_node_vector[destination_node_no].node_id << '\n';
 
         //Initialization for origin node at the preferred departure time, at departure time, cost = 0, otherwise, the delay at origin node
@@ -2104,7 +2104,7 @@ public:
                 return 0;
             }
 
-            dtalog.output() << "origin_node_no =" << g_mm_node_vector[origin_node_no].node_id << "; "
+            dtalog.output() << "[DATA INFO] origin_node_no =" << g_mm_node_vector[origin_node_no].node_id << "; "
                 << "destination_node_no =" << g_mm_node_vector[destination_node_no].node_id << '\n';
 
             fprintf(g_pFileLog, "OD node id: %d -> %d\n", g_mm_node_vector[origin_node_no].node_id, g_mm_node_vector[destination_node_no].node_id);
@@ -2335,7 +2335,7 @@ public:
 
                 if (l_node_size >= 10000)
                 {
-                    dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
+                    dtalog.output() << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
                     g_Program_stop();
                 }
 
@@ -2373,7 +2373,7 @@ public:
         {
             CAgent* p_agent = &(g_agent_vector[m_agent_vector[i]]);
 
-            dtalog.output() << "agent_id =" << p_agent->agent_id.c_str() << '\n';
+            dtalog.output() << "[DATA INFO] agent_id =" << p_agent->agent_id.c_str() << '\n';
 
 
             return_value = time_dependent_label_correcting(p_agent->agent_no);
@@ -2618,7 +2618,7 @@ void g_DetermineResolution()
 
         g_GridResolution = temp_resolution;
 
-        dtalog.output() << "g_GridResolution = " << temp_resolution << '\n';
+        dtalog.output() << "[DATA INFO] g_GridResolution = " << temp_resolution << '\n';
 
         parser.CloseCSVFile();
     }
@@ -2641,7 +2641,7 @@ void g_ReadInputData()
 
             if (g_internal_node_seq_no_map.find(node_id) != g_internal_node_seq_no_map.end())
             {
-                dtalog.output() << "warning: duplicate definition of node " << node_id << " was detected\n";
+                dtalog.output() << "[WARNING] duplicate definition of node " << node_id << " was detected\n";
                 continue;
             }
 
@@ -2680,7 +2680,7 @@ void g_ReadInputData()
             g_mm_node_vector.push_back(node);
             g_internal_node_seq_no_map[node_id] = node.node_seq_no;
             if (g_number_of_nodes % 1000 == 0)
-                dtalog.output() << "reading " << g_number_of_nodes << " nodes.. " << '\n';
+                dtalog.output() << "[STATUS INFO] reading " << g_number_of_nodes << " nodes.. " << '\n';
         }
 
         //in this map matching process for planning model, for each node, we need to assign a zone id internally.so that for the map matched path, we can always find the origin zoneand destination zone along the path.
@@ -2698,12 +2698,12 @@ void g_ReadInputData()
             }
         }
 
-        dtalog.output() << "number of nodes = " << g_number_of_nodes << '\n';
+        dtalog.output() << "[DATA INFO] number of nodes = " << g_number_of_nodes << '\n';
         parser.CloseCSVFile();
     }
     else
     {
-        dtalog.output() << "Cannot open file node.csv" << '\n';
+        dtalog.output() << "[ERROR] Cannot open file node.csv" << '\n';
         g_Program_stop();
     }
 
@@ -2740,12 +2740,12 @@ void g_ReadInputData()
 
             if (g_internal_node_seq_no_map.find(link.from_node_id) == g_internal_node_seq_no_map.end())
             {
-                dtalog.output() << "warning: from_node_id " << link.from_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
+                dtalog.output() << "[WARNING] from_node_id " << link.from_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
                 continue;
             }
             if (g_internal_node_seq_no_map.find(link.to_node_id) == g_internal_node_seq_no_map.end())
             {
-                dtalog.output() << "warning: to_node_id " << link.to_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
+                dtalog.output() << "[WARNING] to_node_id " << link.to_node_id << " of link " << link.link_id << " has not been defined in node.csv\n";
                 continue;
             }
 
@@ -2805,15 +2805,15 @@ void g_ReadInputData()
             g_mm_link_vector.push_back(link);
 
             if (g_number_of_links % 1000 == 0)
-                dtalog.output() << "reading " << g_number_of_links << " links.. " << '\n';
+                dtalog.output() << "[DATA INFO] reading " << g_number_of_links << " links.. " << '\n';
         }
 
-        dtalog.output() << "number of links = " << g_number_of_links << '\n';
+        dtalog.output() << "[DATA INFO] number of links = " << g_number_of_links << '\n';
         parser_link.CloseCSVFile();
     }
     else
     {
-        dtalog.output() << "Cannot open file link.csv" << '\n';
+        dtalog.output() << "[ERROR] Cannot open file link.csv" << '\n';
         g_Program_stop();
     }
 
@@ -2898,8 +2898,8 @@ bool g_ReadInputTrajectoryCSVFile()
 
         }
 
-        dtalog.output() << "number of agents = " << g_agent_vector.size() << '\n';
-        dtalog.output() << "number of GPS points = " << gps_point_count << '\n';
+        dtalog.output() << "[DATA INFO] number of agents = " << g_agent_vector.size() << '\n';
+        dtalog.output() << "[DATA INFO] number of GPS points = " << gps_point_count << '\n';
 
         gps_parser.CloseCSVFile();
 
@@ -2919,7 +2919,7 @@ void g_OutputCell2ZoneCSVFile()
 
     if (g_pFileCell2Zone == NULL)
     {
-        dtalog.output() << "File cell2zone.csv cannot be opened." << '\n';
+        dtalog.output() << "[ERROR] File cell2zone.csv cannot be opened." << '\n';
         g_Program_stop();
     }
     else
@@ -2948,7 +2948,7 @@ void g_OutputDemandCSVFile()
 
     if (g_pFileAgent == NULL)
     {
-        dtalog.output() << "File agent.csv cannot be opened." << '\n';
+        dtalog.output() << "[ERROR] File agent.csv cannot be opened." << '\n';
         //  g_Program_stop();
     }
     else
@@ -3037,7 +3037,7 @@ bool g_LikelyRouteFinding()
     int number_of_threads = 1;
     g_pNetworkVector = new NetworkForSP[number_of_threads]; // create n copies of network, each for a subset of agents to use
 
-    dtalog.output() << "number of CPU threads = " << number_of_threads << '\n';
+    dtalog.output() << "[DATA INFO] number of CPU threads = " << number_of_threads << '\n';
 
     NetworkForSP* p_Network;
 
@@ -3063,7 +3063,7 @@ bool g_LikelyRouteFinding()
 
     }
 
-    dtalog.output() << "End of Sequential Optimization Process. " << '\n';
+    dtalog.output() << "[STATUS INFO] End of Sequential Optimization Process. " << '\n';
     fprintf(g_pFileLog, "end of optimization process\n");
     return true;
 }
@@ -3080,7 +3080,7 @@ int trace2od()
 
     if (g_pFileLog == NULL)
     {
-        dtalog.output() << "File log.txt cannot be opened." << '\n';
+        dtalog.output() << "[ERROR] File log.txt cannot be opened." << '\n';
         g_Program_stop();
 
     }
@@ -3092,9 +3092,9 @@ int trace2od()
     //  g_OutputLinklikelihoodCSVFile();
     end_t = clock();
     total_t = (end_t - start_t);
-    dtalog.output() << "CPU Running Time = " << total_t / 1000.0 << " seconds" << '\n';
-    dtalog.output() << "free memory.." << '\n';
-    dtalog.output() << "done." << '\n';
+    dtalog.output() << "[DATA INFO] CPU Running Time = " << total_t / 1000.0 << " seconds" << '\n';
+    dtalog.output() << "[STATUS INFO] free memory.." << '\n';
+    dtalog.output() << "[STATUS INFO] done." << '\n';
 
     //g_mm_node_vector.clear();
     //g_mm_link_vector.clear();

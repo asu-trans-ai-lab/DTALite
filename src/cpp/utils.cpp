@@ -38,13 +38,13 @@ using std::fmin;
 
 void g_program_stop()
 {
-    dtalog.output() << "DTALite Program stops!" << std::endl;
+    dtalog.output() << "[ERROR] DTALite Program stops!" << std::endl;
     exit(1);
 }
 
 void g_program_exit()
 {
-    dtalog.output() << "DTALite Program completes!" << std::endl;
+    dtalog.output() << "[STATUS INFO] DTALite Program completes!" << std::endl;
     exit(0);
 }
 
@@ -274,7 +274,7 @@ bool CDTACSVParser::OpenCSVFile(string fileName, bool b_required)
     {
         if (b_required)
         {
-            dtalog.output() << "File " << fileName << " does not exist. Please check." << '\n';
+            dtalog.output() << "[WARNING] File " << fileName << " does not exist. Please check." << '\n';
             //g_program_stop();
         }
         return false;
@@ -470,7 +470,7 @@ bool CDTACSVParser::GetValueByFieldName(string field_name, string& value, bool r
     {
         if (required_field)
         {
-            dtalog.output() << "Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << '\n';
+            dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;

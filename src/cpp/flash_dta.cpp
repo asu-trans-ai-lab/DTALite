@@ -14,10 +14,11 @@
 
 #include "config.h"
 #include "utils.h"
-
+#include <tuple>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <filesystem>
 
 // to do:
 // dynamic fluid based analytical based DTA and, agent based simulation, consistency between agent based simulation and dynamic fluid based ADTA
@@ -30,46 +31,294 @@ using namespace std;
 void write_default_setting_file_if_not_exist()
 {
 
-	CDTACSVParser parser_settings;
+	std::string filename = "settings.csv";
 
-	if (parser_settings.OpenCSVFile("settings.csv", false))
+	// Check if the file exists
+	std::ifstream inFile(filename);
+	if (inFile.good()) 
 	{
-		parser_settings.CloseCSVFile();
+		return;  // If the file exists, we'll stop the program here.
+	}
+
+	// Define the data to write to the file.
+		std::vector<std::tuple<std::string, std::string, std::string>> data = {
+			{"assignment", "number_of_iterations", "20"},
+			{"assignment", "route_output", "1"},
+			{"assignment", "simulation_output", "0"},
+			{"cpu", "number_of_memory_blocks", "4"},
+			{"", "length_unit", "meter"},
+			{"", "speed_unit", "kmph"},
+	};
+
+	// Open the file for output.
+	std::ofstream outFile("settings.csv");
+
+	// Write the header to the file.
+	outFile << "section,key,value\n";
+
+	// Write the data to the file.
+	for (const auto& item : data) {
+		outFile << std::get<0>(item) << ","
+			<< std::get<1>(item) << ","
+			<< std::get<2>(item) << "\n";
+	}
+
+	// Close the file.
+	outFile.close();
+	return;
+}
+bool write_default_scenario_index_file_if_not_exist()
+{
+
+	std::string filename = "scenario_index_list.csv";
+
+	// Check if the file exists
+	std::ifstream inFile(filename);
+	if (inFile.good())
+	{
+		return 0;  // If the file exists, we'll stop the program here.
+	}
+
+	// Define the data to write to the file.
+	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string>> data = {
+		{"0", "0", "2025", "25nb", "2025 no built", "1"},
+		{"0", "1","2040", "2040", "2040 future year", "1"},
+	};
+
+	// Open the file for output.
+	std::ofstream outFile(filename);
+
+	// Write the header to the file.
+	outFile << "first_column,scenario_index,year,scenario_name,scenario_description,activate\n";
+
+	// Write the data to the file.
+	for (const auto& item : data) {
+		outFile << std::get<0>(item) << ","
+			<< std::get<1>(item) << ","
+			<< std::get<2>(item) << ","
+			<< std::get<3>(item) << ","
+			<< std::get<4>(item) << ","
+			<< std::get<5>(item) << "\n";
+	}
+
+
+	// Close the file.
+	outFile.close();
+	return 1;
+}
+
+
+int write_default_demand_period_file_if_not_exist() {
+	// Define the output file name
+	std::string filename = "demand_period.csv";
+
+	// Check if the file exists
+	{
+		std::ifstream inFile(filename);
+		if (inFile.good()) {
+			std::cout << "The file " << filename << " already exists.\n";
+			return 0;  // If the file exists, we'll stop the program here.
+		}
+	}  // inFile goes out of scope here and is closed.
+
+ // Define the data to write to the file.
+	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string>> data = {
+		{"0", "1", "am", "weekday", "0700_0800", "730"},
+	};
+
+	// Open the file for output.
+	std::ofstream outFile(filename);
+
+	// Write the header to the file.
+	outFile << "first_column,demand_period_id,demand_period,notes,time_period,peak_time\n";
+
+	// Write the data to the file.
+	for (const auto& item : data) {
+		outFile << std::get<0>(item) << ","
+			<< std::get<1>(item) << ","
+			<< std::get<2>(item) << ","
+			<< std::get<3>(item) << ","
+			<< std::get<4>(item) << ","
+			<< std::get<5>(item) << "\n";
+	}
+
+	// Close the file.
+	outFile.close();
+
+	return 0;
+}
+
+void write_default_mode_type_file_if_not_exist() {
+	// Define the output file name
+	std::string filename = "mode_type.csv";
+
+	// Check if the file exists
+	{
+		std::ifstream inFile(filename);
+		if (inFile.good()) {
+			std::cout << "The file " << filename << " already exists.\n";
+			return;  // If the file exists, we'll return from the function here.
+		}
+	}  // inFile goes out of scope here and is closed.
+
+	// Define the data to write to the file.
+	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string>> data = {
+		{"0", "auto", "0", "passenger car", "10", "1", "1", "1.5", "0"},
+		{"0", "bike", "1", "bike", "10", "1", "1", "5", "0"},
+		{"0", "walk", "2", "pedestrian", "10", "1", "1", "3", "0"},
+	};
+
+	// Open the file for output.
+	std::ofstream outFile(filename);
+
+	// Write the header to the file.
+	outFile << "first_column,mode_type,mode_type_index,name,vot,mode_specific_assignment,person_occupancy,headway_in_sec,real_time_info\n";
+
+	// Write the data to the file.
+	for (const auto& item : data) {
+		outFile << std::get<0>(item) << ","
+			<< std::get<1>(item) << ","
+			<< std::get<2>(item) << ","
+			<< std::get<3>(item) << ","
+			<< std::get<4>(item) << ","
+			<< std::get<5>(item) << ","
+			<< std::get<6>(item) << ","
+			<< std::get<7>(item) << ","
+			<< std::get<8>(item) << "\n";
+	}
+
+	// Close the file.
+	outFile.close();
+}
+
+
+struct LinkTypeData {
+	std::string first_column;
+	std::string link_type;
+	std::string link_type_name;
+	std::string name_description;
+	std::string type_code;
+	std::string traffic_flow_model;
+	std::string allowed_uses_p1;
+	std::string peak_load_factor_p1_auto;
+	std::string peak_load_factor_p1_bike;
+	std::string peak_load_factor_p1_walk;
+	std::string free_speed_auto;
+	std::string free_speed_bike;
+	std::string free_speed_walk;
+	std::string capacity_auto;
+	std::string capacity_bike;
+	std::string capacity_walk;
+	std::string lanes_bike;
+	std::string lanes_walk;
+	std::string k_jam_km;
+	std::string meu_auto_bike;
+	std::string meu_auto_walk;
+	std::string meu_auto_auto;
+	std::string meu_bike_bike;
+	std::string meu_bike_walk;
+	std::string meu_bike_auto;
+	std::string meu_walk_bike;
+	std::string meu_walk_walk;
+	std::string meu_walk_auto;
+};
+
+void write_default_link_type_file_if_not_exist() {
+	std::string filename = "link_type.csv";
+
+	std::ifstream inFile(filename.c_str());
+	if (inFile.good()) {
+		std::cout << "The file " << filename << " already exists.\n";
 		return;
 	}
 
-	ofstream myfile;
-	myfile.open("settings.csv");
-	myfile << "[assignment],number_of_iterations,route_output,simulation_output" << '\n';
-	myfile << ",1,1,0," << '\n';
-	myfile << "[mode_type],mode_type_no,mode_type,name,display_code,vot,flow_type,pce,person_occupancy,desired_speed_ratio,headway,real_time_info," << '\n';
-	myfile << ",1,auto,auto,auto,10,0,1,1,1,1,0," << '\n';
-	//myfile << ",2,walk,walk,walk,10,0,1,1,0.1,1,0," << '\n';
-	//myfile << ",3,bike,bike,bike,10,0,,1,0.2,1,0" << '\n';
-	//myfile << ",4,bus,bus,bus,10,0,1,10,0.75,5,0" << '\n';
-	//myfile << ",5,truck,truck,truck,10,0,1,1,1,3,0" << '\n';
-	//myfile << ",6,cav,auto,auto,10,0,1,1,1,1,0," << '\n';
-	//myfile << ",7,ev,ev,ev,10,0,1,1,1,1,0," << '\n';
-	myfile << "" << '\n';
-	myfile << "[link_type],link_type,link_type_name,type_code,traffic_flow_code,vdf_type," << '\n';
-	myfile << ",1,motorway,,f,0,qvdf," << '\n';
-	myfile << ",2,trunk,,a,0,qvdf," << '\n';
-	myfile << ",3,primary,,a,0,bpr," << '\n';
-	myfile << ",4,residential,,a,0,bpr," << '\n';
-	myfile << ",5,secondary,,a,0,bpr," << '\n';
-	myfile << ",6,tertiary,,a,0,bpr," << '\n';
-	myfile << ",7,unclassified,,a,0,bpr," << '\n';
-	myfile << "[demand_period],demand_period_id,demand_period,,time_period" << '\n';
-	myfile << ", 1,AM, ,0800_0900,, , , " << '\n';
-	myfile << "[departure_time_profile], departure_time_profile_no, , ,time_period, , , ,T0000,T0005,T0010,T0015,T0020,T0025,T0030,T0035,T0040,T0045,T0050,T0055,T0100,T0105,T0110,T0115,T0120,T0125,T0130,T0135,T0140,T0145,T0150,T0155,T0200,T0205,T0210,T0215,T0220,T0224,T0230,T0235,T0239,T0245,T0250,T0255,T0300,T0305,T0310,T0315,T0320,T0325,T0330,T0335,T0340,T0345,T0350,T0355,T0400,T0404,T0410,T0415,T0420,T0425,T0430,T0435,T0440,T0445,T0450,T0455,T0500,T0505,T0510,T0515,T0520,T0525,T0530,T0535,T0540,T0545,T0550,T0555,T0600,T0605,T0610,T0615,T0620,T0625,T0630,T0635,T0640,T0645,T0650,T0655,T0700,T0705,T0710,T0715,T0720,T0725,T0730,T0735,T0740,T0745,T0750,T0755,T0800,T0805,T0810,T0815,T0820,T0825,T0830,T0835,T0840,T0845,T0850,T0855,T0900,T0905,T0910,T0915,T0920,T0925,T0930,T0935,T0940,T0945,T0950,T0955,T1000,T1005,T1010,T1015,T1020,T1025,T1030,T1035,T1040,T1045,T1050,T1055,T1100,T1105,T1110,T1115,T1120,T1125,T1130,T1135,T1140,T1145,T1150,T1155,T1200,T1205,T1210,T1215,T1220,T1225,T1230,T1235,T1240,T1245,T1250,T1255,T1300,T1305,T1310,T1315,T1320,T1325,T1330,T1335,T1340,T1345,T1350,T1355,T1400,T1405,T1410,T1415,T1420,T1425,T1430,T1435,T1440,T1445,T1450,T1455,T1500,T1505,T1510,T1515,T1520,T1525,T1530,T1535,T1540,T1545,T1550,T1555,T1600,T1605,T1610,T1615,T1620,T1625,T1630,T1635,T1640,T1645,T1650,T1655,T1700,T1705,T1710,T1715,T1720,T1725,T1730,T1735,T1740,T1745,T1750,T1755,T1800,T1805,T1810,T1815,T1820,T1825,T1830,T1835,T1840,T1845,T1850,T1855,T1900,T1905,T1910,T1915,T2020,T1925,T1930,T1935,T1940,T1945,T1950,T1955,T2000,T2005,T2010,T2015,T2020,T2025,T2030,T2035,T2040,T2045,T2050,T2055,T2100,T2105,T2110,T2115,T2120,T2125,T2130,T2135,T2140,T2145,T2150,T2155,T2200,T2205,T2210,T2215,T2220,T2225,T2230,T2235,T2240,T2245,T2250,T2255,T2300,T2305,T2310,T2315,T2320,T2325,T2330,T2335,T2340,T2345,T2350,T2355,T2400" << '\n';
-	myfile << ", 1, , ,0900_0930, , , ,0.000571,0.000571,0.000571,0.000571,0.000571,0.000571,0.000506,0.000506,0.000506,0.000445,0.000445,0.000445,0.000391,0.000391,0.000391,0.000357,0.000357,0.000357,0.000328,0.000328,0.000328,0.000319,0.000319,0.000319,0.000302,0.000302,0.000302,0.000292,0.000292,0.000292,0.000296,0.000296,0.000296,0.00031,0.00031,0.00031,0.00031,0.00031,0.00031,0.000319,0.000319,0.000319,0.000383,0.000383,0.000383,0.000496,0.000496,0.000496,0.000568,0.000568,0.000568,0.000656,0.000656,0.000656,0.00095,0.00095,0.00095,0.001368,0.001368,0.001368,0.001587,0.001587,0.001587,0.00175,0.00175,0.00175,0.002288,0.002288,0.002288,0.002921,0.002921,0.002921,0.003242,0.003242,0.003242,0.003218,0.003218,0.003218,0.003803,0.003803,0.003803,0.004459,0.004459,0.004459,0.005002,0.005002,0.005002,0.005207,0.005207,0.005207,0.005677,0.005677,0.005677,0.005994,0.005994,0.005994,0.006018,0.006018,0.006018,0.005508,0.005508,0.005508,0.00529,0.00529,0.00529,0.005058,0.005058,0.005058,0.004833,0.004833,0.004833,0.004421,0.004421,0.004421,0.004327,0.004327,0.004327,0.004364,0.004364,0.004364,0.004343,0.004343,0.004343,0.004139,0.004139,0.004139,0.004201,0.004201,0.004201,0.004291,0.004291,0.004291,0.00435,0.00435,0.00435,0.004409,0.004409,0.004409,0.004566,0.004566,0.004566,0.004674,0.004674,0.004674,0.004761,0.004761,0.004761,0.004827,0.004827,0.004827,0.004882,0.004882,0.004882,0.0049,0.0049,0.0049,0.004887,0.004887,0.004887,0.004835,0.004835,0.004835,0.004899,0.004899,0.004899,0.005023,0.005023,0.005023,0.005065,0.005065,0.005065,0.005162,0.005162,0.005162,0.005436,0.005436,0.005436,0.005772,0.005772,0.005772,0.005907,0.005907,0.005907,0.005877,0.005877,0.005877,0.00605,0.00605,0.00605,0.006196,0.006196,0.006196,0.006248,0.006248,0.006248,0.006308,0.006308,0.006308,0.006404,0.006404,0.006404,0.006391,0.006391,0.006391,0.006401,0.006401,0.006401,0.006526,0.006526,0.006526,0.006574,0.006574,0.006574,0.006271,0.006271,0.006271,0.005937,0.005937,0.005937,0.005578,0.005578,0.005578,0.005293,0.005293,0.005293,0.004834,0.004834,0.004834,0.004387,0.004387,0.004387,0.00403,0.00403,0.00403,0.003748,0.003748,0.003748,0.003382,0.003382,0.003382,0.003121,0.003121,0.003121,0.002963,0.002963,0.002963,0.00289,0.00289,0.00289,0.002671,0.002671,0.002671,0.002468,0.002468,0.002468,0.002365,0.002365,0.002365,0.002249,0.002249,0.002249,0.002015,0.002015,0.002015,0.001784,0.001784,0.001784,0.00164,0.00164,0.00164,0.001474,0.001474,0.001474,0.001312,0.001312,0.001312,0.001132,0.001132,0.001132,0.001005,0.001005,0.001005,0.000889,0.000889,0.000889,0.000778,0.000778,0.000778,0.000676" << '\n';
-	myfile << "[demand_file_list],file_sequence_no,file_name,,format_type,demand_period,mode_type,scale_factor,departure_time_profile_no," << '\n';
-	myfile << ",0,demand.csv,,column,AM,auto,0.1,1," << '\n';
-	myfile.close();
-	return;
+	std::vector<LinkTypeData> data;
+
+	LinkTypeData dataItem = { "0", "1", "highway", "Highway/Expressway", "f", "kw", "", "1", "1", "1", "60", "13.2", "4.8", "2000", "600", "1000", "1", "1", "400", "1.5", "2", "1", "1", "1.2", "0.5", "0.8", "1", "0.3" };
+	data.push_back(dataItem);
+
+	// Add more entries in the same way...
+
+	std::ofstream outFile(filename.c_str());
+
+	outFile << "first_column,link_type,link_type_name,name_description,type_code,traffic_flow_model,allowed_uses_p1,peak_load_factor_p1_auto,"
+		"peak_load_factor_p1_bike,peak_load_factor_p1_walk,free_speed_auto,free_speed_bike,free_speed_walk,capacity_auto,capacity_bike,"
+		"capacity_walk,lanes_bike,lanes_walk,k_jam_km,meu_auto_bike,meu_auto_walk,meu_auto_auto,meu_bike_bike,meu_bike_walk,meu_bike_auto,"
+		"meu_walk_bike,meu_walk_walk,meu_walk_auto\n";
+
+	for (const auto& item : data) {
+		outFile << item.first_column << ","
+			<< item.link_type << ","
+			<< item.link_type_name << ","
+			// continue to write remaining struct elements...
+			<< item.meu_walk_walk << ","
+			<< item.meu_walk_auto << "\n";
+	}
+
+	outFile.close();
 }
 
-bool CheckMeasurementFileExist()
+struct DemandFileListData {
+	std::string first_column;
+	std::string file_sequence_no;
+	std::string scenario_index_vector;
+	std::string file_name;
+	std::string demand_period;
+	std::string mode_type;
+	std::string format_type;
+	std::string scale_factor;
+	std::string departure_time_profile_no;
+	std::string comment;
+};
+void write_default_demand_file_list_if_not_exist() {
+	std::string filename = "demand_file_list.csv";
+
+	std::ifstream inFile(filename.c_str());
+	if (inFile.good()) {
+		std::cout << "The file " << filename << " already exists.\n";
+		return;
+	}
+
+	std::vector<DemandFileListData> data;
+
+	DemandFileListData dataItem = { "0", "1", "0", "demand.csv", "am", "auto", "column", "1", "1", "" };
+	DemandFileListData dataItem_bike = { "0", "2", "0", "demand.csv", "am", "bike", "column", "1", "1", "" };
+	DemandFileListData dataItem_walk = { "0", "3", "0", "demand.csv", "am", "walk", "column", "1", "1", "" };
+
+	DemandFileListData dataItem_1 = { "0", "4", "1", "demand.csv", "am", "auto", "column", "2", "1", "" };
+	DemandFileListData dataItem_bike_1 = { "0", "5", "1", "demand.csv", "am", "bike", "column", "2", "1", "" };
+	DemandFileListData dataItem_walk_1 = { "0", "6", "1", "demand.csv", "am", "walk", "column", "2", "1", "" };
+
+	data.push_back(dataItem);
+	data.push_back(dataItem_bike);
+	data.push_back(dataItem_walk);
+	data.push_back(dataItem_1);
+	data.push_back(dataItem_bike_1);
+	data.push_back(dataItem_walk_1);
+
+	// Add more entries in the same way...
+
+	std::ofstream outFile(filename.c_str());
+
+	outFile << "first_column,file_sequence_no,scenario_index_vector,file_name,demand_period,mode_type,format_type,"
+		"scale_factor,departure_time_profile_no,comment\n";
+
+	for (const auto& item : data) {
+		outFile << item.first_column << ","
+			<< item.file_sequence_no << ","
+			<< item.scenario_index_vector << ","
+			<< item.file_name << ","
+			<< item.demand_period << ","
+			<< item.mode_type << ","
+			<< item.format_type << ","
+			<< item.scale_factor << ","
+			<< item.departure_time_profile_no << ","
+			<< item.comment << "\n";
+	}
+
+	outFile.close();
+}
+bool CheckSensorFileExist()
 {
 	CDTACSVParser parser_measurement;
 	if (parser_measurement.OpenCSVFile("sensor_data.csv", false))
@@ -79,21 +328,17 @@ bool CheckMeasurementFileExist()
 		while (parser_measurement.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 		{
 			string sensor_type;
-			parser_measurement.GetValueByFieldName("sensor_type", sensor_type);
 
-			if (sensor_type == "link")
+
+			int activate_flag = 0;
+			parser_measurement.GetValueByFieldName("activate", activate_flag);
+					
+			if (activate_flag)
 			{
-				int from_node_id;
-				if (!parser_measurement.GetValueByFieldName("from_node_id", from_node_id))
-					continue;
-
-				int to_node_id;
-				if (!parser_measurement.GetValueByFieldName("to_node_id", to_node_id))
-					continue;
-
-				count++;
-
+				count++; break;
 			}
+			
+
 		}
 
 		parser_measurement.CloseCSVFile();
@@ -106,6 +351,89 @@ bool CheckMeasurementFileExist()
 	return false;
 }
 
+#include <fstream>
+#include <vector>
+
+struct DepartureTimeProfileData {
+	std::string first_column;
+	std::string departure_time_profile_no;
+	std::string time_period; // Add time_period
+	std::vector<double> time_points;
+};
+
+void write_default_departure_time_profile_if_not_exist() {
+	std::string filename = "departure_time_profile.csv";
+
+	std::ifstream inFile(filename.c_str());
+	if (inFile.good()) {
+		std::cout << "The file " << filename << " already exists.\n";
+		return;
+	}
+
+	std::vector<DepartureTimeProfileData> data;
+
+	DepartureTimeProfileData dataItem = { "0", "1", "0600_0900", { // Include time_period here
+0.000571,0.000571,0.000571,0.000571,0.000571,0.000571,0.000506,0.000506,0.000506,0.000445,0.000445,0.000445,0.000391,0.000391,0.000391,0.000357,0.000357,0.000357,0.000328,0.000328,0.000328,0.000319,0.000319,0.000319,0.000302,0.000302,0.000302,0.000292,0.000292,0.000292,0.000296,0.000296,0.000296,0.00031,0.00031,0.00031,0.00031,0.00031,0.00031,0.000319,0.000319,0.000319,0.000383,0.000383,0.000383,0.000496,0.000496,0.000496,0.000568,0.000568,0.000568,0.000656,0.000656,0.000656,0.00095,0.00095,0.00095,0.001368,0.001368,0.001368,0.001587,0.001587,0.001587,0.00175,0.00175,0.00175,0.002288,0.002288,0.002288,0.002921,0.002921,0.002921,0.003242,0.003242,0.003242,0.003218,0.003218,0.003218,0.003803,0.003803,0.003803,0.004459,0.004459,0.004459,0.005002,0.005002,0.005002,0.005207,0.005207,0.005207,0.005677,0.005677,0.005677,0.005994,0.005994,0.005994,0.006018,0.006018,0.006018,0.005508,0.005508,0.005508,0.00529,0.00529,0.00529,0.005058,0.005058,0.005058,0.004833,0.004833,0.004833,0.004421,0.004421,0.004421,0.004327,0.004327,0.004327,0.004364,0.004364,0.004364,0.004343,0.004343,0.004343,0.004139,0.004139,0.004139,0.004201,0.004201,0.004201,0.004291,0.004291,0.004291,0.00435,0.00435,0.00435,0.004409,0.004409,0.004409,0.004566,0.004566,0.004566,0.004674,0.004674,0.004674,0.004761,0.004761,0.004761,0.004827,0.004827,0.004827,0.004882,0.004882,0.004882,0.0049,0.0049,0.0049,0.004887,0.004887,0.004887,0.004835,0.004835,0.004835,0.004899,0.004899,0.004899,0.005023,0.005023,0.005023,0.005065,0.005065,0.005065,0.005162,0.005162,0.005162,0.005436,0.005436,0.005436,0.005772,0.005772,0.005772,0.005907,0.005907,0.005907,0.005877,0.005877,0.005877,0.00605,0.00605,0.00605,0.006196,0.006196,0.006196,0.006248,0.006248,0.006248,0.006308,0.006308,0.006308,0.006404,0.006404,0.006404,0.006391,0.006391,0.006391,0.006401,0.006401,0.006401,0.006526,0.006526,0.006526,0.006574,0.006574,0.006574,0.006271,0.006271,0.006271,0.005937,0.005937,0.005937,0.005578,0.005578,0.005578,0.005293,0.005293,0.005293,0.004834,0.004834,0.004834,0.004387,0.004387,0.004387,0.00403,0.00403,0.00403,0.003748,0.003748,0.003748,0.003382,0.003382,0.003382,0.003121,0.003121,0.003121,0.002963,0.002963,0.002963,0.00289,0.00289,0.00289,0.002671,0.002671,0.002671,0.002468,0.002468,0.002468,0.002365,0.002365,0.002365,0.002249,0.002249,0.002249,0.002015,0.002015,0.002015,0.001784,0.001784,0.001784,0.00164,0.00164,0.00164,0.001474,0.001474,0.001474,0.001312,0.001312,0.001312,0.001132,0.001132,0.001132,0.001005,0.001005,0.001005,0.000889,0.000889,0.000889,0.000778,0.000778,0.000778,0.000676
+
+		//...continue for all time points
+	} };
+	data.push_back(dataItem);
+
+	// Add more entries in the same way...
+
+	std::ofstream outFile(filename.c_str());
+
+	outFile << "first_column,departure_time_profile_no,time_period,"; // Include time_period in the header
+	for (int i = 0; i < 288; ++i) {
+		char buffer[10];
+		sprintf(buffer, "T%04d", i * 5);
+		outFile << buffer;
+		if (i != 287)
+			outFile << ",";
+	}
+	outFile << "\n";
+
+	for (const auto& item : data) {
+		outFile << item.first_column << ","
+			<< item.departure_time_profile_no << ","
+			<< item.time_period << ","; // Include time_period in the data writing
+		for (size_t i = 0; i < item.time_points.size(); ++i) {
+			outFile << item.time_points[i];
+			if (i != item.time_points.size() - 1)
+				outFile << ",";
+		}
+		outFile << "\n";
+	}
+
+	outFile.close();
+}
+
+void write_default_subarea_file_if_not_exist() {
+	std::string filename = "subarea.csv";
+	std::ifstream inFile(filename.c_str());
+
+	// If the file does not exist, create it
+	if (!inFile.good()) {
+		std::ofstream outFile;
+		outFile.open(filename.c_str());
+
+		// Write the headers
+		outFile << "notes,geometry\n";
+
+		// Write the data
+		outFile << "subarea_polygon,\"POLYGON ((-180 -90, 180 -90, 180 90, -180 90, -180 -90))\"\n";
+
+		// Close the file
+		outFile.close();
+
+		std::cout << "The file " << filename << " was generated successfully!\n";
+	}
+	else {
+		std::cout << "The file " << filename << " already exists.\n";
+	}
+
+	inFile.close();
+}
 
 bool CheckSupplySideScenarioFileExist()
 {
@@ -119,10 +447,10 @@ bool CheckSupplySideScenarioFileExist()
 		while (parser.ReadRecord())
 		{
 
-			int activation_flag = 0;
-			parser.GetValueByFieldName("activation", activation_flag);
+			int activate_flag = 0;
+			parser.GetValueByFieldName("activate", activate_flag);
 
-			if(activation_flag==1)
+			if(activate_flag==1)
 			{
 
 			int from_node_id = 0;
@@ -147,12 +475,40 @@ bool CheckSupplySideScenarioFileExist()
 	else
 		return true;
 }
+void write_default_sensor_data_file_if_not_exist() {
+	std::string filename = "sensor_data.csv";
+	std::ifstream inFile(filename.c_str());
 
+	// If the file does not exist, create it
+	if (!inFile.good()) {
+		std::ofstream outFile;
+		outFile.open(filename.c_str());
+
+		// Write the headers
+		outFile << "sensor_id,from_node_id,to_node_id,demand_period,count,upper_bound_flag,scenario_index,activate\n";
+
+		// Write the data
+		outFile << "1,483,481,am,3000.975,1,0,0\n";
+
+		// Close the file
+		outFile.close();
+
+		std::cout << "The file " << filename << " was generated successfully!\n";
+	}
+	else {
+		std::cout << "The file " << filename << " already exists.\n";
+	}
+
+	inFile.close();
+}
 
 int main()
 {
+	std::ofstream::sync_with_stdio(false);
 	// reset all the log files to defult 0: not output; if want to output these logs set to 1
-	dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
+
+
+
 	dtalog.debug_level() = 0;
 	dtalog.log_sig() = 0;
 	dtalog.log_odme() = 0;
@@ -177,23 +533,90 @@ int main()
 	int scenario_A_index = 0;
 	int scenario_index_size = -1;
 
-	write_default_setting_file_if_not_exist();
+	dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
+	dtalog.output() << " Overview of files and process\n";
+	dtalog.output() << "1. Input Files:\n";
+	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv, zone.csv)\n";
+	dtalog.output() << "   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)\n";
+	dtalog.output() << "   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)\n";
+	dtalog.output() << "   |--- Supply Layer (supply_side_scenario.csv, signal_timing.csv)\n";
 
+	dtalog.output() << "\n2. Traffic Assignment and Simulation Process:\n";
+	dtalog.output() << "   |--- Demand estimation based on sensor data\n";
+	dtalog.output() << "   |--- Traffic assignment based on network and demand data\n";
+	dtalog.output() << "   |--- Simulation of traffic based on assignment results and scenario configurations\n";
+	dtalog.output() << "   |--- Performance evaluation based on simulation results and performance criteria\n";
+
+	dtalog.output() << "\n3. Output Files:\n";
+	dtalog.output() << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
+	dtalog.output() << "   |--- Route assignment (route_assignment_s.csv)\n";
+	dtalog.output() << "   |--- Mode choice (choice_set_output.csv)\n";
+	dtalog.output() << "   |--- OD pair performance (od_performance_summary.csv)\n";
+	dtalog.output() << "   |--- System performance (system_performance_summary.csv)\n";
+	dtalog.output() << "   |--- Final Summary (final_summary.csv, subarea_related_zone.csv)\n";
+
+	dtalog.output() << "--------------------------" << '\n';
+
+	//dtalog.output() << "Input Files:" << '\n';
+	//dtalog.output() << "  Physical layer:" << '\n';
+	//dtalog.output() << "    node.csv: Defines nodes in the network." << '\n';
+	//dtalog.output() << "    link.csv: Defines links in the network with essential attributes for assignment." << '\n';
+	//dtalog.output() << "    zone.csv: Optional, as zone_id can be defined in node.csv." << '\n';
+	//dtalog.output() << "  Demand layer:" << '\n';
+	//dtalog.output() << "    demand.csv: Defines the demand of passengers on each OD pair. This information could be extracted by demand_file_list.csv." << '\n';
+	//dtalog.output() << "    demand_period.csv: Defines demand period, which could be extracted by demand_file_list.csv." << '\n';
+	//dtalog.output() << "    departure_time_profile.csv: Defines departure time in the agent-based simulation." << '\n';
+	//dtalog.output() << "    demand_file_list.csv: Defines demand type, period, and format type." << '\n';
+	//dtalog.output() << "    sensor_data.csv: Contains observed link volume for OD demand estimation." << '\n';
+	//dtalog.output() << "    choice_set.csv: Contains choice set data for agent-based modeling." << '\n';
+	//dtalog.output() << "    activity_travel_pattern.csv: (Optional) Defines activity and travel patterns of agents in the simulation." << '\n';
+	//dtalog.output() << "  Supply layer:" << '\n';
+	//dtalog.output() << "    supply_side_scenario.csv: Defines different supply side scenarios." << '\n';
+	//dtalog.output() << "    signal_timing.csv: Contains information about signal timings at intersections." << '\n';
+	//dtalog.output() << "  Configuration files:" << '\n';
+	//dtalog.output() << "    settings.csv: Defines basic setting for the network, the number of iterations, etc." << '\n';
+	//dtalog.output() << "    mode_type.csv: Defines attributes of each type of agent, including value of time (vot in dollars per hour) and passenger car equivalent (pce)." << '\n';
+	//dtalog.output() << "    link_type.csv: Defines types of links in the network." << '\n';
+	//dtalog.output() << "    link_vdf.csv: Contains analytical volume demand function parameters." << '\n';
+	//dtalog.output() << "  Scenarios settings:" << '\n';
+	//dtalog.output() << "    scenario_index_list.csv: Defines scenario name, scenario description and activate state." << '\n';
+	//dtalog.output() << "    subarea.csv: optional, extracts the subarea polygon information using NeXTA tool." << '\n';
+	//dtalog.output() << "--------------------------" << '\n';
+
+	//dtalog.output() << "Output Files:" << '\n';
+	//dtalog.output() << "  link_performance_s(scenario_index)_(scenario_name).csv: Shows the performance of each link under different scenarios, including the travel time, volume, and resource balance." << '\n';
+	//dtalog.output() << "  route_assignment_s(scenario_index)_(scenario_name).csv: Shows the results of the assignment under different scenarios, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence." << '\n';
+	//dtalog.output() << "  choice_set_output_(scenario_index)_(scenario_name).csv: Shows the results of activity travel and mode choice." << '\n';
+	//dtalog.output() << "  od_performance_summary.csv: Shows the performance of the OD pairs, including the o_zone_id, d_zone_id and volume." << '\n';
+	//dtalog.output() << "  link_performance_summary.csv: Shows the summary of the performance of each link." << '\n';
+	//dtalog.output() << "  system_performance_summary.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
+	//dtalog.output() << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
+	//dtalog.output() << "  subarea_related_zone.csv: Shows the subarea internal zones and impacted zones." << '\n';
+	//dtalog.output() << "--------------------------" << '\n';
+	write_default_setting_file_if_not_exist();
+	write_default_scenario_index_file_if_not_exist();
+	write_default_demand_period_file_if_not_exist();
+	write_default_mode_type_file_if_not_exist();
+	write_default_link_type_file_if_not_exist();
+	write_default_demand_file_list_if_not_exist();
+	write_default_departure_time_profile_if_not_exist();
+	write_default_subarea_file_if_not_exist();
+	write_default_sensor_data_file_if_not_exist();
 	CDTACSVParser parser_settings;
 
 	parser_settings.IsFirstLineHeader = true;
 	if (parser_settings.OpenCSVFile("settings.csv", true))
 	{
 
-		dtalog.output() << "Step 0: Reading setting.csv." << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 0.0: Reading setting.csv." << '\n';
 		
 		std::string assignment_mode_str;
 
 		int number_of_iterations=  1;
-		if (parser_settings.GetValueByKeyName("number_of_iterations = ", number_of_iterations, false) == true)
+		if (parser_settings.GetValueByKeyName("number_of_iterations", number_of_iterations, false) == true)
 			column_generation_iterations = number_of_iterations; // update
 
-		dtalog.output() << "number_of_iterations" << number_of_iterations << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] number_of_iterations = " << number_of_iterations << " in setting.csv." << '\n';
 		// these are the assignment modes
 		// two usually methods are ue (user equilibrium) and dta (dynamic traffic assignment)
 		// the main difference of these two methods are different output in link_performance.csv
@@ -201,10 +624,10 @@ int main()
 		// for more detailed link performances (one minute) set 'dta'1
 		assignment_mode = 1;
 
-		if (CheckMeasurementFileExist() == true)
+		if (CheckSensorFileExist() == true)
 		{
 			column_updating_iterations = 5;
-			ODME_iterations = 100;
+			ODME_iterations = 50;
 		}
 		else
 			ODME_iterations = 0;
@@ -226,7 +649,7 @@ int main()
 				assignment_mode = 0;
 		}
 
-		dtalog.output() << "route_output = " << route_output_value << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] route_output = " << route_output_value << " in setting.csv." << '\n';
 
 		simulation_output = 1;  //default
 		int simulation_output_value = -1;
@@ -237,7 +660,7 @@ int main()
 				assignment_mode = 2;
 		}
 
-		dtalog.output() << "simulation_output = " << simulation_output << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] simulation_output = " << simulation_output << " in setting.csv." << '\n';
 
 
 		// the start interation of generating signals, if there is no signals set this number larger than the itertion number
@@ -246,7 +669,7 @@ int main()
 		if(parser_settings.GetValueByKeyName("number_of_memory_blocks", number_of_memory_blocks_values, false, false))
 		{
 			number_of_memory_blocks = number_of_memory_blocks_values;
-			dtalog.output() << "number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
+			dtalog.output() << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
 		}
 
 		//if (parser_settings.GetValueByKeyName("scenario_index_size", scenario_index_size, false, false))

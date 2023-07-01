@@ -322,7 +322,7 @@ public:
 
 					if (outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE)
 					{
-						dtalog.output() << " Error: outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << '\n';
+						dtalog.output() << "[ERROR] outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << '\n';
 						// output the log
 
 						g_OutputModelFiles(1);
@@ -351,13 +351,13 @@ public:
 		// after dynamic arrays are created for forward star
 		if (dtalog.debug_level() == 2)
 		{
-			dtalog.output() << "add outgoing link data into dynamic array" << '\n';
+			dtalog.output() << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
 
 			for (int i = 0; i < g_node_vector.size(); ++i)
 			{
 				if (g_node_vector[i].zone_org_id > 0) // for each physical node
 				{ // we need to make sure we only create two way connectors between nodes and zones
-					dtalog.output() << "node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
+					dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
 						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 					for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; j++)
@@ -370,7 +370,7 @@ public:
 				{
 					if (dtalog.debug_level() == 3)
 					{
-						dtalog.output() << "node id= " << g_node_vector[i].node_id << " with "
+						dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
 							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 						for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; ++j)
@@ -558,7 +558,7 @@ public:
 
 						if (l_node_size >= temp_path_node_vector_size)
 						{
-							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
+							dtalog.output() << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
 							g_program_stop();
 						}
 
@@ -794,7 +794,7 @@ public:
 
 						if (l_node_size >= temp_path_node_vector_size)
 						{
-							dtalog.output() << "Error: l_node_size >= temp_path_node_vector_size" << '\n';
+							dtalog.output() << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
 							g_program_stop();
 						}
 
@@ -938,17 +938,17 @@ public:
 
 		if (negative_cost_flag == true && bsensitivity_analysis_flag == true)
 		{
-			dtalog.output() << "Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
+			dtalog.output() << "[DATA INFO] Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 			local_debugging_flag = 0;
 			negative_cost_label_correcting(processor_id, p_assignment, iteration_k, o_node_index, d_node_no);
 			return true;
 		}
 
 		if (p_assignment->g_number_of_nodes >= 1000 && origin_zone % 97 == 0)
-			dtalog.output() << "label correcting for zone " << origin_zone << " in processor " << processor_id << '\n';
+			dtalog.output() << "[STATUS INFO] label correcting for zone " << origin_zone << " in processor " << processor_id << '\n';
 
 		if (dtalog.debug_level() >= 2)
-			dtalog.output() << "SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
+			dtalog.output() << "[DATA INFO] SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 
 		if (local_debugging_flag == 1)
 		{
@@ -1051,7 +1051,7 @@ public:
 
 						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
 						{
-							dtalog.output() << "prohibited movement " << movement_string << " will not be used " << '\n';
+							dtalog.output() << "[DATA INFO] prohibited movement " << movement_string << " will not be used " << '\n';
 							continue;
 						}
 					}
@@ -1326,7 +1326,7 @@ public:
 
 
 		if (dtalog.debug_level() >= 2)
-			dtalog.output() << "Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
+			dtalog.output() << "[DATA INFO] Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
 
 		if (local_debugging_flag == 0)
 		{

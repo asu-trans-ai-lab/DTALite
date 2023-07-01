@@ -11,12 +11,11 @@ using std::max;
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
 constexpr auto MAX_SCENARIOS = 100;
-constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_MODETYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
-//constexpr auto MAX_AGNETTYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
-//constexpr auto MAX_TIMEPERIODS = 6; // time period set to 4: mid night, morning peak, mid-day and afternoon peak;
-//constexpr auto MAX_ORIGIN_DISTRICTS = 30; //origin based agreegration grids
-//constexpr auto MAX_ORIGIN_DISTRICTS = 30; //origin based agreegration grids
+
+constexpr auto MAX_ORIGIN_DISTRICTS = 30; //origin based agreegration grids
+
 constexpr auto MAX_MEMORY_BLOCKS = 100;
 
 constexpr auto MAX_LINK_SIZE_IN_A_PATH = 10000;
@@ -116,12 +115,15 @@ public:
             int hour = s / 12;
             int minute = s * 5 - hour * 60;
 
-            dtalog.output() << std::setprecision(5) << "cumulative profile no. " << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
+            if(s== starting_slot_no + 1 || s== ending_slot_no)
+            {
+            dtalog.output() << std::setprecision(5) << "[DATA INFO] cumulative profile no." << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
                 departure_time_ratio[s] << ",cumulative ratio " <<
                 cumulative_departure_time_ratio[s] << '\n';
+            }
         }
 
-       dtalog.output() << std::setprecision(5) << "final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
+       dtalog.output() << std::setprecision(5) << "[DATA INFO] final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
     }
 
     int get_time_slot_no(int agent_seq_no, int agent_size)
@@ -165,7 +167,7 @@ public:
             int minute = (int)(( s*1.0 /12 - hour) * 60 + 0.5);
             if(idebug)
             {
-            dtalog.output() << "s=" << s << " (" << hour << ":" << minute << ") = " << cumulative_departure_time_ratio[s] << '\n';
+            dtalog.output() << "[DATA INFO] s=" << s << " (" << hour << ":" << minute << ") = " << cumulative_departure_time_ratio[s] << '\n';
             }
             if (r < cumulative_departure_time_ratio[s])
             {
@@ -176,7 +178,7 @@ public:
                 double time_in_min = (s- starting_time_slot_no + floating_point )* MIN_PER_TIMESLOT;
                 if (idebug)
                 {
-                    dtalog.output() << "select: s=" << s << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << ", dep_time = " << time_in_min <<"," << '\n';
+                    dtalog.output() << "[DATA INFO]  select: s=" << s << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << ", dep_time = " << time_in_min <<"," << '\n';
                 }
                 return time_in_min;
             }
@@ -187,7 +189,7 @@ public:
             int hour = starting_time_slot_no / 12;
             int minute = starting_time_slot_no * 5 - hour * 60;
 
-            dtalog.output() << "s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
+            dtalog.output() << "[DATA INFO] s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
         }
         return (r) * MIN_PER_TIMESLOT  ;  // first time slot as the default value
     }
@@ -220,10 +222,29 @@ public:
 class CSystem_Summary
 {
 public:
+    int district_id;
+    int district_name;
+
+    std::vector<DTAGDPoint> shape_points;
+    std::vector<int> district_zone_vector;
+
+
+    void reset_data(int tau, int at)
+    {
+        if (at >= MAX_MODETYPES)
+            return;
+
+        data_by_demand_period_mode_type[tau][at].count =0;
+        data_by_demand_period_mode_type[tau][at].total_od_volume = 0;
+        data_by_demand_period_mode_type[tau][at].total_person_travel_time = 0;
+        data_by_demand_period_mode_type[tau][at].total_person_distance_km = 0;
+        data_by_demand_period_mode_type[tau][at].total_person_distance_mile = 0;
+
+    }
 
     void record_mode_volume(int tau, int at, double od_volume)
     {
-        if (at >= MAX_AGNETTYPES)
+        if (at >= MAX_MODETYPES)
             return;
 
         data_by_demand_period_mode_type[tau][at].total_od_volume += od_volume;
@@ -232,7 +253,7 @@ public:
 
     void record_mode_od_data(CModeType_Summary element, int tau, int at)
     {
-        if (at >= MAX_AGNETTYPES)
+        if (at >= MAX_MODETYPES)
             return;
 
         data_by_demand_period_mode_type[tau][at].count += 1;
@@ -247,57 +268,15 @@ public:
         float count = data_by_demand_period_mode_type[tau][at].count;
         if (count >= 1)
         {
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(1.0, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
         }
     }
 
-    CModeType_Summary data_by_demand_period_mode_type[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    CModeType_Summary data_by_demand_period_mode_type[MAX_TIMEPERIODS][MAX_MODETYPES];
 };
 
-
-class CAnalysisDistrict
-{
-public:
-    int district_id;
-    int district_name;
-    std::vector<DTAGDPoint> shape_points;
-
-    void record_origin_2_district_volume(int at, double od_volume)
-    {
-        if (at >= MAX_AGNETTYPES)
-            return;
-
-        data_by_mode_type[at].total_od_volume += od_volume;
-
-    }
-
-    void record_link_2_district_data(CModeType_Summary element, int at)
-    {
-        if (at >= MAX_AGNETTYPES)
-            return;
-
-        data_by_mode_type[at].count += 1;
-        data_by_mode_type[at].total_person_travel_time += element.total_person_travel_time;
-        data_by_mode_type[at].total_person_distance_km += element.total_person_distance_km;
-        data_by_mode_type[at].total_person_distance_mile += element.total_person_distance_mile;
-
-    }
-
-    void computer_avg_value(int at)
-    {
-        float count = data_by_mode_type[at].count;
-        if (count >= 1)
-        {
-            data_by_mode_type[at].avg_travel_distance_km = data_by_mode_type[at].total_person_distance_km/ max(1.0,data_by_mode_type[at].total_od_volume);
-            data_by_mode_type[at].avg_travel_distance_mile = data_by_mode_type[at].total_person_distance_mile / max(1.0, data_by_mode_type[at].total_od_volume);
-            data_by_mode_type[at].avg_travel_time = data_by_mode_type[at].total_person_travel_time / max(1.0, data_by_mode_type[at].total_od_volume);
-        }
-    }
-
-    CModeType_Summary data_by_mode_type[MAX_AGNETTYPES];
-};
 
 class Cmode_type {
 public:
@@ -337,14 +316,14 @@ class CLinkType
 public:
     CLinkType() : link_type{ 1 }, number_of_links{ 0 }, traffic_flow_code{ spatial_queue }, k_jam{ 300 }, vdf_type{ q_vdf }
     {
-        for (int at = 0; at < MAX_AGNETTYPES; at++)
+        for (int at = 0; at < MAX_MODETYPES; at++)
         {
             free_speed_at[at] = 60;
             capacity_at[at] = 2000;
             FFTT_at[at] = 1;
             lanes_at[at] = 1;
 
-            for (int at2 = 0; at2 < MAX_AGNETTYPES; at2++)
+            for (int at2 = 0; at2 < MAX_MODETYPES; at2++)
             {
                 meu_matrix[at][at2] = 1;
             }
@@ -353,7 +332,7 @@ public:
 
         for (int tau = 0; tau < MAX_TIMEPERIODS; tau++)
         {
-            for (int at = 0; at < MAX_AGNETTYPES; at++)
+            for (int at = 0; at < MAX_MODETYPES; at++)
             {
               peak_load_factor_period_at[tau][at] = 1;
             }
@@ -369,13 +348,13 @@ public:
     e_VDF_type vdf_type;
     e_traffic_flow_model traffic_flow_code;
 
-    double free_speed_at[MAX_AGNETTYPES];
-    double lanes_at[MAX_AGNETTYPES];
-    double capacity_at[MAX_AGNETTYPES];
-    double FFTT_at[MAX_AGNETTYPES];
+    double free_speed_at[MAX_MODETYPES];
+    double lanes_at[MAX_MODETYPES];
+    double capacity_at[MAX_MODETYPES];
+    double FFTT_at[MAX_MODETYPES];
     std::string allow_uses_period[MAX_TIMEPERIODS];
-    double peak_load_factor_period_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
-    double meu_matrix[MAX_AGNETTYPES][MAX_AGNETTYPES];
+    double peak_load_factor_period_at[MAX_TIMEPERIODS][MAX_MODETYPES];
+    double meu_matrix[MAX_MODETYPES][MAX_MODETYPES];
 
 
 
@@ -443,7 +422,7 @@ public:
         if (m_link_size == 0)
         {
             int i_debug = 1;
-            dtalog.output() << "error: m_link_size == 0 in function CColumnPath::AllocateVector()!";
+            dtalog.output() << "[ERROR] m_link_size == 0 in function CColumnPath::AllocateVector()!";
             g_program_stop();
         }
 
@@ -626,12 +605,18 @@ class CColumnVector {
 
 public:
     // this is colletion of unique paths
-    CColumnVector() : avg_cost{ 0 }, avg_time{ 0 }, distance{ 0 },  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_mode_type_no{ 0 },
+    CColumnVector() :  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_mode_type_no{ 0 },
         departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, relative_OD_gap{ 0 }
     {
 
         for (int si = 0; si < MAX_SCENARIOS; si++)
+        {
             od_volume[si] = 0;
+            avg_travel_time[si] = 0;
+            avg_distance[si] = 0;
+            avg_distance[si] = 0;
+        }
+
     }
 
 
@@ -639,9 +624,6 @@ public:
     {
         path_node_sequence_map.clear();
 
-        avg_cost = 0;
-        avg_time = 0;
-        distance = 0;
         relative_OD_gap = 0;
 
     }
@@ -649,9 +631,9 @@ public:
 
     std::map<int, bool> at_od_impacted_flag_map; // for each agent type
 
-    float avg_cost;
-    float avg_time;
-    float distance;
+    float avg_cost[MAX_SCENARIOS];
+    float avg_travel_time[MAX_SCENARIOS];
+    float avg_distance[MAX_SCENARIOS];
     // od volume
     double od_volume[MAX_SCENARIOS];
 
@@ -805,7 +787,7 @@ public:
 class DTAScenario {
 public:
 
-    DTAScenario() : scenario_index{ 0 }, year{ 2023 }, activation{ 1 }
+    DTAScenario() : scenario_index{ 0 }, year{ 2023 }, activate{ 1 }
     {
     }
 
@@ -813,7 +795,7 @@ public:
     int year;
     std::string scenario_name;
     std::string scenario_description;
-    int activation;
+    int activate;
 };
 class Assignment {
 public:
@@ -841,7 +823,7 @@ public:
         summary_file.open("final_summary.csv", std::fstream::out);
         if (summary_file &&!summary_file.is_open())
         {
-            dtalog.output() << "File final_summary.csv cannot be open.";
+            dtalog.output() << "[ERROR] File final_summary.csv cannot be open.";
             g_program_stop();
         }
         simu_log_file.open("log_simulation.txt");
@@ -920,8 +902,6 @@ public:
     void STTrafficSimulation();
     void STMesoTrafficSimulation();
 
-    //OD demand estimation estimation
-    void GenerateDefaultMeasurementData();
     void Demand_ODME(int OD_updating_iterations);
     void Sensor_Vector_based_Demand_ODME(int OD_updating_iterations);
     void AllocateLinkMemory4Simulation();
@@ -1034,8 +1014,8 @@ public:
 
 
 
-    float total_demand[MAX_AGNETTYPES][MAX_TIMEPERIODS];
-    float total_route_demand[MAX_AGNETTYPES][MAX_TIMEPERIODS];
+    float total_demand[MAX_MODETYPES][MAX_TIMEPERIODS];
+    float total_route_demand[MAX_MODETYPES][MAX_TIMEPERIODS];
     float g_DemandGlobalMultiplier;
 
     // used in ST Simulation
@@ -1098,10 +1078,9 @@ public:
         {
             link_type_si[si] = 0;
             number_of_lanes_si[si] = 1;  // default all open
-            penalty_si_flag[si] = 0;
 
             for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
-                for (int at = 0; at < MAX_AGNETTYPES; ++at)
+                for (int at = 0; at < MAX_MODETYPES; ++at)
                 {
 
                     penalty_si_at[si][at][tau] = 0;
@@ -1121,7 +1100,7 @@ public:
             total_person_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
                        //cost_perhour[tau] = 0;
-            for (int at = 0; at < MAX_AGNETTYPES; ++at)
+            for (int at = 0; at < MAX_MODETYPES; ++at)
             {
                 volume_per_mode_type_per_period[tau][at] = 0;
                 converted_MEU_volume_per_period_per_at[tau][at] = 0;
@@ -1171,8 +1150,8 @@ public:
     int zone_seq_no_for_outgoing_connector;
 
     double number_of_lanes_si[MAX_SCENARIOS];
-    double penalty_si_at[MAX_SCENARIOS][MAX_AGNETTYPES][MAX_TIMEPERIODS];
-    double penalty_si_flag[MAX_SCENARIOS];
+    double penalty_si_at[MAX_SCENARIOS][MAX_MODETYPES][MAX_TIMEPERIODS];
+
 
     double lane_capacity;
     double saturation_flow_rate;
@@ -1426,26 +1405,26 @@ public:
     double RT_flow_volume;
     double background_total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
 
-    double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
-    double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
+    double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES];
 
-    double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
-    double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+       double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
     // added by Xuesong 0603 2023
-    double  recorded_capacity_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
-    double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
-    double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_AGNETTYPES][MAX_SCENARIOS];
+    double  recorded_capacity_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
 
 
     double  queue_link_distance_VDF_perslot[MAX_TIMEPERIODS];  // # of vehicles in the vertical point queue
-    double travel_time_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    double travel_time_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
     double RT_waiting_time;
 
 //    std::map<int, float> RT_travel_time_map;
     std::map<int, float> RT_speed_vector;
-    //	double  travel_marginal_cost_per_period[MAX_TIMEPERIODS][MAX_AGNETTYPES];
+    //	double  travel_marginal_cost_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
 
     int number_of_periods;
 
@@ -1535,53 +1514,6 @@ public:
 
     std::string vdf_code;
     CPeriod_VDF VDF_period_sum[MAX_TIMEPERIODS];
-};
-
-class CPeriod_Corridor
-{
-public:
-    CPeriod_Corridor() :volume{ 0 }, count{ 0 }, speed{ 0 }, DoC{ 0 }, P{ 0 },  AvgP{ 0 }, MaxP{0}
-    {}
-
-    int count;
-    double volume, speed, DoC, D, P, AvgP, MaxP;
-
-
-};
-
-
-class CCorridorInfo
-{
-public:
-    CCorridorInfo() {}
-
-    void record_link_2_corridor_data(CPeriod_Corridor element, int tau)
-    {
-        if (tau >= MAX_TIMEPERIODS)
-            return;
-
-        corridor_period[tau].volume += element.volume;
-        corridor_period[tau].DoC += element.DoC;
-        corridor_period[tau].speed += element.speed;
-        corridor_period[tau].P = max(corridor_period[tau].P, element.P);
-        corridor_period[tau].count += 1;
-
-    }
-
-    void computer_avg_value(int tau)
-    {
-        float count = corridor_period[tau].count;
-        if (count >= 1)
-        {
-            corridor_period[tau].volume /= count;
-            corridor_period[tau].speed /= count;;
-            corridor_period[tau].DoC /= count;;
-        }
-    }
-
-    std::string tmc_corridor_name;
-    CPeriod_Corridor corridor_period[MAX_TIMEPERIODS];
-    CPeriod_Corridor corridor_period_before[MAX_TIMEPERIODS];
 };
 
 
@@ -1733,11 +1665,9 @@ public:
 class COZone
 {
 public:
-    COZone() : cell_id{ 0 }, obs_production { 0 }, obs_attraction{ 0 },
-        est_production{ 0 }, est_attraction{ 0 },
-        est_production_dev{ 0 }, est_attraction_dev{ 0 }, gravity_production{ 100 }, gravity_attraction{ 100 }, cell_x{ 0 }, cell_y{ 0 },
+    COZone() : cell_id{ 0 }, gravity_production{ 10 }, gravity_attraction{ 10 }, cell_x{ 0 }, cell_y{ 0 },
         gravity_est_production{ 0 }, gravity_est_attraction{ 0 }, subarea_significance_flag{ true }, preread_total_O_demand{ 0 }, sindex{ -1 }, origin_zone_impact_volume{ 0 }, subarea_inside_flag { 3 },
-        superzone_index{ -100 }, bcluster_seed{ false }, b_shortest_path_computing_flag{ true }, super_seed_zone_id{ -1 }, b_distrct_cluster_seed{ false }, distrct_cluster_index{ -100 }, preread_total_O_related_demand {0}
+        superzone_index{ -100 }, bcluster_seed{ false }, b_shortest_path_computing_flag{ true }, super_seed_zone_id{ -1 }, b_distrct_cluster_seed{ false }, analysis_district_index{ -100 }, preread_total_O_related_demand {0}
     {
     }
 
@@ -1753,7 +1683,7 @@ public:
 
     bool b_shortest_path_computing_flag;  // for super zones
 
-    int  distrct_cluster_index;
+    int  analysis_district_index;
     bool b_distrct_cluster_seed;
 
     bool subarea_significance_flag;
@@ -1765,20 +1695,11 @@ public:
     double cell_x;
     double cell_y;
 
-    float obs_production;
-    float obs_attraction;
-
     float gravity_production;
     float gravity_attraction;
 
     float gravity_est_production;
     float gravity_est_attraction;
-
-    float est_production;
-    float est_attraction;
-
-    float est_production_dev;
-    float est_attraction_dev;
 
     // 0, 1,
     int zone_seq_no;
@@ -1865,7 +1786,7 @@ public:
 extern std::vector<CNode> g_node_vector;
 extern std::vector<CLink> g_link_vector;
 extern std::map<std::string, CVDF_Type> g_vdf_type_map;
-extern std::map<std::string, CCorridorInfo> g_corridor_info_SA_map;
+
 
 extern std::map<int, DTAVehListPerTimeInterval> g_AgentTDListMap;
 extern vector<CAgent_Simu*> g_agent_simu_vector;

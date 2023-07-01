@@ -47,15 +47,18 @@ using std::ifstream;
 using std::ofstream;
 using std::istringstream;
 
-void g_record_corridor_performance_summary(Assignment& assignment, int base_case_flag)
+void g_record_link_district_performance_per_scenario(Assignment& assignment)
 {
+	int total_volume = 0; 
 	for (int i = 0; i < g_link_vector.size(); ++i)
 	{
 		// virtual connectors
 		if (g_link_vector[i].link_type_si[0] == -1)
 			continue;
+		int mode_type_size = assignment.g_ModeTypeVector.size();
 
-
+		for (int at = 0; at < mode_type_size; ++at)
+		{ 
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 
@@ -66,14 +69,14 @@ void g_record_corridor_performance_summary(Assignment& assignment, int base_case
 			if (g_link_vector[i].VDF_period[tau].avg_travel_time > 0.001f)
 				speed = g_link_vector[i].free_speed / max(0.000001, g_link_vector[i].VDF_period[tau].avg_travel_time) * g_link_vector[i].VDF_period[tau].FFTT_at[0];
 
-			float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed
-			float vehicle_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-			float person_volume = g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+			float speed_ratio = speed / max(0.001, g_link_vector[i].free_speed);  // default speed
+
+			float person_volume = g_link_vector[i].volume_per_mode_type_per_period[tau][at] + g_link_vector[i].VDF_period[tau].preload;
 			//VMT,VHT,PMT,PHT,PDT
 			float preload = g_link_vector[i].VDF_period[tau].preload;
-			float VMT = vehicle_volume * g_link_vector[i].link_distance_VDF;
+			float VMT = person_volume * g_link_vector[i].link_distance_VDF;
 
-			float VHT = vehicle_volume * g_link_vector[i].VDF_period[tau].avg_travel_time / 60.0;
+			float VHT = person_volume * g_link_vector[i].VDF_period[tau].avg_travel_time / 60.0;
 			float PMT = person_volume * g_link_vector[i].link_distance_VDF;
 			float PHT = person_volume * g_link_vector[i].VDF_period[tau].avg_travel_time / 60.0;
 			float PDT_vf = person_volume * (g_link_vector[i].VDF_period[tau].avg_travel_time - g_link_vector[i].VDF_period[tau].FFTT_at[0]) / 60.0;
@@ -82,6 +85,8 @@ void g_record_corridor_performance_summary(Assignment& assignment, int base_case
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
 				g_link_vector[i].recorded_volume_per_period_per_at[tau][at][assignment.active_scenario_index] = g_link_vector[i].volume_per_mode_type_per_period[tau][at];
+				total_volume += g_link_vector[i].recorded_volume_per_period_per_at[tau][at][assignment.active_scenario_index];
+
 				g_link_vector[i].recorded_MEU_per_period_per_at[tau][at][assignment.active_scenario_index] = g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at];
 				g_link_vector[i].recorded_capacity_per_period_per_at[tau][at][assignment.active_scenario_index] =
 					g_link_vector[i].VDF_period[tau].capacity_at[at] * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
@@ -90,140 +95,98 @@ void g_record_corridor_performance_summary(Assignment& assignment, int base_case
 			}
 
 
-			if (base_case_flag == 0)
-			{  // base case
-				g_link_vector[i].VDF_period[tau].volume_before_sa = vehicle_volume;
-				g_link_vector[i].VDF_period[tau].speed_before_sa = speed;
-				g_link_vector[i].VDF_period[tau].DoC_before_sa = g_link_vector[i].VDF_period[tau].DOC_mode[0];
-				g_link_vector[i].VDF_period[tau].P_before_sa = g_link_vector[i].VDF_period[tau].P;
-
-			}
-			else  /// SA case
-			{
-				g_link_vector[i].VDF_period[tau].volume_after_sa = vehicle_volume;
-				g_link_vector[i].VDF_period[tau].speed_after_sa = speed;
-				g_link_vector[i].VDF_period[tau].DoC_after_sa = g_link_vector[i].VDF_period[tau].DOC_mode[0];
-				g_link_vector[i].VDF_period[tau].P_after_sa = g_link_vector[i].VDF_period[tau].P;
-
-			}
-
-			if (g_link_vector[i].tmc_corridor_name.size() > 0 || g_link_vector[i].VDF_period[tau].network_design_flag == 1)
-			{  // with corridor name
-				CPeriod_Corridor l_element;
-				l_element.volume = vehicle_volume;
-				l_element.speed = speed;
-				l_element.DoC = g_link_vector[i].VDF_period[tau].DOC_mode[0];
-				l_element.P = g_link_vector[i].VDF_period[tau].P;
-
-				string key = g_link_vector[i].tmc_corridor_name;
-				if (g_link_vector[i].VDF_period[tau].network_design_flag != 0)
-				{
-					int idebug = 1;
-				}
-				if (base_case_flag == 0)
-				{  // base case
-					g_corridor_info_base0_map[key].record_link_2_corridor_data(l_element, tau);
-					if (g_link_vector[i].VDF_period[tau].network_design_flag != 0)
-					{
-						key = g_link_vector[i].VDF_period[tau].scenario_code + " link_id:" + g_link_vector[i].link_id;
-						g_corridor_info_base0_map[key].record_link_2_corridor_data(l_element, tau);
-					}
-				}
-				else  /// SA case
-				{
-					g_corridor_info_SA_map[key].record_link_2_corridor_data(l_element, tau);
-
-					if (g_link_vector[i].VDF_period[tau].network_design_flag != 0)
-					{
-						key = g_link_vector[i].VDF_period[tau].scenario_code + " link_id:" + g_link_vector[i].link_id;
-						g_corridor_info_SA_map[key].record_link_2_corridor_data(l_element, tau);
-					}
-				}
-
-			}
-
-			int mode_type_size = assignment.g_ModeTypeVector.size();
-			for (int ad = 0; ad < assignment.g_number_of_analysis_districts; ++ad)
-				for (int at = 0; at < mode_type_size; ++at)
-				{
-
-					CModeType_Summary l_element;
-
-
-					//l_element.total_person_travel_time = g_link_vector[i].person_volume_per_district_per_at[ad][at] * g_link_vector[i].VDF_period[at].avg_travel_time;
-					//l_element.total_person_distance_km = g_link_vector[i].person_volume_per_district_per_at[ad][at] * g_link_vector[i].link_distance_km;
-					//l_element.total_person_distance_mile = g_link_vector[i].person_volume_per_district_per_at[ad][at] * g_link_vector[i].link_distance_mile;
-
-					// district
-					if (base_case_flag == 0)
-						g_district_info_base0_map[ad].record_link_2_district_data(l_element, at);
-					else
-						g_district_info_SA_map[ad].record_link_2_district_data(l_element, at);
-
-				}
-
-
+		}
 		}
 	}
+
+	dtalog.output() << "[DATA INFO] record link based and district_based performance for scenario_index =" << assignment.active_scenario_index << "with a total volume = " << total_volume <<  '\n';
+
+}
+
+void g_outputZonalHierarchyMapping(Assignment& assignment)
+{
+
+	for (int district = 0; district < assignment.g_number_of_analysis_districts; district++)
+	{
+		std::vector<DTAGDPoint> points, points_in_polygon;
+
+		//DTAGDPoint pt;
+		//pt.x = 0; pt.y = 4; points.push_back(pt);
+		//pt.x = 1; pt.y = 1; points.push_back(pt);
+		//pt.x = 2; pt.y = 2; points.push_back(pt);
+		//pt.x = 4; pt.y = 4; points.push_back(pt);
+		//pt.x = 3; pt.y = 1; points.push_back(pt);
+		//pt.x = 3; pt.y = 3; points.push_back(pt);
+		//g_find_convex_hull(points, points_in_polygon);
+
+		//test
+
+		//clustering
+		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+		{
+			if (g_zone_vector[orig].analysis_district_index == district)
+			{
+				DTAGDPoint pt;
+				pt.x = g_zone_vector[orig].cell_x;
+				pt.y = g_zone_vector[orig].cell_y;
+				g_district_summary_map[district].district_zone_vector.push_back(g_zone_vector[orig].zone_id);
+				points.push_back(pt);
+			}
+		}
+
+
+		if (points.size() >= 4)  // 4 as restrictive conditions
+		{
+			g_find_convex_hull(points, points_in_polygon);
+		}
+		else
+		{
+			for (int i = 0; i < points.size(); i++)
+			{
+				points_in_polygon.push_back(points[i]);
+
+			}
+		}
+
+		for (int i = 0; i < points_in_polygon.size(); i++)
+		{
+			g_district_summary_map[district].shape_points.push_back(points_in_polygon[i]);
+
+		}
+
+
+	}
+
+	dtalog.output() << "[PROCESS INFO] Generate subarea related zone file as subarea_related_zone.csv for focusing approach " << '\n';
+	FILE* g_pFileZone = nullptr;
+	g_pFileZone = fopen("zonal_hierarchy_mapping.csv", "w");
+
+	if (g_pFileZone == NULL)
+	{
+		dtalog.output() << "[ERROR] File zonal_hierarchy_mapping.csv cannot be opened." << '\n';
+		g_program_stop();
+	}
+
+	fprintf(g_pFileZone, "first_column,zone_id,x_coord,y_coord,super_zone_id,analysis_district_id,demand,subarea_significance_flag,inside_flag\n");
+	for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
+	{
+
+		int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[g_zone_vector[orig].zone_seq_no];
+
+		fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d,%d\n",
+			g_zone_vector[orig].zone_id, g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y,
+			g_zone_vector[orig].sindex,
+			analysis_district_id,
+			g_zone_vector[orig].origin_zone_impact_volume,
+			g_zone_vector[orig].subarea_significance_flag,
+			g_zone_vector[orig].subarea_inside_flag);
+	}
+
+	fclose(g_pFileZone);
 }
 
 void g_OutputSummaryFiles(Assignment& assignment)
 {
-	// if
-	if (g_corridor_info_base0_map.size() > 0)
-	{
-
-		assignment.summary_corridor_file.open("corridor_performance.csv", std::fstream::out);
-
-		assignment.summary_corridor_file << "tmc_corridor_name,demand_period,links,vol0,speed0,DoC0,max_P0,vol,speed,Doc,P,diff_vol,diff_spd,diff_Doc,diff_P,d%_vol,d%_spd," << '\n';
-
-		std::map<string, CCorridorInfo>::iterator it;
-		for (it = g_corridor_info_base0_map.begin(); it != g_corridor_info_base0_map.end(); ++it)
-		{
-			assignment.summary_corridor_file << it->first.c_str() << ",";
-			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
-			{
-				if (assignment.g_DemandPeriodVector[tau].number_of_demand_files >= 1)
-				{
-					it->second.computer_avg_value(tau);
-
-					assignment.summary_corridor_file <<
-						assignment.g_DemandPeriodVector[tau].demand_period.c_str() << "," <<
-						it->second.corridor_period[tau].count << "," <<
-						it->second.corridor_period[tau].volume << "," <<
-						it->second.corridor_period[tau].speed << "," <<
-						it->second.corridor_period[tau].DoC << "," <<
-						it->second.corridor_period[tau].P << ",";
-
-
-					if (g_corridor_info_SA_map.find(it->first) != g_corridor_info_SA_map.end())
-					{
-						g_corridor_info_SA_map[it->first].computer_avg_value(tau);
-
-						CCorridorInfo corridor1 = g_corridor_info_SA_map[it->first];
-
-						assignment.summary_corridor_file <<
-							corridor1.corridor_period[tau].volume << "," <<
-							corridor1.corridor_period[tau].speed << "," <<
-							corridor1.corridor_period[tau].DoC << "," <<
-							corridor1.corridor_period[tau].P << "," <<
-							corridor1.corridor_period[tau].volume - it->second.corridor_period[tau].volume << "," <<
-							corridor1.corridor_period[tau].speed - it->second.corridor_period[tau].speed << "," <<
-							corridor1.corridor_period[tau].DoC - it->second.corridor_period[tau].DoC << "," <<
-							corridor1.corridor_period[tau].P - it->second.corridor_period[tau].P << "," <<
-							(corridor1.corridor_period[tau].volume - it->second.corridor_period[tau].volume) / max(1.0, it->second.corridor_period[tau].volume) * 100.0 << "," <<
-							(corridor1.corridor_period[tau].speed - it->second.corridor_period[tau].speed) / max(1.0, it->second.corridor_period[tau].speed) * 100.0 << ",";
-
-					}
-
-					assignment.summary_corridor_file << '\n';
-				}
-			}
-		}
-
-		assignment.summary_corridor_file.close();
-	}
-	///  //output analysis_district performance file
 
 
 	assignment.summary_system_file.open("system_performance_summary.csv", std::fstream::out);
@@ -259,73 +222,16 @@ void g_OutputSummaryFiles(Assignment& assignment)
 		}
 		// end of scenario
 	}
-
-	//////////////////////////////
-	//assignment.summary_system_file.open("analysis_district_performance.csv", std::fstream::out);
-	//assignment.summary_system_file << "district_id,mode_type,od_volume,number_of_links,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_time,SA_total_travel_time_min,SA_avg_distance_km_,SA_avg_distance_mile,SA_avg_time,SA_distance_diff_perc,SA_time_diff_perc,geometry," << '\n';
-	//mode_type_size = assignment.g_ModeTypeVector.size();
-	//std::map<int, CAnalysisDistrict>::iterator it;
-
-	//for (it = g_district_info_base0_map.begin(); it != g_district_info_base0_map.end(); ++it)
-	//	for (int at = 0; at < mode_type_size; ++at)
-	//	{
-	//		assignment.summary_system_file << it->first << ",";
-	//		assignment.summary_system_file << assignment.g_ModeTypeVector[at].mode_type.c_str() << ",";
-	//		assignment.summary_system_file << it->second.data_by_mode_type[at].total_od_volume << ",";
-
-	//		{
-	//			it->second.computer_avg_value(at);
-
-	//			assignment.summary_system_file <<
-	//				it->second.data_by_mode_type[at].count << "," <<
-	//				it->second.data_by_mode_type[at].total_person_distance_km << "," <<
-	//				it->second.data_by_mode_type[at].total_person_distance_mile << "," <<
-	//				it->second.data_by_mode_type[at].total_person_travel_time << "," <<
-	//				it->second.data_by_mode_type[at].avg_travel_distance_km << "," <<
-	//				it->second.data_by_mode_type[at].avg_travel_distance_mile << "," <<
-	//				it->second.data_by_mode_type[at].avg_travel_time << ",";
+	assignment.summary_system_file.close();
 
 
-	//			if (g_district_info_SA_map.find(it->first) != g_district_info_SA_map.end())
-	//			{
-	//				g_district_info_SA_map[it->first].data_by_mode_type[at].total_od_volume = it->second.data_by_mode_type[at].total_od_volume;
-	//				g_district_info_SA_map[it->first].computer_avg_value(at);
-
-	//				CAnalysisDistrict dist_sa = g_district_info_SA_map[it->first];
-	//				assignment.summary_system_file <<
-	//					dist_sa.data_by_mode_type[at].total_person_travel_time << "," <<
-	//					dist_sa.data_by_mode_type[at].avg_travel_distance_km << "," <<
-	//					dist_sa.data_by_mode_type[at].avg_travel_distance_mile << "," <<
-	//					dist_sa.data_by_mode_type[at].avg_travel_time << "," <<
-	//					(dist_sa.data_by_mode_type[at].avg_travel_distance_mile - it->second.data_by_mode_type[at].avg_travel_distance_mile) / max(0.01, it->second.data_by_mode_type[at].avg_travel_distance_mile) * 100.0 << "," <<
-	//					(dist_sa.data_by_mode_type[at].avg_travel_time - it->second.data_by_mode_type[at].avg_travel_time) / max(0.01, it->second.data_by_mode_type[at].avg_travel_time) * 100.0 << ",";
-	//			}
-	//			else
-	//			{
-	//				assignment.summary_system_file << ",,,,,,";
-
-	//			}
-
-	//			assignment.summary_system_file << "\"POLYGON ((";
-	//			for (int i = 0; i < it->second.shape_points.size(); i++)
-	//			{
-	//				assignment.summary_system_file << it->second.shape_points[i].x << " " <<
-	//					it->second.shape_points[i].y << ",";
-
-	//			}
-
-	//			assignment.summary_system_file << "))\"";
-
-	//			assignment.summary_system_file << '\n';
-	//		}
-	//	}
 }
 
 // FILE* g_pFileOutputLog = nullptr;
 
 void g_output_dynamic_queue_profile()  // generated from VDF, from numerical queue evolution calculation
 {
-	dtalog.output() << "writing link_queue_profile.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing link_queue_profile.csv.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -336,7 +242,7 @@ void g_output_dynamic_queue_profile()  // generated from VDF, from numerical que
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File " << file_name.c_str() << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -534,8 +440,71 @@ void g_output_dynamic_queue_profile()  // generated from VDF, from numerical que
 
 }
 
+void g_output_district_performance_result(Assignment& assignment)
+{
+
+
+	char district_performance_file_name[50];
+	int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+	sprintf(district_performance_file_name, "district_performance_s%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
+
+	assignment.summary_system_file.open(district_performance_file_name, std::fstream::out);
+	assignment.summary_system_file << "first_column,district_index,scenario_name,demand_period,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry" << '\n'; 
+
+	int mode_type_size = assignment.g_ModeTypeVector.size();
+	std::map<int, CSystem_Summary>::iterator it_s;
+	for (it_s = g_district_summary_map.begin(); it_s != g_district_summary_map.end(); ++it_s)
+	{
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+		{
+			for (int at = 0; at < mode_type_size; ++at)
+			{
+
+				assignment.summary_system_file << "," << it_s->first << "," << assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str() << ",";
+				assignment.summary_system_file << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ",";
+
+				assignment.summary_system_file << assignment.g_ModeTypeVector[at].mode_type.c_str() << ",";
+				assignment.summary_system_file << it_s->second.data_by_demand_period_mode_type[tau][at].total_od_volume << ",";
+
+				it_s->second.computer_avg_value(tau, at);
+
+				assignment.summary_system_file <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_km << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_distance_mile << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].total_person_travel_time << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_km << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile << "," <<
+					it_s->second.data_by_demand_period_mode_type[tau][at].avg_travel_time << ",";
+
+				for (int i = 0; i < it_s->second.district_zone_vector.size(); i++)
+				{
+					assignment.summary_system_file << it_s->second.district_zone_vector[i] << ";";
+						
+				}
+				assignment.summary_system_file << ",";
+
+				assignment.summary_system_file << "\"POLYGON ((";
+
+				for (int i = 0; i < it_s->second.shape_points.size(); i++)
+				{
+					assignment.summary_system_file << it_s->second.shape_points[i].x << " " << it_s->second.shape_points[i].y << ",";
+
+				}
+				assignment.summary_system_file << "))\"";
+				assignment.summary_system_file << "\n";
+
+				it_s->second.reset_data(tau, at);  // reset the statistics 
+			}
+		}
+		// end of scenario
+
+	}
+	assignment.summary_system_file.close();
+
+}
 void g_output_assignment_result(Assignment& assignment, int subarea_id)
 {
+	g_record_link_district_performance_per_scenario(assignment);
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -557,11 +526,11 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 		sprintf(link_performance_file_name, "link_performance_s%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
 
-		dtalog.output() << "writing link_performance_s" << assignment.active_scenario_index << ".csv" << '\n';
+		dtalog.output() << "[STATUS INFO] writing link_performance_s" << assignment.active_scenario_index << ".csv" << '\n';
 		fopen_ss(&g_pFileLinkMOE, link_performance_file_name, "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_s" << assignment.active_scenario_index << ".csv" << "cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File link_performance_s" << assignment.active_scenario_index << ".csv" << "cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -571,11 +540,11 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 	{
 		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -677,7 +646,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				if (g_link_vector[i].VDF_period[tau].avg_travel_time > 0.001f)
 					speed = g_link_vector[i].free_speed / max(0.000001, g_link_vector[i].VDF_period[tau].avg_travel_time) * g_link_vector[i].VDF_period[tau].FFTT_at[0];
 
-				float speed_ratio = speed / max(1.0, g_link_vector[i].free_speed);  // default speed
+				float speed_ratio = speed / max(0.001, g_link_vector[i].free_speed);  // default speed
 				float vehicle_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
 				float ref_volume_diff = 0;
 
@@ -749,12 +718,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					g_link_vector[i].VDF_period[tau].volume_after_odme,
 					g_link_vector[i].VDF_period[tau].volume_after_odme - g_link_vector[i].VDF_period[tau].volume_before_odme);
 
-				if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
+				if (g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)
 				{
 					fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,",
-						g_link_vector[i].VDF_period[tau].obs_count,
+						g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index],
 						g_link_vector[i].VDF_period[tau].upper_bound_flag,
-						g_link_vector[i].VDF_period[tau].obs_count - g_link_vector[i].VDF_period[tau].volume_after_odme);
+						g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] - g_link_vector[i].VDF_period[tau].volume_after_odme);
 				}
 				else
 				{
@@ -819,12 +788,6 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].VDF_period[tau].DOC_mode[at]);
 
-				//for (int og = 0; og < assignment.g_number_of_analysis_districts; ++og)
-				//	for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-				//	{
-				//		fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].person_volume_per_district_per_at[og][at]);
-				//	}
-
 
 				for (int t = 6 * 60; t < 20 * 60; t += 15)
 				{
@@ -879,7 +842,6 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 
 
-
 	if (subarea_id == 1)
 		return;
 
@@ -895,11 +857,11 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		FILE* g_pFilePathMOE = nullptr;
 		fopen_ss(&g_pFilePathMOE, route_assignment_file_name, "w");
-		dtalog.output() << "writing route_assignment.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing route_assignment.csv for each scenario" << '\n';
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File " << route_assignment_file_name << " cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -914,7 +876,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_column_updating_iterations); iteration_number++)
 		//{
-		//    fprintf(g_pFilePathMOE, "Vol_%d,", iteration_number);
+		//    fprintf(g_pFilePathMOE, "VOL_%d,", iteration_number);
 		//}
 
 		//stage 2: ODME
@@ -1067,76 +1029,71 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				}
 			}
 
-			/// output background_link_volume.csv
-			dtalog.output() << "writing link_background_volume.csv.." << '\n';
+			///// output background_link_volume.csv
+			//dtalog.output() << "[STATUS INFO] writing link_background_volume.csv.." << '\n';
 
-			int b_debug_detail_flag = 0;
-			FILE* g_pFileLinkMOE = nullptr;
-			int b_background_link_volume_file = 0;
+			//int b_debug_detail_flag = 0;
+			//FILE* g_pFileLinkMOE = nullptr;
+			//int b_background_link_volume_file = 0;
 
-			if (b_background_link_volume_file)
-			{
-				fopen_ss(&g_pFileLinkMOE, "link_background_volume.csv", "w");
-				if (!g_pFileLinkMOE)
-				{
-					dtalog.output() << "File link_background_volume.csv cannot be opened." << '\n';
-					g_program_stop();
-				}
-				else
-				{
-					fprintf(g_pFileLinkMOE, "link_id,from_node_id,to_node_id,subarea_id,time_period,volume,background_volume,major_path_volume,ratio_of_major_path_flow,geometry,");
+			//if (b_background_link_volume_file)
+			//{
+			//	fopen_ss(&g_pFileLinkMOE, "link_background_volume.csv", "w");
+			//	if (!g_pFileLinkMOE)
+			//	{
+			//		dtalog.output() << "[ERROR] File link_background_volume.csv cannot be opened." << '\n';
+			//		g_program_stop();
+			//	}
+			//	else
+			//	{
+			//		fprintf(g_pFileLinkMOE, "link_id,from_node_id,to_node_id,subarea_id,time_period,volume,background_volume,major_path_volume,ratio_of_major_path_flow,geometry,");
 
-					fprintf(g_pFileLinkMOE, "notes\n");
+			//		fprintf(g_pFileLinkMOE, "notes\n");
 
-					//Initialization for all nodes
-					for (int i = 0; i < g_link_vector.size(); ++i)
-					{
-						//   virtual connectors
-						if (g_link_vector[i].link_type_si[0] == -1)
-							continue;
+			//		//Initialization for all nodes
+			//		for (int i = 0; i < g_link_vector.size(); ++i)
+			//		{
+			//			//   virtual connectors
+			//			if (g_link_vector[i].link_type_si[0] == -1)
+			//				continue;
 
-						for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-						{
-							double volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
-							double major_path_link_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau];
-							double ratio = major_path_link_volume / max(volume, 0.000001);
+			//			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+			//			{
+			//				double volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload;
+			//				double major_path_link_volume = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau];
+			//				double ratio = major_path_link_volume / max(volume, 0.000001);
 
-							if (volume < 0.0000001)
-								ratio = -1;
-							fprintf(g_pFileLinkMOE, "%s,%d,%d,%d,%s,%.3f,%.3f,%.3f,%.3f,\"%s\",",
-								g_link_vector[i].link_id.c_str(),
-								g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
-								g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
-								g_link_vector[i].subarea_id,
-								assignment.g_DemandPeriodVector[tau].time_period.c_str(),
-								g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
-								g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau],
-								major_path_link_volume,
-								ratio,
-								g_link_vector[i].geometry.c_str());
-							fprintf(g_pFileLinkMOE, "\n");
+			//				if (volume < 0.0000001)
+			//					ratio = -1;
+			//				fprintf(g_pFileLinkMOE, "%s,%d,%d,%d,%s,%.3f,%.3f,%.3f,%.3f,\"%s\",",
+			//					g_link_vector[i].link_id.c_str(),
+			//					g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
+			//					g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
+			//					g_link_vector[i].subarea_id,
+			//					assignment.g_DemandPeriodVector[tau].time_period.c_str(),
+			//					g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload,
+			//					g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau],
+			//					major_path_link_volume,
+			//					ratio,
+			//					g_link_vector[i].geometry.c_str());
+			//				fprintf(g_pFileLinkMOE, "\n");
 
-						}
+			//			}
 
-					}
+			//		}
 
-					fclose(g_pFileLinkMOE);
-				}
+			//		fclose(g_pFileLinkMOE);
+				//}
 
-			}
+			//}
 
 
 		} // end of path flow pattern screening
-		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
-
-
-
-
-
+		
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+				dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			int from_zone_sindex = g_zone_vector[orig].sindex;
 			if (from_zone_sindex == -1)
@@ -1173,6 +1130,9 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 						if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 						{
+							double od_toll = 0;
+							double od_trave_time = 0;
+							double od_distance_km = 0;
 
 							int at_OD_impact_flag;
 							if (p_column_pool->at_od_impacted_flag_map.find(at) != p_column_pool->at_od_impacted_flag_map.end())
@@ -1206,7 +1166,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
+									dtalog.output() << "[STATUS INFO] writing " << count / 1000 << "K paths with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								path_toll = 0;
@@ -1225,14 +1185,14 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 								if (it->second.m_link_size >= MAX_LINK_SIZE_IN_A_PATH - 2)
 								{
-									dtalog.output() << "error: it->second.m_link_size < MAX_LINK_SIZE_IN_A_PATH" << '\n';
-									dtalog.output() << "o= " << g_zone_vector[orig].zone_id << '\n';
-									dtalog.output() << "d= " << g_zone_vector[dest].zone_id << '\n';
-									dtalog.output() << "agent type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() << '\n';
+									dtalog.output() << "[ERROR] it->second.m_link_size < MAX_LINK_SIZE_IN_A_PATH" << '\n';
+									dtalog.output() << "[DATA INFO] o= " << g_zone_vector[orig].zone_id << '\n';
+									dtalog.output() << "[DATA INFO] d= " << g_zone_vector[dest].zone_id << '\n';
+									dtalog.output() << "[DATA INFO] agent type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() << '\n';
 
 									for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 									{
-										dtalog.output() << "node no." << nl << " =" << g_node_vector[it->second.path_node_vector[nl]].node_id << '\n';
+										dtalog.output() << "[DATA INFO] node no." << nl << " =" << g_node_vector[it->second.path_node_vector[nl]].node_id << '\n';
 									}
 
 									g_program_stop();
@@ -1250,6 +1210,10 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 										path_distance_ml += g_link_vector[link_seq_no].link_distance_mile;
 										float link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
 										path_travel_time += link_travel_time;
+
+										od_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at]* it->second.path_volume;
+										od_trave_time += link_travel_time* it->second.path_volume;
+										od_distance_km += g_link_vector[link_seq_no].link_distance_VDF*it->second.path_volume;
 
 										if (g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index] != 1000)   // skip access link
 										{
@@ -1274,7 +1238,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 								l_element.total_person_distance_km = path_distance_km * it->second.path_volume;
 								l_element.total_person_distance_mile = path_distance_ml * it->second.path_volume;
 
-								g_scenario_summary_map[assignment.active_scenario_index].record_mode_od_data(l_element, tau, at);
+								int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig];
+
+								g_district_summary_map[analysis_district_id].record_mode_volume(tau, at, it->second.path_volume);  // based on analysis district id, we count the total volume 
+								g_district_summary_map[analysis_district_id].record_mode_od_data(l_element, tau, at);  // based on analysis district id, we count the OD performance 
+
+								g_scenario_summary_map[assignment.active_scenario_index].record_mode_od_data(l_element, tau, at);  // we count system wide performance. the total volume has been counted in demand reading part 
 
 								double total_agent_path_travel_time = 0;
 
@@ -1323,7 +1292,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 								// assignment_mode = 1, path flow mode
 								if (assignment.assignment_mode != lue)
 								{
-									if (it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta <= 2)
+									if (it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta <= 1)
 										continue;
 
 									int impacted_path_flag = it->second.impacted_path_flag;  //NA by default
@@ -1563,8 +1532,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 									count++;
 								}
 
-							}
-						}
+							}  // for each route
+							p_column_pool->avg_travel_time[assignment.active_scenario_index] = od_trave_time / p_column_pool->od_volume[assignment.active_scenario_index];
+							p_column_pool->avg_distance[assignment.active_scenario_index] = od_distance_km / p_column_pool->od_volume[assignment.active_scenario_index];
+							p_column_pool->avg_cost[assignment.active_scenario_index] = od_toll / p_column_pool->od_volume[assignment.active_scenario_index];
+
+						} // od level
 					}
 				}
 			}
@@ -1572,6 +1545,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		fclose(g_pFilePathMOE);
 
 	}
+
+
 	//	g_output_dynamic_queue_profile();
 }
 
@@ -1587,11 +1562,11 @@ void g_output_choice_set_result(Assignment& assignment)
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, route_assignment_file_name, "w");
-	dtalog.output() << "writing choice_set_output.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing choice_set_output.csv.." << '\n';
 
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File " << route_assignment_file_name << " cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File " << route_assignment_file_name << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -1755,11 +1730,11 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 	{
 		assignment.summary_file << "Output Link Performance Summary" << '\n';
 
-		dtalog.output() << "writing link_performances_summary.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing link_performances_summary.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "link_performance_summary.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_summary.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File link_performance_summary.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -1769,11 +1744,11 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 	{
 		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -1796,13 +1771,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 		for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
 		{
 			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-			fprintf(g_pFileLinkMOE, "type_s%d,", scenario_index);
-		}
-
-		for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
-		{
-			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-			fprintf(g_pFileLinkMOE, "penaltys%d,", scenario_index);
+			fprintf(g_pFileLinkMOE, "link_type_s%d,", scenario_index);
 		}
 
 
@@ -1816,7 +1785,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
 
-						fprintf(g_pFileLinkMOE, "vol_p%d_s%d_%s,", tau, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+						fprintf(g_pFileLinkMOE, "VOL_p%d_s%d_%s,", tau+1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
 					}
 
 				}
@@ -1833,30 +1802,14 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
 
-						fprintf(g_pFileLinkMOE, "MEU_p%d_s%d_%s,", tau, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+						fprintf(g_pFileLinkMOE, "MEU_p%d_s%d_%s,", tau+1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
 					}
 
 				}
 			}
 
 		}
-		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
-		{
-			for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
-			{
-				int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-				{
 
-					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-					{
-
-						fprintf(g_pFileLinkMOE, "cap_p%d_s%d_%s,", tau, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
-					}
-
-				}
-			}
-
-		}
 
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
@@ -1868,7 +1821,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
 
-						fprintf(g_pFileLinkMOE, "DOC_p%d_s%d_%s,", tau, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+						fprintf(g_pFileLinkMOE, "CAP_p%d_s%d_%s,", tau+1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
 					}
 
 				}
@@ -1886,7 +1839,43 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
 
-						fprintf(g_pFileLinkMOE, "TT_p%d_s%d_%s,", tau, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+						fprintf(g_pFileLinkMOE, "PEN_p%d_s%d_%s,", tau + 1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+					}
+
+				}
+			}
+
+		}
+
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+		{
+			for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+			{
+				int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+				{
+
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+					{
+
+						fprintf(g_pFileLinkMOE, "DOC_p%d_s%d_%s,", tau+1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
+					}
+
+				}
+			}
+
+		}
+
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+		{
+			for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+			{
+				int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+				{
+
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+					{
+
+						fprintf(g_pFileLinkMOE, "TT_p%d_s%d_%s,", tau+1, scenario_index, assignment.g_ModeTypeVector[at].mode_type.c_str());
 					}
 
 				}
@@ -1903,9 +1892,10 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 				int scenario_index_no = assignment.g_active_DTAscenario_map[scenario_index];
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
-					fprintf(g_pFileLinkMOE, "vol_%s_s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					fprintf(g_pFileLinkMOE, "VOL_%s_s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "MEU_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
-					fprintf(g_pFileLinkMOE, "cap_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					fprintf(g_pFileLinkMOE, "CAP_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					fprintf(g_pFileLinkMOE, "PEN_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "DOC_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "TT_%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 				}
@@ -1997,12 +1987,8 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 				int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
 				fprintf(g_pFileLinkMOE, "%s,", assignment.g_LinkTypeMap[g_link_vector[i].link_type_si[scenario_index]].link_type_name.c_str());
 			}
-			for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
-			{
-				int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-				fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].penalty_si_flag[scenario_index]);
-			}
 
+			float total_recorded_volume = 0; 
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 				for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
@@ -2013,6 +1999,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 						for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 						{
 
+							total_recorded_volume += g_link_vector[i].recorded_volume_per_period_per_at[tau][at][scenario_index]; 
 							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_volume_per_period_per_at[tau][at][scenario_index]);  // pk format
 
 						}
@@ -2020,6 +2007,10 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 				}
 
 			}
+
+			int debug_flag;
+			debug_flag = 1;
+
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 				for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
@@ -2054,6 +2045,26 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 				}
 
 			}
+
+			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+			{
+				for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+				{
+					int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+					{
+
+						for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+						{
+
+							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].penalty_si_at[tau][at][scenario_index]);  // PEN
+
+						}
+					}
+				}
+
+			}			
+
+
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 				for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
@@ -2102,6 +2113,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_volume_per_period_per_at[tau][at][scenario_index]);
 							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_MEU_per_period_per_at[tau][at][scenario_index]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_capacity_per_period_per_at[tau][at][scenario_index]);
+							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].penalty_si_at[tau][at][scenario_index]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_index]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_TT_per_period_per_at[tau][at][scenario_index]);
 
@@ -2140,11 +2152,11 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 	{
 		assignment.summary_file << "Output 2 Way Link Performance Summary" << '\n';
 
-		dtalog.output() << "writing link_performances_summary_2way.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing link_performances_summary_2way.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "link_performance_summary_2way.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File link_performance_summary2_way.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File link_performance_summary2_way.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -2154,11 +2166,11 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 	{
 		assignment.summary_file << "Output subarea Link Performance:" << '\n';
 
-		dtalog.output() << "writing subarea_link_performance.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing subarea_link_performance.csv.." << '\n';
 		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
 		if (!g_pFileLinkMOE)
 		{
-			dtalog.output() << "File subarea_link_performance.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 	}
@@ -2181,13 +2193,13 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 		for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
 		{
 			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-			fprintf(g_pFileLinkMOE, "type_s%d,", scenario_index);
+			fprintf(g_pFileLinkMOE, "link_type_s%d,", scenario_index);
 		}
 
 		for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
 		{
 			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-			fprintf(g_pFileLinkMOE, "penaltys%d,", scenario_index);
+			fprintf(g_pFileLinkMOE, "penalty_s%d,", scenario_index);
 		}
 
 		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
@@ -2256,6 +2268,7 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 				{
 					fprintf(g_pFileLinkMOE, "MEUVAB%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "capAB%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					fprintf(g_pFileLinkMOE, "PENAB%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "DOCAB%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "TTAB%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 				}
@@ -2274,6 +2287,7 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 				{
 					fprintf(g_pFileLinkMOE, "MEUVBA%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "capBA%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					fprintf(g_pFileLinkMOE, "PENBA%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "DOCBA%s%s%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 					fprintf(g_pFileLinkMOE, "TTBA%s_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
 				}
@@ -2373,11 +2387,6 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
 			fprintf(g_pFileLinkMOE, "%s,", assignment.g_LinkTypeMap[g_link_vector[i].link_type_si[scenario_index]].link_type_name.c_str());
 		}
-		for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
-		{
-			int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
-			fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].penalty_si_flag[scenario_index]);
-		}
 
 		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
@@ -2459,6 +2468,9 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 
 						fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_MEU_per_period_per_at[tau][at][scenario_index]);
 						fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_capacity_per_period_per_at[tau][at][scenario_index]);
+						fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].penalty_si_at[tau][at][scenario_index]);
+
+						
 						fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_index]);
 						fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_TT_per_period_per_at[tau][at][scenario_index]);
 
@@ -2484,6 +2496,8 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 							{
 								fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_MEU_per_period_per_at[tau][at][scenario_index]);
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_capacity_per_period_per_at[tau][at][scenario_index]);
+								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].penalty_si_at[tau][at][scenario_index]);
+							
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_DOC_per_period_per_at[tau][at][scenario_index]);
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_TT_per_period_per_at[tau][at][scenario_index]);
 							}
@@ -2508,36 +2522,51 @@ void g_output_accessibility_result(Assignment& assignment)
 {
 	if (assignment.assignment_mode == lue)
 	{
-		dtalog.output() << "link based user equilibrum mode: no od_performance.csv output.." << '\n';
+		dtalog.output() << "[WARNING] link based user equilibrum mode: no od_performance_summary.csv output.." << '\n';
 		return;
 	}
 
-	dtalog.output() << "output od_performance.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] output od_performance_summary.csv.." << '\n';
 
-	FILE* g_pFilePathMOE = nullptr;
-	fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
+	FILE* g_pFileODMOE = nullptr;
+	fopen_ss(&g_pFileODMOE, "od_performance_summary.csv", "w");
 
-	dtalog.output() << "writing od_performance.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing od_performance_summary.csv.." << '\n';
 
 	double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
-	fopen_ss(&g_pFilePathMOE, "od_performance.csv", "w");
+	fopen_ss(&g_pFileODMOE, "od_performance_summary.csv", "w");
 
-	if (!g_pFilePathMOE)
+	if (!g_pFileODMOE)
 	{
-		dtalog.output() << "File od_performance.csv cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File od_performance_summary.csv cannot be opened." << '\n';
 		g_program_stop();
 	}
 
-	fprintf(g_pFilePathMOE, "od_no,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,mode_type,demand_period,volume,connectivity_flag,s_x_coord,s_y_coord,t_x_coord,t_y_coord,path_FF_travel_time_min,distance_km,distance_mile,");
-
-	for (int d = 0; d < assignment.g_number_of_sensitivity_analysis_iterations; d++)
+	fprintf(g_pFileODMOE, "od_no,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,mode_type,demand_period,connectivity_flag,s_x_coord,s_y_coord,t_x_coord,t_y_coord,");
+	for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
 	{
-		fprintf(g_pFilePathMOE, "OD%d,", d);
+		int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+		fprintf(g_pFileODMOE, "volume_s%d,", scenario_index);
+	}
+	for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+	{
+		int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+		fprintf(g_pFileODMOE, "avg_tt_s%d,", scenario_index);
+	}
+	for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+	{
+		int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+		fprintf(g_pFileODMOE, "avg_distance_km_s%d,", scenario_index);
+	}	for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+	{
+		int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+		fprintf(g_pFileODMOE, "avg_cost_s%d,", scenario_index);
 	}
 
 
-	fprintf(g_pFilePathMOE, "\n");
+
+	fprintf(g_pFileODMOE, "\n");
 	int count = 1;
 
 	clock_t start_t, end_t;
@@ -2667,7 +2696,7 @@ void g_output_accessibility_result(Assignment& assignment)
 
 
 	} // end of path flow pattern screening
-	dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+	dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 	int number_of_connected_OD_pairs = 0;
 
@@ -2684,7 +2713,7 @@ void g_output_accessibility_result(Assignment& assignment)
 			continue;
 
 		if (g_zone_vector[orig].zone_id % 100 == 0)
-			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+			dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 		for (int dest = 0; dest < zone_size; ++dest)
 		{
 			int to_zone_sindex = g_zone_vector[dest].sindex;
@@ -2731,10 +2760,8 @@ void g_output_accessibility_result(Assignment& assignment)
 						}
 
 
-						if (p_column_pool->path_node_sequence_map.size() == 0)
-						{
 
-							fprintf(g_pFilePathMOE, "%d,%d,%d,%d,%d,%d,%d,",
+							fprintf(g_pFileODMOE, "%d,%d,%d,%d,%d,%d,%d,",
 								count,
 								g_zone_vector[orig].zone_id,
 								g_zone_vector[dest].zone_id,
@@ -2744,203 +2771,54 @@ void g_output_accessibility_result(Assignment& assignment)
 								assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[dest]
 
 							);
-							fprintf(g_pFilePathMOE, "%s,%s,%.2f,0,",
+							fprintf(g_pFileODMOE, "%s,%s,0,",
 								assignment.g_ModeTypeVector[at].mode_type.c_str(),
-								assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
-								p_column_pool->od_volume[assignment.active_scenario_index]);
+								assignment.g_DemandPeriodVector[tau].demand_period.c_str());
 
-							fprintf(g_pFilePathMOE, "%f,%f,%f,%f\n",
+							fprintf(g_pFileODMOE, "%f,%f,%f,%f,",
 								g_zone_vector[orig].cell_x,
 								g_zone_vector[orig].cell_y,
 								g_zone_vector[dest].cell_x,
 								g_zone_vector[dest].cell_y);
+
+							for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+							{
+								int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+								fprintf(g_pFileODMOE, "%4.2f,", p_column_pool->od_volume[scenario_index]);
+							}
+							for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+							{
+								int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+								fprintf(g_pFileODMOE, "%4.2f,", p_column_pool->avg_travel_time[scenario_index]);
+							}
+							for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+							{
+								int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+								fprintf(g_pFileODMOE, "%4.2f,", p_column_pool->avg_distance[scenario_index]);
+							}
+							for (int sii = 0; sii < assignment.g_DTAscenario_vector.size(); sii++)
+							{
+								int scenario_index = assignment.g_DTAscenario_vector[sii].scenario_index;
+								fprintf(g_pFileODMOE, "%4.2f,", p_column_pool->avg_cost[scenario_index]);
+							}
+
+							fprintf(g_pFileODMOE, "\n");
+
 							continue;
 						}
-						// scan through the map with different node sum for different continuous paths
-						it_begin = p_column_pool->path_node_sequence_map.begin();
-						it_end = p_column_pool->path_node_sequence_map.end();
 
-
-						for (it = it_begin; it != it_end; ++it)
-						{
-							if (it->second.subarea_output_flag == 0)
-								continue;
-
-							if (count % 100000 == 0)
-							{
-								end_t = clock();
-								iteration_t = end_t - start_t;
-								dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
-							}
-
-							path_toll = 0;
-							path_distance = 0;
-							path_travel_time = 0;
-							path_travel_time_without_access_link = 0;
-							path_FF_travel_time = 0;
-
-							path_time_vector[0] = time_stamp;
-							string link_code_str;
-
-							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
-							{
-
-								int link_seq_no = it->second.path_link_vector[nl];
-								if (g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index] >= 0)
-								{
-									path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
-									path_distance += g_link_vector[link_seq_no].link_distance_km;
-									float link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
-									path_travel_time += link_travel_time;
-
-									if (g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index] != 1000)   // skip access link
-									{
-										path_travel_time_without_access_link += link_travel_time;
-									}
-									path_FF_travel_time += g_link_vector[link_seq_no].VDF_period[tau].FFTT_at[at];
-									time_stamp += link_travel_time;
-									path_time_vector[nl + 1] = time_stamp;
-
-									link_code_str += g_link_vector[link_seq_no].link_code_str;
-								}
-								else
-								{
-									int virtual_link = 0;
-								}
-							}
-
-							double total_agent_path_travel_time = 0;
-
-							for (int vi = 0; vi < it->second.agent_simu_id_vector.size(); ++vi)
-							{
-								int agent_simu_id = it->second.agent_simu_id_vector[vi];
-								CAgent_Simu* pAgentSimu = g_agent_simu_vector[agent_simu_id];
-								total_agent_path_travel_time += pAgentSimu->path_travel_time_in_min;
-							}
-
-							double final_path_travel_time = path_travel_time;  // by default
-
-							if (it->second.agent_simu_id_vector.size() > 1)  // with simulated agents
-							{
-								final_path_travel_time = total_agent_path_travel_time / it->second.agent_simu_id_vector.size();
-							}
-
-
-
-							int virtual_first_link_delta = 1;
-							int virtual_last_link_delta = 1;
-							// fixed routes have physical nodes always, without virtual connectors
-							if (p_column_pool->bfixed_route)
-							{
-
-								virtual_first_link_delta = 0;
-								virtual_last_link_delta = 1;
-							}
-							if (information_type == 1 && it->second.path_volume < 0.1)
-								continue;
-
-							if (information_type == 1)  // information diversion start from physical nodes
-							{
-								virtual_first_link_delta = 0;
-								virtual_last_link_delta = 1;
-
-							}
-
-
-							// assignment_mode = 1, path flow mode
-							if (assignment.assignment_mode >= 1)
-							{
-
-								int o_zone_mode_type_cover_flag = 0;
-								int d_zone_mode_type_cover_flag = 0;
-
-								if (assignment.g_ModeTypeVector[at].zone_id_cover_map.find(g_zone_vector[orig].zone_id) != assignment.g_ModeTypeVector[at].zone_id_cover_map.end())
-								{
-									o_zone_mode_type_cover_flag = 1;
-								}
-
-								if (assignment.g_ModeTypeVector[at].zone_id_cover_map.find(g_zone_vector[dest].zone_id) != assignment.g_ModeTypeVector[at].zone_id_cover_map.end())
-								{
-									d_zone_mode_type_cover_flag = 1;
-								}
-
-								int number_of_nodes = it->second.m_link_size + 1;
-
-								if (number_of_nodes <= 1)
-								{
-									int i_debug = 1;
-								}
-								int route_no = it->second.global_path_no;
-								if (route_no == -1)
-									route_no = count;
-
-								fprintf(g_pFilePathMOE, "%d,%d,%d,%d,%d,%d,%d,",
-									count,
-									g_zone_vector[orig].zone_id,
-									g_zone_vector[dest].zone_id,
-									g_zone_vector[orig].sindex,
-									g_zone_vector[dest].sindex,
-									assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[orig],
-									assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[dest]);
-
-								fprintf(g_pFilePathMOE, "%s,%s,%.2f,1,%f,%f,%f,%f,%.4f,%.4f,%.4f,",
-									assignment.g_ModeTypeVector[at].mode_type.c_str(),
-									assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
-									it->second.path_volume,
-									g_zone_vector[orig].cell_x,
-									g_zone_vector[orig].cell_y,
-									g_zone_vector[dest].cell_x,
-									g_zone_vector[dest].cell_y,
-
-									path_FF_travel_time,
-									path_distance,
-									path_distance / 1.609
-								);
-								//it->second.path_seq_no,
-								//information_type,
-								//it->second.agent_simu_id_vector.size(),
-								//it->second.subarea_output_flag,
-								//it->second.measurement_flag,
-								//path_toll,
-								//final_path_travel_time,
-								//path_travel_time,
-								//path_travel_time_without_access_link,
-								////path_FF_travel_time,
-								////final_path_travel_time- path_FF_travel_time,
-								//number_of_nodes,
-								//path_distance);
-
-								double prev_value = 0;
-
-								for (int d = 0; d < assignment.g_number_of_sensitivity_analysis_iterations; d++)
-								{
-									double value = 0;
-
-									if (p_column_pool->od_volume_per_iteration_map.find(d) != p_column_pool->od_volume_per_iteration_map.end())
-									{
-										value = p_column_pool->od_volume_per_iteration_map[d];
-									}
-
-									fprintf(g_pFilePathMOE, "%f,", value - prev_value);
-									prev_value = value;
-								}
-								fprintf(g_pFilePathMOE, "\n");
-
-
-								count++;
-							}
-
+						
 						}
 					}
 				}
-			}
-		}
+	
+	
 	}
-	fclose(g_pFilePathMOE);
+	fclose(g_pFileODMOE);
 
 	if (column_pool_ready_flag)
 	{
-		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance.csv" << '\n';
+		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance_summary.csv" << '\n';
 		assignment.summary_file << ", # of connected OD pairs =, " << l_origin_destination_map.size() << '\n';
 		assignment.summary_file << ", # of OD/mode_type/demand_type columns without paths =, " << l_origin_destination_disconnected_map.size() << '\n';
 //		dtalog.output() << ", # of connected OD pairs = " << l_origin_destination_map.size() << '\n';  // to be checked, Xuesong, 2023
@@ -3032,19 +2910,23 @@ void g_output_dynamic_link_performance(Assignment& assignment, int output_mode =
 
 void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 {
-	dtalog.output() << "writing td_link_performance.csv.." << '\n';
-	dtalog.output() << "writing td_link_performance.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing td_link_performance.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing td_link_performance.csv.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
 
-	string file_name = "td_link_performance.csv";
 
-	fopen_ss(&g_pFileLinkMOE, file_name.c_str(), "w");
+	char TD_link_performance_file_name[50];
+
+	int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+	sprintf(TD_link_performance_file_name, "td_link_performance%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
+
+	fopen_ss(&g_pFileLinkMOE, TD_link_performance_file_name, "w");
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File " << TD_link_performance_file_name << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -3179,7 +3061,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 
 void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 {
-	dtalog.output() << "writing log_dynamic_link_state.txt.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing log_dynamic_link_state.txt.." << '\n';
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -3190,7 +3072,7 @@ void g_output_dynamic_link_state(Assignment& assignment, int output_mode = 1)
 
 	if (!g_pFileLinkMOE)
 	{
-		dtalog.output() << "File " << file_name.c_str() << " cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File " << file_name.c_str() << " cannot be opened." << '\n';
 		g_program_stop();
 	}
 	else
@@ -3460,16 +3342,22 @@ void g_output_agent_csv(Assignment& assignment)
 	}
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
-		dtalog.output() << "writing agent.csv.." << '\n';
+
+		char agent_file_name[50];
+
+		int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+		sprintf(agent_file_name, "agent_%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
+
+		dtalog.output() << "[STATUS INFO] writing " << agent_file_name << '\n';
 		assignment.summary_file << ",summary by multi-modal agents,mode_type,#_agents,avg_distance,avg_travel_time_in_min,avg_free_speed," << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 		FILE* g_pFilePathMOE = nullptr;
-		fopen_ss(&g_pFilePathMOE, "agent.csv", "w");
+		fopen_ss(&g_pFilePathMOE, agent_file_name, "w");
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File agent.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File " << agent_file_name  << "cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -3499,7 +3387,7 @@ void g_output_agent_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+		dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 
 
@@ -3512,7 +3400,7 @@ void g_output_agent_csv(Assignment& assignment)
 			for (int orig = 0; orig < zone_size; ++orig)
 			{
 				if (g_zone_vector[orig].zone_id % 100 == 0)
-					dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+					dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 				int from_zone_sindex = g_zone_vector[orig].sindex;
 				if (from_zone_sindex == -1)
@@ -3561,7 +3449,7 @@ void g_output_agent_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
+									dtalog.output() << "[STATUS INFO] writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -3768,15 +3656,21 @@ void g_output_trajectory_csv(Assignment& assignment)
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
 		int total_number_of_nodes = 0;
-		dtalog.output() << "writing trajectory.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing trajectory.csv.." << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
+
+		char trajectory_file_name[50];
+
+		int scenario_index_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+		sprintf(trajectory_file_name, "trajectory_%d_%s.csv", assignment.active_scenario_index, assignment.g_DTAscenario_vector[scenario_index_no].scenario_name.c_str());
+
 		FILE* g_pFilePathMOE = nullptr;
-		fopen_ss(&g_pFilePathMOE, "trajectory.csv", "w");
+		fopen_ss(&g_pFilePathMOE, trajectory_file_name, "w");
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trajectory.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File trajectory.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -3808,7 +3702,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+		dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -3817,7 +3711,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 				continue;
 
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+				dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			for (int at = 0; at < mode_type_size; ++at)
 			{
@@ -3843,7 +3737,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
+									dtalog.output() << "[STATUS INFO] writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -4014,7 +3908,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 	{
 		FILE* g_pFilePathMOE = nullptr;
 		fopen_ss(&g_pFilePathMOE, "trace.csv", "w");
-		dtalog.output() << "writing trace.csv.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing trace.csv.." << '\n';
 
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
@@ -4022,7 +3916,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trace.csv cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File trace.csv cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -4051,7 +3945,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+		dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -4083,7 +3977,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
+									dtalog.output() << "[STATUS INFO] writing " << count / 1000 << "K agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -4207,7 +4101,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 	}
 	else if (assignment.assignment_mode >= 1)  //UE mode, or ODME, DTA
 	{
-		dtalog.output() << "writing trajectory.bin.." << '\n';
+		dtalog.output() << "[STATUS INFO] writing trajectory.bin.." << '\n';
 
 		int path_node_vector[MAX_LINK_SIZE_IN_A_PATH];
 		double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
@@ -4216,7 +4110,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		if (!g_pFilePathMOE)
 		{
-			dtalog.output() << "File trajectory.bin cannot be opened." << '\n';
+			dtalog.output() << "[ERROR] File trajectory.bin cannot be opened." << '\n';
 			g_program_stop();
 		}
 
@@ -4262,7 +4156,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-		dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+		dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 		for (int orig = 0; orig < zone_size; ++orig)
 		{
@@ -4271,7 +4165,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 				continue;
 
 			if (g_zone_vector[orig].zone_id % 100 == 0)
-				dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+				dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 			for (int at = 0; at < mode_type_size; ++at)
 			{
@@ -4296,7 +4190,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 								{
 									end_t = clock();
 									iteration_t = end_t - start_t;
-									dtalog.output() << "writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
+									dtalog.output() << "[STATUS INFO] writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s" << '\n';
 								}
 
 								if (count % sampling_step != 0)
@@ -4416,7 +4310,7 @@ void g_output_trajectory_bin(Assignment& assignment)
 
 		end_t = clock();
 		iteration_t = end_t - start_t;
-		dtalog.output() << "Comlete writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s." << '\n';
+		dtalog.output() << "[STATUS INFO] Comlete writing " << count / 1000 << "K binary agents with CPU time " << iteration_t / 1000.0 << " s." << '\n';
 		fclose(g_pFilePathMOE);
 	}
 
@@ -4425,14 +4319,14 @@ void g_output_trajectory_bin(Assignment& assignment)
 void g_output_demand_bin(Assignment& assignment)
 {
 
-	dtalog.output() << "writing demand.bin.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing demand.bin.." << '\n';
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, "output_demand.bin", "wb");
 
 	if (!g_pFilePathMOE)
 	{
-		dtalog.output() << "File demand.bin cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File demand.bin cannot be opened." << '\n';
 		g_program_stop();
 	}
 
@@ -4459,7 +4353,7 @@ void g_output_demand_bin(Assignment& assignment)
 
 	std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
-	dtalog.output() << "writing data for " << zone_size << "  zones " << '\n';
+	dtalog.output() << "[STATUS INFO] writing data for " << zone_size << "  zones " << '\n';
 
 	for (int orig = 0; orig < zone_size; ++orig)
 	{
@@ -4468,7 +4362,7 @@ void g_output_demand_bin(Assignment& assignment)
 			continue;
 
 		if (g_zone_vector[orig].zone_id % 100 == 0)
-			dtalog.output() << "o zone id =  " << g_zone_vector[orig].zone_id << '\n';
+			dtalog.output() << "[DATA INFO] o zone id =  " << g_zone_vector[orig].zone_id << '\n';
 
 		for (int at = 0; at < mode_type_size; ++at)
 		{
@@ -4501,7 +4395,7 @@ void g_output_demand_bin(Assignment& assignment)
 
 	end_t = clock();
 	iteration_t = end_t - start_t;
-	dtalog.output() << "Complete writing " << count / 1000 << "K binary demand pairs with CPU time " << iteration_t / 1000.0 << " s." << '\n';
+	dtalog.output() << "[STATUS INFO] Complete writing " << count / 1000 << "K binary demand pairs with CPU time " << iteration_t / 1000.0 << " s." << '\n';
 	fclose(g_pFilePathMOE);
 }
 
@@ -4561,7 +4455,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_node.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
+			dtalog.output() << "[ERROR] File model_node.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 
@@ -4637,7 +4531,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
+			dtalog.output() << "[ERROR] File model_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 		}
@@ -4712,7 +4606,7 @@ void g_OutputModelFiles(int mode)
 			}
 			else
 			{
-				dtalog.output() << "Error: File access_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
+				dtalog.output() << "[ERROR] File access_link.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 				g_program_stop();
 
 			}
@@ -4826,7 +4720,7 @@ void g_OutputModelFiles(int mode)
 		}
 		else
 		{
-			dtalog.output() << "Error: File model_label_cost_tree.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
+			dtalog.output() << "[ERROR] File model_label_cost_tree.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
 			g_program_stop();
 
 

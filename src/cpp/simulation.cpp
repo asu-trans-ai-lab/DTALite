@@ -57,10 +57,10 @@ void Assignment::AllocateLinkMemory4Simulation()
 
 	g_number_of_intervals_in_sec = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin + simulation_discharge_period_in_min) * 60;
 
-	dtalog.output() << "LoadingStartTimeInMin = " << g_LoadingStartTimeInMin << '\n';
-	dtalog.output() << "g_LoadingStartTimeInMin = " << g_LoadingEndTimeInMin << '\n';
-	dtalog.output() << "number_of_simulation_intervals = " << g_number_of_simulation_intervals << '\n';
-	dtalog.output() << "number_of_simu intervals in sec = " << g_number_of_intervals_in_sec << '\n';
+	dtalog.output() << "[DATA INFO] LoadingStartTimeInMin = " << g_LoadingStartTimeInMin << '\n';
+	dtalog.output() << "[DATA INFO] g_LoadingStartTimeInMin = " << g_LoadingEndTimeInMin << '\n';
+	dtalog.output() << "[DATA INFO] number_of_simulation_intervals = " << g_number_of_simulation_intervals << '\n';
+	dtalog.output() << "[DATA INFO] number_of_simu intervals in sec = " << g_number_of_intervals_in_sec << '\n';
 
 	g_number_of_loading_intervals_in_sec = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin) * 60;
 
@@ -68,21 +68,21 @@ void Assignment::AllocateLinkMemory4Simulation()
 	// add + 120 as a buffer
 	g_number_of_in_memory_simulation_intervals = g_number_of_simulation_intervals;
 
-	dtalog.output() << "allocate 2D dynamic memory LinkOutFlowCapacity..." << '\n';
+	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector LinkOutFlowCapacity..." << '\n';
 
 	m_LinkOutFlowCapacity = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_sec);  //1
 	m_LinkOutFlowState = Allocate2DDynamicArray <int>(g_number_of_links, g_number_of_intervals_in_sec);  //1
 	// discharge rate per simulation time interval
-	dtalog.output() << "allocate 2D dynamic memory m_LinkCumulativeArrivalVector..." << '\n';
+	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeArrivalVector..." << '\n';
 	m_LinkCumulativeArrivalVector = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min);  //2
 
-	dtalog.output() << "allocate 2D dynamic memory m_LinkCumulativeDepartureVector..." << '\n';
+	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeDepartureVector..." << '\n';
 	m_LinkCumulativeDepartureVector = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min);  //3
 
 	m_link_CA_count = Allocate1DDynamicArray <float>(g_number_of_links);
 	m_link_CD_count = Allocate1DDynamicArray <float>(g_number_of_links);
 
-	dtalog.output() << "allocate 2D dynamic memory m_link_TD_waiting_time..." << '\n';
+	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector  m_link_TD_waiting_time..." << '\n';
 	m_link_TD_waiting_time = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min); //5
 
 	m_link_total_waiting_time_vector.clear();
@@ -91,7 +91,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 		m_link_total_waiting_time_vector.push_back(0.0);
 	}
 
-	dtalog.output() << "initializing time dependent capacity data..." << '\n';
+	dtalog.output() << "[STATUS INFO] initializing time dependent capacity data..." << '\n';
 
 #pragma omp parallel for
 	for (int i = 0; i < g_number_of_links; ++i)
@@ -199,7 +199,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 			{
 				end_green_time += cycle_length;  // consider a looped end green time notation, e.g. 60-10 for cl = 100, then end green time should be 110.
 			}
-			dtalog.output() << "signal timing data: link: cycle_length = " << cycle_length <<
+			dtalog.output() << "[DATA INFO] signal timing data: link: cycle_length = " << cycle_length <<
 				",start_green_time = " << start_green_time <<
 				",end_green_time = " << end_green_time <<
 				'\n';
@@ -250,7 +250,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 		//end f
 	}
 
-	dtalog.output() << "End of initializing time dependent capacity data." << '\n';
+	dtalog.output() << "[STATUS INFO] End of initializing time dependent capacity data." << '\n';
 }
 
 void Assignment::DeallocateLinkMemory4Simulation()
@@ -280,6 +280,7 @@ void Assignment::DeallocateLinkMemory4Simulation()
 
 void Assignment::STTrafficSimulation()
 {
+	g_agent_simu_vector.clear();
 
 	ofstream simu_log_file;
 
@@ -299,8 +300,8 @@ void Assignment::STTrafficSimulation()
 	int mode_type_size = g_ModeTypeVector.size();
 	int zone_size = g_zone_vector.size();
 	int demand_period_size = g_DemandPeriodVector.size();
-	int system_information_activation_time_in_min = 999999;
-	int system_information_activation_time_in_simu_interval = 99999999;
+	int system_information_activate_time_in_min = 999999;
+	int system_information_activate_time_in_simu_interval = 99999999;
 
 
 	for (int li = 0; li < g_link_vector.size(); ++li)
@@ -308,7 +309,7 @@ void Assignment::STTrafficSimulation()
 		CLink* p_link = &(g_link_vector[li]);
 		{
 
-			system_information_activation_time_in_min = min(g_link_vector[li].dynamic_link_event_start_time_in_min, system_information_activation_time_in_min);
+			system_information_activate_time_in_min = min(g_link_vector[li].dynamic_link_event_start_time_in_min, system_information_activate_time_in_min);
 
 			for (int at = 0; at < mode_type_size; ++at)
 			{
@@ -330,13 +331,13 @@ void Assignment::STTrafficSimulation()
 	}
 
 
-	dtalog.output() << "system-wide information activation time = " << system_information_activation_time_in_min << " in min" << '\n';
-	assignment.summary_file << ", system - wide information activation time = " << system_information_activation_time_in_min << " in min" << '\n';
+	dtalog.output() << "[STATUS INFO] system-wide information activate time = " << system_information_activate_time_in_min << " in min" << '\n';
+	assignment.summary_file << ", system - wide information activate time = " << system_information_activate_time_in_min << " in min" << '\n';
 
-	if (system_information_activation_time_in_min < 2000)
+	if (system_information_activate_time_in_min < 2000)
 	{
-		system_information_activation_time_in_simu_interval = (system_information_activation_time_in_min - g_LoadingStartTimeInMin) * 60 / number_of_seconds_per_interval;
-		//	dtalog.output() << "system-wide information activation time in simu interval = " << system_information_activation_time_in_simu_interval << '\n';
+		system_information_activate_time_in_simu_interval = (system_information_activate_time_in_min - g_LoadingStartTimeInMin) * 60 / number_of_seconds_per_interval;
+		//	dtalog.output() << "system-wide information activate time in simu interval = " << system_information_activate_time_in_simu_interval << '\n';
 	}
 
 	CColumnVector* p_column_pool;
@@ -401,8 +402,8 @@ void Assignment::STTrafficSimulation()
 							}
 							else
 							{
-								dtalog.output() << "error in departure_time_profile_no=  " << p_column_pool->departure_time_profile_no << '\n';
-								dtalog.output() << "size of g_DepartureTimeProfileVector = " << assignment.g_DepartureTimeProfileVector.size() << '\n';
+								dtalog.output() << "[ERROR] error in departure_time_profile_no=  " << p_column_pool->departure_time_profile_no << '\n';
+								dtalog.output() << "[DATA INFO] size of g_DepartureTimeProfileVector = " << assignment.g_DepartureTimeProfileVector.size() << '\n';
 								g_program_stop();
 
 							}
@@ -522,9 +523,10 @@ void Assignment::STTrafficSimulation()
 		}
 	}
 
-	dtalog.output() << "number of simulation zones:" << zone_size << '\n';
-	dtalog.output() << "generating " << g_agent_simu_vector.size() / 1000 << " K agents" << '\n';
+	dtalog.output() << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
+	dtalog.output() << "[STATUS INFO] generating " << g_agent_simu_vector.size() / 1000 << " K agents" << '\n';
 
+	dtalog.output() << "[DATA INFO] CI = cumulative impact count, CR= cumulative rerouting count" << '\n';
 	assignment.summary_file << ", # of simulated agents in agent.csv=," << g_agent_simu_vector.size() << "," <<'\n';
 
 	int current_active_agent_id = 0;
@@ -597,7 +599,7 @@ void Assignment::STTrafficSimulation()
 		int info_updating_freq_in_min_in_in_6sec = assignment.g_info_updating_freq_in_min * 10;
 		int current_time_in_6sec = current_time_in_min * 10;  // *10: 0.1 min, 6 seconds.
 
-		if (t % number_of_simu_intervals_in_min == 0 /*// every min*/ && current_time_in_min >= system_information_activation_time_in_min - 1 && current_time_in_6sec % info_updating_freq_in_min_in_in_6sec == 0) // RT updating every x=5 or even 0.1 min
+		if (t % number_of_simu_intervals_in_min == 0 /*// every min*/ && current_time_in_min >= system_information_activate_time_in_min - 1 && current_time_in_6sec % info_updating_freq_in_min_in_in_6sec == 0) // RT updating every x=5 or even 0.1 min
 		{ // updating real time link travel time for RT destination based shortest path
 #pragma omp parallel for    // parallel computing for each link
 			for (int i = 0; i < g_link_vector.size(); ++i)
@@ -640,7 +642,7 @@ void Assignment::STTrafficSimulation()
 			}
 			int recording_flag = 0;
 
-			if (t / number_of_simu_interval_per_min == system_information_activation_time_in_min + 5)
+			if (t / number_of_simu_interval_per_min == system_information_activate_time_in_min + 5)
 				recording_flag = 0;
 
 			g_rt_info_column_generation(this, current_time_in_min, recording_flag);  // parallel computing inside, and to provide rt information for vehicles to access
@@ -652,7 +654,7 @@ void Assignment::STTrafficSimulation()
 
 		if (t % (number_of_simu_interval_per_min * 10) == 0)
 		{
-			dtalog.output() << std::setprecision(4) << "simu time= " << t / number_of_simu_interval_per_min << " min, CA = " << TotalCumulative_Arrival_Count << " CD=" << TotalCumulative_Departure_Count
+			dtalog.output() << std::setprecision(4) << "[DATA INFO] simu time= " << t / number_of_simu_interval_per_min << " min, CA = " << TotalCumulative_Arrival_Count << " CD=" << TotalCumulative_Departure_Count
 				<< ", speed=" << network_wide_speed << ", travel time = " << network_wide_travel_time <<
 				",CI=" << TotalCumulative_impact_count <<
 				",CR=" << TotalCumulative_rerouting_count
@@ -952,7 +954,7 @@ void Assignment::STTrafficSimulation()
 				{
 					incoming_link_index = (i + incoming_link_index_FIFO) % (g_node_vector[node].m_incoming_link_seq_no_vector.size());  // cycle loop
 					if (debug_node_resource_competing_mode)
-						dtalog.output() << "FIFO judgement i = " << i << '\n';
+						dtalog.output() << "[DATA INFO] FIFO judgement i = " << i << '\n';
 				}
 				else
 				{  // random mode
@@ -1087,7 +1089,7 @@ void Assignment::STTrafficSimulation()
 									p_link->win_count++;
 									if (debug_node_resource_competing_mode)
 									{
-										dtalog.output() << "win:spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id
+										dtalog.output() << "[DATA INFO] win:spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id
 											<< " to link" << g_node_vector[pNextLink->from_node_seq_no].node_id << " -> " << g_node_vector[pNextLink->to_node_seq_no].node_id
 											<< " time request " << p_agent->m_veh_link_departure_time_in_simu_interval[p_agent->m_current_link_seq_no]
 											<< '\n';
@@ -1218,12 +1220,12 @@ void Assignment::STTrafficSimulation()
 								" with travel time = " << travel_time_in_sec << " sec" << '\n';
 						}
 
-						//if (t == system_information_activation_time_in_simu_interval)
+						//if (t == system_information_activate_time_in_simu_interval)
 						//{
 						//	int idebug = 2;
 						//}
 						//test rerouting
-						//if (t >= system_information_activation_time_in_simu_interval)
+						//if (t >= system_information_activate_time_in_simu_interval)
 						bool rerouting_decision_flag = false;
 						int visual_distance_in_number_of_cells = max(1, g_visual_distance_in_cells);  // 5 cells ahead
 
@@ -1232,7 +1234,7 @@ void Assignment::STTrafficSimulation()
 							visual_distance_in_number_of_cells = 1;
 
 						// case 1: visual distance based information
-						if (t >= system_information_activation_time_in_simu_interval && p_agent->impacted_flag == 1 && (p_agent->info_receiving_flag != 2 && p_agent->info_receiving_flag != 3)&& p_agent->impacted_link_seq_no == p_agent->m_current_link_seq_no + visual_distance_in_number_of_cells)
+						if (t >= system_information_activate_time_in_simu_interval && p_agent->impacted_flag == 1 && (p_agent->info_receiving_flag != 2 && p_agent->info_receiving_flag != 3)&& p_agent->impacted_link_seq_no == p_agent->m_current_link_seq_no + visual_distance_in_number_of_cells)
 						{
 							rerouting_decision_flag = true;
 							p_agent->info_receiving_flag = 1;
@@ -1240,7 +1242,7 @@ void Assignment::STTrafficSimulation()
 
 						// case 2: dynamic variable message signs
 						int current_time_in_min_int = current_time_in_min;
-						if (t >= system_information_activation_time_in_simu_interval &&
+						if (t >= system_information_activate_time_in_simu_interval &&
 							p_link->m_link_pedefined_information_response_map.find(current_time_in_min_int) != p_link->m_link_pedefined_information_response_map.end())
 						{
 
@@ -1252,7 +1254,7 @@ void Assignment::STTrafficSimulation()
 						}
 
 						// case 3: g_real_time_info_ratio
-						if (t >= system_information_activation_time_in_simu_interval && p_agent->impacted_flag == 1 && p_agent->m_current_link_seq_no >= 1 && p_agent->info_receiving_flag == 0)
+						if (t >= system_information_activate_time_in_simu_interval && p_agent->impacted_flag == 1 && p_agent->m_current_link_seq_no >= 1 && p_agent->info_receiving_flag == 0)
 						{  // touch the physical road, and receive no information so far : info_receiving_flag =0;
 
 							int mode_type_no = p_agent->mode_type_no;

@@ -1,227 +1,133 @@
 DTALite Log           
-Step 0: Reading setting.csv.
-number_of_iterations1 in setting.csv.
-route_output = -1 in setting.csv.
-simulation_output = 1 in setting.csv.
-LinkOutFlowCapacity...
-allocate 2D dynamic memory m_LinkCumulativeArrivalVector...
-allocate 2D dynamic memory m_LinkCumulativeDepartureVector...
-allocate 2D dynamic memory m_link_TD_waiting_time...
-initializing time dependent capacity data...
-End of initializing time dependent capacity data.
-system-wide information activation time = 99999 in min
-number of simulation zones:4
-generating 4 K agents
-simu time= 0 min, CA = 0 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 10 min, CA = 79 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 20 min, CA = 232 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 30 min, CA = 385 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 40 min, CA = 565 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 50 min, CA = 760 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 60 min, CA = 971 CD=10, speed=54.68, travel time = 49.39,CI=0,CR=0
-simu time= 70 min, CA = 1169 CD=27, speed=48.95, travel time = 55.18,CI=0,CR=0
-LoadingStartTimeInMin = 420
-g_LoadingStartTimeInMin = 480
-number_of_simulation_intervals = 16802
-number_of_simu intervals in sec = 4200
-allocate 2D dynamic memory LinkOutFlowCapacity...
-allocate 2D dynamic memory m_LinkCumulativeArrivalVector...
-allocate 2D dynamic memory m_LinkCumulativeDepartureVector...
-allocate 2D dynamic memory m_link_TD_waiting_time...
-initializing time dependent capacity data...
-End of initializing time dependent capacity data.
-system-wide information activation time = 99999 in min
-number of simulation zones:4
-generating 8 K agents
-simu time= 0 min, CA = 0 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 10 min, CA = 158 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 20 min, CA = 464 CD=0, speed=60, travel time = 0,CI=0,CR=0
-simu time= 30 min, CA = 770 CD=7, speed=131, travel time = 20.62,CI=0,CR=0
-simu time= 40 min, CA = 1130 CD=26, speed=107.5, travel time = 25.13,CI=0,CR=0
-simu time= 50 min, CA = 1520 CD=38, speed=93.94, travel time = 28.75,CI=0,CR=0
-simu time= 60 min, CA = 1943 CD=55, speed=80.56, travel time = 33.52,CI=0,CR=0
-simu time= 70 min, CA = 2339 CD=262, speed=59.84, travel time = 45.13,CI=0,CR=0
-ile link_type.csv
-Warining: link_type = 155 has been defined more than once in file link_type.csv
-number of link types = 69
-Step 1.35: Reading optional zone data in zone.csv...
-Step 1.4: Reading node data in node.csv...
-Reading node data 
-number of nodes = 4
-number of multimodal activity nodes = 0
-Note: One can add mode_type in node.csv to denote transit stations as part of efforts for modeling multmodal activities
-Step 1.5: Initializing O-D zone vector...
-number of zones = 4
+ Overview of files and process
+1. Input Files:
+   |--- Physical Layer (node.csv, link.csv, zone.csv)
+   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)
+   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)
+   |--- Supply Layer (supply_side_scenario.csv, signal_timing.csv)
 
-Reading file demand_file_list.csv...
-Step 1.6: Reading link data in link.csv... 
-number of links =5
-number of links =5
+2. Traffic Assignment and Simulation Process:
+   |--- Demand estimation based on sensor data
+   |--- Traffic assignment based on network and demand data
+   |--- Simulation of traffic based on assignment results and scenario configurations
+   |--- Performance evaluation based on simulation results and performance criteria
 
-Step 2.0: Reading file departure_time_profile.csv
-T6h0min=0.003242
-T6h5min=0
-T6h10min=0.003242
-T6h15min=0.003218
-T6h20min=0.003218
-T6h25min=0.003218
-T6h30min=0.003803
-T6h35min=0.003803
-T6h40min=0.003803
-T6h45min=0.004459
-T6h50min=0.004459
-T6h55min=0.004459
-T7h0min=0.005002
-T7h5min=0
-T7h10min=0.005002
-T7h15min=0.005207
-T7h20min=0.005207
-T7h25min=0.005207
-T7h30min=0.005677
-T7h35min=0.005677
-T7h40min=0.005677
-T7h45min=0.005994
-T7h50min=0.005994
-T7h55min=0.005994
-T8h0min=0.006018
-T8h5min=0.006018
-T8h10min=0
-T8h15min=0.005508
-T8h20min=0.005508
-T8h25min=0
-T8h30min=0.00529
-T8h35min=0.00529
-T8h40min=0.00529
-T8h45min=0.005058
-T8h50min=0.005058
-T8h55min=0
-T9h0min=0.004833
-cumulative profile no. 1, ratio at slot  73 (6:5) = 0.0033333,cumulative ratio 0.01974
-cumulative profile no. 1, ratio at slot  74 (6:10) = 0.003242,cumulative ratio 0.03894
-cumulative profile no. 1, ratio at slot  75 (6:15) = 0.003218,cumulative ratio 0.057998
-cumulative profile no. 1, ratio at slot  76 (6:20) = 0.003218,cumulative ratio 0.077055
-cumulative profile no. 1, ratio at slot  77 (6:25) = 0.003218,cumulative ratio 0.096113
-cumulative profile no. 1, ratio at slot  78 (6:30) = 0.003803,cumulative ratio 0.11863
-cumulative profile no. 1, ratio at slot  79 (6:35) = 0.003803,cumulative ratio 0.14116
-cumulative profile no. 1, ratio at slot  80 (6:40) = 0.003803,cumulative ratio 0.16368
-cumulative profile no. 1, ratio at slot  81 (6:45) = 0.004459,cumulative ratio 0.19009
-cumulative profile no. 1, ratio at slot  82 (6:50) = 0.004459,cumulative ratio 0.21649
-cumulative profile no. 1, ratio at slot  83 (6:55) = 0.004459,cumulative ratio 0.2429
-cumulative profile no. 1, ratio at slot  84 (7:0) = 0.005002,cumulative ratio 0.27252
-cumulative profile no. 1, ratio at slot  85 (7:5) = 0.0033333,cumulative ratio 0.29226
-cumulative profile no. 1, ratio at slot  86 (7:10) = 0.005002,cumulative ratio 0.32188
-cumulative profile no. 1, ratio at slot  87 (7:15) = 0.005207,cumulative ratio 0.35272
-cumulative profile no. 1, ratio at slot  88 (7:20) = 0.005207,cumulative ratio 0.38356
-cumulative profile no. 1, ratio at slot  89 (7:25) = 0.005207,cumulative ratio 0.41439
-cumulative profile no. 1, ratio at slot  90 (7:30) = 0.005677,cumulative ratio 0.44801
-cumulative profile no. 1, ratio at slot  91 (7:35) = 0.005677,cumulative ratio 0.48163
-cumulative profile no. 1, ratio at slot  92 (7:40) = 0.005677,cumulative ratio 0.51525
-cumulative profile no. 1, ratio at slot  93 (7:45) = 0.005994,cumulative ratio 0.55075
-cumulative profile no. 1, ratio at slot  94 (7:50) = 0.005994,cumulative ratio 0.58625
-cumulative profile no. 1, ratio at slot  95 (7:55) = 0.005994,cumulative ratio 0.62175
-cumulative profile no. 1, ratio at slot  96 (8:0) = 0.006018,cumulative ratio 0.65739
-cumulative profile no. 1, ratio at slot  97 (8:5) = 0.006018,cumulative ratio 0.69303
-cumulative profile no. 1, ratio at slot  98 (8:10) = 0.0033333,cumulative ratio 0.71277
-cumulative profile no. 1, ratio at slot  99 (8:15) = 0.005508,cumulative ratio 0.74539
-cumulative profile no. 1, ratio at slot  100 (8:20) = 0.005508,cumulative ratio 0.778
-cumulative profile no. 1, ratio at slot  101 (8:25) = 0.0033333,cumulative ratio 0.79774
-cumulative profile no. 1, ratio at slot  102 (8:30) = 0.00529,cumulative ratio 0.82907
-cumulative profile no. 1, ratio at slot  103 (8:35) = 0.00529,cumulative ratio 0.8604
-cumulative profile no. 1, ratio at slot  104 (8:40) = 0.00529,cumulative ratio 0.89173
-cumulative profile no. 1, ratio at slot  105 (8:45) = 0.005058,cumulative ratio 0.92168
-cumulative profile no. 1, ratio at slot  106 (8:50) = 0.005058,cumulative ratio 0.95164
-cumulative profile no. 1, ratio at slot  107 (8:55) = 0.0033333,cumulative ratio 0.97138
-cumulative profile no. 1, ratio at slot  108 (9:0) = 0.004833,cumulative ratio 1
-final cumulative profile ratio = 0.97138
-allocating 4D memory for no.0 zone,nM=4,nX=4,nY=1,nZ=1
-
-Step 2.1: Reading file demand_file_list.csv...
-reading demand file for scenario index =0
-o_zone_id:1, d_zone_id: 2, value = 4000
-cumulative total demand volume is 4000
-reading demand file for scenario index =1
-o_zone_id:1, d_zone_id: 2, value = 4000
-cumulative total demand volume is 4000
-Step 2.2: Reading supply side scenario data...
-reading 0 sa  capacity scenario.. 
-reading 0 dms scenario.. 
-Step 3: Assigning computing tasks to memory blocks...
-There are 4 SP networks in memory.
-There are 4 agent type*zones to be computed in CPU.
-
-Step 4: Column Generation for Traffic Assignment...
-Total number of column generation iteration = 0
-
-
-_________________________
-global scenario index = 0
-_________________________
-
-Current iteration number = No. 0
-CPU time: 0.004 s
-system wide travel time (TT) = 0, least system TT = 1.8004e+05,gap = -100 %
-Step 5: Column Pool Updating
-Total number of column pool updating iterations = 2
-column updating: iteration= 0, avg travel time = 85.01(min), optimization obj = 0,Relative_gap=0 %
-column updating: iteration= 1, avg travel time = 85.01(min), optimization obj = 0,Relative_gap=0 %
-
-Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
-Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-Step 8: Simulation for traffic assignment..
-writing agent.csv..
-writing data for 4  zones 
-CPU Running Time for traffic simulation: 0 s
-
-CPU Running Time for the entire computing progress = 1.592 s
-Step 9: record corridor performance summary
-Step 10: output assignment results
-writing link_performance_s0.csv
-writing route_assignment.csv..
-writing link_background_volume.csv..
-writing data for 4  zones 
-writing demand.bin..
-writing data for 4  zones 
-Complete writing 0K binary demand pairs with CPU time 0 s.
-writing choice_set_output.csv..
-
-_________________________
-global scenario index = 1
-_________________________
-
-Current iteration number = No. 0
-CPU time: 0.01 s
-system wide travel time (TT) = 3.4004e+05, least system TT = 1.6012e+05,gap = 112.36 %
-Step 5: Column Pool Updating
-Total number of column pool updating iterations = 2
-column updating: iteration= 0, avg travel time = 80.03(min), optimization obj = 0,Relative_gap=0 %
-column updating: iteration= 1, avg travel time = 80.03(min), optimization obj = 0,Relative_gap=0 %
-
-Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
-Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-Step 8: Simulation for traffic assignment..
-writing agent.csv..
-writing data for 4  zones 
-CPU Running Time for traffic simulation: 0 s
-
-CPU Running Time for the entire computing progress = 5.051 s
-Step 9: record corridor performance summary
-Step 10: output assignment results
-writing link_performance_s1.csv
-writing route_assignment.csv..
-writing link_background_volume.csv..
-writing data for 4  zones 
-writing demand.bin..
-writing data for 4  zones 
-Complete writing 0K binary demand pairs with CPU time 0 s.
-writing choice_set_output.csv..
-output od_performance.csv..
-writing od_performance.csv..
-writing data for 4  zones 
-writing link_performances_summary.csv..
-writing link_performances_summary_2way.csv..
-CPU Running Time for outputting simulation results: 0.013 s
-free memory..
-CPU Running Time for Entire Process: 0 min 6 sec
-DTALite computing process is complete.
+3. Output Files:
+   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)
+   |--- Route assignment (route_assignment_s.csv)
+   |--- Mode choice (choice_set_output.csv)
+   |--- OD pair performance (od_performance.csv)
+   |--- System performance (system_performance_summary.csv)
+   |--- Final Summary (final_summary.csv, subarea_related_zone.csv)
+--------------------------
+[PROCESS INFO] Step 0.0: Reading setting.csv.
+[DATA INFO] number_of_iterations = 20 in setting.csv.
+[DATA INFO] route_output = 1 in setting.csv.
+[DATA INFO] simulation_output = 0 in setting.csv.
+[DATA INFO] number_of_memory_blocks = 4 in settings.csv.
+ number of zones = 4
+[STATUS INFO] Reading file demand_file_list.csv...
+[PROCESS INFO] Step 1.6: Reading link data in link.csv... 
+[DATA INFO] number of links =5
+[STATUS INFO] reading optional input subarea.csv
+[PROCESS INFO] Step 2.0: Reading file departure_time_profile.csv
+[DATA INFO] T6h0min = 0.003242
+[DATA INFO] T9h0min = 0.004833
+[DATA INFO] cumulative profile no.1, ratio at slot  73 (6:5) = 0.0033333,cumulative ratio 0.01974
+[DATA INFO] cumulative profile no.1, ratio at slot  108 (9:0) = 0.004833,cumulative ratio 1
+[DATA INFO] final cumulative profile ratio = 0.97138
+[DATA INFO] allocating 4D memory for no.0 zone,nM = 4,nX = 4,nY = 1,nZ = 1
+[PROCESS INFO] Step 2.1: Reading file demand_file_list.csv...
+[STATUS INFO] reading demand file for scenario index =0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 4000
+[DATA INFO] cumulative total demand volume is 4000
+[STATUS INFO] reading demand file for scenario index =1
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 4000
+[DATA INFO] cumulative total demand volume is 4000
+[PROCESS INFO] Step 2.2: Reading supply side scenario data...
+[STATUS INFO] reading 0 sa  capacity scenario.. 
+[STATUS INFO] reading 0 dms scenario.. 
+[PROCESS INFO] Step 3: Assigning computing tasks to memory blocks...
+[DATA INFO] There are 4 SP networks in memory.
+[DATA INFO] There are 4 agent type*zones to be computed in CPU.
+[PROCESS INFO] Step 4: Column Generation for Traffic Assignment...
+[DATA INFO] Total number of column generation iteration = 20
+[DATA INFO] global scenario index = 0
+[DATA INFO] Iter. No.= 0, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 1.8004e+05, gap = -100 %
+[DATA INFO] Iter. No.= 1, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 1.8004e+05, gap = -100 %
+[DATA INFO] Iter. No.= 2, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.4004e+05, least system TT = 1.8004e+05, gap = 88.868 %
+[DATA INFO] Iter. No.= 3, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.4004e+05, least system TT = 1.8004e+05, gap = 88.868 %
+[DATA INFO] Iter. No.= 4, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6893e+05, least system TT = 2.3337e+05, gap = 15.235 %
+[DATA INFO] Iter. No.= 5, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[DATA INFO] Iter. No.= 6, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6324e+05, least system TT = 2.4404e+05, gap = 7.8675 %
+[DATA INFO] Iter. No.= 7, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[DATA INFO] Iter. No.= 8, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6167e+05, least system TT = 2.4861e+05, gap = 5.2536 %
+[DATA INFO] Iter. No.= 9, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6504e+05, least system TT = 2.4004e+05, gap = 10.415 %
+[DATA INFO] Iter. No.= 10, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6103e+05, least system TT = 2.5115e+05, gap = 3.9325 %
+[DATA INFO] Iter. No.= 11, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[DATA INFO] Iter. No.= 12, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.607e+05, least system TT = 2.5277e+05, gap = 3.1388 %
+[DATA INFO] Iter. No.= 13, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[DATA INFO] Iter. No.= 14, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6051e+05, least system TT = 2.5389e+05, gap = 2.6103 %
+[DATA INFO] Iter. No.= 15, CPU time= 0.001 s, Sys. Wide Travel Time (TT) = 2.6167e+05, least system TT = 2.4861e+05, gap = 5.2536 %
+[DATA INFO] Iter. No.= 16, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.604e+05, least system TT = 2.5471e+05, gap = 2.2335 %
+[DATA INFO] Iter. No.= 17, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[DATA INFO] Iter. No.= 18, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6032e+05, least system TT = 2.5534e+05, gap = 1.9514 %
+[DATA INFO] Iter. No.= 19, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6004e+05, least system TT = 2.6004e+05, gap = 1.1192e-14 %
+[PROCESS INFO] Step 5: Column Pool Updating
+[DATA INFO] Total number of column pool updating iterations = 2
+[DATA INFO] column updating: iteration = 0, avg travel time = 65.21(min), optimization obj = 8800,Relative_gap =3.2791 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 65.043(min), optimization obj = 3354.6,Relative_gap =1.2791 %
+[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[DATA INFO] CPU Running Time for the entire computing progress = 0.011 s
+[PROCESS INFO] Step 9: record corridor performance summary
+[PROCESS INFO] Step 10: output assignment results
+[STATUS INFO] writing link_performance_s0.csv
+[STATUS INFO] writing route_assignment.csv..
+[STATUS INFO] writing link_background_volume.csv..
+[STATUS INFO] writing choice_set_output.csv..
+[DATA INFO] global scenario index = 1
+[DATA INFO] Iter. No.= 0, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6009e+05, least system TT = 1.6012e+05, gap = 62.431 %
+[DATA INFO] Iter. No.= 1, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 121.36, gap = -100 %
+[DATA INFO] Iter. No.= 2, CPU time= 0.001 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 3, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 4, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 5, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 6, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 7, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 8, CPU time= 0.001 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 9, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 10, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 11, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 12, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 13, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 14, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 15, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 16, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 17, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 18, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[DATA INFO] Iter. No.= 19, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 3.6366e-14 %
+[PROCESS INFO] Step 5: Column Pool Updating
+[DATA INFO] Total number of column pool updating iterations = 2
+[DATA INFO] column updating: iteration = 0, avg travel time = 80.03(min), optimization obj = 0,Relative_gap =0 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 80.03(min), optimization obj = 0,Relative_gap =0 %
+[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[DATA INFO] CPU Running Time for the entire computing progress = 0.01 s
+[PROCESS INFO] Step 9: record corridor performance summary
+[PROCESS INFO] Step 10: output assignment results
+[STATUS INFO] writing link_performance_s1.csv
+[STATUS INFO] writing route_assignment.csv..
+[STATUS INFO] writing link_background_volume.csv..
+[STATUS INFO] writing choice_set_output.csv..
+[STATUS INFO] output od_performance.csv..
+[STATUS INFO] writing od_performance.csv..
+[STATUS INFO] writing data for 4  zones 
+[STATUS INFO] writing link_performances_summary.csv..
+[STATUS INFO] writing link_performances_summary_2way.csv..
+[DATA INFO] CPU Running Time for outputting simulation results: 0.015 s
+[STATUS INFO] free memory..
+[DATA INFO] CPU Running Time for Entire Process: 0 min 0 sec
+[STATUS INFO] DTALite computing process is complete.

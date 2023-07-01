@@ -60,7 +60,7 @@ public:
         volume_after_sa{ 0 }, speed_after_sa{ 0 }, DoC_after_sa{ 0 }, P_after_sa{ 0 },
         ref_link_volume{ -1 }
 {
-        for (int at = 0; at < MAX_AGNETTYPES; at++)
+        for (int at = 0; at < MAX_MODETYPES; at++)
         {
             toll[at] = 0;
             free_speed_at[at] = 0;
@@ -214,6 +214,12 @@ public:
                 avg_travel_time = uniform_delay + FFTT;
             }
 
+            if (DOC > 0.0001 && avg_travel_time > 10)
+            {
+                int idebug;
+                idebug = 1;
+            }
+
             avg_waiting_time = avg_travel_time - FFTT;
             //step 4.4 compute vt2
 //            vt2 = avg_queue_speed * 8.0 / 15.0;  // 8/15 is a strong assumption
@@ -230,7 +236,7 @@ public:
 
                if(L - P >= 10.0 / 60.0)
                {
-                   nonpeak_hourly_flow = (volume * (1- peak_load_factor)) / max(1.0, nlanes) / max(0.1, min(L-1, L - P - 5.0/60.0));  //5.0/60.0 as one 5 min interval, as P includes both boundary points
+                   nonpeak_hourly_flow = (volume * (1- peak_load_factor)) / max(0.001, nlanes) / max(0.1, min(L-1, L - P - 5.0/60.0));  //5.0/60.0 as one 5 min interval, as P includes both boundary points
                }
 
            //           dtalog.output() << "nonpeak_hourly_flow = " << nonpeak_hourly_flow << '\n';
@@ -381,7 +387,7 @@ public:
     double alpha;
     double beta;
     double ref_link_volume;
-//    double BPR_period_capacity_at[MAX_AGNETTYPES];
+//    double BPR_period_capacity_at[MAX_MODETYPES];
 
     double Q_peak_load_factor;
     double Q_alpha;
@@ -395,9 +401,9 @@ public:
 
     double volume_before_odme;
     double volume_after_odme;
-    double obs_count;
-    int upper_bound_flag;
-    double est_count_dev;
+    double obs_count[MAX_SCENARIOS];
+    int upper_bound_flag[MAX_SCENARIOS];
+    double est_count_dev[MAX_SCENARIOS];
 
 
     string scenario_code;
@@ -427,23 +433,23 @@ public:
 
     int network_design_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
-    double toll[MAX_AGNETTYPES];
-    double occ[MAX_AGNETTYPES];
+    double toll[MAX_MODETYPES];
+    double occ[MAX_MODETYPES];
 
-    double free_speed_at[MAX_AGNETTYPES];
-    double capacity_at[MAX_AGNETTYPES];
-    double FFTT_at[MAX_AGNETTYPES];
-    double lanes_at[MAX_AGNETTYPES];
+    double free_speed_at[MAX_MODETYPES];
+    double capacity_at[MAX_MODETYPES];
+    double FFTT_at[MAX_MODETYPES];
+    double lanes_at[MAX_MODETYPES];
 
-    double DOC_mode[MAX_AGNETTYPES];
+    double DOC_mode[MAX_MODETYPES];
 
-    double dsr[MAX_AGNETTYPES]; // desired speed ratio with respect to free-speed
+    double dsr[MAX_MODETYPES]; // desired speed ratio with respect to free-speed
     double penalty;
     double RT_route_regeneration_penalty;
-    double LR_price[MAX_AGNETTYPES];
-    double LR_RT_price[MAX_AGNETTYPES];;
-    bool   RT_allowed_use[MAX_AGNETTYPES];
-    bool   SA_allowed_use[MAX_AGNETTYPES];
+    double LR_price[MAX_MODETYPES];
+    double LR_RT_price[MAX_MODETYPES];;
+    bool   RT_allowed_use[MAX_MODETYPES];
+    bool   SA_allowed_use[MAX_MODETYPES];
     string allowed_uses[MAX_SCENARIOS];
     string sa_allowed_uses;
 
@@ -465,7 +471,7 @@ public:
 
 //    double period_capacity;  // link based period_capacity  //depreciated; will not be used.
     double lane_based_ultimate_hourly_capacity;
-    double lane_based_ultimate_hourly_cap_at[MAX_AGNETTYPES];
+    double lane_based_ultimate_hourly_cap_at[MAX_MODETYPES];
 
     double nlanes;
 
