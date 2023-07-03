@@ -4,7 +4,7 @@ DTALite Log
    |--- Physical Layer (node.csv, link.csv, zone.csv)
    |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)
    |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)
-   |--- Supply Layer (supply_side_scenario.csv, signal_timing.csv)
+   |--- Supply Layer (dynamic_traffic_management.csv, signal_timing.csv)
 
 2. Traffic Assignment and Simulation Process:
    |--- Demand estimation based on sensor data
@@ -25,7 +25,41 @@ DTALite Log
 [DATA INFO] route_output = 1 in setting.csv.
 [DATA INFO] simulation_output = 0 in setting.csv.
 [DATA INFO] number_of_memory_blocks = 4 in settings.csv.
-of zones = 4
+length_unit = meter in settings.csv.
+speed_unit = kmph in settings.csv.
+e link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] The field peak_load_factor_p1_autocannot be found in the link_type.csv file. The default peak load factor 1.0 is used.
+[WARNING] the following link type(s) have been defined more than once in file link_type.csv:  250, 252, 253, 254, 255, 100, 150, 152, 153, 154, 155, [DATA INFO] number of link types = 69
+[PROCESS INFO] Step 1.35: Reading optional zone data in zone.csv...
+[PROCESS INFO] Step 1.4: Reading node data in node.csv...
+[STATUS INFO] Reading node data 
+[DATA INFO] number of nodes = 4
+[DATA INFO] number of multimodal activity nodes = 0
+[NOTE] One can add mode_type in node.csv to denote transit stations as part of efforts for modeling multmodal activities
+[PROCESS INFO] Step 1.5: Initializing O-D zone vector...
+[DATA INFO] number of zones = 4
 [STATUS INFO] Reading file demand_file_list.csv...
 [PROCESS INFO] Step 1.6: Reading link data in link.csv... 
 [DATA INFO] number of links =5
@@ -50,9 +84,6 @@ of zones = 4
 [STATUS INFO] reading demand file for scenario index =1
 [DATA INFO] o_zone_id:1, d_zone_id: 2, value = 4000
 [DATA INFO] cumulative total demand volume is 4000
-[PROCESS INFO] Step 2.2: Reading supply side scenario data...
-[STATUS INFO] reading 0 sa  capacity scenario.. 
-[STATUS INFO] reading 0 dms scenario.. 
 [PROCESS INFO] Step 3: Assigning computing tasks to memory blocks...
 [DATA INFO] There are 4 SP networks in memory.
 [DATA INFO] There are 4 agent type*zones to be computed in CPU.
@@ -60,7 +91,11 @@ of zones = 4
 [DATA INFO] Total number of column generation iteration = 20
 [PROCESS INFO] Generate subarea related zone file as subarea_related_zone.csv for focusing approach 
 [DATA INFO] global scenario index = 0 --------------------------
-[DATA INFO] Iter. No.= 0, CPU time= 0.006 s, Sys. Wide Travel Time (TT) = 0, least system TT = 1.8004e+05, gap = 0 %
+[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data...
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 lane closure scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dms scenarios dynamic_traffic_management.csv 
+[DATA INFO] Iter. No.= 0, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 1.8004e+05, gap = 0 %
 [DATA INFO] Iter. No.= 1, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 1.8004e+05, gap = 0 %
 [DATA INFO] Iter. No.= 2, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.4004e+05, least system TT = 1.8004e+05, gap = 88.868 %
 [DATA INFO] Iter. No.= 3, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.4004e+05, least system TT = 1.8004e+05, gap = 88.868 %
@@ -85,18 +120,23 @@ of zones = 4
 [DATA INFO] column updating: iteration = 0, avg travel time = 65.21(min), optimization obj = 8800,Relative_gap =1.6629 %
 [DATA INFO] column updating: iteration = 1, avg travel time = 65.043(min), optimization obj = 3354.6,Relative_gap =0.6421 %
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 7: perform sensivity sensitivity if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+[DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 7998
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[DATA INFO] CPU Running Time for the entire computing progress = 0.008 s
+[DATA INFO] CPU Running Time for the entire computing progress = 0.011 s
 [PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
 [PROCESS INFO] Step 10: output assignment results
 [DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 7998
-[STATUS INFO] writing link_performance_s0.csv
+[STATUS INFO] writing file link_performance_s0_no_build.csv
 [STATUS INFO] writing route_assignment.csv for each scenario
 [DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 7998
 [STATUS INFO] writing subarea_link_performance.csv..
 [STATUS INFO] writing choice_set_output.csv..
 [DATA INFO] global scenario index = 1 --------------------------
+[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data...
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 lane closure scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dms scenarios dynamic_traffic_management.csv 
 [DATA INFO] Iter. No.= 0, CPU time= 0 s, Sys. Wide Travel Time (TT) = 2.6009e+05, least system TT = 1.6012e+05, gap = 62.431 %
 [DATA INFO] Iter. No.= 1, CPU time= 0 s, Sys. Wide Travel Time (TT) = 0, least system TT = 121.36, gap = 0 %
 [DATA INFO] Iter. No.= 2, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
@@ -109,7 +149,7 @@ of zones = 4
 [DATA INFO] Iter. No.= 9, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
 [DATA INFO] Iter. No.= 10, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
 [DATA INFO] Iter. No.= 11, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
-[DATA INFO] Iter. No.= 12, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
+[DATA INFO] Iter. No.= 12, CPU time= 0.001 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
 [DATA INFO] Iter. No.= 13, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
 [DATA INFO] Iter. No.= 14, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
 [DATA INFO] Iter. No.= 15, CPU time= 0 s, Sys. Wide Travel Time (TT) = 3.2012e+05, least system TT = 3.2012e+05, gap = 0 %
@@ -122,13 +162,14 @@ of zones = 4
 [DATA INFO] column updating: iteration = 0, avg travel time = 80.03(min), optimization obj = 0,Relative_gap =0 %
 [DATA INFO] column updating: iteration = 1, avg travel time = 80.03(min), optimization obj = 0,Relative_gap =0 %
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 7: perform sensivity sensitivity if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+[DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 12000
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[DATA INFO] CPU Running Time for the entire computing progress = 0.008 s
+[DATA INFO] CPU Running Time for the entire computing progress = 0.01 s
 [PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
 [PROCESS INFO] Step 10: output assignment results
 [DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 12000
-[STATUS INFO] writing link_performance_s1.csv
+[STATUS INFO] writing file link_performance_s1_build.csv
 [STATUS INFO] writing route_assignment.csv for each scenario
 [DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 12000
 [STATUS INFO] writing subarea_link_performance.csv..
@@ -138,7 +179,7 @@ of zones = 4
 [STATUS INFO] writing data for 4  zones 
 [STATUS INFO] writing link_performances_summary.csv..
 [STATUS INFO] writing link_performances_summary_2way.csv..
-[DATA INFO] CPU Running Time for outputting simulation results: 0.019 s
+[DATA INFO] CPU Running Time for outputting simulation results: 0.016 s
 [STATUS INFO] free memory..
 [DATA INFO] CPU Running Time for Entire Process: 0 min 0 sec
 [STATUS INFO] DTALite computing process is complete.

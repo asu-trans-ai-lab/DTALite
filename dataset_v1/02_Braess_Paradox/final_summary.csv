@@ -245,14 +245,12 @@ FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly 
 3,0,0,0,8000
 FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume
 ,,1,1,2,3,3,auto,am,4000
-,read supply side scenario
-, # of records in supply_side_scenario.csv=,0,
-, # of SA records in supply_side_scenario.csv=,0,
-, # of incident records in supply_side_scenario.csv=,0,
-, # of dms records in supply_side_scenario.csv=,0,
 [PROCESS INFO]Step 4: Column Generation for Traffic Assignment
 ,Total number of column generation iterations =, 20
 ,Total number of column generation iterations =, 20
+,read dynamic traffic managementscenario
+, # of lane closure records in dynamic_traffic_management.csv=,0,
+, # of dms records in dynamic_traffic_management.csv=,0,
 [DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
 0,0,4000,0,0
 1,0,4000,0,0
@@ -279,7 +277,7 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 column updating
 [DATA INFO] column updating: iteration = 0, avg travel time = 65.2103(min), optimization obj = 8800, Relative_gap = 1.66287 %
 [DATA INFO] column updating: iteration = 1, avg travel time = 65.0428(min), optimization obj = 3354.59, Relative_gap = 0.642102 %
-[PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
 [PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping 
 Output Link Performance:
@@ -304,6 +302,9 @@ Output subarea Link Performance:
 ,simple avg link volume=,1600
 ,simple avg link speed=,36.012
 ,simple avg link speed ratio=,0.6002
+,read dynamic traffic managementscenario
+, # of lane closure records in dynamic_traffic_management.csv=,0,
+, # of dms records in dynamic_traffic_management.csv=,0,
 [DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
 0,0,4000,65.0215,62.4305
 1,0,4000,0,0
@@ -330,7 +331,7 @@ Output subarea Link Performance:
 column updating
 [DATA INFO] column updating: iteration = 0, avg travel time = 80.0303(min), optimization obj = 0, Relative_gap = 0 %
 [DATA INFO] column updating: iteration = 1, avg travel time = 80.0303(min), optimization obj = 0, Relative_gap = 0 %
-[PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
+[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
 [PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping 
 Output Link Performance:

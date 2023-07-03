@@ -27,4 +27,326 @@ DTALite Log
 [DATA INFO] number_of_memory_blocks = 4 in settings.csv.
 length_unit = meter in settings.csv.
 speed_unit = kmper in settings.csv.
-[ERROR] Field multimodal_dedicated_assignment_flag in file mode_type.csv does not exist. Please check the file.
+ Validated subarea.csv. It contains 5 geometric points. Proceeding to FOCUSING analysis step.
+[PROCESS INFO] Step 1.8: preload OD demand for focusing approach 
+[DATA INFO] total pre-load demand = 1.2606e+06
+[DATA INFO]0 zones are not significantly related by the subarea. = (0 % )
+[DATA INFO]387 zones are inside the subarea. 
+[DATA INFO] total demand = 1.2609e+06 total subarea-related demand = 1.2609e+06 (100 % )
+[PROCESS INFO] Step 2.0: Reading file departure_time_profile.csv
+[DATA INFO] T7h0min = 0.005002
+[DATA INFO] T17h0min = 0.006401
+[DATA INFO] cumulative profile no.1, ratio at slot  85 (7:5) = 0.005002,cumulative ratio 0.0081223
+[DATA INFO] cumulative profile no.1, ratio at slot  204 (17:0) = 0.006401,cumulative ratio 1
+[DATA INFO] final cumulative profile ratio = 0.98961
+[DATA INFO] allocating 4D memory for no.0 zone,nM = 387,nX = 387,nY = 1,nZ = 1
+[PROCESS INFO] Step 2.1: Reading file demand_file_list.csv...
+[STATUS INFO] reading demand file for scenario index =0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 347.31
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 390.81
+[DATA INFO] o_zone_id:1, d_zone_id: 4, value = 204.51
+[DATA INFO] o_zone_id:1, d_zone_id: 5, value = 373.73
+[DATA INFO] o_zone_id:1, d_zone_id: 6, value = 199.7
+[DATA INFO] o_zone_id:1, d_zone_id: 7, value = 119.69
+[DATA INFO] cumulative total demand volume is 1.1373e+06
+[STATUS INFO] reading demand file for scenario index =1
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 347.31
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 390.81
+[DATA INFO] o_zone_id:1, d_zone_id: 4, value = 204.51
+[DATA INFO] o_zone_id:1, d_zone_id: 5, value = 373.73
+[DATA INFO] o_zone_id:1, d_zone_id: 6, value = 199.7
+[DATA INFO] o_zone_id:1, d_zone_id: 7, value = 119.69
+[DATA INFO] cumulative total demand volume is 1.1373e+06
+[PROCESS INFO] Step 3: Assigning computing tasks to memory blocks...
+[DATA INFO] There are 4 SP networks in memory.
+[DATA INFO] There are 386 agent type*zones to be computed in CPU.
+[PROCESS INFO] Step 4: Column Generation for Traffic Assignment...
+[DATA INFO] Total number of column generation iteration = 20
+[PROCESS INFO] Generate subarea related zone file as subarea_related_zone.csv for focusing approach 
+[DATA INFO] global scenario index = 0 --------------------------
+[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data...
+[ERROR] Link 1->3 in file dynamic_traffic_management.csv is not defined in link.csv.
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 lane closure scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dms scenarios dynamic_traffic_management.csv 
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 0, CPU time= 0.015 s, Sys. Wide Travel Time (TT) = 0, least system TT = 2.2055e+07, gap = 0 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 1, CPU time= 0.077 s, Sys. Wide Travel Time (TT) = 0, least system TT = 2.2055e+07, gap = 0 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 2, CPU time= 0.078 s, Sys. Wide Travel Time (TT) = 1.8932e+08, least system TT = 2.4815e+07, gap = 662.93 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 3, CPU time= 0.118 s, Sys. Wide Travel Time (TT) = 1.8932e+08, least system TT = 2.4815e+07, gap = 662.93 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 4, CPU time= 0.11 s, Sys. Wide Travel Time (TT) = 4.6426e+07, least system TT = 2.446e+07, gap = 89.803 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 5, CPU time= 0.13 s, Sys. Wide Travel Time (TT) = 3.1693e+07, least system TT = 2.4099e+07, gap = 31.51 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 6, CPU time= 0.139 s, Sys. Wide Travel Time (TT) = 2.6897e+07, least system TT = 2.4072e+07, gap = 11.734 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 7, CPU time= 0.141 s, Sys. Wide Travel Time (TT) = 2.5524e+07, least system TT = 2.423e+07, gap = 5.3416 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 8, CPU time= 0.147 s, Sys. Wide Travel Time (TT) = 2.5181e+07, least system TT = 2.432e+07, gap = 3.5404 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 9, CPU time= 0.15 s, Sys. Wide Travel Time (TT) = 2.496e+07, least system TT = 2.4324e+07, gap = 2.6139 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 10, CPU time= 0.155 s, Sys. Wide Travel Time (TT) = 2.4767e+07, least system TT = 2.4304e+07, gap = 1.9078 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 11, CPU time= 0.158 s, Sys. Wide Travel Time (TT) = 2.4655e+07, least system TT = 2.4272e+07, gap = 1.5775 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 12, CPU time= 0.161 s, Sys. Wide Travel Time (TT) = 2.458e+07, least system TT = 2.4268e+07, gap = 1.2848 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 13, CPU time= 0.16 s, Sys. Wide Travel Time (TT) = 2.4536e+07, least system TT = 2.4271e+07, gap = 1.089 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 14, CPU time= 0.163 s, Sys. Wide Travel Time (TT) = 2.4509e+07, least system TT = 2.427e+07, gap = 0.98604 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 15, CPU time= 0.164 s, Sys. Wide Travel Time (TT) = 2.4483e+07, least system TT = 2.4274e+07, gap = 0.85996 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 16, CPU time= 0.162 s, Sys. Wide Travel Time (TT) = 2.4462e+07, least system TT = 2.4269e+07, gap = 0.79566 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 17, CPU time= 0.165 s, Sys. Wide Travel Time (TT) = 2.4444e+07, least system TT = 2.4256e+07, gap = 0.77528 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 18, CPU time= 0.172 s, Sys. Wide Travel Time (TT) = 2.4424e+07, least system TT = 2.4249e+07, gap = 0.71958 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 19, CPU time= 0.169 s, Sys. Wide Travel Time (TT) = 2.4417e+07, least system TT = 2.4249e+07, gap = 0.692 %
+[PROCESS INFO] Step 5: Column Pool Updating
+[DATA INFO] Total number of column pool updating iterations = 5
+[DATA INFO] column updating: iteration = 0, avg travel time = 21.586(min), optimization obj = 1.594e+05,Relative_gap =0.50422 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 21.353(min), optimization obj = 1.2874e+05,Relative_gap =0.41039 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 21.384(min), optimization obj = 1.0482e+05,Relative_gap =0.33519 %
+[DATA INFO] column updating: iteration = 3, avg travel time = 21.075(min), optimization obj = 86983,Relative_gap =0.27867 %
+[DATA INFO] column updating: iteration = 4, avg travel time = 21.323(min), optimization obj = 73867,Relative_gap =0.23691 %
+[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+[DATA INFO] ODME #0, link MAE= 1091,link_MAPE: 35.44%,system_MPE: 35.44%,avg_tt = 21.431(min) ,UE gap =0.060176(min) = (0.2808 %)
+[DATA INFO] count of all column pool vectors=59429, count of all paths =113555, count of column_pools with sensors = 493(0.82956%), count of column_paths with sensors = 20624 (18.162%)
+[DATA INFO] total_system_demand =3.8677e+05, [DATA INFO] ODME #1, link MAE= 833.43,link_MAPE: 27.071%,system_MPE: 27.071%,avg_tt = 19.739(min) ,UE gap =0.20781(min) = (1.0528 %)
+[DATA INFO] total_system_demand =2.9891e+05, [DATA INFO] ODME #2, link MAE= 611.49,link_MAPE: 19.861%,system_MPE: 19.861%,avg_tt = 19.694(min) ,UE gap =0.20716(min) = (1.0518 %)
+[DATA INFO] total_system_demand =3.1747e+05, [DATA INFO] ODME #3, link MAE= 428.16,link_MAPE: 13.903%,system_MPE: 13.903%,avg_tt = 19.726(min) ,UE gap =0.20811(min) = (1.055 %)
+[DATA INFO] total_system_demand =2.5598e+05, [DATA INFO] ODME #4, link MAE= 271.25,link_MAPE: 8.8032%,system_MPE: 8.8032%,avg_tt = 19.913(min) ,UE gap =0.20996(min) = (1.0544 %)
+[DATA INFO] total_system_demand =3.0012e+05, [DATA INFO] ODME #5, link MAE= 144.99,link_MAPE: 4.7036%,system_MPE: 4.7036%,avg_tt = 19.603(min) ,UE gap =0.20676(min) = (1.0548 %)
+[DATA INFO] total_system_demand =3.1719e+05, [DATA INFO] ODME #6, link MAE= 73.886,link_MAPE: 2.3948%,system_MPE: 2.3948%,avg_tt = 19.632(min) ,UE gap =0.20707(min) = (1.0547 %)
+[DATA INFO] total_system_demand =2.7707e+05, [DATA INFO] ODME #7, link MAE= 22.671,link_MAPE: 0.73194%,system_MPE: 0.73194%,avg_tt = 19.63(min) ,UE gap =0.20707(min) = (1.0549 %)
+[PROCESS INFO] ODME stage terminates with gap < 1% as 0.73194% at iteration = 7
+[DATA INFO] ODME #50, link MAE= 22.671,link_MAPE: 0.73194%,system_MPE: 0.73194%,avg_tt = 19.654(min) ,UE gap =0.20632(min) = (1.0497 %)
+[PROCESS INFO] Step 7: perform sensivity sensitivity if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+[DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 34953
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[DATA INFO] CPU Running Time for the entire computing progress = 4.081 s
+[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
+[PROCESS INFO] Step 10: output assignment results
+[DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 34953
+[STATUS INFO] writing file link_performance_s0_no_build.csv
+[STATUS INFO] writing route_assignment.csv for each scenario
+[DATA INFO] o zone id =  100
+[STATUS INFO] writing 100K paths with CPU time 3.344 s
+[DATA INFO] o zone id =  200
+[STATUS INFO] writing 200K paths with CPU time 6.665 s
+[DATA INFO] o zone id =  300
+[DATA INFO] record link based and district_based performance for scenario_index =0with a total volume = 34953
+[STATUS INFO] writing subarea_link_performance.csv..
+[STATUS INFO] writing choice_set_output.csv..
+[DATA INFO] global scenario index = 1 --------------------------
+[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data...
+[ERROR] Link 1->3 in file dynamic_traffic_management.csv is not defined in link.csv.
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 lane closure scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dms scenarios dynamic_traffic_management.csv 
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 0, CPU time= 0.011 s, Sys. Wide Travel Time (TT) = 1.2208e+05, least system TT = 2.2056e+07, gap = 0 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 1, CPU time= 0.072 s, Sys. Wide Travel Time (TT) = 0, least system TT = 2.2055e+07, gap = 0 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 2, CPU time= 0.072 s, Sys. Wide Travel Time (TT) = 3.2509e+07, least system TT = 2.2532e+07, gap = 44.279 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 3, CPU time= 0.092 s, Sys. Wide Travel Time (TT) = 3.2509e+07, least system TT = 2.2532e+07, gap = 44.28 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 4, CPU time= 0.095 s, Sys. Wide Travel Time (TT) = 2.3722e+07, least system TT = 2.2431e+07, gap = 5.7532 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 5, CPU time= 0.097 s, Sys. Wide Travel Time (TT) = 2.2711e+07, least system TT = 2.2383e+07, gap = 1.4623 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 6, CPU time= 0.103 s, Sys. Wide Travel Time (TT) = 2.2497e+07, least system TT = 2.2363e+07, gap = 0.59564 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 7, CPU time= 0.105 s, Sys. Wide Travel Time (TT) = 2.2434e+07, least system TT = 2.2366e+07, gap = 0.30309 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 8, CPU time= 0.104 s, Sys. Wide Travel Time (TT) = 2.2418e+07, least system TT = 2.2377e+07, gap = 0.18145 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 9, CPU time= 0.103 s, Sys. Wide Travel Time (TT) = 2.2417e+07, least system TT = 2.2386e+07, gap = 0.13853 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 10, CPU time= 0.102 s, Sys. Wide Travel Time (TT) = 2.2414e+07, least system TT = 2.2383e+07, gap = 0.13793 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 11, CPU time= 0.102 s, Sys. Wide Travel Time (TT) = 2.2409e+07, least system TT = 2.2377e+07, gap = 0.14217 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 12, CPU time= 0.109 s, Sys. Wide Travel Time (TT) = 2.2407e+07, least system TT = 2.2385e+07, gap = 0.099737 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 13, CPU time= 0.103 s, Sys. Wide Travel Time (TT) = 2.2415e+07, least system TT = 2.2385e+07, gap = 0.13439 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 14, CPU time= 0.101 s, Sys. Wide Travel Time (TT) = 2.2409e+07, least system TT = 2.2388e+07, gap = 0.095808 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 15, CPU time= 0.103 s, Sys. Wide Travel Time (TT) = 2.2407e+07, least system TT = 2.239e+07, gap = 0.076092 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 16, CPU time= 0.102 s, Sys. Wide Travel Time (TT) = 2.2405e+07, least system TT = 2.2389e+07, gap = 0.067858 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 17, CPU time= 0.101 s, Sys. Wide Travel Time (TT) = 2.2403e+07, least system TT = 2.2385e+07, gap = 0.077491 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 18, CPU time= 0.106 s, Sys. Wide Travel Time (TT) = 2.2402e+07, least system TT = 2.2386e+07, gap = 0.07091 %
+[STATUS INFO] label correcting for zone 0 in processor 0
+[STATUS INFO] label correcting for zone 97 in processor 1
+[STATUS INFO] label correcting for zone 194 in processor 2
+[STATUS INFO] label correcting for zone 291 in processor 3
+[DATA INFO] Iter. No.= 19, CPU time= 0.104 s, Sys. Wide Travel Time (TT) = 2.2405e+07, least system TT = 2.239e+07, gap = 0.065836 %
+[PROCESS INFO] Step 5: Column Pool Updating
+[DATA INFO] Total number of column pool updating iterations = 5
+[DATA INFO] column updating: iteration = 0, avg travel time = 19.725(min), optimization obj = 12933,Relative_gap =0.10038 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 19.83(min), optimization obj = 11123,Relative_gap =0.086442 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 19.832(min), optimization obj = 10576,Relative_gap =0.08223 %
+[DATA INFO] column updating: iteration = 3, avg travel time = 19.707(min), optimization obj = 10010,Relative_gap =0.077844 %
+[DATA INFO] column updating: iteration = 4, avg travel time = 19.763(min), optimization obj = 9462.7,Relative_gap =0.0736 %
+[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
+[DATA INFO] ODME #0, link MAE= 0,link_MAPE: 0%,system_MPE: 0%,avg_tt = 19.929(min) ,UE gap =0.0086237(min) = (0.043273 %)
+[PROCESS INFO] ODME stage terminates with gap < 1% as 0% at iteration = 0
+[DATA INFO] ODME #50, link MAE= 0,link_MAPE: 0%,system_MPE: 0%,avg_tt = 19.786(min) ,UE gap =0.048619(min) = (0.24572 %)
+[PROCESS INFO] Step 7: perform sensivity sensitivity if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+[DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 0
+[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
+[DATA INFO] CPU Running Time for the entire computing progress = 1.401 s
+[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
+[PROCESS INFO] Step 10: output assignment results
+[DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 0
+[STATUS INFO] writing file link_performance_s1_build.csv
+[STATUS INFO] writing route_assignment.csv for each scenario
+[DATA INFO] o zone id =  100
+[DATA INFO] o zone id =  200
+[STATUS INFO] writing 100K paths with CPU time 3.269 s
+[DATA INFO] o zone id =  300
+[DATA INFO] record link based and district_based performance for scenario_index =1with a total volume = 0
+[STATUS INFO] writing subarea_link_performance.csv..
+[STATUS INFO] writing choice_set_output.csv..
+[STATUS INFO] output od_performance_summary.csv..
+[STATUS INFO] writing od_performance_summary.csv..
+[STATUS INFO] writing data for 387  zones 
+[DATA INFO] o zone id =  100
+[DATA INFO] o zone id =  200
+[DATA INFO] o zone id =  300
+[STATUS INFO] writing link_performances_summary.csv..
+[STATUS INFO] writing link_performances_summary_2way.csv..
+[DATA INFO] CPU Running Time for outputting simulation results: 5.533 s
+[STATUS INFO] free memory..
+[DATA INFO] CPU Running Time for Entire Process: 0 min 30 sec
+[STATUS INFO] DTALite computing process is complete.

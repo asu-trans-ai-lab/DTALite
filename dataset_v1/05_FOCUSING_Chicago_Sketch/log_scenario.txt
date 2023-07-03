@@ -1,1 +1,3 @@
-scenario_type,demand_period,from_node,to_node,geometry,values
+dtm_type,demand_period,from_node,to_node,geometry,values
+reading record 1
+[ERROR] link 1-> 3 in file scenario.csv is not defined in link.csv
