@@ -47,18 +47,24 @@ using std::ifstream;
 using std::ofstream;
 using std::istringstream;
 
-void g_load_supply_side_scenario_file(Assignment& assignment)
+void g_load_dynamic_traffic_management_file(Assignment& assignment)
 {
-	dtalog.output() << "[PROCESS INFO] Step 2.2: Reading supply side scenario data..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data..." << '\n';
+
+
+	// we setup the initial number of lanes per demand period, per mode and for each scenario, then we will load the dynamic_traffic_management file to overwrite the # of lanes for dynamic lane use in some special cases
+	for (int i = 0; i < g_link_vector.size(); ++i)
+	{
+		g_link_vector[i].setup_dynamic_number_of_lanes(assignment.active_scenario_index);
+	}
 
 	CDTACSVParser parser;
 
 	int capacity_count = 0;
-	int sa_capacity_count = 0;
+	int dtm_dynamic_lane_use_count = 0;
+	int dtm_lane_closure_count = 0;
 
-	int incident_count = 0;
-	int workzone_count = 0;
-	int dms_count = 0;
+	int dtm_dms_count = 0;
 
 	int record_no = 0;
 
@@ -66,9 +72,12 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 	if (g_pFileModel_LC == NULL)
 		return;
 
-	fprintf(g_pFileModel_LC, "scenario_type,demand_period,from_node,to_node,geometry,values\n");
+	fprintf(g_pFileModel_LC, "dtm_type,demand_period,from_node,to_node,geometry,values\n");
 
-	if (parser.OpenCSVFile("supply_side_scenario.csv", false))
+	assignment.active_dms_count = 0;
+	assignment.active_lane_closure_count = 0;
+
+	if (parser.OpenCSVFile("dynamic_traffic_management.csv", false))
 	{
 		fprintf(g_pFileModel_LC, "reading record %d\n", record_no+1);
 		record_no = record_no+1;
@@ -127,7 +136,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file supply_side_scenario.csv is not defined in link.csv." << '\n';
+				dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file dynamic_traffic_management.csv is not defined in link.csv." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] link %d-> %d in file scenario.csv is not defined in link.csv\n", from_node_id, to_node_id);
 				continue;
 			}
@@ -147,41 +156,87 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			fprintf(g_pFileModel_LC, "%f %f,", g_node_vector[internal_to_node_seq_no].x, g_node_vector[internal_to_node_seq_no].y);
 			fprintf(g_pFileModel_LC, ")\"");
 
-			string scenario_type;
-			parser.GetValueByFieldName("scenario_type", scenario_type);
-			if (scenario_type == "demand")
-			{
-				// o_distrct_id, d_district_id, factor
-				// users given districts
+			string str_mode_type;
+			parser.GetValueByFieldName("mode_type", str_mode_type); 
 
-				// new districts for traffic analysis
+			int mode_type_no = 0; 
+			if (str_mode_type.size() > 0 && assignment.mode_type_2_seqno_mapping.find(str_mode_type) != assignment.mode_type_2_seqno_mapping.end())
+			{
+				mode_type_no = assignment.mode_type_2_seqno_mapping[str_mode_type];
+		
 			}
 
+			int acitcivate_flag = 0;
 
-			if (scenario_type == "sa")
+			parser.GetValueByFieldName("activate", acitcivate_flag);
+
+
+			if (acitcivate_flag == 0)  // continue to skip this record
+				continue;
+
+			string DTM_type, scenario_index_vector_str;
+			parser.GetValueByFieldName("dtm_type", DTM_type);
+			
+			parser.GetValueByFieldName("scenario_index_vector", scenario_index_vector_str);
+			std::vector<int> scenario_index_vector;
+
+			g_ParserIntSequence(scenario_index_vector_str, scenario_index_vector);
+
+			g_link_vector[link_seq_no].link_specifical_flag_str.clear();
+			g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = 0;
+			g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = 0;  // apply the change
+			g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code.clear();
+
+			bool bFoundFlag = false; 
+
+
+
+			for (int scenario_index_i = 0; scenario_index_i < scenario_index_vector.size(); scenario_index_i++)
+			{ 
+				if (scenario_index_vector[scenario_index_i] == assignment.active_scenario_index)
+				{
+					assignment.g_DTA_scenario_vector[assignment.active_scenario_index].dtm_flag = 1;
+					bFoundFlag = true;
+				}
+				
+			}
+
+			if (bFoundFlag == false)  // this active scenario index 
+				continue; 
+			if (DTM_type == "dynamic_lane_use")
 			{
 				// capacity in the space time arcs
-				float lanes_changed = 0;
-				parser.GetValueByFieldName("lanes", lanes_changed);
+				float final_lanes = 0;
+				parser.GetValueByFieldName("final_lanes", final_lanes);
 
-				g_link_vector[link_seq_no].VDF_period[tau].sa_lanes_change = lanes_changed;  // apply the change
-				g_link_vector[link_seq_no].VDF_period[tau].network_design_flag = -1;
-				g_link_vector[link_seq_no].link_code_str = "sa";
-				//
-				g_link_vector[link_seq_no].VDF_period[tau].scenario_code = "sa";
-				sa_capacity_count++;
-
-				fprintf(g_pFileModel_LC, "sa,number_of_lanes_changed=%f,", lanes_changed);
+				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no][assignment.active_scenario_index] = final_lanes;  // apply the change
+				fprintf(g_pFileModel_LC, "dynamic lane use,final_number_of_lanes=%f,", final_lanes);
+				dtm_dynamic_lane_use_count++;
 			}
-			else if (scenario_type == "dms")
+			else if (DTM_type == "lane_closure")
 			{
-				g_link_vector[link_seq_no].VDF_period[tau].network_design_flag = 2;
-				g_link_vector[link_seq_no].VDF_period[tau].scenario_code = "dms";
-				g_link_vector[link_seq_no].link_code_str = "dms";
+				// capacity in the space time arcs
+				float final_lanes = 0;
+				parser.GetValueByFieldName("final_lanes", final_lanes);
+
+				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
+				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = -1;
+				g_link_vector[link_seq_no].link_specifical_flag_str = "lane_closure";
+				//
+				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "lane_closure";
+				dtm_lane_closure_count++;
+
+				fprintf(g_pFileModel_LC, "lane closure,final_number_of_lanes=%f,", final_lanes);
+			}
+			else if (DTM_type == "dms")
+			{
+				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = 2;
+				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "dms";
+				g_link_vector[link_seq_no].link_specifical_flag_str = "dms";
 
 				if (assignment.node_seq_no_2_zone_id_mapping.find(g_link_vector[link_seq_no].to_node_seq_no) == assignment.node_seq_no_2_zone_id_mapping.end())
 				{
-					dtalog.output() << "[ERROR] information zone has not been defined!" << '\n';
+					dtalog.output() << "[ERROR]  The upstream node ('to_node_id' = " << to_node_id << ") of a DMS link must be associated with a 'zone_id' in 'node.csv' for the simulation of DMS information provision strategies." << '\n';
 					g_program_stop();
 
 				}
@@ -196,12 +251,19 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 				assignment.zone_seq_no_2_info_mapping[zone_no] = 1;  // set information zone flag
 
 
-
-				dms_count++;
+				assignment.active_dms_count +=1;
+				dtm_dms_count++;
+			}
+			else
+			{
+				dtalog.output() << "[ERROR] DTALite does not support DTM_type = " << DTM_type.c_str() << " in dynamic_traffic_management.csv " << '\n';
+				dtalog.output() << "[INFO] DTALite only support DTM_type = lane_closure or dms in dynamic_traffic_management.csv " << '\n';
+				g_program_stop();
 			}
 
 
-			//if (scenario_type == "incident")
+
+			//if (DTM_type == "incident")
 			//{
 
 			//	string time_period;
@@ -241,7 +303,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			//		continue;
 			//	}
 			//}
-			//if (scenario_type == "incident")
+			//if (DTM_type == "incident")
 			//{
 			//	// capacity in the space time arcs
 			//	float capacity = 1;
@@ -287,7 +349,7 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			//	fprintf(g_pFileModel_LC, "incident,cap=%f,", capacity);
 			//	incident_count++;
 			//
-			//else if (scenario_type == "dms")
+			//else if (DTM_type == "dms")
 			//{
 			//	// capacity in the space time arcs
 			//	float response_rate = 1;
@@ -301,15 +363,15 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 			//	g_link_vector[link_seq_no].vms_map[tau] = 1;
 			//	fprintf(g_pFileModel_LC, "dms,response_rate=%f,", response_rate);
 
-			//	dms_count++;
+			//	dtm_dms_count++;
 
 
 			//}
 			//else
 			//{
-			//	if (scenario_type.size() >= 1)
+			//	if (DTM_type.size() >= 1)
 			//	{
-			//		dtalog.output() << "Error: scenario_type = " << scenario_type << " is not supported. Currently DTALite supports scenario_type such as sa, incident, dms" << '\n';
+			//		dtalog.output() << "Error: DTM_type = " << DTM_type << " is not supported. Currently DTALite supports DTM_type such as sa, incident, dms" << '\n';
 			//		g_program_stop();
 			//	}
 			//}
@@ -320,27 +382,52 @@ void g_load_supply_side_scenario_file(Assignment& assignment)
 
 	}
 	// allocate
-	dtalog.output() << "[STATUS INFO] reading " << sa_capacity_count << " sa  capacity scenario.. " << '\n';
-	dtalog.output() << "[STATUS INFO] reading " << dms_count << " dms scenario.. " << '\n';
+	dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 
-	if (incident_count >= 1)
+	
+	dtalog.output() << "[STATUS INFO] loading " << dtm_lane_closure_count << " lane closure scenarios in dynamic_traffic_management.csv  " << '\n';
+	if (dtm_lane_closure_count  > 0  && assignment.g_number_of_real_time_mode_types ==0)
 	{
-		g_assign_RT_computing_tasks_to_memory_blocks(assignment);
+		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
+		g_program_stop();
 	}
+
+	if (dtm_lane_closure_count > 0 && assignment.total_real_time_demand_volume <= 0.1)
+	{
+		dtalog.output() << "[ERROR] No positive demand volume is defined for real time information user. If a lane closure scenario is activated, a corresponding real-time information user class 's demand input should be defined in demand_file_list.csv." << '\n';
+		g_program_stop();
+	}
+	dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
+	if (dtm_dms_count > 0 && assignment.g_number_of_DMS_mode_types == 0)
+	{
+		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
+		g_program_stop();
+	}
+	if (dtm_dms_count > 0 && dtm_lane_closure_count ==0 )
+	{
+		dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
+		g_program_stop();
+	}
+
+
+	//if (incident_count >= 1)
+	//{
+	//	g_assign_RT_computing_tasks_to_memory_blocks(assignment);
+	//}
 	fclose(g_pFileModel_LC);
 	parser.CloseCSVFile();
 
 	// we now know the number of links
 
-	assignment.summary_file << ",read supply side scenario" << '\n';
-	assignment.summary_file << ", # of records in supply_side_scenario.csv=," << sa_capacity_count + incident_count + dms_count << "," << '\n';
-	assignment.summary_file << ", # of SA records in supply_side_scenario.csv=," << sa_capacity_count << "," << '\n';
-	assignment.summary_file << ", # of incident records in supply_side_scenario.csv=," << incident_count << "," << '\n';
-	assignment.summary_file << ", # of dms records in supply_side_scenario.csv=," << dms_count << "," << '\n';
+	assignment.summary_file << ",read dynamic traffic managementscenario" << '\n';
+	//assignment.summary_file << ", # of records in dynamic_traffic_management.csv=," << dtm_lane_closure_count + incident_count + dtm_dms_count << "," << '\n';
+	assignment.summary_file << ", # of lane closure records in dynamic_traffic_management.csv=," << dtm_lane_closure_count << "," << '\n';
+	//assignment.summary_file << ", # of incident records in dynamic_traffic_management.csv=," << incident_count << "," << '\n';
+	assignment.summary_file << ", # of dms records in dynamic_traffic_management.csv=," << dtm_dms_count << "," << '\n';
 
 	//if (capacity_count > 0 || sa_capacity_count > 0)
 	//{
-	//	assignment.g_number_of_sensitivity_analysis_iterations = max(0, assignment.g_number_of_sensitivity_analysis_iterations);
+	//	assignment.g_number_of_sensitivity_analysis_iterations_for_dtm = max(0, assignment.g_number_of_sensitivity_analysis_iterations_for_dtm);
 	//}
 
 }
@@ -389,34 +476,34 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 
 			parser.GetValueByFieldName("scale_factor", scale_factor, false);
 
-			string scenario_type;
-			parser.GetValueByFieldName("scenario_type", scenario_type);
+			string DTM_type;
+			parser.GetValueByFieldName("DTM_type", DTM_type);
 			// o_distrct_id_factor_map,
 			// d_district_id_factor_map,
 			// od_district_id_factor_map
 
-			if (scenario_type == "o_based")
+			if (DTM_type == "o_based")
 			{
 				assignment.o_district_id_factor_map[o_district_id] = scale_factor;
 
-			}else if (scenario_type == "d_based")
+			}else if (DTM_type == "d_based")
 			{
 				assignment.d_district_id_factor_map[d_district_id] = scale_factor;
-			}else if (scenario_type == "od_based")
+			}else if (DTM_type == "od_based")
 			{
 				int od_district_key = o_district_id * 1000 + d_district_id;
 
 				assignment.od_district_id_factor_map[od_district_key] = scale_factor;
-			}else if (scenario_type == "sa_o_based")
+			}else if (DTM_type == "sa_o_based")
 			{
 				assignment.SA_o_district_id_factor_map[o_district_id] = scale_factor;
 
 			}
-			else if (scenario_type == "sa_d_based")
+			else if (DTM_type == "sa_d_based")
 			{
 				assignment.SA_d_district_id_factor_map[d_district_id] = scale_factor;
 			}
-			else if (scenario_type == "sa_od_based")
+			else if (DTM_type == "sa_od_based")
 			{
 				int od_district_key = o_district_id * 1000 + d_district_id;
 
@@ -425,7 +512,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
-				dtalog.output() << scenario_type.c_str() << "is not supported." << '\n';
+				dtalog.output() << DTM_type.c_str() << "is not supported." << '\n';
 				g_program_stop();
 			}
 
@@ -458,7 +545,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //	//if (capacity < 1)
 //	g_link_vector[link_seq_no].VDF_period[tau].RT_allowed_use[at] = false;
 
-//	if (assignment.g_ModeTypeVector[at].real_time_information >= 1)
+//	if (assignment.g_ModeTypeVector[at].real_time_information_type >= 1)
 //	{
 //		sprintf(lr_price_field_name, "lr_rt_price_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
 //		parser.GetValueByFieldName(lr_price_field_name, LR_RT_price, true, false);

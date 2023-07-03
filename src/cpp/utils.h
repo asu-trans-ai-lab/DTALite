@@ -394,7 +394,7 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
     {
         if (required_field)
         {
-            dtalog.output() << "[DATA INFO] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+            dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -451,14 +451,14 @@ bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool requi
 
     if (FieldsIndices.find("key") == FieldsIndices.end())
     {
-        dtalog.output() << "[DATA INFO] Field key  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        dtalog.output() << "[ERROR] Field key in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
         g_program_stop();
         return false;
     }
 
     if (FieldsIndices.find("value") == FieldsIndices.end())
     {
-        dtalog.output() << "[DATA INFO] Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+        dtalog.output() << "[ERROR] Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
         g_program_stop();
         return false;
     }

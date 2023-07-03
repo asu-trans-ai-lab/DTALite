@@ -1259,7 +1259,7 @@ void Assignment::STTrafficSimulation()
 
 							int mode_type_no = p_agent->mode_type_no;
 							//requre mode_type_no be sequential
-							if (mode_type_no-1 < g_ModeTypeVector.size() && g_ModeTypeVector[p_agent->mode_type_no - 1].real_time_information)  // modeling response uniformly
+							if (mode_type_no-1 < g_ModeTypeVector.size() && g_ModeTypeVector[p_agent->mode_type_no - 1].real_time_information_type)  // modeling response uniformly
 							{
 								rerouting_decision_flag = true;
 								p_agent->info_receiving_flag = 3;

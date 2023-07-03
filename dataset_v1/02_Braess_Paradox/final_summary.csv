@@ -2,7 +2,7 @@
 [STATUS INFO] scenario_index=0,scenario_name=,no_build
 [STATUS INFO] scenario_index=1,scenario_name=,build
 [PROCESS INFO] Step 1.1: Reading demand_period.csv...
-,demand_period= 1,= am,time_period=0700_0800
+,demand_period= 1, am,time_period=0700_0800
 [PROCESS INFO] Step 1.2: Reading file mode_type.csv...
 mode_type =, auto, real time info flag = 0
 [PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv...
@@ -221,6 +221,16 @@ link_type =, 165, link_type_name =
 ,,263,y_cc_ws,0,0,0,0,0,0,0,
 ,,264,y_cc_cc,0,0,0,0,0,0,0,
 ,,265,y_cc_oth,0,0,0,0,0,0,0,
+pre-read demand_file_list.csv.
+,first stage scanning
+,# of inside zones = 4, total_related_demand = 4000
+,# inside_zone_count = 4, total_related_demand_from_internal zones = 4000
+,# related_external_zone_count = 0, external related demand = 0
+,# related_external_zone_count_with_significant_volume = 0
+,second stage cut off, cut off zone = all inside zones + significant external related zones 
+,# cut off zone size = 4, total_related_demand_from_external_cutoff  = 0
+,cut off volume threshold to determine significance = 0, external origin zones with volume larger than this threadshold will be kept
+, remaining external related demand percentage after the cut off  = 0 %
 [PROCESS INFO] Step 2.1: read demand, defined in demand_file_list.csv.
 [STATUS INFO] reading demand file for scenario index = 0
 [STATUS INFO] reading demand file for scenario index = 1
@@ -244,34 +254,34 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 ,Total number of column generation iterations =, 20
 ,Total number of column generation iterations =, 20
 [DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,4000,0,-100
-1,0,4000,0,-100
-2,0,4000,85.0103,88.8685
-3,0,4000,85.0103,88.8685
-4,0,4000,67.2326,15.2354
-5,0,4000,65.0103,1.1192e-14
-6,0,4000,65.8103,7.86752
-7,0,4000,65.0103,1.1192e-14
-8,0,4000,65.4185,5.25364
-9,0,4000,66.2603,10.4149
-10,0,4000,65.2573,3.93249
-11,0,4000,65.0103,1.1192e-14
-12,0,4000,65.1756,3.13879
-13,0,4000,65.0103,1.1192e-14
-14,0,4000,65.1287,2.6103
-15,0,4000,65.4185,5.25364
-16,0,4000,65.0992,2.2335
-17,0,4000,65.0103,1.1192e-14
-18,0,4000,65.0795,1.95144
-19,0,4000,65.0103,1.1192e-14
+0,0,4000,0,0
+1,0,4000,0,0
+2,0,4000,85.01,88.8677
+3,0,4000,85.01,88.8677
+4,0,4000,67.2322,15.2348
+5,0,4000,65.01,0
+6,0,4000,65.81,7.86696
+7,0,4000,65.01,0
+8,0,4000,65.4182,5.2531
+9,0,4000,66.26,10.4143
+10,0,4000,65.2569,3.93195
+11,0,4000,65.01,0
+12,0,4000,65.1753,3.13825
+13,0,4000,65.01,0
+14,0,4000,65.1283,2.60977
+15,0,4000,65.4182,5.2531
+16,0,4000,65.0989,2.23297
+17,0,4000,65.01,0
+18,0,4000,65.0792,1.95091
+19,0,4000,65.01,0
 [PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,2
 column updating
-[DATA INFO] column updating: iteration = 0, avg travel time = 65.2103(min), optimization obj = 8800, Relative_gap = 3.27913 %
-[DATA INFO] column updating: iteration = 1, avg travel time = 65.0428(min), optimization obj = 3354.59, Relative_gap = 1.27907 %
+[DATA INFO] column updating: iteration = 0, avg travel time = 65.2103(min), optimization obj = 8800, Relative_gap = 1.66287 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 65.0428(min), optimization obj = 3354.59, Relative_gap = 0.642102 %
 [PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[PROCESS INFO] Step 9: record corridor performance summary
+[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
 ,VMT=,111896,VKT=,180040
@@ -283,27 +293,38 @@ Output Link Performance:
 ,simple avg link volume=,1600
 ,simple avg link speed=,36.012
 ,simple avg link speed ratio=,0.6002
+Output subarea Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,111896,VKT=,180040
+,VHT=,4334.77
+,network vehicle speed (MPH) =,25.8135,,network vehicle speed (KPH) =,41.534
+,PMT=,111896,PKT=,180040
+,PHT=,4334.77
+,network person speed (MPH) =,25.8135,,network person speed (KPH) =,41.534
+,simple avg link volume=,1600
+,simple avg link speed=,36.012
+,simple avg link speed ratio=,0.6002
 [DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,4000,65.0218,62.4314
-1,0,4000,0,-100
-2,0,4000,80.0303,3.6366e-14
-3,0,4000,80.0303,3.6366e-14
-4,0,4000,80.0303,3.6366e-14
-5,0,4000,80.0303,3.6366e-14
-6,0,4000,80.0303,3.6366e-14
-7,0,4000,80.0303,3.6366e-14
-8,0,4000,80.0303,3.6366e-14
-9,0,4000,80.0303,3.6366e-14
-10,0,4000,80.0303,3.6366e-14
-11,0,4000,80.0303,3.6366e-14
-12,0,4000,80.0303,3.6366e-14
-13,0,4000,80.0303,3.6366e-14
-14,0,4000,80.0303,3.6366e-14
-15,0,4000,80.0303,3.6366e-14
-16,0,4000,80.0303,3.6366e-14
-17,0,4000,80.0303,3.6366e-14
-18,0,4000,80.0303,3.6366e-14
-19,0,4000,80.0303,3.6366e-14
+0,0,4000,65.0215,62.4305
+1,0,4000,0,0
+2,0,4000,80.03,0
+3,0,4000,80.03,0
+4,0,4000,80.03,0
+5,0,4000,80.03,0
+6,0,4000,80.03,0
+7,0,4000,80.03,0
+8,0,4000,80.03,0
+9,0,4000,80.03,0
+10,0,4000,80.03,0
+11,0,4000,80.03,0
+12,0,4000,80.03,0
+13,0,4000,80.03,0
+14,0,4000,80.03,0
+15,0,4000,80.03,0
+16,0,4000,80.03,0
+17,0,4000,80.03,0
+18,0,4000,80.03,0
+19,0,4000,80.03,0
 [PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,2
 column updating
@@ -311,7 +332,7 @@ column updating
 [DATA INFO] column updating: iteration = 1, avg travel time = 80.0303(min), optimization obj = 0, Relative_gap = 0 %
 [PROCESS INFO] Step 7: perform sensitivity analysis if supply_side_scenario.csv is provided for types = SA and DMS. 
 [PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[PROCESS INFO] Step 9: record corridor performance summary
+[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
 ,VMT=,74.5805,VKT=,120
@@ -323,7 +344,18 @@ Output Link Performance:
 ,simple avg link volume=,2400
 ,simple avg link speed=,36.006
 ,simple avg link speed ratio=,0.6001
-     Check OD connectivity and accessibility in od_performance.csv
+Output subarea Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,74.5805,VKT=,120
+,VHT=,5335.33
+,network vehicle speed (MPH) =,0.0139786,,network vehicle speed (KPH) =,0.0224916
+,PMT=,74.5805,PKT=,120
+,PHT=,5335.33
+,network person speed (MPH) =,0.0139786,,network person speed (KPH) =,0.0224916
+,simple avg link volume=,2400
+,simple avg link speed=,36.006
+,simple avg link speed ratio=,0.6001
+     Check OD connectivity and accessibility in od_performance_summary.csv
 , # of connected OD pairs =, 0
 , # of OD/mode_type/demand_type columns without paths =, 1
 Output Link Performance Summary

@@ -247,7 +247,7 @@ public:
 		{
 			CLink* p_link = &(g_link_vector[i]);
 
-				if (p_assignment->g_ModeTypeVector[mode_type_no].real_time_information == 1 /*RT users*/)
+				if (p_assignment->g_ModeTypeVector[mode_type_no].real_time_information_type == 1 /*RT users*/)
 				{
 
 					p_link->VDF_period[m_tau].penalty = p_link->VDF_period[m_tau].RT_route_regeneration_penalty;
@@ -310,7 +310,7 @@ public:
 				//	continue;
 
 				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
-				//if (m_mode_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_at[m_mode_type_no]==0)  // other modes
+				//if (m_mode_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_mode_type[m_mode_type_no]==0)  // other modes
 				//	continue;
 
 				if (g_link_vector[link_seq_no].AllowModeType(p_assignment->g_ModeTypeVector[m_mode_type_no].mode_type, m_tau, assignment.active_scenario_index))

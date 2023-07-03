@@ -46,8 +46,8 @@ void write_default_setting_file_if_not_exist()
 			{"assignment", "route_output", "1"},
 			{"assignment", "simulation_output", "0"},
 			{"cpu", "number_of_memory_blocks", "4"},
-			{"", "length_unit", "meter"},
-			{"", "speed_unit", "kmph"},
+			{"unit", "length_unit", "meter"},
+			{"unit", "speed_unit", "kmph"},
 	};
 
 	// Open the file for output.
@@ -172,7 +172,7 @@ void write_default_mode_type_file_if_not_exist() {
 	std::ofstream outFile(filename);
 
 	// Write the header to the file.
-	outFile << "first_column,mode_type,mode_type_index,name,vot,mode_specific_assignment,person_occupancy,headway_in_sec,real_time_info\n";
+	outFile << "first_column,mode_type,mode_type_index,name,vot,multimodal_dedicated_assignment_flag,person_occupancy,headway_in_sec,DTM_real_time_info_type\n";
 
 	// Write the data to the file.
 	for (const auto& item : data) {
@@ -442,7 +442,7 @@ bool CheckSupplySideScenarioFileExist()
 
 	int sa_count = 0;
 
-	if (parser.OpenCSVFile("supply_side_scenario.csv", false))
+	if (parser.OpenCSVFile("dynamic_traffic_management.csv", false))
 	{
 		while (parser.ReadRecord())
 		{
@@ -474,6 +474,25 @@ bool CheckSupplySideScenarioFileExist()
 		return false;
 	else
 		return true;
+}
+
+void write_default_dynamic_traffic_management_file_if_not_exist() {
+	std::string filename = "dynamic_traffic_management.csv";
+
+	std::ifstream inFile(filename.c_str());
+	if (inFile.good()) {
+		std::cout << "The file " << filename << " already exists.\n";
+		return;
+	}
+
+	std::ofstream outFile;
+	outFile.open(filename.c_str());
+
+	outFile << "dtm_type,from_node_id,to_node_id,final_lanes,demand_period,mode_type,scenario_index_vector,activate\n";
+	outFile << "lane_closure,1,3,0.5,am,auto,0,0\n";
+
+	outFile.close();
+	std::cout << "The file " << filename << " has been created with default values.\n";
 }
 void write_default_sensor_data_file_if_not_exist() {
 	std::string filename = "sensor_data.csv";
@@ -529,9 +548,8 @@ int main()
 	int assignment_mode = 1;
 	bool flag_default = false;
 	int default_volume = 1;
-	int link_length_in_meter_flag = 0;
-	int scenario_A_index = 0;
-	int scenario_index_size = -1;
+	int length_unit_flag = 0; //0: meter, 1: mile,
+	int speed_unit_flag = 0;  //0: kmph, 1: mph
 
 	dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
 	dtalog.output() << " Overview of files and process\n";
@@ -539,7 +557,7 @@ int main()
 	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv, zone.csv)\n";
 	dtalog.output() << "   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)\n";
 	dtalog.output() << "   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)\n";
-	dtalog.output() << "   |--- Supply Layer (supply_side_scenario.csv, signal_timing.csv)\n";
+	dtalog.output() << "   |--- Supply Layer (dynamic_traffic_management.csv, signal_timing.csv)\n";
 
 	dtalog.output() << "\n2. Traffic Assignment and Simulation Process:\n";
 	dtalog.output() << "   |--- Demand estimation based on sensor data\n";
@@ -571,7 +589,7 @@ int main()
 	//dtalog.output() << "    choice_set.csv: Contains choice set data for agent-based modeling." << '\n';
 	//dtalog.output() << "    activity_travel_pattern.csv: (Optional) Defines activity and travel patterns of agents in the simulation." << '\n';
 	//dtalog.output() << "  Supply layer:" << '\n';
-	//dtalog.output() << "    supply_side_scenario.csv: Defines different supply side scenarios." << '\n';
+	//dtalog.output() << "    dynamic_traffic_management.csv: Defines different dynamic traffic managementscenarios." << '\n';
 	//dtalog.output() << "    signal_timing.csv: Contains information about signal timings at intersections." << '\n';
 	//dtalog.output() << "  Configuration files:" << '\n';
 	//dtalog.output() << "    settings.csv: Defines basic setting for the network, the number of iterations, etc." << '\n';
@@ -602,6 +620,7 @@ int main()
 	write_default_departure_time_profile_if_not_exist();
 	write_default_subarea_file_if_not_exist();
 	write_default_sensor_data_file_if_not_exist();
+	write_default_dynamic_traffic_management_file_if_not_exist();
 	CDTACSVParser parser_settings;
 
 	parser_settings.IsFirstLineHeader = true;
@@ -672,15 +691,31 @@ int main()
 			dtalog.output() << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
 		}
 
-		//if (parser_settings.GetValueByKeyName("scenario_index_size", scenario_index_size, false, false))
-		//{
-		//	dtalog.output() << "scenario_index_size = " << scenario_index_size << " in settings.csv." << '\n';
+		string length_unit_str; 
+		if (parser_settings.GetValueByKeyName("length_unit", length_unit_str, false, false))
+		{
+			dtalog.output() << "length_unit = " << length_unit_str.c_str() << " in settings.csv." << '\n';
 
-		//	if(scenario_index_size>=1)
-		//	{
-		//		sensitivity_analysis_iterations = 10; // 10 iterations
-		//	}
-		//}
+			if (length_unit_str == "mile")
+				length_unit_flag = 1;
+			else
+				length_unit_flag = 0; // always as default 0
+
+		}
+
+
+		string speed_unit_str;
+		if (parser_settings.GetValueByKeyName("speed_unit", speed_unit_str, false, false))
+		{
+			dtalog.output() << "speed_unit = " << speed_unit_str.c_str() << " in settings.csv." << '\n';
+
+			if (speed_unit_str == "mph")
+				speed_unit_flag = 1;
+			else
+				speed_unit_flag = 0; // always as default 0 
+
+		}
+		
 
 		double number_of_seconds_per_interval_input = 0.25;
 		//parser_settings.GetValueByFieldName("number_of_seconds_per_interval", number_of_seconds_per_interval_input, false, false);
@@ -700,7 +735,7 @@ int main()
 	// scenario
 	//
 	// obtain initial flow values
-	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, scenario_A_index, scenario_index_size);
+	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, length_unit_flag, speed_unit_flag);
 
 	return 0;
 }

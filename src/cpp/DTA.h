@@ -280,7 +280,7 @@ public:
 
 class Cmode_type {
 public:
-    Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
+    Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information_type{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
          OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }
     {
     }
@@ -295,7 +295,7 @@ public:
     double DSR;
 
     float time_headway_in_sec;
-    int real_time_information;
+    int real_time_information_type;
     std::string mode_type;
     int number_of_allowed_links;
 
@@ -321,7 +321,7 @@ public:
             free_speed_at[at] = 60;
             capacity_at[at] = 2000;
             FFTT_at[at] = 1;
-            lanes_at[at] = 1;
+            lanes_mode_type[at] = 1;
 
             for (int at2 = 0; at2 < MAX_MODETYPES; at2++)
             {
@@ -349,7 +349,7 @@ public:
     e_traffic_flow_model traffic_flow_code;
 
     double free_speed_at[MAX_MODETYPES];
-    double lanes_at[MAX_MODETYPES];
+    double lanes_mode_type[MAX_MODETYPES];
     double capacity_at[MAX_MODETYPES];
     double FFTT_at[MAX_MODETYPES];
     std::string allow_uses_period[MAX_TIMEPERIODS];
@@ -363,7 +363,7 @@ public:
 class CColumnPath {
 public:
     CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
-        path_switch_volume{ 0 }, path_volume{ 0 }, path_preload_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{ -1 }, path_volume_before_sa{ -1 }, path_volume_after_sa{ -1 }, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
+        path_switch_volume{ 0 }, path_volume{ 0 }, path_preload_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{ -1 }, path_volume_before_dtm{ -1 }, path_volume_after_dtm{ -1 }, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
         path_gradient_cost{ 0 }, path_gradient_cost_difference{ 0 }, path_gradient_cost_relative_difference{ 0 }, subarea_output_flag{ 1 }, measurement_flag{ 0 }, impacted_path_flag{ 0 },
         network_design_detour_mode{ 0 }, b_RT_new_path_flag{0}, global_path_no{ -1 }, b_sensitivity_analysis_flag{ false }
     {
@@ -462,8 +462,8 @@ public:
     double path_preload_volume = 0;
     double path_volume_before_ODME = 0;
     double path_volume_after_ODME = 0;
-    double path_volume_before_sa = 0;
-    double path_volume_after_sa = 0;
+    double path_volume_before_dtm = 0;
+    double path_volume_after_dtm = 0;
 
     std::vector<float> departure_time_in_min;
     int subarea_output_flag;
@@ -606,7 +606,7 @@ class CColumnVector {
 public:
     // this is colletion of unique paths
     CColumnVector() :  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_mode_type_no{ 0 },
-        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, relative_OD_gap{ 0 }
+        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, OD_based_UE_relative_gap{ 0 }
     {
 
         for (int si = 0; si < MAX_SCENARIOS; si++)
@@ -624,7 +624,7 @@ public:
     {
         path_node_sequence_map.clear();
 
-        relative_OD_gap = 0;
+        OD_based_UE_relative_gap = 0;
 
     }
     bool subarea_passing_flag;
@@ -637,7 +637,7 @@ public:
     // od volume
     double od_volume[MAX_SCENARIOS];
 
-    double relative_OD_gap;
+    double OD_based_UE_relative_gap;
     std::map<int, double> od_volume_per_iteration_map;
 
     double prev_od_volume;
@@ -787,7 +787,7 @@ public:
 class DTAScenario {
 public:
 
-    DTAScenario() : scenario_index{ 0 }, year{ 2023 }, activate{ 1 }
+    DTAScenario() : scenario_index{ 0 }, year{ 2023 }, activate{ 1 }, dtm_flag{ 0 }
     {
     }
 
@@ -796,18 +796,19 @@ public:
     std::string scenario_name;
     std::string scenario_description;
     int activate;
+    int dtm_flag; 
 };
 class Assignment {
 public:
     // default is UE
     Assignment() : assignment_mode{ lue }, g_number_of_memory_blocks{ 4 }, g_number_of_threads{ 1 }, g_info_updating_freq_in_min{ 5 }, g_visual_distance_in_cells{ 5 },
-        g_link_type_file_loaded{ true }, g_mode_type_file_loaded{ false }, total_route_demand_volume{ 0 },
+        g_link_type_file_loaded{ true }, g_mode_type_file_loaded{ false }, total_route_demand_volume{ 0 }, total_real_time_demand_volume{ 0 },
         total_demand_volume{ 0.0 }, g_column_pool{ nullptr }, g_number_of_in_memory_simulation_intervals{ 500 },
-        g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
+        g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations_for_dtm{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
         g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_mode_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
         shortest_path_log_zone_id{ -1 }, g_number_of_analysis_districts{ 1 },
-        active_scenario_index{ 0 }
+        active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }
 
     {
         m_LinkCumulativeArrivalVector  = NULL;
@@ -881,7 +882,7 @@ public:
     }
 
 
-    std::vector<DTAScenario> g_DTAscenario_vector;
+    std::vector<DTAScenario> g_DTA_scenario_vector;
     std::map<int, int> g_active_DTAscenario_map;
 
     std::vector<DTAGDPoint> g_subarea_shape_points;
@@ -920,6 +921,8 @@ public:
     e_assignment_mode assignment_mode;
 
     int active_scenario_index;
+    int active_dms_count; 
+    int active_lane_closure_count;
     int g_number_of_memory_blocks;
     int g_visual_distance_in_cells;
     float g_info_updating_freq_in_min;
@@ -940,6 +943,8 @@ public:
     bool g_mode_type_file_loaded;
 
     float total_demand_volume;
+    float total_real_time_demand_volume;
+
     float total_route_demand_volume;
     std::map<int, float> g_origin_demand_array;
     CColumnVector**** g_column_pool;
@@ -948,16 +953,20 @@ public:
     // the data horizon in the memory
     int g_number_of_in_memory_simulation_intervals;
     int g_number_of_column_generation_iterations;
-    int g_number_of_sensitivity_analysis_iterations;
+    int g_number_of_sensitivity_analysis_iterations_for_dtm;
     int g_number_of_column_updating_iterations;
     int g_number_of_ODME_iterations;
     int g_number_of_demand_periods;
+    int g_length_unit_flag;
+    int g_speed_unit_flag;
 
     int g_number_of_links;
     int g_number_of_timing_arcs;
     int g_number_of_nodes;
     int g_number_of_zones;
     int g_number_of_mode_types;
+    int g_number_of_real_time_mode_types;
+    int g_number_of_DMS_mode_types;
 
     std::map<int, int> node_seq_no_2_zone_id_mapping;  // this is used to mark if this zone_id has been identified or not
     std::map<int, int> zone_seq_no_2_info_mapping;  // this is used to mark if this zone_id has been identified or not
@@ -1084,6 +1093,7 @@ public:
                 {
 
                     penalty_si_at[si][at][tau] = 0;
+                    recorded_lanes_per_period_per_at[tau][at][si] = 0;
                     recorded_volume_per_period_per_at[tau][at][si] = 0;
                     recorded_MEU_per_period_per_at[tau][at][si] = 0;
                     recorded_capacity_per_period_per_at[tau][at][si] = 0;
@@ -1122,7 +1132,7 @@ public:
     }
 
     void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int vdf_type);
-
+    void setup_dynamic_number_of_lanes(int scenario_index);
     void calculate_marginal_cost_for_mode_type(int tau, int mode_type_no, float PCE_mode_type)
     {
         // volume * dervative
@@ -1381,7 +1391,7 @@ public:
 
     int cell_type;  // 2 lane changing
     std::string mvmt_txt_id;
-    std::string link_code_str;
+    std::string link_specifical_flag_str;
     std::string tmc_corridor_name;
     std::string link_type_name;
     std::string link_type_code;
@@ -1408,7 +1418,8 @@ public:
     double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
     double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES];
 
-       double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_lanes_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
     double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
     // added by Xuesong 0603 2023

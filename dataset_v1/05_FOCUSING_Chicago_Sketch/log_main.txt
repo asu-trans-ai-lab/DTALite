@@ -1,0 +1,30 @@
+DTALite Log           
+ Overview of files and process
+1. Input Files:
+   |--- Physical Layer (node.csv, link.csv, zone.csv)
+   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)
+   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)
+   |--- Supply Layer (dynamic_traffic_management.csv, signal_timing.csv)
+
+2. Traffic Assignment and Simulation Process:
+   |--- Demand estimation based on sensor data
+   |--- Traffic assignment based on network and demand data
+   |--- Simulation of traffic based on assignment results and scenario configurations
+   |--- Performance evaluation based on simulation results and performance criteria
+
+3. Output Files:
+   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)
+   |--- Route assignment (route_assignment_s.csv)
+   |--- Mode choice (choice_set_output.csv)
+   |--- OD pair performance (od_performance_summary.csv)
+   |--- System performance (system_performance_summary.csv)
+   |--- Final Summary (final_summary.csv, subarea_related_zone.csv)
+--------------------------
+[PROCESS INFO] Step 0.0: Reading setting.csv.
+[DATA INFO] number_of_iterations = 20 in setting.csv.
+[DATA INFO] route_output = 1 in setting.csv.
+[DATA INFO] simulation_output = 0 in setting.csv.
+[DATA INFO] number_of_memory_blocks = 4 in settings.csv.
+length_unit = meter in settings.csv.
+speed_unit = kmper in settings.csv.
+[ERROR] Field multimodal_dedicated_assignment_flag in file mode_type.csv does not exist. Please check the file.

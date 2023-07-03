@@ -141,7 +141,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 
 								if (b_sensitivity_analysis_flag == true)
 								{
-									if (assignment.g_ModeTypeVector[at].real_time_information == 0)
+									if (assignment.g_ModeTypeVector[at].real_time_information_type == 0)
 									{
 										// important condition here: working with Frank Zhang, Macro Li. we do not reset the path volume to zero for non-info user class /agent type
 										if (orig == 2 && dest == 1)
@@ -150,7 +150,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 										}
 										continue;
 									}
-									if (assignment.g_ModeTypeVector[at].real_time_information == 2 /*DMS*/)
+									if (assignment.g_ModeTypeVector[at].real_time_information_type == 2 /*DMS*/)
 									{
 
 										if (assignment.zone_seq_no_2_info_mapping.find(g_zone_vector[orig].zone_seq_no) == assignment.zone_seq_no_2_info_mapping.end())
@@ -1185,7 +1185,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 						if(g_zone_vector[orig].zone_id == 1 && g_zone_vector[dest].zone_id == 3 && b_sensitivity_analysis_flag == true)
 						{
-							if(p_column_pool->relative_OD_gap > 0.5)
+							if(p_column_pool->OD_based_UE_relative_gap > 0.5)
 							{
 							int iii_debug = 1;
 							}
@@ -1201,14 +1201,14 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 					//		dtalog << "od " << g_zone_vector[orig].zone_id << " -> " << g_zone_vector[dest].zone_id  <<  "; path_id" << it->second.path_seq_no << '\n';
 							/// <summary>
 							///
-							if (b_sensitivity_analysis_flag && assignment.g_ModeTypeVector[at].real_time_information == 1)  //real time information
+							if (b_sensitivity_analysis_flag && assignment.g_ModeTypeVector[at].real_time_information_type == 1)  //real time information
 							{
 								for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 								{
 									// step 3.3 link flow gradient
 									link_seq_no = it->second.path_link_vector[nl];
 
-									if (g_link_vector[link_seq_no].VDF_period[tau].network_design_flag == -1)  // affected by capacity reduction supply side scenario
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1)  // affected by capacity reduction dynamic traffic managementscenario
 									{
 
 										p_column_pool->OD_impact_flag = 1;
@@ -1237,7 +1237,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 								if (b_sensitivity_analysis_flag && inner_iteration_number == 0)  // peiheng and entai, 02/28/2023
 								{
-									if (g_link_vector[link_seq_no].VDF_period[tau].network_design_flag!=0)
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag!=0)
 									{
 
 										it->second.path_SA_link_vector.push_back(link_seq_no);
@@ -1449,7 +1449,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 						}
 
 
-						p_column_pool->relative_OD_gap = total_OD_gap / max(0.001, total_OD_travel_time);
+						p_column_pool->OD_based_UE_relative_gap = total_OD_gap / max(0.001, total_OD_travel_time);
 					}
 				}
 			}
@@ -1547,10 +1547,10 @@ void g_update_sa_volume_in_column_pool(Assignment& assignment, int before_and_af
 							path_travel_time = 0;
 
 							if (before_and_after_flag == 0)
-								it->second.path_volume_before_sa = it->second.path_volume;
+								it->second.path_volume_before_dtm = it->second.path_volume;
 
 							if (before_and_after_flag >= 1)
-								it->second.path_volume_after_sa = it->second.path_volume;
+								it->second.path_volume_after_dtm = it->second.path_volume;
 						}
 					}
 
@@ -1660,7 +1660,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
-				//if (assignment.g_ModeTypeVector[at].real_time_information != 0)  // users with information, continue;
+				//if (assignment.g_ModeTypeVector[at].real_time_information_type != 0)  // users with information, continue;
 				//	continue;
 
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
@@ -1691,7 +1691,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 							{
 								link_seq_no = it->second.path_link_vector[nl];
 
-								if (g_link_vector[link_seq_no].VDF_period[tau].network_design_flag == -1 /* sa impacted, but not DMS location*/)  // screening condition 1: passing through the network design location
+								if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1 /* sa impacted, but not DMS location*/)  // screening condition 1: passing through the network design location
 								{
 									it->second.impacted_path_flag = 1;
 
@@ -1761,14 +1761,14 @@ CColumnPath* g_add_new_column(CColumnVector* pColumnVector, std::vector <int> li
 	return &(pColumnVector->path_node_sequence_map[node_sum]);  // a pointer to be used by other programs
 }
 
-void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations, bool sensitivity_analysis_flag = false)
+void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations, bool dynamic_traffic_management_flag = false)
 {
 	assignment.summary_file << "column updating" << '\n';
 
 	// column_updating_iterations is internal numbers of column updating
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
-		g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, sensitivity_analysis_flag);
+		g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
 
 		if (dtalog.debug_level() >= 3)
 		{
@@ -1821,7 +1821,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
-				if (assignment.g_ModeTypeVector[at].real_time_information == 2)   // case of DMS
+				if (assignment.g_ModeTypeVector[at].real_time_information_type == 2)   // case of DMS
 				{
 					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 					{
@@ -1858,7 +1858,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									CLink* p_current_link = &(g_link_vector[link_seq_no]);
 
 									if (b_passing_information_zone == false &&
-										p_current_link->VDF_period[tau].network_design_flag == 2 /*DMS link*/ &&
+										p_current_link->VDF_period[tau].dynamic_traffic_management_flag == 2 /*DMS link*/ &&
 										assignment.node_seq_no_2_zone_id_mapping.find(p_current_link->to_node_seq_no) != assignment.node_seq_no_2_zone_id_mapping.end())
 										// this node been defined as zone
 									{
@@ -1886,7 +1886,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										}
 									}
 
-									if (g_link_vector[link_seq_no].VDF_period[tau].network_design_flag == -1)  // affected by capacity reduction
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1)  // affected by capacity reduction
 									{
 										b_passing_capacity_impact_area = true;
 										it->second.impacted_path_flag = 1; // impacted
@@ -1948,7 +1948,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 
 										for (int nl2 = 1; nl2 < it2->second.m_link_size; ++nl2)  // arc a // starting from 1 to exclude virtual link at the beginning
-											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].network_design_flag <= -1)  // affected by capacity reduction
+											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
 											{
 												b_diversion_flag = false;
 											}
@@ -1974,7 +1974,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										{
 
 
-											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].network_design_flag <= -1)  // affected by capacity reduction
+											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
 											{
 												b_diversion_flag = false;
 											}

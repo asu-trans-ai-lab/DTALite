@@ -1,0 +1,6 @@
+[PROCESS INFO] Step 0: reading scenario_index_list.csv
+[STATUS INFO] scenario_index=0,scenario_name=,no_build
+[STATUS INFO] scenario_index=1,scenario_name=,build
+[PROCESS INFO] Step 1.1: Reading demand_period.csv...
+,demand_period= 1, am,time_period=0700_0800
+[PROCESS INFO] Step 1.2: Reading file mode_type.csv...

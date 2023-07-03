@@ -50,14 +50,14 @@ class CPeriod_VDF
 {
 public:
     CPeriod_VDF() : vdf_type{ q_vdf }, vdf_data_count{ 0 }, Q_peak_load_factor{ 1.0 }, Q_cd{ 0.954946463 }, Q_n{ 1.141574427 }, Q_cp{ 0.400089684 }, Q_s{ 4 }, vf{ 60 }, v_congestion_cutoff{ 45 }, vt2{ -1 },
-        alpha{ 0.39999993 }, beta{ 4 }, Q_alpha{ 0.272876961 }, Q_beta{ 4 }, rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, sa_lanes_change{ 0 }, LR_price{ 0 }, LR_RT_price{ 0 }, starting_time_in_hour{ 0 }, ending_time_in_hour{ 0 },
+        alpha{ 0.39999993 }, beta{ 4 }, Q_alpha{ 0.272876961 }, Q_beta{ 4 }, rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, lane_closure_final_lanes{ 0 }, LR_price{ 0 }, LR_RT_price{ 0 }, starting_time_in_hour{ 0 }, ending_time_in_hour{ 0 },
         volume_before_odme {0}, volume_after_odme {0},
 
         cycle_length{ -1 }, red_time{ 0 }, effective_green_time{ 0 }, saturation_flow_rate{ _default_saturation_flow_rate }, t0{ -1 }, t3{ -1 }, start_green_time{ -1 }, end_green_time{ -1 }, L{ 1 },
         queue_length{ 0 }, obs_count{ 0 }, upper_bound_flag{ 1 }, est_count_dev{ 0 }, avg_waiting_time{ 0 }, P{ -1 }, Severe_Congestion_P{ -1 }, lane_based_D{ 0 }, lane_based_Vph{ 0 }, avg_speed_BPR{ -1 }, avg_queue_speed{ -1 }, nlanes{ 1 }, sa_volume{ 0 }, t2{ 1 }, k_critical{ 45 }, link_volume {0},
-        Q_mu{ 0 }, Q_gamma{ 0 }, network_design_flag{ 0 },
-        volume_before_sa{ 0 }, speed_before_sa{ 0 }, DoC_before_sa{ 0 }, P_before_sa { 0 },
-        volume_after_sa{ 0 }, speed_after_sa{ 0 }, DoC_after_sa{ 0 }, P_after_sa{ 0 },
+        Q_mu{ 0 }, Q_gamma{ 0 }, dynamic_traffic_management_flag{ 0 },
+        volume_before_dtm{ 0 }, speed_before_dtm{ 0 }, DoC_before_dtm{ 0 }, P_before_dtm { 0 },
+        volume_after_dtm{ 0 }, speed_after_dtm{ 0 }, DoC_after_dtm{ 0 }, P_after_dtm{ 0 },
         ref_link_volume{ -1 }
 {
         for (int at = 0; at < MAX_MODETYPES; at++)
@@ -67,7 +67,7 @@ public:
             capacity_at[at] = 0;
             FFTT_at[at] = 0;
             DOC_mode[at] = 0;
-            lanes_at[at] = 0;
+            lanes_mode_type[at] = 0;
 
 
             occ[at] = 1;
@@ -406,16 +406,16 @@ public:
     double est_count_dev[MAX_SCENARIOS];
 
 
-    string scenario_code;
-    double volume_before_sa;
-    double speed_before_sa;
-    double DoC_before_sa;
-    double P_before_sa;
+    string dtm_scenario_code;
+    double volume_before_dtm;
+    double speed_before_dtm;
+    double DoC_before_dtm;
+    double P_before_dtm;
 
-    double volume_after_sa;
-    double speed_after_sa;
-    double DoC_after_sa;
-    double P_after_sa;
+    double volume_after_dtm;
+    double speed_after_dtm;
+    double DoC_after_dtm;
+    double P_after_dtm;
 
 
     double starting_time_in_hour;
@@ -428,10 +428,10 @@ public:
     double vf;
 
     double sa_volume;
-    double sa_lanes_change;
+    double lane_closure_final_lanes;
 
 
-    int network_design_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
+    int dynamic_traffic_management_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
     double toll[MAX_MODETYPES];
     double occ[MAX_MODETYPES];
@@ -439,7 +439,7 @@ public:
     double free_speed_at[MAX_MODETYPES];
     double capacity_at[MAX_MODETYPES];
     double FFTT_at[MAX_MODETYPES];
-    double lanes_at[MAX_MODETYPES];
+    double lanes_mode_type[MAX_MODETYPES];
 
     double DOC_mode[MAX_MODETYPES];
 
