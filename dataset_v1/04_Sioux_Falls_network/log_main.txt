@@ -27,14 +27,7 @@ Please provide feedback or report any issues you encounter on our GitHub site: h
 [DATA INFO] number_of_memory_blocks = 4 in settings.csv.
 length_unit = meter in settings.csv.
 speed_unit = kmper in settings.csv.
-INFO] # of nodes = 48
-[DATA INFO] # of links = 76
-[DATA INFO] # of zones = 24
-[PROCESS INFO]   link_type,  link_name,    # links,    avg_mph,   avg_kmph,total_len_km,  total_cap,   avg_lane,    avg_len,
-[PROCESS INFO]           1     highway          76          60     96.5604         314      778788     10247.2     4131.58
-[PROCESS INFO] Step 1.7: reading input subarea.csv
-[PROCESS INFO] Validated subarea.csv. It contains 5 geometric points. Proceeding to FOCUSING analysis step.
-[PROCESS INFO] Step 1.8: Preloading Origin-Destination (OD) demand data as part of the focusing approach. 
+g Origin-Destination (OD) demand data as part of the focusing approach. 
 [DATA INFO] total pre-load demand = 360600
 [DATA INFO] Initiating the first stage of the subarea scanning process, where we determine cut-off zones.
 [DATA INFO] Number of zones inside the subarea: 24. Total demand related to these zones: 360600.
@@ -54,46 +47,20 @@ INFO] # of nodes = 48
 [DATA INFO] Cumulative profile no.1, ratio at slot  85 (7:5) = 0.005002
 [DATA INFO] Cumulative profile no.1, ratio at slot  204 (17:0) = 0.006401
 [DATA INFO] Final cumulative profile ratio = 0.98961
-[DATA INFO] Allocating 4D memory for zone index (start from 0) 0 with the following dimensions: nM = 24, nX = 24, nY = 3, nZ = 3
+[DATA INFO] Allocating 4D memory for zone index (start from 0) 0 with the following dimensions: nM = 24, nX = 24, nY = 1, nZ = 3
 [PROCESS INFO] Step 2.1: Reading file demand_file_list.csv...
 [STATUS INFO] reading demand file demand.csv for scenario index = 0
 [DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
 [DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
 [DATA INFO] cumulative total demand volume is 3.606e+05
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
-[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
-[DATA INFO] cumulative total demand volume is 3.606e+05
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
-[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
-[DATA INFO] cumulative total demand volume is 3.606e+05
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
-[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
-[DATA INFO] cumulative total demand volume is 7.212e+05
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
-[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
-[DATA INFO] cumulative total demand volume is 7.212e+05
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
-[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
-[DATA INFO] cumulative total demand volume is 7.212e+05
 [PROCESS INFO]
 demand_period and mode_type   total_demand     #_of_links      speed_mph     speed_kmph      length km   avg_lane_cap   avg_length_m
-             am,auto     1.0818e+06             76          60.00          96.56         314.00       10247.21        4131.58
-             am,bike     1081800.00             76          60.00          96.56         314.00       10247.21        4131.58
-             am,walk     1081800.00             76          60.00          96.56         314.00       10247.21        4131.58
+             am,auto      3.606e+05             76          60.00          96.56         314.00       10247.21        4131.58
              md,auto           0.00             76          60.00          96.56         314.00       10247.21        4131.58
-             md,bike           0.00             76          60.00          96.56         314.00       10247.21        4131.58
-             md,walk           0.00             76          60.00          96.56         314.00       10247.21        4131.58
              pm,auto           0.00             76          60.00          96.56         314.00       10247.21        4131.58
-             pm,bike           0.00             76          60.00          96.56         314.00       10247.21        4131.58
-             pm,walk           0.00             76          60.00          96.56         314.00       10247.21        4131.58
 [PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing.
-[DATA INFO] There are 36 shortest path (SP) networks stored in memory for processing.
-[DATA INFO] There are 216 different agent types across various zones. These computations will be performed by the multi CPU processors.
+[DATA INFO] There are 12 shortest path (SP) networks stored in memory for processing.
+[DATA INFO] There are 72 different agent types across various zones. These computations will be performed by the multi CPU processors.
 [PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool
 [DATA INFO] Perform 100 iterations for the Column Generation process
 [PROCESS INFO] Creating a file named 'zonal_hierarchy_mapping.csv', which contains data about zones related to each subarea. This file will help us focus our approach on specific areas. 
@@ -102,153 +69,153 @@ demand_period and mode_type   total_demand     #_of_links      speed_mph     spe
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
-[DATA INFO] 0           0.01        0.00e+00                      5.73e+07            0.00        
-[DATA INFO] 1           0.01        0.00e+00                      5.73e+07            0.00        
-[DATA INFO] 2           0.01        2.12e+14                      3.36e+13            529.51      
-[DATA INFO] 3           0.02        2.12e+14                      3.36e+13            529.51      
-[DATA INFO] 4           0.01        1.99e+14                      6.39e+13            211.22      
-[DATA INFO] 5           0.02        5.43e+14                      7.84e+13            593.16      
-[DATA INFO] 6           0.02        2.98e+14                      9.64e+13            209.39      
-[DATA INFO] 7           0.02        2.67e+14                      1.15e+14            131.41      
-[DATA INFO] 8           0.01        2.26e+14                      1.36e+14            65.99       
-[DATA INFO] 9           0.02        2.18e+14                      1.40e+14            55.35       
-[DATA INFO] 10          0.02        2.16e+14                      1.35e+14            59.74       
-[DATA INFO] 11          0.02        1.92e+14                      1.31e+14            46.26       
-[DATA INFO] 12          0.02        1.77e+14                      1.29e+14            36.49       
-[DATA INFO] 13          0.02        1.68e+14                      1.27e+14            32.01       
-[DATA INFO] 14          0.02        1.62e+14                      1.24e+14            30.90       
-[DATA INFO] 15          0.02        1.57e+14                      1.22e+14            28.74       
-[DATA INFO] 16          0.02        1.52e+14                      1.20e+14            26.98       
-[DATA INFO] 17          0.02        1.48e+14                      1.18e+14            25.80       
-[DATA INFO] 18          0.02        1.44e+14                      1.18e+14            22.21       
-[DATA INFO] 19          0.02        1.41e+14                      1.17e+14            20.79       
-[DATA INFO] 20          0.02        1.38e+14                      1.14e+14            20.46       
-[DATA INFO] 21          0.02        1.34e+14                      1.14e+14            18.06       
-[DATA INFO] 22          0.02        1.31e+14                      1.12e+14            17.13       
-[DATA INFO] 23          0.02        1.29e+14                      1.10e+14            17.50       
-[DATA INFO] 24          0.01        1.26e+14                      1.09e+14            15.78       
-[DATA INFO] 25          0.02        1.24e+14                      1.08e+14            14.73       
-[DATA INFO] 26          0.02        1.22e+14                      1.07e+14            14.31       
-[DATA INFO] 27          0.02        1.21e+14                      1.06e+14            13.74       
-[DATA INFO] 28          0.02        1.19e+14                      1.06e+14            12.61       
-[DATA INFO] 29          0.02        1.17e+14                      1.04e+14            12.53       
-[DATA INFO] 30          0.02        1.16e+14                      1.03e+14            12.14       
-[DATA INFO] 31          0.02        1.14e+14                      1.03e+14            11.21       
-[DATA INFO] 32          0.02        1.13e+14                      1.01e+14            11.19       
-[DATA INFO] 33          0.02        1.11e+14                      1.00e+14            10.82       
-[DATA INFO] 34          0.02        1.10e+14                      1.00e+14            10.02       
-[DATA INFO] 35          0.02        1.09e+14                      9.91e+13            10.07       
-[DATA INFO] 36          0.02        1.08e+14                      9.80e+13            9.85        
-[DATA INFO] 37          0.01        1.07e+14                      9.77e+13            9.18        
-[DATA INFO] 38          0.02        1.06e+14                      9.70e+13            9.14        
-[DATA INFO] 39          0.02        1.05e+14                      9.63e+13            8.99        
-[DATA INFO] 40          0.02        1.04e+14                      9.61e+13            8.43        
-[DATA INFO] 41          0.02        1.03e+14                      9.54e+13            8.45        
-[DATA INFO] 42          0.02        1.03e+14                      9.50e+13            8.18        
-[DATA INFO] 43          0.02        1.02e+14                      9.47e+13            7.74        
-[DATA INFO] 44          0.02        1.01e+14                      9.40e+13            7.87        
-[DATA INFO] 45          0.02        1.01e+14                      9.37e+13            7.61        
-[DATA INFO] 46          0.02        1.00e+14                      9.36e+13            7.17        
-[DATA INFO] 47          0.02        9.97e+13                      9.29e+13            7.29        
-[DATA INFO] 48          0.02        9.89e+13                      9.23e+13            7.11        
-[DATA INFO] 49          0.02        9.84e+13                      9.21e+13            6.77        
-[DATA INFO] 50          0.02        9.79e+13                      9.16e+13            6.85        
-[DATA INFO] 51          0.02        9.76e+13                      9.15e+13            6.62        
-[DATA INFO] 52          0.02        9.72e+13                      9.15e+13            6.30        
-[DATA INFO] 53          0.01        9.68e+13                      9.09e+13            6.42        
-[DATA INFO] 54          0.02        9.62e+13                      9.05e+13            6.28        
-[DATA INFO] 55          0.02        9.58e+13                      9.05e+13            5.93        
-[DATA INFO] 56          0.02        9.55e+13                      9.00e+13            6.02        
-[DATA INFO] 57          0.02        9.52e+13                      8.99e+13            5.91        
-[DATA INFO] 58          0.01        9.48e+13                      8.98e+13            5.61        
-[DATA INFO] 59          0.02        9.45e+13                      8.94e+13            5.65        
-[DATA INFO] 60          0.02        9.39e+13                      8.89e+13            5.57        
-[DATA INFO] 61          0.02        9.36e+13                      8.88e+13            5.35        
-[DATA INFO] 62          0.02        9.33e+13                      8.85e+13            5.37        
-[DATA INFO] 63          0.02        9.31e+13                      8.84e+13            5.25        
-[DATA INFO] 64          0.02        9.29e+13                      8.84e+13            5.06        
-[DATA INFO] 65          0.02        9.26e+13                      8.81e+13            5.11        
-[DATA INFO] 66          0.02        9.21e+13                      8.77e+13            5.02        
-[DATA INFO] 67          0.02        9.19e+13                      8.77e+13            4.80        
-[DATA INFO] 68          0.02        9.16e+13                      8.74e+13            4.90        
-[DATA INFO] 69          0.02        9.14e+13                      8.72e+13            4.84        
-[DATA INFO] 70          0.02        9.12e+13                      8.72e+13            4.60        
-[DATA INFO] 71          0.01        9.10e+13                      8.69e+13            4.66        
-[DATA INFO] 72          0.02        9.06e+13                      8.66e+13            4.60        
-[DATA INFO] 73          0.02        9.04e+13                      8.66e+13            4.43        
-[DATA INFO] 74          0.02        9.02e+13                      8.64e+13            4.44        
-[DATA INFO] 75          0.02        9.00e+13                      8.62e+13            4.43        
-[DATA INFO] 76          0.02        8.98e+13                      8.62e+13            4.24        
-[DATA INFO] 77          0.02        8.96e+13                      8.60e+13            4.22        
-[DATA INFO] 78          0.02        8.94e+13                      8.58e+13            4.29        
-[DATA INFO] 79          0.02        8.92e+13                      8.57e+13            4.09        
-[DATA INFO] 80          0.02        8.91e+13                      8.56e+13            4.04        
-[DATA INFO] 81          0.01        8.89e+13                      8.54e+13            4.10        
-[DATA INFO] 82          0.02        8.87e+13                      8.53e+13            3.93        
-[DATA INFO] 83          0.02        8.85e+13                      8.52e+13            3.89        
-[DATA INFO] 84          0.02        8.84e+13                      8.50e+13            3.95        
-[DATA INFO] 85          0.02        8.83e+13                      8.50e+13            3.83        
-[DATA INFO] 86          0.02        8.82e+13                      8.50e+13            3.74        
-[DATA INFO] 87          0.02        8.80e+13                      8.48e+13            3.77        
-[DATA INFO] 88          0.02        8.77e+13                      8.46e+13            3.67        
-[DATA INFO] 89          0.02        8.76e+13                      8.45e+13            3.62        
-[DATA INFO] 90          0.02        8.75e+13                      8.44e+13            3.61        
-[DATA INFO] 91          0.02        8.74e+13                      8.44e+13            3.53        
-[DATA INFO] 92          0.01        8.73e+13                      8.43e+13            3.51        
-[DATA INFO] 93          0.01        8.70e+13                      8.41e+13            3.50        
-[DATA INFO] 94          0.02        8.68e+13                      8.39e+13            3.43        
-[DATA INFO] 95          0.02        8.67e+13                      8.38e+13            3.43        
-[DATA INFO] 96          0.01        8.67e+13                      8.38e+13            3.38        
-[DATA INFO] 97          0.02        8.66e+13                      8.38e+13            3.32        
-[DATA INFO] 98          0.01        8.65e+13                      8.37e+13            3.30        
-[DATA INFO] 99          0.01        8.63e+13                      8.35e+13            3.29        
+[DATA INFO] 0           0.01        0.00e+00                      3.18e+06            0.00        
+[DATA INFO] 1           0.00        0.00e+00                      3.18e+06            0.00        
+[DATA INFO] 2           0.00        7.13e+07                      6.88e+06            935.58      
+[DATA INFO] 3           0.00        7.13e+07                      6.88e+06            935.58      
+[DATA INFO] 4           0.00        2.11e+07                      9.02e+06            134.42      
+[DATA INFO] 5           0.00        3.80e+07                      8.87e+06            328.50      
+[DATA INFO] 6           0.00        2.18e+07                      8.69e+06            150.68      
+[DATA INFO] 7           0.00        1.75e+07                      9.83e+06            78.26       
+[DATA INFO] 8           0.00        1.79e+07                      1.02e+07            75.57       
+[DATA INFO] 9           0.00        1.60e+07                      1.04e+07            53.30       
+[DATA INFO] 10          0.00        1.44e+07                      1.03e+07            39.40       
+[DATA INFO] 11          0.00        1.30e+07                      1.02e+07            27.54       
+[DATA INFO] 12          0.00        1.24e+07                      9.78e+06            26.28       
+[DATA INFO] 13          0.00        1.17e+07                      9.52e+06            22.84       
+[DATA INFO] 14          0.00        1.12e+07                      9.44e+06            18.49       
+[DATA INFO] 15          0.00        1.08e+07                      9.34e+06            15.79       
+[DATA INFO] 16          0.00        1.05e+07                      9.19e+06            14.54       
+[DATA INFO] 17          0.00        1.03e+07                      9.07e+06            13.07       
+[DATA INFO] 18          0.00        1.00e+07                      8.91e+06            12.42       
+[DATA INFO] 19          0.00        9.82e+06                      8.80e+06            11.65       
+[DATA INFO] 20          0.00        9.66e+06                      8.70e+06            11.06       
+[DATA INFO] 21          0.00        9.53e+06                      8.63e+06            10.53       
+[DATA INFO] 22          0.00        9.41e+06                      8.57e+06            9.71        
+[DATA INFO] 23          0.00        9.30e+06                      8.48e+06            9.66        
+[DATA INFO] 24          0.00        9.20e+06                      8.42e+06            9.23        
+[DATA INFO] 25          0.00        9.10e+06                      8.39e+06            8.42        
+[DATA INFO] 26          0.00        9.02e+06                      8.32e+06            8.40        
+[DATA INFO] 27          0.00        8.95e+06                      8.27e+06            8.24        
+[DATA INFO] 28          0.00        8.88e+06                      8.26e+06            7.42        
+[DATA INFO] 29          0.00        8.81e+06                      8.22e+06            7.28        
+[DATA INFO] 30          0.00        8.77e+06                      8.18e+06            7.13        
+[DATA INFO] 31          0.00        8.72e+06                      8.17e+06            6.62        
+[DATA INFO] 32          0.00        8.67e+06                      8.14e+06            6.44        
+[DATA INFO] 33          0.00        8.62e+06                      8.10e+06            6.42        
+[DATA INFO] 34          0.00        8.58e+06                      8.09e+06            6.09        
+[DATA INFO] 35          0.00        8.55e+06                      8.06e+06            5.96        
+[DATA INFO] 36          0.00        8.51e+06                      8.04e+06            5.87        
+[DATA INFO] 37          0.00        8.47e+06                      8.02e+06            5.62        
+[DATA INFO] 38          0.00        8.44e+06                      8.00e+06            5.49        
+[DATA INFO] 39          0.00        8.42e+06                      7.99e+06            5.38        
+[DATA INFO] 40          0.00        8.38e+06                      7.97e+06            5.13        
+[DATA INFO] 41          0.00        8.35e+06                      7.95e+06            5.06        
+[DATA INFO] 42          0.00        8.34e+06                      7.95e+06            4.90        
+[DATA INFO] 43          0.00        8.32e+06                      7.94e+06            4.71        
+[DATA INFO] 44          0.00        8.30e+06                      7.93e+06            4.66        
+[DATA INFO] 45          0.00        8.28e+06                      7.92e+06            4.53        
+[DATA INFO] 46          0.00        8.26e+06                      7.91e+06            4.37        
+[DATA INFO] 47          0.00        8.24e+06                      7.90e+06            4.38        
+[DATA INFO] 48          0.00        8.22e+06                      7.88e+06            4.30        
+[DATA INFO] 49          0.00        8.19e+06                      7.86e+06            4.23        
+[DATA INFO] 50          0.00        8.18e+06                      7.85e+06            4.09        
+[DATA INFO] 51          0.00        8.16e+06                      7.84e+06            4.16        
+[DATA INFO] 52          0.00        8.15e+06                      7.84e+06            3.94        
+[DATA INFO] 53          0.00        8.14e+06                      7.84e+06            3.82        
+[DATA INFO] 54          0.00        8.13e+06                      7.84e+06            3.69        
+[DATA INFO] 55          0.00        8.11e+06                      7.82e+06            3.68        
+[DATA INFO] 56          0.00        8.10e+06                      7.82e+06            3.55        
+[DATA INFO] 57          0.00        8.08e+06                      7.81e+06            3.50        
+[DATA INFO] 58          0.00        8.08e+06                      7.80e+06            3.54        
+[DATA INFO] 59          0.00        8.06e+06                      7.79e+06            3.49        
+[DATA INFO] 60          0.00        8.05e+06                      7.78e+06            3.38        
+[DATA INFO] 61          0.00        8.04e+06                      7.78e+06            3.36        
+[DATA INFO] 62          0.00        8.03e+06                      7.77e+06            3.29        
+[DATA INFO] 63          0.00        8.02e+06                      7.77e+06            3.22        
+[DATA INFO] 64          0.00        8.00e+06                      7.76e+06            3.14        
+[DATA INFO] 65          0.00        8.00e+06                      7.75e+06            3.14        
+[DATA INFO] 66          0.00        7.99e+06                      7.75e+06            2.99        
+[DATA INFO] 67          0.00        7.98e+06                      7.75e+06            2.95        
+[DATA INFO] 68          0.00        7.97e+06                      7.74e+06            3.01        
+[DATA INFO] 69          0.00        7.96e+06                      7.74e+06            2.85        
+[DATA INFO] 70          0.00        7.96e+06                      7.74e+06            2.85        
+[DATA INFO] 71          0.00        7.95e+06                      7.73e+06            2.87        
+[DATA INFO] 72          0.00        7.94e+06                      7.73e+06            2.80        
+[DATA INFO] 73          0.00        7.93e+06                      7.72e+06            2.73        
+[DATA INFO] 74          0.00        7.92e+06                      7.71e+06            2.76        
+[DATA INFO] 75          0.00        7.92e+06                      7.71e+06            2.76        
+[DATA INFO] 76          0.00        7.92e+06                      7.71e+06            2.61        
+[DATA INFO] 77          0.00        7.91e+06                      7.71e+06            2.62        
+[DATA INFO] 78          0.00        7.90e+06                      7.70e+06            2.58        
+[DATA INFO] 79          0.00        7.90e+06                      7.71e+06            2.49        
+[DATA INFO] 80          0.00        7.89e+06                      7.70e+06            2.47        
+[DATA INFO] 81          0.00        7.89e+06                      7.69e+06            2.56        
+[DATA INFO] 82          0.00        7.88e+06                      7.70e+06            2.39        
+[DATA INFO] 83          0.00        7.88e+06                      7.69e+06            2.42        
+[DATA INFO] 84          0.00        7.87e+06                      7.68e+06            2.46        
+[DATA INFO] 85          0.00        7.86e+06                      7.68e+06            2.37        
+[DATA INFO] 86          0.00        7.86e+06                      7.68e+06            2.33        
+[DATA INFO] 87          0.00        7.85e+06                      7.67e+06            2.37        
+[DATA INFO] 88          0.00        7.85e+06                      7.68e+06            2.27        
+[DATA INFO] 89          0.00        7.85e+06                      7.68e+06            2.24        
+[DATA INFO] 90          0.00        7.84e+06                      7.68e+06            2.21        
+[DATA INFO] 91          0.00        7.84e+06                      7.67e+06            2.16        
+[DATA INFO] 92          0.00        7.83e+06                      7.67e+06            2.16        
+[DATA INFO] 93          0.00        7.83e+06                      7.66e+06            2.22        
+[DATA INFO] 94          0.00        7.82e+06                      7.66e+06            2.11        
+[DATA INFO] 95          0.00        7.82e+06                      7.66e+06            2.13        
+[DATA INFO] 96          0.00        7.82e+06                      7.65e+06            2.12        
+[DATA INFO] 97          0.00        7.81e+06                      7.66e+06            2.05        
+[DATA INFO] 98          0.00        7.81e+06                      7.66e+06            2.02        
+[DATA INFO] 99          0.00        7.81e+06                      7.65e+06            2.06        
 [PROCESS INFO] Step 5: Column Pool Updating
 [DATA INFO] Total number of column pool updating iterations = 40
 [DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
-                               0       79500344.16          8.36e+13             49.60
-                               1       28229404.30          2.52e+13             48.95
-                               2       18996233.90          1.57e+13             48.47
-                               3       14957644.83          1.18e+13             48.09
-                               4       12663682.26          9.60e+12             47.76
-                               5       11146979.02          8.19e+12             47.48
-                               6       10054707.75          7.19e+12             47.22
-                               7        9243495.35          6.46e+12             46.98
-                               8        8619349.77          5.90e+12             46.77
-                               9        8121257.64          5.46e+12             46.58
-                              10        7714959.10          5.11e+12             46.40
-                              11        7377297.75          4.81e+12             46.24
-                              12        7095446.96          4.57e+12             46.10
-                              13        6852859.35          4.36e+12             45.96
-                              14        6639847.51          4.18e+12             45.83
-                              15        6454534.28          4.02e+12             45.71
-                              16        6291958.61          3.88e+12             45.60
-                              17        6145563.43          3.76e+12             45.50
-                              18        6014763.45          3.65e+12             45.40
-                              19        5897487.82          3.55e+12             45.31
-                              20        5791777.18          3.46e+12             45.22
-                              21        5694824.27          3.38e+12             45.14
-                              22        5605054.65          3.31e+12             45.06
-                              23        5521938.44          3.24e+12             44.99
-                              24        5444917.41          3.18e+12             44.92
-                              25        5373176.80          3.12e+12             44.85
-                              26        5305701.39          3.06e+12             44.78
-                              27        5242235.51          3.01e+12             44.72
-                              28        5182888.32          2.96e+12             44.66
-                              29        5126465.13          2.91e+12             44.60
-                              30        5073038.13          2.87e+12             44.54
-                              31        5022295.12          2.83e+12             44.48
-                              32        4973959.77          2.79e+12             44.43
-                              33        4927683.64          2.75e+12             44.38
-                              34        4883902.13          2.71e+12             44.32
-                              35        4843371.94          2.68e+12             44.28
-                              36        4805538.18          2.65e+12             44.23
-                              37        4769163.27          2.62e+12             44.18
-                              38        4734195.84          2.59e+12             44.14
-                              39        4700712.16          2.57e+12             44.10
+                               0             21.68          1.51e+05              1.00
+                               1             21.08          3.34e+04              0.24
+                               2             20.47          1.58e+04              0.11
+                               3             20.79          1.20e+04              0.08
+                               4             20.61          9.97e+03              0.07
+                               5             20.56          8.71e+03              0.06
+                               6             20.87          7.91e+03              0.06
+                               7             20.81          7.30e+03              0.05
+                               8             20.75          6.79e+03              0.05
+                               9             20.65          6.56e+03              0.05
+                              10             21.05          6.27e+03              0.04
+                              11             20.87          6.11e+03              0.04
+                              12             20.84          5.81e+03              0.04
+                              13             20.58          5.67e+03              0.04
+                              14             20.78          5.51e+03              0.04
+                              15             20.98          5.35e+03              0.04
+                              16             20.61          5.23e+03              0.04
+                              17             20.87          5.08e+03              0.04
+                              18             20.94          5.00e+03              0.04
+                              19             20.75          4.92e+03              0.03
+                              20             20.96          4.80e+03              0.03
+                              21             20.82          4.75e+03              0.03
+                              22             21.09          4.66e+03              0.03
+                              23             20.49          4.59e+03              0.03
+                              24             20.77          4.54e+03              0.03
+                              25             20.67          4.47e+03              0.03
+                              26             20.78          4.39e+03              0.03
+                              27             20.77          4.36e+03              0.03
+                              28             20.67          4.31e+03              0.03
+                              29             20.80          4.26e+03              0.03
+                              30             21.00          4.21e+03              0.03
+                              31             20.62          4.17e+03              0.03
+                              32             20.47          4.15e+03              0.03
+                              33             20.74          4.10e+03              0.03
+                              34             20.70          4.09e+03              0.03
+                              35             20.51          4.04e+03              0.03
+                              36             20.72          4.02e+03              0.03
+                              37             20.87          4.00e+03              0.03
+                              38             20.78          3.96e+03              0.03
+                              39             20.86          3.95e+03              0.03
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
 [PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 11.60 s
+[DATA INFO] Total CPU running time for the entire process = 0.17 s
 [PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
 [PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
 [STATUS INFO] writing file link_performance_s0_25nb.csv
@@ -260,153 +227,153 @@ demand_period and mode_type   total_demand     #_of_links      speed_mph     spe
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
-[DATA INFO] 0           0.01        3.50e+12                      1.74e+13            0.00        
-[DATA INFO] 1           0.01        0.00e+00                      1.15e+08            0.00        
-[DATA INFO] 2           0.01        2.23e+16                      1.58e+15            1311.93     
-[DATA INFO] 3           0.01        7.39e+15                      1.33e+15            457.41      
-[DATA INFO] 4           0.01        1.72e+16                      2.52e+15            582.04      
-[DATA INFO] 5           0.02        4.81e+16                      1.55e+15            2998.42     
-[DATA INFO] 6           0.02        1.91e+16                      2.23e+15            756.76      
-[DATA INFO] 7           0.02        1.01e+16                      3.24e+15            211.40      
-[DATA INFO] 8           0.01        7.54e+15                      3.56e+15            112.14      
-[DATA INFO] 9           0.02        6.20e+15                      3.71e+15            67.05       
-[DATA INFO] 10          0.02        5.52e+15                      3.71e+15            48.89       
-[DATA INFO] 11          0.02        5.22e+15                      3.60e+15            44.73       
-[DATA INFO] 12          0.02        4.94e+15                      3.53e+15            39.82       
-[DATA INFO] 13          0.01        4.70e+15                      3.54e+15            32.68       
-[DATA INFO] 14          0.02        4.50e+15                      3.51e+15            28.07       
-[DATA INFO] 15          0.02        4.31e+15                      3.42e+15            26.13       
-[DATA INFO] 16          0.02        4.14e+15                      3.38e+15            22.40       
-[DATA INFO] 17          0.02        4.10e+15                      3.36e+15            21.91       
-[DATA INFO] 18          0.02        4.07e+15                      3.33e+15            21.99       
-[DATA INFO] 19          0.02        4.01e+15                      3.35e+15            19.73       
-[DATA INFO] 20          0.02        3.97e+15                      3.33e+15            19.08       
-[DATA INFO] 21          0.02        3.90e+15                      3.33e+15            17.12       
-[DATA INFO] 22          0.02        3.84e+15                      3.31e+15            16.23       
-[DATA INFO] 23          0.02        3.78e+15                      3.26e+15            15.82       
-[DATA INFO] 24          0.02        3.72e+15                      3.25e+15            14.65       
-[DATA INFO] 25          0.02        3.68e+15                      3.23e+15            13.97       
-[DATA INFO] 26          0.02        3.63e+15                      3.21e+15            12.87       
-[DATA INFO] 27          0.02        3.59e+15                      3.21e+15            11.92       
-[DATA INFO] 28          0.02        3.54e+15                      3.18e+15            11.46       
-[DATA INFO] 29          0.02        3.49e+15                      3.14e+15            11.29       
-[DATA INFO] 30          0.02        3.45e+15                      3.11e+15            10.68       
-[DATA INFO] 31          0.02        3.41e+15                      3.09e+15            10.27       
-[DATA INFO] 32          0.02        3.38e+15                      3.08e+15            9.81        
-[DATA INFO] 33          0.02        3.35e+15                      3.06e+15            9.43        
-[DATA INFO] 34          0.02        3.32e+15                      3.04e+15            9.12        
-[DATA INFO] 35          0.02        3.29e+15                      3.02e+15            8.92        
-[DATA INFO] 36          0.01        3.26e+15                      3.00e+15            8.66        
-[DATA INFO] 37          0.01        3.24e+15                      2.99e+15            8.39        
-[DATA INFO] 38          0.02        3.22e+15                      2.98e+15            8.07        
-[DATA INFO] 39          0.02        3.20e+15                      2.97e+15            7.76        
-[DATA INFO] 40          0.02        3.17e+15                      2.95e+15            7.60        
-[DATA INFO] 41          0.02        3.15e+15                      2.93e+15            7.26        
-[DATA INFO] 42          0.02        3.13e+15                      2.92e+15            7.13        
-[DATA INFO] 43          0.02        3.11e+15                      2.90e+15            7.05        
-[DATA INFO] 44          0.02        3.09e+15                      2.89e+15            6.74        
-[DATA INFO] 45          0.02        3.08e+15                      2.89e+15            6.51        
-[DATA INFO] 46          0.01        3.06e+15                      2.88e+15            6.54        
-[DATA INFO] 47          0.02        3.04e+15                      2.87e+15            6.25        
-[DATA INFO] 48          0.02        3.03e+15                      2.85e+15            6.13        
-[DATA INFO] 49          0.02        3.02e+15                      2.84e+15            6.10        
-[DATA INFO] 50          0.02        3.00e+15                      2.83e+15            5.93        
-[DATA INFO] 51          0.02        2.99e+15                      2.83e+15            5.62        
-[DATA INFO] 52          0.02        2.98e+15                      2.83e+15            5.59        
-[DATA INFO] 53          0.01        2.97e+15                      2.81e+15            5.49        
-[DATA INFO] 54          0.02        2.95e+15                      2.80e+15            5.27        
-[DATA INFO] 55          0.02        2.94e+15                      2.79e+15            5.28        
-[DATA INFO] 56          0.02        2.93e+15                      2.78e+15            5.40        
-[DATA INFO] 57          0.02        2.92e+15                      2.78e+15            5.07        
-[DATA INFO] 58          0.02        2.92e+15                      2.78e+15            4.89        
-[DATA INFO] 59          0.02        2.91e+15                      2.77e+15            4.92        
-[DATA INFO] 60          0.02        2.90e+15                      2.77e+15            4.80        
-[DATA INFO] 61          0.02        2.89e+15                      2.76e+15            4.64        
-[DATA INFO] 62          0.02        2.88e+15                      2.75e+15            4.69        
-[DATA INFO] 63          0.02        2.87e+15                      2.75e+15            4.56        
-[DATA INFO] 64          0.02        2.87e+15                      2.75e+15            4.43        
-[DATA INFO] 65          0.02        2.86e+15                      2.74e+15            4.45        
-[DATA INFO] 66          0.02        2.85e+15                      2.73e+15            4.32        
-[DATA INFO] 67          0.02        2.84e+15                      2.73e+15            4.21        
-[DATA INFO] 68          0.01        2.83e+15                      2.72e+15            4.26        
-[DATA INFO] 69          0.02        2.83e+15                      2.72e+15            4.15        
-[DATA INFO] 70          0.02        2.82e+15                      2.71e+15            4.01        
-[DATA INFO] 71          0.02        2.82e+15                      2.71e+15            4.01        
-[DATA INFO] 72          0.02        2.82e+15                      2.71e+15            3.95        
-[DATA INFO] 73          0.02        2.81e+15                      2.70e+15            3.86        
-[DATA INFO] 74          0.02        2.80e+15                      2.70e+15            3.91        
-[DATA INFO] 75          0.02        2.80e+15                      2.69e+15            3.81        
-[DATA INFO] 76          0.02        2.79e+15                      2.69e+15            3.69        
-[DATA INFO] 77          0.02        2.79e+15                      2.69e+15            3.68        
-[DATA INFO] 78          0.02        2.79e+15                      2.69e+15            3.61        
-[DATA INFO] 79          0.02        2.78e+15                      2.68e+15            3.57        
-[DATA INFO] 80          0.02        2.77e+15                      2.67e+15            3.56        
-[DATA INFO] 81          0.02        2.76e+15                      2.67e+15            3.52        
-[DATA INFO] 82          0.02        2.76e+15                      2.67e+15            3.43        
-[DATA INFO] 83          0.02        2.76e+15                      2.67e+15            3.40        
-[DATA INFO] 84          0.02        2.76e+15                      2.67e+15            3.38        
-[DATA INFO] 85          0.02        2.75e+15                      2.66e+15            3.29        
-[DATA INFO] 86          0.02        2.75e+15                      2.66e+15            3.26        
-[DATA INFO] 87          0.02        2.74e+15                      2.65e+15            3.24        
-[DATA INFO] 88          0.02        2.74e+15                      2.65e+15            3.18        
-[DATA INFO] 89          0.02        2.74e+15                      2.65e+15            3.12        
-[DATA INFO] 90          0.02        2.73e+15                      2.65e+15            3.10        
-[DATA INFO] 91          0.02        2.73e+15                      2.65e+15            3.06        
-[DATA INFO] 92          0.02        2.72e+15                      2.64e+15            3.06        
-[DATA INFO] 93          0.02        2.72e+15                      2.64e+15            3.01        
-[DATA INFO] 94          0.02        2.72e+15                      2.64e+15            2.99        
-[DATA INFO] 95          0.02        2.72e+15                      2.64e+15            2.97        
-[DATA INFO] 96          0.02        2.71e+15                      2.64e+15            2.88        
-[DATA INFO] 97          0.02        2.71e+15                      2.63e+15            2.87        
-[DATA INFO] 98          0.02        2.70e+15                      2.63e+15            2.88        
-[DATA INFO] 99          0.02        2.70e+15                      2.63e+15            2.76        
+[DATA INFO] 0           0.00        7.44e+06                      0.00e+00            74413797426224.81
+[DATA INFO] 1           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 2           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 3           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 4           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 5           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 6           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 7           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 8           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 9           0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 10          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 11          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 12          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 13          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 14          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 15          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 16          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 17          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 18          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 19          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 20          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 21          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 22          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 23          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 24          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 25          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 26          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 27          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 28          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 29          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 30          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 31          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 32          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 33          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 34          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 35          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 36          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 37          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 38          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 39          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 40          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 41          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 42          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 43          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 44          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 45          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 46          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 47          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 48          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 49          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 50          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 51          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 52          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 53          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 54          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 55          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 56          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 57          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 58          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 59          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 60          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 61          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 62          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 63          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 64          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 65          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 66          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 67          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 68          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 69          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 70          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 71          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 72          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 73          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 74          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 75          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 76          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 77          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 78          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 79          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 80          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 81          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 82          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 83          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 84          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 85          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 86          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 87          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 88          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 89          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 90          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 91          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 92          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 93          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 94          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 95          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 96          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 97          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 98          0.00        0.00e+00                      0.00e+00            0.00        
+[DATA INFO] 99          0.00        0.00e+00                      0.00e+00            0.00        
 [PROCESS INFO] Step 5: Column Pool Updating
 [DATA INFO] Total number of column pool updating iterations = 40
 [DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
-                               0     1246485146.54          2.67e+15             49.97
-                               1      593018877.75          1.15e+15             49.95
-                               2      448968857.59          8.34e+14             49.93
-                               3      376323529.00          6.81e+14             49.92
-                               4      331947518.25          5.90e+14             49.91
-                               5      301136732.56          5.28e+14             49.90
-                               6      278401790.61          4.82e+14             49.90
-                               7      260948088.51          4.48e+14             49.89
-                               8      246735008.65          4.20e+14             49.89
-                               9      234793902.74          3.97e+14             49.88
-                              10      224549518.28          3.77e+14             49.88
-                              11      215701655.73          3.60e+14             49.87
-                              12      208105489.68          3.46e+14             49.87
-                              13      201440623.55          3.33e+14             49.86
-                              14      195475797.91          3.22e+14             49.86
-                              15      190083650.68          3.11e+14             49.86
-                              16      185189969.93          3.02e+14             49.85
-                              17      180756216.35          2.94e+14             49.85
-                              18      176694912.60          2.86e+14             49.85
-                              19      172955167.87          2.80e+14             49.84
-                              20      169491637.08          2.73e+14             49.84
-                              21      166275930.15          2.67e+14             49.84
-                              22      163278371.73          2.62e+14             49.83
-                              23      160466545.17          2.57e+14             49.83
-                              24      157823850.34          2.52e+14             49.83
-                              25      155337446.68          2.47e+14             49.83
-                              26      153010568.40          2.43e+14             49.83
-                              27      150830041.85          2.39e+14             49.82
-                              28      148768325.75          2.35e+14             49.82
-                              29      146830366.17          2.32e+14             49.82
-                              30      144995029.70          2.28e+14             49.82
-                              31      143242738.65          2.25e+14             49.81
-                              32      141567786.43          2.22e+14             49.81
-                              33      139970139.37          2.19e+14             49.81
-                              34      138459889.46          2.17e+14             49.81
-                              35      137016320.55          2.14e+14             49.81
-                              36      135627844.66          2.12e+14             49.81
-                              37      134291890.22          2.09e+14             49.80
-                              38      133005054.21          2.07e+14             49.80
-                              39      131766547.51          2.05e+14             49.80
+                               0              0.00          0.00e+00              0.00
+                               1              0.00          0.00e+00              0.00
+                               2              0.00          0.00e+00              0.00
+                               3              0.00          0.00e+00              0.00
+                               4              0.00          0.00e+00              0.00
+                               5              0.00          0.00e+00              0.00
+                               6              0.00          0.00e+00              0.00
+                               7              0.00          0.00e+00              0.00
+                               8              0.00          0.00e+00              0.00
+                               9              0.00          0.00e+00              0.00
+                              10              0.00          0.00e+00              0.00
+                              11              0.00          0.00e+00              0.00
+                              12              0.00          0.00e+00              0.00
+                              13              0.00          0.00e+00              0.00
+                              14              0.00          0.00e+00              0.00
+                              15              0.00          0.00e+00              0.00
+                              16              0.00          0.00e+00              0.00
+                              17              0.00          0.00e+00              0.00
+                              18              0.00          0.00e+00              0.00
+                              19              0.00          0.00e+00              0.00
+                              20              0.00          0.00e+00              0.00
+                              21              0.00          0.00e+00              0.00
+                              22              0.00          0.00e+00              0.00
+                              23              0.00          0.00e+00              0.00
+                              24              0.00          0.00e+00              0.00
+                              25              0.00          0.00e+00              0.00
+                              26              0.00          0.00e+00              0.00
+                              27              0.00          0.00e+00              0.00
+                              28              0.00          0.00e+00              0.00
+                              29              0.00          0.00e+00              0.00
+                              30              0.00          0.00e+00              0.00
+                              31              0.00          0.00e+00              0.00
+                              32              0.00          0.00e+00              0.00
+                              33              0.00          0.00e+00              0.00
+                              34              0.00          0.00e+00              0.00
+                              35              0.00          0.00e+00              0.00
+                              36              0.00          0.00e+00              0.00
+                              37              0.00          0.00e+00              0.00
+                              38              0.00          0.00e+00              0.00
+                              39              0.00          0.00e+00              0.00
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
 [PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 1.84 s
+[DATA INFO] Total CPU running time for the entire process = 0.09 s
 [PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
 [PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
 [STATUS INFO] writing file link_performance_s1_2040.csv
@@ -417,7 +384,7 @@ demand_period and mode_type   total_demand     #_of_links      speed_mph     spe
 [STATUS INFO] writing data for 24  zones 
 [STATUS INFO] writing link_performances_summary.csv..
 [STATUS INFO] writing link_performances_summary_2way.csv..
-[DATA INFO] CPU running time for outputting simulation results: 0.55 s
+[DATA INFO] CPU running time for outputting simulation results: 0.03 s
 [STATUS INFO] Freeing memory..
-[DATA INFO] CPU running time for the entire process: 0 min 19 sec
-[STATUS INFO] DTALite computing process is complete.
+[DATA INFO] CPU running time for the entire process: 0 min 0 sec
+[STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science.

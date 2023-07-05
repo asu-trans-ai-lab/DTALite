@@ -2661,142 +2661,142 @@ void g_read_input_data(Assignment& assignment)
 	dtalog.output() << "[DATA INFO] number of mode types = " << assignment.g_ModeTypeVector.size() << '\n';
 
 
-	//// Step 1.2: Reading activity_travel_pattern.csv...
-	//dtalog.output() << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
-	//assignment.summary_file << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
+	////// Step 1.2: Reading activity_travel_pattern.csv...
+	////dtalog.output() << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
+	////assignment.summary_file << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
 
-	CDTACSVParser parser_activity_travel_pattern;
+	//CDTACSVParser parser_activity_travel_pattern;
 
-	if (parser_activity_travel_pattern.OpenCSVFile("activity_travel_pattern.csv", false))
-	{
-		while (parser_activity_travel_pattern.ReadRecord())
-		{
-			CActivityTravelPattern travel_pattern;
+	//if (parser_activity_travel_pattern.OpenCSVFile("activity_travel_pattern.csv", false))
+	//{
+	//	while (parser_activity_travel_pattern.ReadRecord())
+	//	{
+	//		CActivityTravelPattern travel_pattern;
 
-			if (!parser_activity_travel_pattern.GetValueByFieldName("activity_travel_pattern_index", travel_pattern.activity_travel_pattern_index))
-				break;
+	//		if (!parser_activity_travel_pattern.GetValueByFieldName("activity_travel_pattern_index", travel_pattern.activity_travel_pattern_index))
+	//			break;
 
-			if (!parser_activity_travel_pattern.GetValueByFieldName("activity_travel_pattern_id", travel_pattern.activity_travel_pattern_id))
-			{
-				dtalog.output() << "[ERROR] Field activity_travel_pattern_id in file activity_travel_pattern.csv cannot be read." << '\n';
-				g_program_stop();
-			}
+	//		if (!parser_activity_travel_pattern.GetValueByFieldName("activity_travel_pattern_id", travel_pattern.activity_travel_pattern_id))
+	//		{
+	//			dtalog.output() << "[ERROR] Field activity_travel_pattern_id in file activity_travel_pattern.csv cannot be read." << '\n';
+	//			g_program_stop();
+	//		}
 
-			if (assignment.g_ActivityTravelPatternMap.find(travel_pattern.activity_travel_pattern_id) != assignment.g_ActivityTravelPatternMap.end())
-			{
-				dtalog.output() << "[ERROR] Field activity_travel_pattern_id = " << travel_pattern.activity_travel_pattern_id.c_str() << " has been defined twice in file activity_travel_pattern.csv." << '\n';
-				g_program_stop();
-			}
-
-
-			if (!parser_activity_travel_pattern.GetValueByFieldName("number_of_trips", travel_pattern.number_of_trips))
-			{
-				dtalog.output() << "[ERROR] Field number_of_trips in file activity_travel_pattern.csv cannot be read." << '\n';
-				g_program_stop();
-			}
-
-			std::string demand_period_vector_str;
-			if (!parser_activity_travel_pattern.GetValueByFieldName("demand_period_chain", demand_period_vector_str))
-			{
-				dtalog.output() << "[ERROR] Field demand_period_vector in file activity_travel_pattern.csv cannot be read." << '\n';
-				g_program_stop();
-			}
-
-			std::string mode_vector_str;
-			if (!parser_activity_travel_pattern.GetValueByFieldName("mode_chain", mode_vector_str))
-			{
-				dtalog.output() << "[ERROR] Field mode_chain in file activity_travel_pattern.csv cannot be read." << '\n';
-				g_program_stop();
-			}
-
-			travel_pattern.mode_chain_str = mode_vector_str;
-			travel_pattern.demand_period_chain_str = demand_period_vector_str;
-
-			// split the string into a vector by ';' as the delimiter and set the demand period vector
-
-			int demand_period_size = g_ParserStringSequence(demand_period_vector_str, travel_pattern.demand_period_chain);
-
-			int mode_size = g_ParserStringSequence(mode_vector_str, travel_pattern.mode_chain);
-
-			if (demand_period_size != travel_pattern.number_of_trips)
-			{
-				dtalog.output() << "[ERROR] demand_period_size != number_of_trips in file activity_travel_pattern.csv." << '\n';
-				g_program_stop();
-			}
-
-			if (mode_size != travel_pattern.number_of_trips)
-			{
-				dtalog.output() << "[ERROR] mode_size != number_of_trips in file activity_travel_pattern.csv. for index = " <<
-					travel_pattern.activity_travel_pattern_index << " id = " << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
-				g_program_stop();
-			}
-
-			for (int trip_no = 0; trip_no < travel_pattern.mode_chain.size(); trip_no++)
-			{
-				std::string mode_type = travel_pattern.mode_chain[trip_no];
-
-				if (assignment.mode_type_2_seqno_mapping.find(mode_type) != assignment.mode_type_2_seqno_mapping.end())
-				{
-					int mode_type_no = assignment.mode_type_2_seqno_mapping[mode_type];
-					travel_pattern.mode_vector.push_back(mode_type_no);
-				}
-				else
-				{
-					dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type.c_str() << "not defined yet in mode_type.csv." << '\n';
-					g_program_stop();
-				}
-
-				std::string assignment_period = travel_pattern.demand_period_chain[trip_no];
-
-				if (assignment.demand_period_to_seqno_mapping.find(assignment_period) != assignment.demand_period_to_seqno_mapping.end())
-				{
-					int assignment_period_no = assignment.demand_period_to_seqno_mapping[mode_type];
-					travel_pattern.demand_period_vector.push_back(assignment_period_no);
-				}
-				else
-				{
-					dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type << "not defined yet in mode_type.csv." << '\n';
-					g_program_stop();
-				}
-
-			}
+	//		if (assignment.g_ActivityTravelPatternMap.find(travel_pattern.activity_travel_pattern_id) != assignment.g_ActivityTravelPatternMap.end())
+	//		{
+	//			dtalog.output() << "[ERROR] Field activity_travel_pattern_id = " << travel_pattern.activity_travel_pattern_id.c_str() << " has been defined twice in file activity_travel_pattern.csv." << '\n';
+	//			g_program_stop();
+	//		}
 
 
+	//		if (!parser_activity_travel_pattern.GetValueByFieldName("number_of_trips", travel_pattern.number_of_trips))
+	//		{
+	//			dtalog.output() << "[ERROR] Field number_of_trips in file activity_travel_pattern.csv cannot be read." << '\n';
+	//			g_program_stop();
+	//		}
 
-			if (mode_size != travel_pattern.number_of_trips)
-			{
-				dtalog.output() << "[ERROR] mode_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
-				g_program_stop();
-			}
+	//		std::string demand_period_vector_str;
+	//		if (!parser_activity_travel_pattern.GetValueByFieldName("demand_period_chain", demand_period_vector_str))
+	//		{
+	//			dtalog.output() << "[ERROR] Field demand_period_vector in file activity_travel_pattern.csv cannot be read." << '\n';
+	//			g_program_stop();
+	//		}
 
-			if (demand_period_size != travel_pattern.number_of_trips)
-			{
-				dtalog.output() << "[ERROR] demand_period_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
-				g_program_stop();
-			}
+	//		std::string mode_vector_str;
+	//		if (!parser_activity_travel_pattern.GetValueByFieldName("mode_chain", mode_vector_str))
+	//		{
+	//			dtalog.output() << "[ERROR] Field mode_chain in file activity_travel_pattern.csv cannot be read." << '\n';
+	//			g_program_stop();
+	//		}
 
-			// split the string into a vector by ';' as the delimiter and set the mode vector
-		//	travel_pattern.setModes(g_string_to_vector(mode_vector_str, ';'));
+	//		travel_pattern.mode_chain_str = mode_vector_str;
+	//		travel_pattern.demand_period_chain_str = demand_period_vector_str;
 
-			assignment.g_ActivityTravelPatternMap[travel_pattern.activity_travel_pattern_id] = travel_pattern;
+	//		// split the string into a vector by ';' as the delimiter and set the demand period vector
 
-			assignment.summary_file << "[DATA INFO] activity_travel_pattern_index= " << travel_pattern.activity_travel_pattern_id <<
-				", activity_travel_pattern_id=" << travel_pattern.activity_travel_pattern_id.c_str() << ", number_of_trips=" << travel_pattern.number_of_trips << '\n';
-		}
+	//		int demand_period_size = g_ParserStringSequence(demand_period_vector_str, travel_pattern.demand_period_chain);
 
-		parser_activity_travel_pattern.CloseCSVFile();
+	//		int mode_size = g_ParserStringSequence(mode_vector_str, travel_pattern.mode_chain);
 
-		if (assignment.g_ActivityTravelPatternMap.size() == 0)
-		{
-			dtalog.output() << "[ERROR] File activity_travel_pattern has no information." << '\n';
-			//			g_program_stop();
-		}
-	}
-	else
-	{
-		//dtalog.output() << "[WARNING] File activity_travel_pattern.csv cannot be opened. Note that, file activity_travel_pattern.csv is optional." << '\n';
-		//	g_program_stop();
-	}
+	//		if (demand_period_size != travel_pattern.number_of_trips)
+	//		{
+	//			dtalog.output() << "[ERROR] demand_period_size != number_of_trips in file activity_travel_pattern.csv." << '\n';
+	//			g_program_stop();
+	//		}
+
+	//		if (mode_size != travel_pattern.number_of_trips)
+	//		{
+	//			dtalog.output() << "[ERROR] mode_size != number_of_trips in file activity_travel_pattern.csv. for index = " <<
+	//				travel_pattern.activity_travel_pattern_index << " id = " << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
+	//			g_program_stop();
+	//		}
+
+	//		for (int trip_no = 0; trip_no < travel_pattern.mode_chain.size(); trip_no++)
+	//		{
+	//			std::string mode_type = travel_pattern.mode_chain[trip_no];
+
+	//			if (assignment.mode_type_2_seqno_mapping.find(mode_type) != assignment.mode_type_2_seqno_mapping.end())
+	//			{
+	//				int mode_type_no = assignment.mode_type_2_seqno_mapping[mode_type];
+	//				travel_pattern.mode_vector.push_back(mode_type_no);
+	//			}
+	//			else
+	//			{
+	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type.c_str() << "not defined yet in mode_type.csv." << '\n';
+	//				g_program_stop();
+	//			}
+
+	//			std::string assignment_period = travel_pattern.demand_period_chain[trip_no];
+
+	//			if (assignment.demand_period_to_seqno_mapping.find(assignment_period) != assignment.demand_period_to_seqno_mapping.end())
+	//			{
+	//				int assignment_period_no = assignment.demand_period_to_seqno_mapping[mode_type];
+	//				travel_pattern.demand_period_vector.push_back(assignment_period_no);
+	//			}
+	//			else
+	//			{
+	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type << "not defined yet in mode_type.csv." << '\n';
+	//				g_program_stop();
+	//			}
+
+	//		}
+
+
+
+	//		if (mode_size != travel_pattern.number_of_trips)
+	//		{
+	//			dtalog.output() << "[ERROR] mode_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
+	//			g_program_stop();
+	//		}
+
+	//		if (demand_period_size != travel_pattern.number_of_trips)
+	//		{
+	//			dtalog.output() << "[ERROR] demand_period_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
+	//			g_program_stop();
+	//		}
+
+	//		// split the string into a vector by ';' as the delimiter and set the mode vector
+	//	//	travel_pattern.setModes(g_string_to_vector(mode_vector_str, ';'));
+
+	//		assignment.g_ActivityTravelPatternMap[travel_pattern.activity_travel_pattern_id] = travel_pattern;
+
+	//		assignment.summary_file << "[DATA INFO] activity_travel_pattern_index= " << travel_pattern.activity_travel_pattern_id <<
+	//			", activity_travel_pattern_id=" << travel_pattern.activity_travel_pattern_id.c_str() << ", number_of_trips=" << travel_pattern.number_of_trips << '\n';
+	//	}
+
+	//	parser_activity_travel_pattern.CloseCSVFile();
+
+	//	if (assignment.g_ActivityTravelPatternMap.size() == 0)
+	//	{
+	//		dtalog.output() << "[ERROR] File activity_travel_pattern has no information." << '\n';
+	//		//			g_program_stop();
+	//	}
+	//}
+	//else
+	//{
+	//	//dtalog.output() << "[WARNING] File activity_travel_pattern.csv cannot be opened. Note that, file activity_travel_pattern.csv is optional." << '\n';
+	//	//	g_program_stop();
+	//}
 
 
 

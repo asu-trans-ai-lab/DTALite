@@ -1591,7 +1591,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	int min = second / 60;
 	int sec = second - min * 60;
 	dtalog.output() << "[DATA INFO] CPU running time for the entire process: " << min << " min " << sec << " sec" << '\n';
-	dtalog.output() << "[STATUS INFO] DTALite computing process is complete." << std::endl;
+	dtalog.output() << "[STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science." << std::endl;
 
 	return 1;
 }
