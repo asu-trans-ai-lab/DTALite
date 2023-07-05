@@ -53,6 +53,7 @@ float g_read_float(FILE* f);
 
 std::vector<std::string> split(const std::string& s, const std::string& seperator);
 int g_ParserIntSequence(std::string str, std::vector<int>& vect);
+int g_ParserDoubleSequence(std::string str, std::vector<double>& vect);
 int g_ParserStringSequence(std::string str, std::vector<std::string>& vect);
 
 std::vector<float> g_time_parser(std::string str);
@@ -252,13 +253,13 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
 
     if (!dynamicArray)
     {
-        dtalog.output() << "[ERROR] insufficient memory.";
+        dtalog.output() << "[ERROR] Insufficient memory.";
         g_program_stop();
     }
 
     if (nM == 0 || nX == 0 || nY == 0 || nZ == 0)
     {
-        dtalog.output() << "[ERROR] allocating 4D memory but size = 0 in 1 dimension.";
+        dtalog.output() << "[ERROR] Allocating 4D memory but size = 0 in 1 dimension.";
         g_program_stop();
     }
 
@@ -266,10 +267,10 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
     {
         if (m % 1000 == 0)
         {
-            dtalog.output() << "[DATA INFO] allocating 4D memory for no." << m << " zone,"
-                << "nM = " << nM << ","
-                << "nX = " << nX << ","
-                << "nY = " << nY << ","
+            dtalog.output() << "[DATA INFO] Allocating 4D memory for zone index (start from 0) " << m << " with the following dimensions: "
+                << "nM = " << nM << ", "
+                << "nX = " << nX << ", "
+                << "nY = " << nY << ", "
                 << "nZ = " << nZ << '\n';
         }
 

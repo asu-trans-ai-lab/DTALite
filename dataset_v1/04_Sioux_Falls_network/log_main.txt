@@ -1,10 +1,10 @@
-DTALite Log           
+Logbook for DTALite: The Open-Source, Lightweight Dynamic Traffic Assignment Solution           
  Overview of files and process
 1. Input Files:
-   |--- Physical Layer (node.csv, link.csv, zone.csv)
-   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)
-   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)
-   |--- Supply Layer (supply_side_scenario.csv, signal_timing.csv)
+   |--- Physical Layer (node.csv, link.csv)
+   |--- Demand Layer (demand.csv, mode_type.csv, demand_period.csv, departure_time_profile.csv, demand_file_list.csv, sensor_data.csv, subarea.csv)
+   |--- Configuration Files (settings.csv, scenario_index_list.csv)
+   |--- Supply Layer (link_type.csv, dynamic_traffic_management.csv)
 
 2. Traffic Assignment and Simulation Process:
    |--- Demand estimation based on sensor data
@@ -15,146 +15,409 @@ DTALite Log
 3. Output Files:
    |--- Link performance (link_performance_s.csv, link_performance_summary.csv)
    |--- Route assignment (route_assignment_s.csv)
-   |--- Mode choice (choice_set_output.csv)
-   |--- OD pair performance (od_performance_summary.csv)
-   |--- System performance (system_performance_summary.csv)
-   |--- Final Summary (final_summary.csv, subarea_related_zone.csv)
+   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)
+   |--- System performance (system_performance_summary.csv, final_summary.csv)
+   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)
 --------------------------
-[PROCESS INFO] Step 0.0: Reading setting.csv.
-[DATA INFO] number_of_iterations = 20 in setting.csv.
-[DATA INFO] route_output = 1 in setting.csv.
-[DATA INFO] simulation_output = 0 in setting.csv.
+Please provide feedback or report any issues you encounter on our GitHub site: https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem.
+[PROCESS INFO] Step 0.0: Reading settings.csv.
+[DATA INFO] number_of_iterations = 100 in settings.csv.
+[DATA INFO] route_output = 1 in settings.csv.
+[DATA INFO] simulation_output = 0 in settings.csv.
 [DATA INFO] number_of_memory_blocks = 4 in settings.csv.
- 152, 153, 154, 155, [DATA INFO] number of link types = 69
-[PROCESS INFO] Step 1.35: Reading optional zone data in zone.csv...
-[PROCESS INFO] Step 1.4: Reading node data in node.csv...
-[STATUS INFO] Reading node data 
-[DATA INFO] number of nodes = 24
-[DATA INFO] number of multimodal activity nodes = 0
-[NOTE] One can add mode_type in node.csv to denote transit stations as part of efforts for modeling multmodal activities
-[PROCESS INFO] Step 1.5: Initializing O-D zone vector...
-[DATA INFO] number of zones = 24
-[STATUS INFO] Reading file demand_file_list.csv...
-[PROCESS INFO] Step 1.6: Reading link data in link.csv... 
-[DATA INFO] number of links =76
+length_unit = meter in settings.csv.
+speed_unit = kmper in settings.csv.
+INFO] # of nodes = 48
+[DATA INFO] # of links = 76
+[DATA INFO] # of zones = 24
+[PROCESS INFO]   link_type,  link_name,    # links,    avg_mph,   avg_kmph,total_len_km,  total_cap,   avg_lane,    avg_len,
+[PROCESS INFO]           1     highway          76          60     96.5604         314      778788     10247.2     4131.58
 [PROCESS INFO] Step 1.7: reading input subarea.csv
 [PROCESS INFO] Validated subarea.csv. It contains 5 geometric points. Proceeding to FOCUSING analysis step.
-[PROCESS INFO] Step 1.8: preload OD demand for focusing approach 
-[DATA INFO] total pre-load demand = 1
-[DATA INFO]0 zones are not significantly related by the subarea. = (0 % )
-[DATA INFO]24 zones are inside the subarea. 
-[DATA INFO] total demand = 1 total subarea-related demand = 1 (100 % )
+[PROCESS INFO] Step 1.8: Preloading Origin-Destination (OD) demand data as part of the focusing approach. 
+[DATA INFO] total pre-load demand = 360600
+[DATA INFO] Initiating the first stage of the subarea scanning process, where we determine cut-off zones.
+[DATA INFO] Number of zones inside the subarea: 24. Total demand related to these zones: 360600.
+[DATA INFO] Number of zones inside the subarea: 24. Total demand related to these zones from internal zones: 360600.
+[DATA INFO] Number of external zones related to the subarea: 0. Total demand related to the subarea from these external zones: 0.
+[DATA INFO] Number of external zones related to the subarea with significant volume: 0.
+[DATA INFO] During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones 
+[DATA INFO] # cut-off zone size = 24,  total related demand from external cut-off  = 0
+[DATA INFO] Cut-off volume threshold to determine significance = 0. External origin zones with a volume larger than this threshold will be retained.
+[DATA INFO] Remaining external related demand percentage after the cut-off:  = 0 %
+[DATA INFO] 0 zones are not significantly related to the subarea, accounting for 0 % of the total.
+[DATA INFO] 24 zones are inside the subarea. 
+[DATA INFO] Total demand = 360600. Subarea-related demand = 360600 (100%), accounting for 100% inside the subarea, i.e. 0 % outside the subarea.
 [PROCESS INFO] Step 2.0: Reading file departure_time_profile.csv
-[DATA INFO] T7h0min = 0.005002
-[DATA INFO] T17h0min = 0.006401
-[DATA INFO] cumulative profile no.1, ratio at slot  85 (7:5) = 0.005002,cumulative ratio 0.0081223
-[DATA INFO] cumulative profile no.1, ratio at slot  204 (17:0) = 0.006401,cumulative ratio 1
-[DATA INFO] final cumulative profile ratio = 0.98961
-[DATA INFO] allocating 4D memory for no.0 zone,nM = 24,nX = 24,nY = 3,nZ = 3
+[DATA INFO] At time 7:0 (T0700) , the demand ratio is 0.005002.
+[DATA INFO] At time 17:0 (T1700) , the demand ratio is 0.006401.
+[DATA INFO] Cumulative profile no.1, ratio at slot  85 (7:5) = 0.005002
+[DATA INFO] Cumulative profile no.1, ratio at slot  204 (17:0) = 0.006401
+[DATA INFO] Final cumulative profile ratio = 0.98961
+[DATA INFO] Allocating 4D memory for zone index (start from 0) 0 with the following dimensions: nM = 24, nX = 24, nY = 3, nZ = 3
 [PROCESS INFO] Step 2.1: Reading file demand_file_list.csv...
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 1
-[DATA INFO] cumulative total demand volume is 1
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 1
-[DATA INFO] cumulative total demand volume is 1
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 1
-[DATA INFO] cumulative total demand volume is 1
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 2
-[DATA INFO] cumulative total demand volume is 2
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 2
-[DATA INFO] cumulative total demand volume is 2
-[STATUS INFO] reading demand file for scenario index =0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 2
-[DATA INFO] cumulative total demand volume is 2
-[PROCESS INFO] Step 2.2: Reading supply side scenario data...
-[STATUS INFO] reading 0 sa  capacity scenario.. 
-[STATUS INFO] reading 0 dms scenario.. 
-[PROCESS INFO] Step 3: Assigning computing tasks to memory blocks...
-[DATA INFO] There are 36 SP networks in memory.
-[DATA INFO] There are 36 agent type*zones to be computed in CPU.
-[PROCESS INFO] Step 4: Column Generation for Traffic Assignment...
-[DATA INFO] Total number of column generation iteration = 20
-[PROCESS INFO] Generate subarea related zone file as subarea_related_zone.csv for focusing approach 
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
+[DATA INFO] cumulative total demand volume is 3.606e+05
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
+[DATA INFO] cumulative total demand volume is 3.606e+05
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 100
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 100
+[DATA INFO] cumulative total demand volume is 3.606e+05
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
+[DATA INFO] cumulative total demand volume is 7.212e+05
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
+[DATA INFO] cumulative total demand volume is 7.212e+05
+[STATUS INFO] reading demand file demand.csv for scenario index = 0
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 200
+[DATA INFO] o_zone_id:1, d_zone_id: 3, value = 200
+[DATA INFO] cumulative total demand volume is 7.212e+05
+[PROCESS INFO]
+demand_period and mode_type   total_demand     #_of_links      speed_mph     speed_kmph      length km   avg_lane_cap   avg_length_m
+             am,auto     1.0818e+06             76          60.00          96.56         314.00       10247.21        4131.58
+             am,bike     1081800.00             76          60.00          96.56         314.00       10247.21        4131.58
+             am,walk     1081800.00             76          60.00          96.56         314.00       10247.21        4131.58
+             md,auto           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+             md,bike           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+             md,walk           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+             pm,auto           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+             pm,bike           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+             pm,walk           0.00             76          60.00          96.56         314.00       10247.21        4131.58
+[PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing.
+[DATA INFO] There are 36 shortest path (SP) networks stored in memory for processing.
+[DATA INFO] There are 216 different agent types across various zones. These computations will be performed by the multi CPU processors.
+[PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool
+[DATA INFO] Perform 100 iterations for the Column Generation process
+[PROCESS INFO] Creating a file named 'zonal_hierarchy_mapping.csv', which contains data about zones related to each subarea. This file will help us focus our approach on specific areas. 
 [DATA INFO] global scenario index = 0 --------------------------
-[DATA INFO] Iter. No.= 0, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 0, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 1, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 0, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 2, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 3, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 4, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 5, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 6, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 7, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 8, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 9, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 10, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 11, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 12, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 13, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 14, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 15, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 16, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 17, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 18, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
-[DATA INFO] Iter. No.= 19, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 108.27, gap = 0 %
+[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data...
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
+[DATA INFO] 0           0.01        0.00e+00                      5.73e+07            0.00        
+[DATA INFO] 1           0.01        0.00e+00                      5.73e+07            0.00        
+[DATA INFO] 2           0.01        2.12e+14                      3.36e+13            529.51      
+[DATA INFO] 3           0.02        2.12e+14                      3.36e+13            529.51      
+[DATA INFO] 4           0.01        1.99e+14                      6.39e+13            211.22      
+[DATA INFO] 5           0.02        5.43e+14                      7.84e+13            593.16      
+[DATA INFO] 6           0.02        2.98e+14                      9.64e+13            209.39      
+[DATA INFO] 7           0.02        2.67e+14                      1.15e+14            131.41      
+[DATA INFO] 8           0.01        2.26e+14                      1.36e+14            65.99       
+[DATA INFO] 9           0.02        2.18e+14                      1.40e+14            55.35       
+[DATA INFO] 10          0.02        2.16e+14                      1.35e+14            59.74       
+[DATA INFO] 11          0.02        1.92e+14                      1.31e+14            46.26       
+[DATA INFO] 12          0.02        1.77e+14                      1.29e+14            36.49       
+[DATA INFO] 13          0.02        1.68e+14                      1.27e+14            32.01       
+[DATA INFO] 14          0.02        1.62e+14                      1.24e+14            30.90       
+[DATA INFO] 15          0.02        1.57e+14                      1.22e+14            28.74       
+[DATA INFO] 16          0.02        1.52e+14                      1.20e+14            26.98       
+[DATA INFO] 17          0.02        1.48e+14                      1.18e+14            25.80       
+[DATA INFO] 18          0.02        1.44e+14                      1.18e+14            22.21       
+[DATA INFO] 19          0.02        1.41e+14                      1.17e+14            20.79       
+[DATA INFO] 20          0.02        1.38e+14                      1.14e+14            20.46       
+[DATA INFO] 21          0.02        1.34e+14                      1.14e+14            18.06       
+[DATA INFO] 22          0.02        1.31e+14                      1.12e+14            17.13       
+[DATA INFO] 23          0.02        1.29e+14                      1.10e+14            17.50       
+[DATA INFO] 24          0.01        1.26e+14                      1.09e+14            15.78       
+[DATA INFO] 25          0.02        1.24e+14                      1.08e+14            14.73       
+[DATA INFO] 26          0.02        1.22e+14                      1.07e+14            14.31       
+[DATA INFO] 27          0.02        1.21e+14                      1.06e+14            13.74       
+[DATA INFO] 28          0.02        1.19e+14                      1.06e+14            12.61       
+[DATA INFO] 29          0.02        1.17e+14                      1.04e+14            12.53       
+[DATA INFO] 30          0.02        1.16e+14                      1.03e+14            12.14       
+[DATA INFO] 31          0.02        1.14e+14                      1.03e+14            11.21       
+[DATA INFO] 32          0.02        1.13e+14                      1.01e+14            11.19       
+[DATA INFO] 33          0.02        1.11e+14                      1.00e+14            10.82       
+[DATA INFO] 34          0.02        1.10e+14                      1.00e+14            10.02       
+[DATA INFO] 35          0.02        1.09e+14                      9.91e+13            10.07       
+[DATA INFO] 36          0.02        1.08e+14                      9.80e+13            9.85        
+[DATA INFO] 37          0.01        1.07e+14                      9.77e+13            9.18        
+[DATA INFO] 38          0.02        1.06e+14                      9.70e+13            9.14        
+[DATA INFO] 39          0.02        1.05e+14                      9.63e+13            8.99        
+[DATA INFO] 40          0.02        1.04e+14                      9.61e+13            8.43        
+[DATA INFO] 41          0.02        1.03e+14                      9.54e+13            8.45        
+[DATA INFO] 42          0.02        1.03e+14                      9.50e+13            8.18        
+[DATA INFO] 43          0.02        1.02e+14                      9.47e+13            7.74        
+[DATA INFO] 44          0.02        1.01e+14                      9.40e+13            7.87        
+[DATA INFO] 45          0.02        1.01e+14                      9.37e+13            7.61        
+[DATA INFO] 46          0.02        1.00e+14                      9.36e+13            7.17        
+[DATA INFO] 47          0.02        9.97e+13                      9.29e+13            7.29        
+[DATA INFO] 48          0.02        9.89e+13                      9.23e+13            7.11        
+[DATA INFO] 49          0.02        9.84e+13                      9.21e+13            6.77        
+[DATA INFO] 50          0.02        9.79e+13                      9.16e+13            6.85        
+[DATA INFO] 51          0.02        9.76e+13                      9.15e+13            6.62        
+[DATA INFO] 52          0.02        9.72e+13                      9.15e+13            6.30        
+[DATA INFO] 53          0.01        9.68e+13                      9.09e+13            6.42        
+[DATA INFO] 54          0.02        9.62e+13                      9.05e+13            6.28        
+[DATA INFO] 55          0.02        9.58e+13                      9.05e+13            5.93        
+[DATA INFO] 56          0.02        9.55e+13                      9.00e+13            6.02        
+[DATA INFO] 57          0.02        9.52e+13                      8.99e+13            5.91        
+[DATA INFO] 58          0.01        9.48e+13                      8.98e+13            5.61        
+[DATA INFO] 59          0.02        9.45e+13                      8.94e+13            5.65        
+[DATA INFO] 60          0.02        9.39e+13                      8.89e+13            5.57        
+[DATA INFO] 61          0.02        9.36e+13                      8.88e+13            5.35        
+[DATA INFO] 62          0.02        9.33e+13                      8.85e+13            5.37        
+[DATA INFO] 63          0.02        9.31e+13                      8.84e+13            5.25        
+[DATA INFO] 64          0.02        9.29e+13                      8.84e+13            5.06        
+[DATA INFO] 65          0.02        9.26e+13                      8.81e+13            5.11        
+[DATA INFO] 66          0.02        9.21e+13                      8.77e+13            5.02        
+[DATA INFO] 67          0.02        9.19e+13                      8.77e+13            4.80        
+[DATA INFO] 68          0.02        9.16e+13                      8.74e+13            4.90        
+[DATA INFO] 69          0.02        9.14e+13                      8.72e+13            4.84        
+[DATA INFO] 70          0.02        9.12e+13                      8.72e+13            4.60        
+[DATA INFO] 71          0.01        9.10e+13                      8.69e+13            4.66        
+[DATA INFO] 72          0.02        9.06e+13                      8.66e+13            4.60        
+[DATA INFO] 73          0.02        9.04e+13                      8.66e+13            4.43        
+[DATA INFO] 74          0.02        9.02e+13                      8.64e+13            4.44        
+[DATA INFO] 75          0.02        9.00e+13                      8.62e+13            4.43        
+[DATA INFO] 76          0.02        8.98e+13                      8.62e+13            4.24        
+[DATA INFO] 77          0.02        8.96e+13                      8.60e+13            4.22        
+[DATA INFO] 78          0.02        8.94e+13                      8.58e+13            4.29        
+[DATA INFO] 79          0.02        8.92e+13                      8.57e+13            4.09        
+[DATA INFO] 80          0.02        8.91e+13                      8.56e+13            4.04        
+[DATA INFO] 81          0.01        8.89e+13                      8.54e+13            4.10        
+[DATA INFO] 82          0.02        8.87e+13                      8.53e+13            3.93        
+[DATA INFO] 83          0.02        8.85e+13                      8.52e+13            3.89        
+[DATA INFO] 84          0.02        8.84e+13                      8.50e+13            3.95        
+[DATA INFO] 85          0.02        8.83e+13                      8.50e+13            3.83        
+[DATA INFO] 86          0.02        8.82e+13                      8.50e+13            3.74        
+[DATA INFO] 87          0.02        8.80e+13                      8.48e+13            3.77        
+[DATA INFO] 88          0.02        8.77e+13                      8.46e+13            3.67        
+[DATA INFO] 89          0.02        8.76e+13                      8.45e+13            3.62        
+[DATA INFO] 90          0.02        8.75e+13                      8.44e+13            3.61        
+[DATA INFO] 91          0.02        8.74e+13                      8.44e+13            3.53        
+[DATA INFO] 92          0.01        8.73e+13                      8.43e+13            3.51        
+[DATA INFO] 93          0.01        8.70e+13                      8.41e+13            3.50        
+[DATA INFO] 94          0.02        8.68e+13                      8.39e+13            3.43        
+[DATA INFO] 95          0.02        8.67e+13                      8.38e+13            3.43        
+[DATA INFO] 96          0.01        8.67e+13                      8.38e+13            3.38        
+[DATA INFO] 97          0.02        8.66e+13                      8.38e+13            3.32        
+[DATA INFO] 98          0.01        8.65e+13                      8.37e+13            3.30        
+[DATA INFO] 99          0.01        8.63e+13                      8.35e+13            3.29        
 [PROCESS INFO] Step 5: Column Pool Updating
-[DATA INFO] Total number of column pool updating iterations = 2
-[DATA INFO] column updating: iteration = 0, avg travel time = 36.091(min), optimization obj = 0,Relative_gap =0 %
-[DATA INFO] column updating: iteration = 1, avg travel time = 36.091(min), optimization obj = 0,Relative_gap =0 %
+[DATA INFO] Total number of column pool updating iterations = 40
+[DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
+                               0       79500344.16          8.36e+13             49.60
+                               1       28229404.30          2.52e+13             48.95
+                               2       18996233.90          1.57e+13             48.47
+                               3       14957644.83          1.18e+13             48.09
+                               4       12663682.26          9.60e+12             47.76
+                               5       11146979.02          8.19e+12             47.48
+                               6       10054707.75          7.19e+12             47.22
+                               7        9243495.35          6.46e+12             46.98
+                               8        8619349.77          5.90e+12             46.77
+                               9        8121257.64          5.46e+12             46.58
+                              10        7714959.10          5.11e+12             46.40
+                              11        7377297.75          4.81e+12             46.24
+                              12        7095446.96          4.57e+12             46.10
+                              13        6852859.35          4.36e+12             45.96
+                              14        6639847.51          4.18e+12             45.83
+                              15        6454534.28          4.02e+12             45.71
+                              16        6291958.61          3.88e+12             45.60
+                              17        6145563.43          3.76e+12             45.50
+                              18        6014763.45          3.65e+12             45.40
+                              19        5897487.82          3.55e+12             45.31
+                              20        5791777.18          3.46e+12             45.22
+                              21        5694824.27          3.38e+12             45.14
+                              22        5605054.65          3.31e+12             45.06
+                              23        5521938.44          3.24e+12             44.99
+                              24        5444917.41          3.18e+12             44.92
+                              25        5373176.80          3.12e+12             44.85
+                              26        5305701.39          3.06e+12             44.78
+                              27        5242235.51          3.01e+12             44.72
+                              28        5182888.32          2.96e+12             44.66
+                              29        5126465.13          2.91e+12             44.60
+                              30        5073038.13          2.87e+12             44.54
+                              31        5022295.12          2.83e+12             44.48
+                              32        4973959.77          2.79e+12             44.43
+                              33        4927683.64          2.75e+12             44.38
+                              34        4883902.13          2.71e+12             44.32
+                              35        4843371.94          2.68e+12             44.28
+                              36        4805538.18          2.65e+12             44.23
+                              37        4769163.27          2.62e+12             44.18
+                              38        4734195.84          2.59e+12             44.14
+                              39        4700712.16          2.57e+12             44.10
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
-[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[DATA INFO] CPU Running Time for the entire computing progress = 0.016 s
-[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
-[PROCESS INFO] Step 10: output assignment results
-[STATUS INFO] writing link_performance_s0.csv
+[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
+[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
+[DATA INFO] Total CPU running time for the entire process = 11.60 s
+[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
+[PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
+[STATUS INFO] writing file link_performance_s0_25nb.csv
 [STATUS INFO] writing route_assignment.csv for each scenario
+[STATUS INFO] writing district_performance_s.csv..
 [STATUS INFO] writing subarea_link_performance.csv..
-[STATUS INFO] writing choice_set_output.csv..
 [DATA INFO] global scenario index = 1 --------------------------
-[DATA INFO] Iter. No.= 0, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 108.27, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 1, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 0, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 2, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 3, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 4, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 5, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 6, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 7, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 8, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 9, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 10, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 11, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 12, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 13, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 14, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 15, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 16, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 17, CPU time= 0.003 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 18, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
-[DATA INFO] Iter. No.= 19, CPU time= 0.002 s, Sys. Wide Travel Time (TT) = 216.55, least system TT = 216.55, gap = 0 %
+[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data...
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
+[DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
+[DATA INFO] 0           0.01        3.50e+12                      1.74e+13            0.00        
+[DATA INFO] 1           0.01        0.00e+00                      1.15e+08            0.00        
+[DATA INFO] 2           0.01        2.23e+16                      1.58e+15            1311.93     
+[DATA INFO] 3           0.01        7.39e+15                      1.33e+15            457.41      
+[DATA INFO] 4           0.01        1.72e+16                      2.52e+15            582.04      
+[DATA INFO] 5           0.02        4.81e+16                      1.55e+15            2998.42     
+[DATA INFO] 6           0.02        1.91e+16                      2.23e+15            756.76      
+[DATA INFO] 7           0.02        1.01e+16                      3.24e+15            211.40      
+[DATA INFO] 8           0.01        7.54e+15                      3.56e+15            112.14      
+[DATA INFO] 9           0.02        6.20e+15                      3.71e+15            67.05       
+[DATA INFO] 10          0.02        5.52e+15                      3.71e+15            48.89       
+[DATA INFO] 11          0.02        5.22e+15                      3.60e+15            44.73       
+[DATA INFO] 12          0.02        4.94e+15                      3.53e+15            39.82       
+[DATA INFO] 13          0.01        4.70e+15                      3.54e+15            32.68       
+[DATA INFO] 14          0.02        4.50e+15                      3.51e+15            28.07       
+[DATA INFO] 15          0.02        4.31e+15                      3.42e+15            26.13       
+[DATA INFO] 16          0.02        4.14e+15                      3.38e+15            22.40       
+[DATA INFO] 17          0.02        4.10e+15                      3.36e+15            21.91       
+[DATA INFO] 18          0.02        4.07e+15                      3.33e+15            21.99       
+[DATA INFO] 19          0.02        4.01e+15                      3.35e+15            19.73       
+[DATA INFO] 20          0.02        3.97e+15                      3.33e+15            19.08       
+[DATA INFO] 21          0.02        3.90e+15                      3.33e+15            17.12       
+[DATA INFO] 22          0.02        3.84e+15                      3.31e+15            16.23       
+[DATA INFO] 23          0.02        3.78e+15                      3.26e+15            15.82       
+[DATA INFO] 24          0.02        3.72e+15                      3.25e+15            14.65       
+[DATA INFO] 25          0.02        3.68e+15                      3.23e+15            13.97       
+[DATA INFO] 26          0.02        3.63e+15                      3.21e+15            12.87       
+[DATA INFO] 27          0.02        3.59e+15                      3.21e+15            11.92       
+[DATA INFO] 28          0.02        3.54e+15                      3.18e+15            11.46       
+[DATA INFO] 29          0.02        3.49e+15                      3.14e+15            11.29       
+[DATA INFO] 30          0.02        3.45e+15                      3.11e+15            10.68       
+[DATA INFO] 31          0.02        3.41e+15                      3.09e+15            10.27       
+[DATA INFO] 32          0.02        3.38e+15                      3.08e+15            9.81        
+[DATA INFO] 33          0.02        3.35e+15                      3.06e+15            9.43        
+[DATA INFO] 34          0.02        3.32e+15                      3.04e+15            9.12        
+[DATA INFO] 35          0.02        3.29e+15                      3.02e+15            8.92        
+[DATA INFO] 36          0.01        3.26e+15                      3.00e+15            8.66        
+[DATA INFO] 37          0.01        3.24e+15                      2.99e+15            8.39        
+[DATA INFO] 38          0.02        3.22e+15                      2.98e+15            8.07        
+[DATA INFO] 39          0.02        3.20e+15                      2.97e+15            7.76        
+[DATA INFO] 40          0.02        3.17e+15                      2.95e+15            7.60        
+[DATA INFO] 41          0.02        3.15e+15                      2.93e+15            7.26        
+[DATA INFO] 42          0.02        3.13e+15                      2.92e+15            7.13        
+[DATA INFO] 43          0.02        3.11e+15                      2.90e+15            7.05        
+[DATA INFO] 44          0.02        3.09e+15                      2.89e+15            6.74        
+[DATA INFO] 45          0.02        3.08e+15                      2.89e+15            6.51        
+[DATA INFO] 46          0.01        3.06e+15                      2.88e+15            6.54        
+[DATA INFO] 47          0.02        3.04e+15                      2.87e+15            6.25        
+[DATA INFO] 48          0.02        3.03e+15                      2.85e+15            6.13        
+[DATA INFO] 49          0.02        3.02e+15                      2.84e+15            6.10        
+[DATA INFO] 50          0.02        3.00e+15                      2.83e+15            5.93        
+[DATA INFO] 51          0.02        2.99e+15                      2.83e+15            5.62        
+[DATA INFO] 52          0.02        2.98e+15                      2.83e+15            5.59        
+[DATA INFO] 53          0.01        2.97e+15                      2.81e+15            5.49        
+[DATA INFO] 54          0.02        2.95e+15                      2.80e+15            5.27        
+[DATA INFO] 55          0.02        2.94e+15                      2.79e+15            5.28        
+[DATA INFO] 56          0.02        2.93e+15                      2.78e+15            5.40        
+[DATA INFO] 57          0.02        2.92e+15                      2.78e+15            5.07        
+[DATA INFO] 58          0.02        2.92e+15                      2.78e+15            4.89        
+[DATA INFO] 59          0.02        2.91e+15                      2.77e+15            4.92        
+[DATA INFO] 60          0.02        2.90e+15                      2.77e+15            4.80        
+[DATA INFO] 61          0.02        2.89e+15                      2.76e+15            4.64        
+[DATA INFO] 62          0.02        2.88e+15                      2.75e+15            4.69        
+[DATA INFO] 63          0.02        2.87e+15                      2.75e+15            4.56        
+[DATA INFO] 64          0.02        2.87e+15                      2.75e+15            4.43        
+[DATA INFO] 65          0.02        2.86e+15                      2.74e+15            4.45        
+[DATA INFO] 66          0.02        2.85e+15                      2.73e+15            4.32        
+[DATA INFO] 67          0.02        2.84e+15                      2.73e+15            4.21        
+[DATA INFO] 68          0.01        2.83e+15                      2.72e+15            4.26        
+[DATA INFO] 69          0.02        2.83e+15                      2.72e+15            4.15        
+[DATA INFO] 70          0.02        2.82e+15                      2.71e+15            4.01        
+[DATA INFO] 71          0.02        2.82e+15                      2.71e+15            4.01        
+[DATA INFO] 72          0.02        2.82e+15                      2.71e+15            3.95        
+[DATA INFO] 73          0.02        2.81e+15                      2.70e+15            3.86        
+[DATA INFO] 74          0.02        2.80e+15                      2.70e+15            3.91        
+[DATA INFO] 75          0.02        2.80e+15                      2.69e+15            3.81        
+[DATA INFO] 76          0.02        2.79e+15                      2.69e+15            3.69        
+[DATA INFO] 77          0.02        2.79e+15                      2.69e+15            3.68        
+[DATA INFO] 78          0.02        2.79e+15                      2.69e+15            3.61        
+[DATA INFO] 79          0.02        2.78e+15                      2.68e+15            3.57        
+[DATA INFO] 80          0.02        2.77e+15                      2.67e+15            3.56        
+[DATA INFO] 81          0.02        2.76e+15                      2.67e+15            3.52        
+[DATA INFO] 82          0.02        2.76e+15                      2.67e+15            3.43        
+[DATA INFO] 83          0.02        2.76e+15                      2.67e+15            3.40        
+[DATA INFO] 84          0.02        2.76e+15                      2.67e+15            3.38        
+[DATA INFO] 85          0.02        2.75e+15                      2.66e+15            3.29        
+[DATA INFO] 86          0.02        2.75e+15                      2.66e+15            3.26        
+[DATA INFO] 87          0.02        2.74e+15                      2.65e+15            3.24        
+[DATA INFO] 88          0.02        2.74e+15                      2.65e+15            3.18        
+[DATA INFO] 89          0.02        2.74e+15                      2.65e+15            3.12        
+[DATA INFO] 90          0.02        2.73e+15                      2.65e+15            3.10        
+[DATA INFO] 91          0.02        2.73e+15                      2.65e+15            3.06        
+[DATA INFO] 92          0.02        2.72e+15                      2.64e+15            3.06        
+[DATA INFO] 93          0.02        2.72e+15                      2.64e+15            3.01        
+[DATA INFO] 94          0.02        2.72e+15                      2.64e+15            2.99        
+[DATA INFO] 95          0.02        2.72e+15                      2.64e+15            2.97        
+[DATA INFO] 96          0.02        2.71e+15                      2.64e+15            2.88        
+[DATA INFO] 97          0.02        2.71e+15                      2.63e+15            2.87        
+[DATA INFO] 98          0.02        2.70e+15                      2.63e+15            2.88        
+[DATA INFO] 99          0.02        2.70e+15                      2.63e+15            2.76        
 [PROCESS INFO] Step 5: Column Pool Updating
-[DATA INFO] Total number of column pool updating iterations = 2
-[DATA INFO] column updating: iteration = 0, avg travel time = 36.091(min), optimization obj = 0,Relative_gap =0 %
-[DATA INFO] column updating: iteration = 1, avg travel time = 36.091(min), optimization obj = 0,Relative_gap =0 %
+[DATA INFO] Total number of column pool updating iterations = 40
+[DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
+                               0     1246485146.54          2.67e+15             49.97
+                               1      593018877.75          1.15e+15             49.95
+                               2      448968857.59          8.34e+14             49.93
+                               3      376323529.00          6.81e+14             49.92
+                               4      331947518.25          5.90e+14             49.91
+                               5      301136732.56          5.28e+14             49.90
+                               6      278401790.61          4.82e+14             49.90
+                               7      260948088.51          4.48e+14             49.89
+                               8      246735008.65          4.20e+14             49.89
+                               9      234793902.74          3.97e+14             49.88
+                              10      224549518.28          3.77e+14             49.88
+                              11      215701655.73          3.60e+14             49.87
+                              12      208105489.68          3.46e+14             49.87
+                              13      201440623.55          3.33e+14             49.86
+                              14      195475797.91          3.22e+14             49.86
+                              15      190083650.68          3.11e+14             49.86
+                              16      185189969.93          3.02e+14             49.85
+                              17      180756216.35          2.94e+14             49.85
+                              18      176694912.60          2.86e+14             49.85
+                              19      172955167.87          2.80e+14             49.84
+                              20      169491637.08          2.73e+14             49.84
+                              21      166275930.15          2.67e+14             49.84
+                              22      163278371.73          2.62e+14             49.83
+                              23      160466545.17          2.57e+14             49.83
+                              24      157823850.34          2.52e+14             49.83
+                              25      155337446.68          2.47e+14             49.83
+                              26      153010568.40          2.43e+14             49.83
+                              27      150830041.85          2.39e+14             49.82
+                              28      148768325.75          2.35e+14             49.82
+                              29      146830366.17          2.32e+14             49.82
+                              30      144995029.70          2.28e+14             49.82
+                              31      143242738.65          2.25e+14             49.81
+                              32      141567786.43          2.22e+14             49.81
+                              33      139970139.37          2.19e+14             49.81
+                              34      138459889.46          2.17e+14             49.81
+                              35      137016320.55          2.14e+14             49.81
+                              36      135627844.66          2.12e+14             49.81
+                              37      134291890.22          2.09e+14             49.80
+                              38      133005054.21          2.07e+14             49.80
+                              39      131766547.51          2.05e+14             49.80
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: perform sensivity sensitivity if supply_side_scenario.csv is provided for types = SA and DMS. 
-[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . 
-[DATA INFO] CPU Running Time for the entire computing progress = 0.016 s
-[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping
-[PROCESS INFO] Step 10: output assignment results
-[STATUS INFO] writing link_performance_s1.csv
+[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
+[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
+[DATA INFO] Total CPU running time for the entire process = 1.84 s
+[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
+[PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
+[STATUS INFO] writing file link_performance_s1_2040.csv
 [STATUS INFO] writing route_assignment.csv for each scenario
+[STATUS INFO] writing district_performance_s.csv..
 [STATUS INFO] writing subarea_link_performance.csv..
-[STATUS INFO] writing choice_set_output.csv..
-[STATUS INFO] output od_performance_summary.csv..
 [STATUS INFO] writing od_performance_summary.csv..
 [STATUS INFO] writing data for 24  zones 
 [STATUS INFO] writing link_performances_summary.csv..
 [STATUS INFO] writing link_performances_summary_2way.csv..
-[DATA INFO] CPU Running Time for outputting simulation results: 0.077 s
-[STATUS INFO] free memory..
-[DATA INFO] CPU Running Time for Entire Process: 0 min 0 sec
+[DATA INFO] CPU running time for outputting simulation results: 0.55 s
+[STATUS INFO] Freeing memory..
+[DATA INFO] CPU running time for the entire process: 0 min 19 sec
 [STATUS INFO] DTALite computing process is complete.

@@ -82,7 +82,7 @@ bool write_default_scenario_index_file_if_not_exist()
 	// Define the data to write to the file.
 	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string>> data = {
 		{"0", "0", "2025", "25nb", "2025 no built", "1"},
-		{"0", "1","2040", "2040", "2040 future year", "1"},
+		{"0", "1","2040", "2040", "2040 future year", "0"},
 	};
 
 	// Open the file for output.
@@ -162,17 +162,22 @@ void write_default_mode_type_file_if_not_exist() {
 	}  // inFile goes out of scope here and is closed.
 
 	// Define the data to write to the file.
-	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string>> data = {
-		{"0", "auto", "0", "passenger car", "10", "1", "1", "1.5", "0"},
-		{"0", "bike", "1", "bike", "10", "1", "1", "5", "0"},
-		{"0", "walk", "2", "pedestrian", "10", "1", "1", "3", "0"},
+	std::vector<std::tuple<std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string, std::string>> data = {
+		{"0", "auto", "0", "auto", "10", "1", "1", "1.5", "0", "1"},
+		{"0", "walk", "1", "walk", "10", "1", "1", "1", "0", "0"},
+		{"0", "bike", "2", "bike", "10", "1", "1", "1", "0", "0"},
+		{"0", "bus", "3", "bus", "10", "1", "10", "0.1", "0", "0"},
+		{"0", "truck", "4", "truck", "10", "0", "1", "0.2", "0", "0"},
+		{"0", "cav", "5", "cav", "10", "0", "1", "0.75", "1", "0"},
+		{"0", "ev", "6", "ev", "10", "0", "1", "1.5", "0", "0"},
+		{"0", "hov", "7", "hov", "10", "0", "2", "1.5", "0", "0"},
 	};
 
 	// Open the file for output.
 	std::ofstream outFile(filename);
 
 	// Write the header to the file.
-	outFile << "first_column,mode_type,mode_type_index,name,vot,multimodal_dedicated_assignment_flag,person_occupancy,headway_in_sec,DTM_real_time_info_type\n";
+	outFile << "first_column,mode_type,mode_type_index,name,vot,multimodal_dedicated_assignment_flag,person_occupancy,headway_in_sec,DTM_real_time_info_type,activate\n";
 
 	// Write the data to the file.
 	for (const auto& item : data) {
@@ -184,7 +189,8 @@ void write_default_mode_type_file_if_not_exist() {
 			<< std::get<5>(item) << ","
 			<< std::get<6>(item) << ","
 			<< std::get<7>(item) << ","
-			<< std::get<8>(item) << "\n";
+			<< std::get<8>(item) << ","
+			<< std::get<9>(item) << "\n";
 	}
 
 	// Close the file.
@@ -200,6 +206,8 @@ struct LinkTypeData {
 	std::string type_code;
 	std::string traffic_flow_model;
 	std::string allowed_uses_p1;
+	std::string allowed_uses_p2;
+	std::string allowed_uses_p3;
 	std::string peak_load_factor_p1_auto;
 	std::string peak_load_factor_p1_bike;
 	std::string peak_load_factor_p1_walk;
@@ -214,13 +222,24 @@ struct LinkTypeData {
 	std::string k_jam_km;
 	std::string meu_auto_bike;
 	std::string meu_auto_walk;
-	std::string meu_auto_auto;
-	std::string meu_bike_bike;
 	std::string meu_bike_walk;
 	std::string meu_bike_auto;
 	std::string meu_walk_bike;
-	std::string meu_walk_walk;
 	std::string meu_walk_auto;
+	std::string emissions_auto_co2;
+	std::string emissions_auto_nox;
+	std::string emissions_bike_co2;
+	std::string emissions_bike_nox;
+	std::string emissions_walk_co2;
+	std::string emissions_walk_nox;
+	std::string emissions_ev_co2;
+	std::string emissions_ev_nox;
+	std::string emissions_truck_co2;
+	std::string emissions_truck_nox;
+	std::string emissions_bus_co2;
+	std::string emissions_bus_nox;
+	std::string emissions_hov_co2;
+	std::string emissions_hov_nox;
 };
 
 void write_default_link_type_file_if_not_exist() {
@@ -234,29 +253,123 @@ void write_default_link_type_file_if_not_exist() {
 
 	std::vector<LinkTypeData> data;
 
-	LinkTypeData dataItem = { "0", "1", "highway", "Highway/Expressway", "f", "kw", "", "1", "1", "1", "60", "13.2", "4.8", "2000", "600", "1000", "1", "1", "400", "1.5", "2", "1", "1", "1.2", "0.5", "0.8", "1", "0.3" };
-	data.push_back(dataItem);
+	// Add each line as a dataItem in the vector data
+	// First record
+	LinkTypeData dataItem1 = {
+		"0", "1", "motorway", "motorway", "f", "kw", "auto", "", "",
+		"1", "1", "1", "120", "25", "5", "2000", "300", "200",
+		"0", "0", "300", "0", "0", "0", "0", "0", "0",
+		"20785.99541;0.0002;0.0042;0.3412", "5.53516;0.0003;0.0043;0.0959",
+		"0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0",
+		"10392.99771;0.0002;0.0042;0.3412", "2;0.0003;0.0043;0.0959",
+		"23816.14583;0.0002;0.0042;0.3412", "6.342370833;0.0003;0.0043;0.0959",
+		"25115.20833;0.0002;0.0042;0.3412", "6.688318333;0.0003;0.0043;0.0959",
+		"10392.99771;0.0002;0.0042;0.3412", "2;0.0003;0.0043;0.0959"
+	};
+	data.push_back(dataItem1);
 
-	// Add more entries in the same way...
+	// Second record
+	LinkTypeData dataItem2 = {
+		"0", "2", "trunk", "trunk", "a", "spatial_queue", "auto", "", "",
+		"1", "1", "1", "100", "25", "5", "1800", "300", "200",
+		"0", "0", "300", "0", "0", "0", "0", "0", "0",
+		"20785.99541;0.0002;0.0042;0.3413", "5.53516;0.0003;0.0043;0.0960",
+		"0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0",
+		"10392.99771;0.0002;0.0042;0.3412", "2;0.0003;0.0043;0.0960",
+		"23816.14583;0.0002;0.0042;0.3413", "6.342370833;0.0003;0.0043;0.0960",
+		"25115.20833;0.0002;0.0042;0.3413", "6.688318333;0.0003;0.0043;0.0960",
+		"10392.99771;0.0002;0.0042;0.3413", "2;0.0003;0.0043;0.0960"
+	};
+	data.push_back(dataItem2);
+	LinkTypeData dataItem3 = { "0", "3", "primary", "primary", "a", "spatial_queue", "", "", "", "1", "1", "1", "80", "25", "5", "1500", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3414", "5.53516;0.0003;0.0043;0.0961", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3413", "2;0.0003;0.0043;0.0961", "23816.14583;0.0002;0.0042;0.3414", "6.342370833;0.0003;0.0043;0.0961", "25115.20833;0.0002;0.0042;0.3414", "6.688318333;0.0003;0.0043;0.0961", "10392.99771;0.0002;0.0042;0.3414", "2;0.0003;0.0043;0.0961" };
+	data.push_back(dataItem3);
+
+	LinkTypeData dataItem4 = { "0", "4", "residential", "residential", "a", "point_queue", "", "", "", "1", "1", "1", "30", "25", "5", "1000", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3415", "5.53516;0.0003;0.0043;0.0962", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3414", "2;0.0003;0.0043;0.0962", "23816.14583;0.0002;0.0042;0.3415", "6.342370833;0.0003;0.0043;0.0962", "25115.20833;0.0002;0.0042;0.3415", "6.688318333;0.0003;0.0043;0.0962", "10392.99771;0.0002;0.0042;0.3415", "2;0.0003;0.0043;0.0962" };
+	data.push_back(dataItem4);
+
+	LinkTypeData dataItem5 = { "0", "5", "secondary", "secondary", "a", "point_queue", "", "", "", "1", "1", "1", "60", "25", "5", "1400", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3416", "5.53516;0.0003;0.0043;0.0963", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3415", "2;0.0003;0.0043;0.0963", "23816.14583;0.0002;0.0042;0.3416", "6.342370833;0.0003;0.0043;0.0963", "25115.20833;0.0002;0.0042;0.3416", "6.688318333;0.0003;0.0043;0.0963", "10392.99771;0.0002;0.0042;0.3416", "2;0.0003;0.0043;0.0963" };
+	data.push_back(dataItem5);
+
+	LinkTypeData dataItem6 = { "0", "6", "tertiary", "tertiary", "a", "point_queue", "", "", "", "1", "1", "1", "50", "25", "5", "1300", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3417", "5.53516;0.0003;0.0043;0.0964", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3416", "2;0.0003;0.0043;0.0964", "23816.14583;0.0002;0.0042;0.3417", "6.342370833;0.0003;0.0043;0.0964", "25115.20833;0.0002;0.0042;0.3417", "6.688318333;0.0003;0.0043;0.0964", "10392.99771;0.0002;0.0042;0.3417", "2;0.0003;0.0043;0.0964" };
+	data.push_back(dataItem6);
+
+	LinkTypeData dataItem7 = { "0", "7", "unclassified", "unclassified", "a", "point_queue", "", "", "", "1", "1", "1", "40", "25", "5", "1200", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3418", "5.53516;0.0003;0.0043;0.0965", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3417", "2;0.0003;0.0043;0.0965", "23816.14583;0.0002;0.0042;0.3418", "6.342370833;0.0003;0.0043;0.0965", "25115.20833;0.0002;0.0042;0.3418", "6.688318333;0.0003;0.0043;0.0965", "10392.99771;0.0002;0.0042;0.3418", "2;0.0003;0.0043;0.0965" };
+	data.push_back(dataItem7);
+
+	LinkTypeData dataItem9 = { "0", "9", "collector", "collector", "a", "point_queue", "", "", "", "1", "1", "1", "50", "25", "5", "1200", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0", "20785.99541;0.0002;0.0042;0.3419", "5.53516;0.0003;0.0043;0.0966", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3418", "2;0.0003;0.0043;0.0966", "23816.14583;0.0002;0.0042;0.3419", "6.342370833;0.0003;0.0043;0.0966", "25115.20833;0.0002;0.0042;0.3419", "6.688318333;0.0003;0.0043;0.0966", "10392.99771;0.0002;0.0042;0.3419", "2;0.0003;0.0043;0.0966" };
+	data.push_back(dataItem9);
+
+
+	LinkTypeData dataItem10 = { "0", "10", "connector", "connector", "c", "point_queue", "", "", "", "1", "1", "1", "60", "25", "5", "15000", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0" };
+	data.push_back(dataItem10);
+
+	LinkTypeData dataItem100 = { "0", "100", "shared_use", "", "a", "point_queue", "", "", "", "1", "1", "1", "20", "25", "5", "200", "300", "200", "1", "1", "300", "0.5", "0", "0", "2", "0", "0", "20785.99541;0.0002;0.0042;0.3419", "5.53516;0.0003;0.0043;0.0966", "0;0;0;0", "0;0;0;0", "0;0;0;0", "0;0;0;0", "10392.99771;0.0002;0.0042;0.3418", "2;0.0003;0.0043;0.0966", "23816.14583;0.0002;0.0042;0.3419", "6.342370833;0.0003;0.0043;0.0966", "25115.20833;0.0002;0.0042;0.3419", "6.688318333;0.0003;0.0043;0.0966", "10392.99771;0.0002;0.0042;0.3419", "2;0.0003;0.0043;0.0966" };
+	data.push_back(dataItem100);
+
+	LinkTypeData dataItem200 = { "0", "200", "bikeonly", "Bike only", "a", "point_queue", "bike", "bike", "bike", "1", "1", "1", "5", "25", "5", "200", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0"};
+	data.push_back(dataItem200);
+
+	LinkTypeData dataItem300 = { "0", "300", "walkonly", "walk only", "a", "point_queue", "walk", "walk", "walk", "1", "1", "1", "25", "25", "5", "300", "300", "200", "1", "1", "300", "0", "0", "0", "0", "0", "0"};
+	data.push_back(dataItem300);
+
 
 	std::ofstream outFile(filename.c_str());
 
-	outFile << "first_column,link_type,link_type_name,name_description,type_code,traffic_flow_model,allowed_uses_p1,peak_load_factor_p1_auto,"
-		"peak_load_factor_p1_bike,peak_load_factor_p1_walk,free_speed_auto,free_speed_bike,free_speed_walk,capacity_auto,capacity_bike,"
-		"capacity_walk,lanes_bike,lanes_walk,k_jam_km,meu_auto_bike,meu_auto_walk,meu_auto_auto,meu_bike_bike,meu_bike_walk,meu_bike_auto,"
-		"meu_walk_bike,meu_walk_walk,meu_walk_auto\n";
+	outFile << "first_column,link_type,link_type_name,name_description,type_code,traffic_flow_model,allowed_uses_p1,allowed_uses_p2,allowed_uses_p3,"
+		"peak_load_factor_p1_auto,peak_load_factor_p1_bike,peak_load_factor_p1_walk,free_speed_auto,free_speed_bike,free_speed_walk,capacity_auto,capacity_bike,"
+		"capacity_walk,lanes_bike,lanes_walk,k_jam_km,meu_auto_bike,meu_auto_walk,meu_bike_walk,meu_bike_auto,meu_walk_bike,meu_walk_auto,"
+		"emissions_auto_co2,emissions_auto_nox,emissions_bike_co2,emissions_bike_nox,emissions_walk_co2,emissions_walk_nox,emissions_ev_co2,"
+		"emissions_ev_nox,emissions_truck_co2,emissions_truck_nox,emissions_bus_co2,emissions_bus_nox,emissions_hov_co2,emissions_hov_nox\n";
 
 	for (const auto& item : data) {
 		outFile << item.first_column << ","
 			<< item.link_type << ","
 			<< item.link_type_name << ","
-			// continue to write remaining struct elements...
-			<< item.meu_walk_walk << ","
-			<< item.meu_walk_auto << "\n";
+			<< item.name_description << ","
+			<< item.type_code << ","
+			<< item.traffic_flow_model << ","
+			<< item.allowed_uses_p1 << ","
+			<< item.allowed_uses_p2 << ","
+			<< item.allowed_uses_p3 << ","
+			<< item.peak_load_factor_p1_auto << ","
+			<< item.peak_load_factor_p1_bike << ","
+			<< item.peak_load_factor_p1_walk << ","
+			<< item.free_speed_auto << ","
+			<< item.free_speed_bike << ","
+			<< item.free_speed_walk << ","
+			<< item.capacity_auto << ","
+			<< item.capacity_bike << ","
+			<< item.capacity_walk << ","
+			<< item.lanes_bike << ","
+			<< item.lanes_walk << ","
+			<< item.k_jam_km << ","
+			<< item.meu_auto_bike << ","
+			<< item.meu_auto_walk << ","
+			<< item.meu_bike_walk << ","
+			<< item.meu_bike_auto << ","
+			<< item.meu_walk_bike << ","
+			<< item.meu_walk_auto << ","
+			<< item.emissions_auto_co2 << ","
+			<< item.emissions_auto_nox << ","
+			<< item.emissions_bike_co2 << ","
+			<< item.emissions_bike_nox << ","
+			<< item.emissions_walk_co2 << ","
+			<< item.emissions_walk_nox << ","
+			<< item.emissions_ev_co2 << ","
+			<< item.emissions_ev_nox << ","
+			<< item.emissions_truck_co2 << ","
+			<< item.emissions_truck_nox << ","
+			<< item.emissions_bus_co2 << ","
+			<< item.emissions_bus_nox << ","
+			<< item.emissions_hov_co2 << ","
+			<< item.emissions_hov_nox << "\n";
+
+
 	}
 
 	outFile.close();
 }
+
 
 struct DemandFileListData {
 	std::string first_column;
@@ -282,19 +395,10 @@ void write_default_demand_file_list_if_not_exist() {
 	std::vector<DemandFileListData> data;
 
 	DemandFileListData dataItem = { "0", "1", "0", "demand.csv", "am", "auto", "column", "1", "1", "" };
-	DemandFileListData dataItem_bike = { "0", "2", "0", "demand.csv", "am", "bike", "column", "1", "1", "" };
-	DemandFileListData dataItem_walk = { "0", "3", "0", "demand.csv", "am", "walk", "column", "1", "1", "" };
-
-	DemandFileListData dataItem_1 = { "0", "4", "1", "demand.csv", "am", "auto", "column", "2", "1", "" };
-	DemandFileListData dataItem_bike_1 = { "0", "5", "1", "demand.csv", "am", "bike", "column", "2", "1", "" };
-	DemandFileListData dataItem_walk_1 = { "0", "6", "1", "demand.csv", "am", "walk", "column", "2", "1", "" };
+	DemandFileListData dataItem_1 = { "0", "2", "1", "demand.csv", "am", "auto", "column", "2", "1", "" };
 
 	data.push_back(dataItem);
-	data.push_back(dataItem_bike);
-	data.push_back(dataItem_walk);
 	data.push_back(dataItem_1);
-	data.push_back(dataItem_bike_1);
-	data.push_back(dataItem_walk_1);
 
 	// Add more entries in the same way...
 
@@ -488,8 +592,8 @@ void write_default_dynamic_traffic_management_file_if_not_exist() {
 	std::ofstream outFile;
 	outFile.open(filename.c_str());
 
-	outFile << "dtm_type,from_node_id,to_node_id,final_lanes,demand_period,mode_type,scenario_index_vector,activate\n";
-	outFile << "lane_closure,1,3,0.5,am,auto,0,0\n";
+	outFile << "dtm_id,dtm_type,from_node_id,to_node_id,final_lanes,demand_period,mode_type,scenario_index_vector,activate\n";
+	outFile << "1,lane_closure,1,3,0.5,am,info,0,0\n";
 
 	outFile.close();
 	std::cout << "The file " << filename << " has been created with default values.\n";
@@ -536,7 +640,7 @@ int main()
 	dtalog.log_ue() = 0;
 
 	int column_generation_iterations = 0;
-	int column_updating_iterations = 2;
+	int column_updating_iterations = 40;
 	int ODME_iterations = 0;
 	int sensitivity_analysis_iterations = 0;
 	int number_of_memory_blocks = 4;
@@ -551,13 +655,13 @@ int main()
 	int length_unit_flag = 0; //0: meter, 1: mile,
 	int speed_unit_flag = 0;  //0: kmph, 1: mph
 
-	dtalog.output() << "DTALite Log" << std::fixed << std::setw(12) << '\n';
+	dtalog.output() << "Logbook for DTALite: The Open-Source, Lightweight Dynamic Traffic Assignment Solution" << std::fixed << std::setw(12) << '\n';
 	dtalog.output() << " Overview of files and process\n";
 	dtalog.output() << "1. Input Files:\n";
-	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv, zone.csv)\n";
-	dtalog.output() << "   |--- Demand Layer (demand.csv, departure_time_profile.csv, demand_file_list.csv, demand_period.csv, choice_set.csv, activity_travel_pattern.csv)\n";
-	dtalog.output() << "   |--- Configuration Files (settings.csv, mode_type.csv, link_type.csv, link_vdf.csv, scenario_index_list.csv, sensor_data.csv)\n";
-	dtalog.output() << "   |--- Supply Layer (dynamic_traffic_management.csv, signal_timing.csv)\n";
+	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv)\n";
+	dtalog.output() << "   |--- Demand Layer (demand.csv, mode_type.csv, demand_period.csv, departure_time_profile.csv, demand_file_list.csv, sensor_data.csv, subarea.csv)\n";
+	dtalog.output() << "   |--- Configuration Files (settings.csv, scenario_index_list.csv)\n";
+	dtalog.output() << "   |--- Supply Layer (link_type.csv, dynamic_traffic_management.csv)\n";
 
 	dtalog.output() << "\n2. Traffic Assignment and Simulation Process:\n";
 	dtalog.output() << "   |--- Demand estimation based on sensor data\n";
@@ -568,12 +672,12 @@ int main()
 	dtalog.output() << "\n3. Output Files:\n";
 	dtalog.output() << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
 	dtalog.output() << "   |--- Route assignment (route_assignment_s.csv)\n";
-	dtalog.output() << "   |--- Mode choice (choice_set_output.csv)\n";
-	dtalog.output() << "   |--- OD pair performance (od_performance_summary.csv)\n";
-	dtalog.output() << "   |--- System performance (system_performance_summary.csv)\n";
-	dtalog.output() << "   |--- Final Summary (final_summary.csv, subarea_related_zone.csv)\n";
-
+	dtalog.output() << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)\n";
+	dtalog.output() << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
+	dtalog.output() << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)\n";
 	dtalog.output() << "--------------------------" << '\n';
+	dtalog.output() << "Please provide feedback or report any issues you encounter on our GitHub site: "
+		<< "https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem." << '\n';
 
 	//dtalog.output() << "Input Files:" << '\n';
 	//dtalog.output() << "  Physical layer:" << '\n';
@@ -627,7 +731,7 @@ int main()
 	if (parser_settings.OpenCSVFile("settings.csv", true))
 	{
 
-		dtalog.output() << "[PROCESS INFO] Step 0.0: Reading setting.csv." << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 0.0: Reading settings.csv." << '\n';
 		
 		std::string assignment_mode_str;
 
@@ -635,7 +739,7 @@ int main()
 		if (parser_settings.GetValueByKeyName("number_of_iterations", number_of_iterations, false) == true)
 			column_generation_iterations = number_of_iterations; // update
 
-		dtalog.output() << "[DATA INFO] number_of_iterations = " << number_of_iterations << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] number_of_iterations = " << number_of_iterations << " in settings.csv." << '\n';
 		// these are the assignment modes
 		// two usually methods are ue (user equilibrium) and dta (dynamic traffic assignment)
 		// the main difference of these two methods are different output in link_performance.csv
@@ -668,7 +772,7 @@ int main()
 				assignment_mode = 0;
 		}
 
-		dtalog.output() << "[DATA INFO] route_output = " << route_output_value << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] route_output = " << route_output_value << " in settings.csv." << '\n';
 
 		simulation_output = 1;  //default
 		int simulation_output_value = -1;
@@ -679,7 +783,7 @@ int main()
 				assignment_mode = 2;
 		}
 
-		dtalog.output() << "[DATA INFO] simulation_output = " << simulation_output << " in setting.csv." << '\n';
+		dtalog.output() << "[DATA INFO] simulation_output = " << simulation_output << " in settings.csv." << '\n';
 
 
 		// the start interation of generating signals, if there is no signals set this number larger than the itertion number

@@ -62,7 +62,8 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
-				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+				g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 			}
 		}
 
@@ -204,7 +205,7 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 		//for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
 		//{
 		//	float travel_time = g_link_vector[l].free_flow_travel_time_in_min  + waiting_time_count* number_of_seconds_per_interval / max(1, volume) / 60;
-		//	g_link_vector[l].travel_time_per_period[tau] = travel_time;
+		//	g_link_vector[l].link_avg_travel_time_per_period[tau] = travel_time;
 
 		//}
 	}
@@ -250,7 +251,7 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 					{
 						if (g_link_vector[i].volume_per_mode_type_per_period[tau][at_k] > 0)
 						{
-							total_network_travel_time += g_link_vector[i].travel_time_per_period[tau][at_k] * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
+							total_network_travel_time += g_link_vector[i].link_avg_travel_time_per_period[tau][at_k] * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
 
 							total_distance += g_link_vector[i].length_in_meter * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
 						}
@@ -289,7 +290,8 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
-				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+				g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 			}
 		}
 
@@ -374,7 +376,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -584,7 +586,8 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
-					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+					g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
 
@@ -776,7 +779,8 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
-					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;  g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
+					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;
+					g_link_vector[i].converted_MEU_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
 
@@ -863,7 +867,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -1048,6 +1052,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 //   assignment.summary_file << ",iteration,key,o,d,at,tau,volume,"<< '\n';
 	//step 1: calculate shortest path at inner iteration of column flow updating
+
 #pragma omp parallel for
 	for (int orig = 0; orig < g_zone_vector.size(); ++orig)  // o
 	{
@@ -1115,7 +1120,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 						if (b_sensitivity_analysis_flag)
 						{
-							if (g_zone_vector[orig].zone_id == 6 && g_zone_vector[dest].zone_id == 2)
+							if (g_zone_vector[orig].zone_id == 1 && g_zone_vector[dest].zone_id == 2)
 							{
 								int idebug = 1;
 							}
@@ -1158,7 +1163,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -1232,7 +1237,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 								link_seq_no = it->second.path_link_vector[nl];
 								path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 								path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-								link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 								if (b_sensitivity_analysis_flag && inner_iteration_number == 0)  // peiheng and entai, 02/28/2023
@@ -1328,6 +1333,10 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 									if (b_sensitivity_analysis_flag == true)  // SA stages
 									{
+										if (assignment.g_ModeTypeVector[at].real_time_information_type == 0)  // historical info
+											step_size = 0;  // no route changing
+										else
+										{
 
 										// during SA stage,
 										// regular drivers do not switch at all (except for those encounter the dramatic induced delay)
@@ -1338,6 +1347,9 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 
 										if (step_size < 0.05)
 											step_size = 0.05;
+
+										}
+
 
 									}
 									else
@@ -1462,12 +1474,13 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 		avg_travel_time << "(min), optimization obj = " << total_system_cost_gap
 		<< ", Relative_gap = " << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << '\n';
 
-	dtalog.output() << "[DATA INFO] column updating: iteration = " << inner_iteration_number << ", avg travel time = " <<
-		avg_travel_time << "(min), optimization obj = " << total_system_cost_gap
-		<< ",Relative_gap =" << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << '\n';
-
+	dtalog.output() << std::left << std::setw(20) << ""
+		<< std::right << std::setw(12) << inner_iteration_number
+		<< std::setw(18) << std::fixed << std::setprecision(2) << avg_travel_time
+		<< std::scientific << std::setw(18) <<  std::setprecision(2) << total_system_cost_gap
+		<< std::setw(18) << std::fixed << std::setprecision(2) << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << '\n';
 	string stage_str;
-	stage_str = "column updating";
+	stage_str = "Column updating";
 
 	if (b_sensitivity_analysis_flag)
 		stage_str = "sensitivity analaysis";
@@ -1766,6 +1779,11 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 	assignment.summary_file << "column updating" << '\n';
 
 	// column_updating_iterations is internal numbers of column updating
+
+	dtalog.output() << std::left << std::setw(20) << "[DATA INFO] Column Updating:"
+		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
+		<< std::setw(18) << "Optimization Obj" << std::setw(18) << "Relative Gap (%)" << '\n';
+
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
 		g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
@@ -1933,13 +1951,13 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 									bool b_sa_column_found_flag = false;
 									// check non-diverted path travel time
-									float non_diverted_path_travel_time = 999999; // default value
+									float non_diverted_path_travel_time = 999980; // default value
 									for (it2 = it_begin2; it2 != it_end2; ++it2)
 									{
 										for (int nl2 = 1; nl2 < it2->second.m_link_size; ++nl2)  // arc a // starting from 1 to exclude virtual link at the beginning
 										{
 											// compute it2->second.path_travel_time
-											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].travel_time_per_period[tau][at];
+											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].link_avg_travel_time_per_period[tau][at];
 
 										}
 
@@ -2047,14 +2065,14 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											for (int nl0 = 0; nl0 < it->second.m_link_size; ++nl0)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].travel_time_per_period[tau][at];
+												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].link_avg_travel_time_per_period[tau][at];
 
 											}
 											float alt_path_travel_time = 0;
 											for (int nl3 = 1; nl3 < link_seq_vector.size(); ++nl3)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].travel_time_per_period[tau][at];
+												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].link_avg_travel_time_per_period[tau][at];
 
 											}
 
@@ -2168,7 +2186,7 @@ void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in
 	int second = total_t0 / 1000.0;
 	int min = second / 60;
 	int sec = second - min * 60;
-	//dtalog.output() << "CPU Running Time for RT shortest path: " << min << " min " << sec << " sec" << '\n';
+	//dtalog.output() << "CPU running time for RT shortest path: " << min << " min " << sec << " sec" << '\n';
 	assignment.summary_file << ", RT shortest path at time =," << current_time_in_min << "min" << '\n';
 
 }

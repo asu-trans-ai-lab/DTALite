@@ -286,7 +286,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 											link_seq_no = it->second.path_link_vector[nl];
 											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-											double link_travel_time = g_link_vector[link_seq_no].travel_time_per_period[tau][at];
+											double link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 											path_travel_time += link_travel_time;
 
 											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)  // added with mustafa 12/24/2022, verified

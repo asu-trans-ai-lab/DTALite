@@ -97,9 +97,6 @@ public:
 		if (m_link_person_volume_array)  //8
 			delete[] m_link_person_volume_array;
 
-		if (m_link_person_volume_per_grid_array)  //8
-			Deallocate2DDynamicArray(m_link_person_volume_per_grid_array, l_number_of_links, number_of_origin_grids);
-
 		if (m_link_genalized_cost_array) //9
 			delete[] m_link_genalized_cost_array;
 
@@ -163,8 +160,6 @@ public:
 	double* m_link_mode_type_volume_array;  // for VDF computing based on PCE
 	double* m_link_person_volume_array;  // person delay counting based on agent type
 
-	double** m_link_person_volume_per_grid_array;  // person delay counting based on grid_id
-
 	double* m_link_genalized_cost_array;
 	int* m_link_outgoing_connector_zone_seq_no_array;
 
@@ -192,9 +187,6 @@ public:
 		m_link_mode_type_volume_array = new double[number_of_links];  //8
 		m_link_person_volume_array = new double[number_of_links];  //8
 
-
-		m_link_person_volume_per_grid_array = Allocate2DDynamicArray <double>(number_of_links, number_of_origin_grids);  //1
-
 		m_link_genalized_cost_array = new double[number_of_links];  //9
 
 		m_link_outgoing_connector_zone_seq_no_array = new int[number_of_links]; //10
@@ -210,7 +202,7 @@ public:
 
 
 
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
+			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
 				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
@@ -218,14 +210,14 @@ public:
 			{
 				int idebug = 1;
 			}
-			// if (p_link->travel_time_per_period[m_tau] < 0)
+			// if (p_link->link_avg_travel_time_per_period[m_tau] < 0)
 			// {
 
 			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
 			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
 			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
-			// 		",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
+			// 		",p_link->link_avg_travel_time_per_period[m_tau]=" << p_link->link_avg_travel_time_per_period[m_tau] <<
 			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
 			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
 			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
@@ -253,7 +245,7 @@ public:
 					p_link->VDF_period[m_tau].penalty = p_link->VDF_period[m_tau].RT_route_regeneration_penalty;
 				}
 
-			m_link_genalized_cost_array[i] = p_link->travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
+			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
 				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
@@ -261,14 +253,14 @@ public:
 			{
 				int idebug = 1;
 			}
-			// if (p_link->travel_time_per_period[m_tau] < 0)
+			// if (p_link->link_avg_travel_time_per_period[m_tau] < 0)
 			// {
 
 			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
 			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
 			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
-			// 		",p_link->travel_time_per_period[m_tau]=" << p_link->travel_time_per_period[m_tau] <<
+			// 		",p_link->link_avg_travel_time_per_period[m_tau]=" << p_link->link_avg_travel_time_per_period[m_tau] <<
 			// 		",p_link->VDF_period[m_tau].penalty=" << p_link->VDF_period[m_tau].penalty <<
 			// 		",LR_price=" << p_link->VDF_period[m_tau].LR_price[mode_type_no] <<
 			// 		", p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60=" << p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60 <<
@@ -581,9 +573,6 @@ public:
 									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
 									m_link_person_volume_array[current_link_seq_no] += volume;
 
-
-									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
-									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume ;
 									//dtalog.output() << "node = " << g_node_vector[i].node_id
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
@@ -597,7 +586,7 @@ public:
 									//}
 								}
 
-								//path_travel_time += g_link_vector[current_link_seq_no].travel_time_per_period[tau];
+								//path_travel_time += g_link_vector[current_link_seq_no].link_avg_travel_time_per_period[tau];
 								//path_distance += g_link_vector[current_link_seq_no].link_distance_VDF;
 							}
 						}
@@ -640,7 +629,7 @@ public:
 										// so we use a partial link penality approach to discover new alterantive routes for RT and DMS users. Xuesong and Mohammad 02/17/2023
 										for (int li = 0; li < l_node_size-1; ++li)
 										{
-											double current_travel_time = g_link_vector[temp_path_link_vector[li]].travel_time_per_period[m_tau][m_mode_type_no];
+											double current_travel_time = g_link_vector[temp_path_link_vector[li]].link_avg_travel_time_per_period[m_tau][m_mode_type_no];
 											g_link_vector[temp_path_link_vector[li]].VDF_period[m_tau].RT_route_regeneration_penalty = current_travel_time * 0.25;
 										}
 
@@ -818,22 +807,20 @@ public:
 									m_link_person_volume_array[current_link_seq_no] += volume;
 
 
-									// core code added by Xuesong and Cafer, 03/24/2022 for considering person volume per agent type and per origin grid
-									m_link_person_volume_per_grid_array[current_link_seq_no][analysis_district_id] += volume;
-									//dtalog.output() << "node = " << g_node_vector[i].node_id
-									//    << "zone id= " << g_node_vector[i].zone_id << ","
-									//    << "l_link_size= " << l_link_size << ","
-									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//    << ": add volume " << volume << '\n';
+									dtalog.output() << "node = " << g_node_vector[i].node_id
+									    << "zone id= " << g_node_vector[i].zone_id << ","
+									    << "l_link_size= " << l_link_size << ","
+									    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									    << ": add volume " << volume << '\n';
 
-									//if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
-									//{
-									//    int idebug = 1;
-									//}
+									if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
+									{
+									    int idebug = 1;
+									}
 								}
 
-								//path_travel_time += g_link_vector[current_link_seq_no].travel_time_per_period[tau];
+								//path_travel_time += g_link_vector[current_link_seq_no].link_avg_travel_time_per_period[tau];
 								//path_distance += g_link_vector[current_link_seq_no].link_distance_VDF;
 							}
 						}
@@ -929,12 +916,6 @@ public:
 
 		bool negative_cost_flag = UpdateGeneralizedLinkCost(mode_type, p_assignment, origin_zone, iteration_k, bsensitivity_analysis_flag);
 
-		//if (iteration_k == 1)
-		//{
-		//    if (g_zone_vector[origin_zone].zone_id == p_assignment->shortest_path_log_zone_id)
-		//        local_debugging_flag = 1;
-		//}
-
 
 		if (negative_cost_flag == true && bsensitivity_analysis_flag == true)
 		{
@@ -1024,21 +1005,20 @@ public:
 				link_seq_no = NodeForwardStarArray[from_node].OutgoingLinkNoArray[i];
 
 				if (local_debugging_flag)
+				{
 					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << '\n';
+						float cost = m_link_genalized_cost_array[link_seq_no];
+						int debug = 1;
+						p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
+							<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
+							" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
+							<< '\n';
 
+				}
 				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
 				//     then continue; //skip this is not an exact solution algorithm for movement
 
 
-
-				//{
-				//	float cost = m_link_genalized_cost_array[link_seq_no];
-				//	int debug = 1;
-				//	p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
-				//		<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
-				//		" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
-				//		<< '\n';
-				//}
 
 				if (g_node_vector[from_node].prohibited_movement_size >= 1)
 				{
@@ -1084,7 +1064,7 @@ public:
 				//very important: only origin zone can access the outbound connectors,
 				//the other zones do not have access to the outbound connectors
 
-				// Mark				new_time = m_label_time_array[from_node] + p_link->travel_time_per_period[tau];
+				// Mark				new_time = m_label_time_array[from_node] + p_link->link_avg_travel_time_per_period[tau];
 				// Mark				new_distance = m_label_distance_array[from_node] + p_link->link_distance_VDF;
 				//float additional_cost = 0;
 
@@ -1419,7 +1399,7 @@ public:
 				//very important: only origin zone can access the outbound connectors,
 				//the other zones do not have access to the outbound connectors
 
-				// Mark				new_time = m_label_time_array[from_node] + p_link->travel_time_per_period[tau];
+				// Mark				new_time = m_label_time_array[from_node] + p_link->link_avg_travel_time_per_period[tau];
 				// Mark				new_distance = m_label_distance_array[from_node] + p_link->link_distance_VDF;
 				//if (current_updating_in_min < -99)
 				//{
@@ -1726,7 +1706,7 @@ public:
 				//very important: only origin zone can access the outbound connectors,
 				//the other zones do not have access to the outbound connectors
 
-				// Mark				new_time = m_label_time_array[from_node] + p_link->travel_time_per_period[tau];
+				// Mark				new_time = m_label_time_array[from_node] + p_link->link_avg_travel_time_per_period[tau];
 				// Mark				new_distance = m_label_distance_array[from_node] + p_link->link_distance_VDF;
 				float additional_cost = 0;
 

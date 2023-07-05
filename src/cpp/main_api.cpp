@@ -108,6 +108,10 @@ std::map<int, CSystem_Summary>  g_district_summary_map;
 std::map<int, CSystem_Summary>  g_scenario_summary_map;
 std::vector<COZone> g_zone_vector;
 int g_related_zone_vector_size;
+int g_number_of_active_scenarios = 1;
+int g_number_of_active_mode_types = 1;
+int g_number_of_active_demand_perioids =1;
+
 
 Assignment assignment;
 
@@ -146,10 +150,10 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 
 
 		
-		dtalog.output() << "[DATA INFO] SA: iteration number:" << iteration_number << ',';
+		dtalog.output() << "[DATA INFO] Regenerating column for real-time information provision - Iteration Number: " << iteration_number << '\n';
 		end_t = clock();
 		iteration_t = end_t - start_t;
-		dtalog.output() << "[DATA INFO] SA: CPU time: " << iteration_t / 1000.0 << " s" << '\n';
+		dtalog.output() << ", CPU time: " << iteration_t / 1000.0 << " s" << '\n';
 
 		// step 3.1 update travel time and resource consumption
 		clock_t start_t_lu = clock();
@@ -381,7 +385,7 @@ void g_assign_computing_tasks_to_memory_blocks(Assignment& assignment)
 {
 	//fprintf(g_pFileDebugLog, "-------g_assign_computing_tasks_to_memory_blocks-------\n");
 	// step 2: assign node to thread
-	dtalog.output() << "[PROCESS INFO] Step 3: Assigning computing tasks to memory blocks..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing." << '\n';
 
 	NetworkForSP* PointerMatrx[MAX_MODETYPES][MAX_TIMEPERIODS][MAX_MEMORY_BLOCKS] = { NULL };
 	NetworkForSP* RTPointerMatrx[MAX_MODETYPES][MAX_TIMEPERIODS][MAX_MEMORY_BLOCKS] = { NULL };
@@ -446,8 +450,8 @@ void g_assign_computing_tasks_to_memory_blocks(Assignment& assignment)
 	}
 
 
-	dtalog.output() << "[DATA INFO] There are " << g_NetworkForSP_vector.size() << " SP networks in memory." << '\n';
-	dtalog.output() << "[DATA INFO] There are " << computing_zone_count << " agent type*zones to be computed in CPU." << '\n';
+	dtalog.output() << "[DATA INFO] There are " << g_NetworkForSP_vector.size() << " shortest path (SP) networks stored in memory for processing." << '\n';
+	dtalog.output() << "[DATA INFO] There are " << computing_zone_count << " different agent types across various zones. These computations will be performed by the multi CPU processors." << '\n';
 
 }
 
@@ -455,7 +459,7 @@ void g_assign_RT_computing_tasks_to_memory_blocks(Assignment& assignment)
 {
 	//fprintf(g_pFileDebugLog, "-------g_assign_computing_tasks_to_memory_blocks-------\n");
 	// step 2: assign node to thread
-	dtalog.output() << "[PROCESS INFO] Step 2: Assigning RT info computing tasks to memory blocks..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 2: Assigning real time info computing tasks to memory blocks..." << '\n';
 
 	int computing_zone_count = 0;
 
@@ -540,11 +544,6 @@ void g_reset_link_volume_for_all_processors()
 					pNetwork->m_link_person_volume_array[i] = 0;
 
 
-					for(int og = 0; og < assignment.g_number_of_analysis_districts; og++)
-					{
-					pNetwork->m_link_person_volume_per_grid_array[i][og] = 0;
-					}
-
 				}
 
 			}
@@ -594,8 +593,8 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 			}
 			else // Non-main modes (e.g., active transportation, public transportation)
 			{
-				// If the current mode type requires a specific assignment
-				if (assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag)
+				// If the current mode type requires a specific assignment, bike, walk
+				if (assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag  ==1)
 				{
 					// Fetch the link type for the active scenario
 					int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
@@ -603,7 +602,7 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 					// Fetch the number of lanes for the current mode type from the link type
 					number_of_lanes = assignment.g_LinkTypeMap[link_type].lanes_mode_type[mode_type_index];
 				}
-				else // Non-main modes such as hov, and truck 
+				else // Non-main modes such as hov, and truck, real time info
 				{
 					// Fetch the number of lanes for the current scenario
 					number_of_lanes = number_of_lanes_si[assignment.active_scenario_index];
@@ -637,11 +636,19 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			// Resetting the Mobility Equivalent Unit (MEU) conversion volume
 			converted_MEU_volume_per_period_per_at[tau][mode_type_index] = 0;
 
+			if (inner_iteration_number == 1 && mode_type_index == 1)
+			{
+				int debug_int = 1;
+
+			}
 			// Looping over all mode types to convert volumes based on MEU
 			for (int mode_type_index_secondary = 0; mode_type_index_secondary < assignment.g_ModeTypeVector.size(); mode_type_index_secondary++)
 			{
 				// Fetching the MEU conversion value for this mode type pair
-				double MEU_conversion_value = assignment.g_LinkTypeMap[link_type].meu_matrix[mode_type_index_secondary][mode_type_index];
+				double MEU_conversion_value = assignment.g_LinkTypeMap[link_type].meu_matrix[mode_type_index][mode_type_index_secondary];
+
+				if (mode_type_index == mode_type_index_secondary)
+					MEU_conversion_value = 1.0;
 
 				// Adding the converted volume to the MEU conversion volume
 				converted_MEU_volume_per_period_per_at[tau][mode_type_index] += volume_per_mode_type_per_period[tau][mode_type_index_secondary] * MEU_conversion_value;
@@ -687,28 +694,54 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			{
 				int idebug;
 				idebug = 1;
-				travel_time_per_period[tau][mode_type_index] = 999999;
+				link_avg_travel_time_per_period[tau][mode_type_index] = 999900;
 				continue;
 			}
 
+			CLinkType link_type; 
+
+			link_type = assignment.g_LinkTypeMap[this->link_type_si[assignment.active_scenario_index]];
+
+
 			// Calculate travel time based on QVDF
-			travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
+			link_avg_travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
 				mode_type_index,
 				VDF_period[tau].FFTT_at[mode_type_index],
 				link_volume_to_be_assigned,
 				mode_hourly_capacity,
 				mode_peak_load_factor,
 				this->model_speed,
-				this->est_volume_per_hour_per_lane);
+				this->est_volume_per_hour_per_lane,
+				link_type, tau, this->link_avg_co2_emit_per_mode, this->link_avg_nox_emit_per_mode);
 
 			// Add additional penalty if exists
 			if (fabs(penalty_si_at[assignment.active_scenario_index][mode_type_index][tau]) > 0.0001)
 			{
-				travel_time_per_period[tau][mode_type_index] += penalty_si_at[assignment.active_scenario_index][mode_type_index][tau];
+				link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[assignment.active_scenario_index][mode_type_index][tau];
 			}
 
 			// Set link volume for the VDF period
 			VDF_period[tau].link_volume = link_volume_to_be_assigned;
+
+			if (assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag == 0)
+			{
+				// The condition checks if the mode specific assignment flag for the given mode type index (could be truck, hov, real time in, CAV, EV mode) is zero.
+				// If it is zero, we assume that the mode type does not have its own specific values and we need to use default values from the base mode type, which is 'auto' in this case.
+
+				// The base mode type index for 'auto'.
+				int primary_mode_index = 0;
+
+				// Transferring data from the primary 'auto' mode to the associated modes when the associated mode does not have its own specific values. 
+
+				// Transferring average travel time per period from 'auto' to the current mode type.
+				link_avg_travel_time_per_period[tau][mode_type_index] = link_avg_travel_time_per_period[tau][primary_mode_index];
+
+				// Transferring average CO2 emission per mode from 'auto' to the current mode type.
+				link_avg_co2_emit_per_mode[tau][mode_type_index] = link_avg_co2_emit_per_mode[tau][primary_mode_index];
+
+				// Transferring average NOx emission per mode from 'auto' to the current mode type.
+				link_avg_nox_emit_per_mode[tau][mode_type_index] = link_avg_nox_emit_per_mode[tau][primary_mode_index];
+			}
 		}
 	}
 }
@@ -764,12 +797,12 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //				{
 //					int idebug;
 //					idebug = 1;
-//					travel_time_per_period[tau][mode_type_index] = 999999;
+//					link_avg_travel_time_per_period[tau][mode_type_index] = 999999;
 //					continue;
 //				}
 //
 //
-//				travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
+//				link_avg_travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
 //					mode_type_index,
 //					VDF_period[tau].FFTT_at[mode_type_index],
 //					link_volume_to_be_assigned,
@@ -780,7 +813,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //
 //				if(fabs(penalty_si_at[assignment.active_scenario_index][mode_type_index][tau]) >0.0001)
 //				{
-//					travel_time_per_period[tau][mode_type_index] += penalty_si_at[assignment.active_scenario_index][mode_type_index][tau];  // add additional penalty
+//					link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[assignment.active_scenario_index][mode_type_index][tau];  // add additional penalty
 //				}
 //
 //
@@ -963,7 +996,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 {
 
 	assignment.summary_file << "[PROCESS INFO] Step 0: reading scenario_index_list.csv" << '\n';
-	dtalog.output() << "\n[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
 
 	CDTACSVParser parser_scenario_index_file_list;
 	if (parser_scenario_index_file_list.OpenCSVFile("scenario_index_list.csv", false))
@@ -1001,6 +1034,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		g_program_stop();
 	}
 
+	g_number_of_active_scenarios = assignment.g_DTA_scenario_vector.size();
 	clock_t start_t0, end_t0, total_t0;
 	int signal_updating_iterations = 0;
 	start_t0 = clock();
@@ -1090,8 +1124,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 	//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
 	
-	dtalog.output() << "[PROCESS INFO] Step 4: Column Generation for Traffic Assignment..." << '\n';
-	dtalog.output() << "[DATA INFO] Total number of column generation iteration = " << assignment.g_number_of_column_generation_iterations << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool" << '\n';
+	dtalog.output() << "[DATA INFO] Perform " << assignment.g_number_of_column_generation_iterations << " iterations for the Column Generation process" << '\n';
 
 	assignment.summary_file << "[PROCESS INFO]Step 4: Column Generation for Traffic Assignment" << '\n';
 	assignment.summary_file << ",Total number of column generation iterations =, " << assignment.g_number_of_column_generation_iterations << '\n';
@@ -1104,16 +1138,21 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	{
 
 
-		//dtalog.output() << "\n_________________________\n";
 
 		assignment.active_scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
 		dtalog.output() << "[DATA INFO] global scenario index = " << assignment.g_DTA_scenario_vector[sii].scenario_index << " --------------------------" << '\n';
-		//dtalog.output() << "_________________________\n";
 		
 		g_load_dynamic_traffic_management_file(assignment);
 
 		//if (read_route_information_to_replace_column_generation_and_ODME() == 0)
 		{  // apply column generation and ODME
+
+			dtalog.output()  << "[DATA INFO] " 
+				<< std::setw(12) << std::left << "Iter. No."
+				<< std::setw(12) << std::left << "CPU time(s)"
+				<< std::setw(30) << std::left << "Sys. Wide Travel Time (TT)"
+				<< std::setw(20) << std::left << "Least system TT"
+				<< std::setw(12) << std::left << "Gap (%)" << '\n';
 
 			for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
 			{
@@ -1241,18 +1280,27 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				int number_of_agents = 0;
 				double Avg_Travel_Time = total_system_wide_travel_time / max(1.0f, assignment.total_demand_volume);
 
-				dtalog.output() << "[DATA INFO] Iter. No.= " << iteration_number << ", CPU time= " << iteration_t *1.0/ 1000.0 << " s" <<  ", Sys. Wide Travel Time (TT) = " << total_system_wide_travel_time << ", least system TT = " <<
-					total_least_system_travel_time << ", gap = " << relative_gap * 100 << " %" << '\n';
+				dtalog.output() << "[DATA INFO] "
+					<< std::setw(12) << std::left << iteration_number
+					<< std::setw(12) << std::left << iteration_t * 1.0 / 1000.0
+					<< std::scientific << std::setw(30) << std::left << total_system_wide_travel_time
+					<< std::scientific << std::setw(20) << std::left << total_least_system_travel_time
+					<< std::fixed << std::setw(12) << std::left << relative_gap * 100 << '\n';
 
 				if (iteration_number == 0)
 				{
 
-					assignment.summary_file << "[DATA INFO] Iteration, CPU Running Time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %" << '\n';
+					assignment.summary_file << "[DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %" << '\n';
 				}
 
 				assignment.summary_file << iteration_number << "," << CPU_Running_Time << "," << assignment.total_demand_volume << "," << Avg_Travel_Time << "," << relative_gap * 100 << '\n';
 			}
 
+			if (assignment.active_scenario_index == 0)
+			{
+				g_OutputModelFiles(10);
+
+			}
 			// column updating stage: for given column pool, update volume assigned for each column
 			dtalog.output() << "[PROCESS INFO] Step 5: Column Pool Updating" << '\n';
 			dtalog.output() << "[DATA INFO] Total number of column pool updating iterations = " << column_updating_iterations << '\n';
@@ -1261,7 +1309,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			assignment.summary_file << ",# of flow updating iterations=," << column_updating_iterations << '\n';
 
 			start_t = clock();
-			g_column_pool_optimization(assignment, column_updating_iterations);
+			g_column_pool_optimization(assignment, column_updating_iterations, false);
 
 
 			
@@ -1323,7 +1371,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 
 		assignment.summary_file << "[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. " << '\n';
-		dtalog.output() << "[PROCESS INFO] Step 7: perform sensivity sensitivity if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. " << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. " << '\n';
 		
 		g_reset_link_district_performance_per_scenario(assignment);
 		g_record_link_district_performance_per_scenario(assignment, 0);
@@ -1332,7 +1380,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		{
 
 
-			dtalog.output() << "[PROCESS INFO] Step 7.1: apply dynamic traffic_management scenarios" << '\n';
+			dtalog.output() << "[PROCESS INFO] Step 7.1: Applying dynamic traffic_management scenarios" << '\n';
 
 			int count = 0; 
 			// apply dynamic traffic managementscenarios
@@ -1347,7 +1395,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 						g_link_vector[i].VDF_period[tau].nlanes = g_link_vector[i].VDF_period[tau].lane_closure_final_lanes; // apply the absolute lane changes
 						g_link_vector[i].VDF_period[tau].allowed_uses[assignment.active_scenario_index] = g_link_vector[i].VDF_period[tau].sa_allowed_uses; // apply the lane changes
 
-						count + 1; 
+						count += 1; 
 						int at = 0;
 						if (g_link_vector[i].VDF_period[tau].nlanes < 0.01)
 							g_link_vector[i].VDF_period[tau].FFTT_at[at] = 1440; // prevent free flow travel time under zero flow due to blockage
@@ -1454,9 +1502,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 		g_classification_in_column_pool(assignment);
 
-		dtalog.output() << "[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . " << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . " << '\n';
 
-		assignment.summary_file << "[PROCESS INFO] Step 8: traffic simulation if simulation_output = 1 in settings.csv . " << '\n';
+		assignment.summary_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. " << '\n';
 
 		if (simulation_iterations >= 1)
 		{
@@ -1467,25 +1515,25 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			end_simu = clock();
 			total_simu = end_simu - end_simu;
 
-			dtalog.output() << "[DATA INFO] CPU Running Time for traffic simulation: " << total_simu / 1000.0 << " s" << '\n';
+			dtalog.output() << "[DATA INFO] CPU running time for traffic simulation: " << total_simu / 1000.0 << " s" << '\n';
 			
 		}
 
 		end_t = clock();
 		total_t = (end_t - start_t);
 
-		dtalog.output() << "[DATA INFO] CPU Running Time for the entire computing progress = " << total_t / 1000.0 << " s" << '\n';
+		dtalog.output() << "[DATA INFO] Total CPU running time for the entire process = " << total_t / 1000.0 << " s" << '\n';
 
 		start_t = clock();
 
 		//step 5: output simulation results of the new demand
-		dtalog.output() << "[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping" << '\n';
-		assignment.summary_file << "[PROCESS INFO] Step 9: generate zonal hierarchy mapping such as zone to super-zone and zone to district mapping " << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)" << '\n';
+		assignment.summary_file << "[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) " << '\n';
 
 		// zonal_hierarchy_mapping
 
 
-		dtalog.output() << "[PROCESS INFO] Step 10: output assignment results" << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 10: Outputting Traffic Assignment Results." << '\n';
 
 		g_output_assignment_result(assignment,0);
 
@@ -1525,9 +1573,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 	end_t = clock();
 	total_t = (end_t - start_t);
-	dtalog.output() << "[DATA INFO] CPU Running Time for outputting simulation results: " << total_t / 1000.0 << " s" << '\n';
+	dtalog.output() << "[DATA INFO] CPU running time for outputting simulation results: " << total_t / 1000.0 << " s" << '\n';
 
-	dtalog.output() << "[STATUS INFO] free memory.." << '\n';
+	dtalog.output() << "[STATUS INFO] Freeing memory.." << '\n';
 
 
 	// temp comment out
@@ -1542,7 +1590,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	int second = total_t0 / 1000.0;
 	int min = second / 60;
 	int sec = second - min * 60;
-	dtalog.output() << "[DATA INFO] CPU Running Time for Entire Process: " << min << " min " << sec << " sec" << '\n';
+	dtalog.output() << "[DATA INFO] CPU running time for the entire process: " << min << " min " << sec << " sec" << '\n';
 	dtalog.output() << "[STATUS INFO] DTALite computing process is complete." << std::endl;
 
 	return 1;

@@ -1,0 +1,5 @@
+first_column,district_seq_id,scenario_name,demand_period,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry
+,1,eco,am,auto,3500,70000,43505.3,70384.7,20,12.4301,20.1099,1;,"POLYGON ((0.017882 -0.125179,))"
+,1,eco,am,rt,3500,70000,43505.3,70384.7,20,12.4301,20.1099,1;,"POLYGON ((0.017882 -0.125179,))"
+,2,eco,am,auto,3500,70000,43505.3,70384.7,20,12.4301,20.1099,2;,"POLYGON ((40.2539 0.053648,))"
+,2,eco,am,rt,3500,70000,43505.3,70384.7,20,12.4301,20.1099,2;,"POLYGON ((40.2539 0.053648,))"

@@ -49,7 +49,7 @@ using std::istringstream;
 
 void g_load_dynamic_traffic_management_file(Assignment& assignment)
 {
-	dtalog.output() << "[PROCESS INFO] Step 2.2: Reading dynamic_traffic_management data..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data..." << '\n';
 
 
 	// we setup the initial number of lanes per demand period, per mode and for each scenario, then we will load the dynamic_traffic_management file to overwrite the # of lanes for dynamic lane use in some special cases
@@ -77,6 +77,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	assignment.active_dms_count = 0;
 	assignment.active_lane_closure_count = 0;
 
+	bool bFoundFlag = false;
+
 	if (parser.OpenCSVFile("dynamic_traffic_management.csv", false))
 	{
 		fprintf(g_pFileModel_LC, "reading record %d\n", record_no+1);
@@ -85,21 +87,35 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		while (parser.ReadRecord())
 		{
 
+			int acitcivate_flag = 0;
+
+			parser.GetValueByFieldName("activate", acitcivate_flag);
+
+
+			if (acitcivate_flag == 0)  // continue to skip this record
+				continue;
+
+			int DTM_id = 0;
+			if (!parser.GetValueByFieldName("dtm_id", DTM_id))
+			{
+				dtalog.output() << "[ERROR] Field dtm_id in file dynamic_traffic_management.csv does not have a valid value." << '\n';
+				fprintf(g_pFileModel_LC, "[ERROR] field dtm_id %d in file dynamic_traffic_management.csv does not have a valid value\n");
+				g_program_stop();
+			}
 			int from_node_id = 0;
 			if (!parser.GetValueByFieldName("from_node_id", from_node_id))
 			{
-				dtalog.output() << "[ERROR] from_node_id in file scenario.csv is not defined." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file scenario.csv is not defined\n", from_node_id);
-				continue;
+				dtalog.output() << "[ERROR] from_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
+				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file dynamic_traffic_management.csv is not defined\n", from_node_id);
+				g_program_stop();
 			}
 
 			int to_node_id = 0;
 			if (!parser.GetValueByFieldName("to_node_id", to_node_id))
 			{
-				dtalog.output() << "[ERROR] to_node_id in file scenario.csv is not defined." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file scenario.csv is not defined\n", to_node_id);
-
-				continue;
+				dtalog.output() << "[ERROR] to_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
+				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file dynamic_traffic_management.csv is not defined\n", to_node_id);
+				g_program_stop();
 			}
 
 
@@ -159,20 +175,18 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			string str_mode_type;
 			parser.GetValueByFieldName("mode_type", str_mode_type); 
 
-			int mode_type_no = 0; 
+
+			int mode_type_no = 0;
 			if (str_mode_type.size() > 0 && assignment.mode_type_2_seqno_mapping.find(str_mode_type) != assignment.mode_type_2_seqno_mapping.end())
 			{
 				mode_type_no = assignment.mode_type_2_seqno_mapping[str_mode_type];
-		
+
+			}
+			else
+			{
+				dtalog.output() << "[ERROR] Please ensure that the mode type '" << str_mode_type << "' specified in dynamic_traffic_management.csv for record number " << DTM_id << " is present in the mode_type.csv file." << '\n';
 			}
 
-			int acitcivate_flag = 0;
-
-			parser.GetValueByFieldName("activate", acitcivate_flag);
-
-
-			if (acitcivate_flag == 0)  // continue to skip this record
-				continue;
 
 			string DTM_type, scenario_index_vector_str;
 			parser.GetValueByFieldName("dtm_type", DTM_type);
@@ -187,7 +201,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = 0;  // apply the change
 			g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code.clear();
 
-			bool bFoundFlag = false; 
+
 
 
 
@@ -226,6 +240,13 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "lane_closure";
 				dtm_lane_closure_count++;
 
+				if (assignment.g_ModeTypeVector[mode_type_no].real_time_information_type == 0) {
+					dtalog.output() << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
+					g_program_stop();
+				}
+
+
+
 				fprintf(g_pFileModel_LC, "lane closure,final_number_of_lanes=%f,", final_lanes);
 			}
 			else if (DTM_type == "dms")
@@ -247,6 +268,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 					continue;
 
 				int zone_no = assignment.g_zoneid_to_zone_seq_no_mapping[zone_id];
+
+
 
 				assignment.zone_seq_no_2_info_mapping[zone_no] = 1;  // set information zone flag
 
@@ -382,32 +405,50 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 	}
 	// allocate
-	dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 
-	
-	dtalog.output() << "[STATUS INFO] loading " << dtm_lane_closure_count << " lane closure scenarios in dynamic_traffic_management.csv  " << '\n';
+	if(dtm_dynamic_lane_use_count = 0)
+		dtalog.output() << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
+	else 
+		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+
+	if (dtm_lane_closure_count = 0)
+		dtalog.output() << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
+	else
+		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+
+
+
 	if (dtm_lane_closure_count  > 0  && assignment.g_number_of_real_time_mode_types ==0)
 	{
 		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
 		g_program_stop();
 	}
 
-	if (dtm_lane_closure_count > 0 && assignment.total_real_time_demand_volume <= 0.1)
-	{
-		dtalog.output() << "[ERROR] No positive demand volume is defined for real time information user. If a lane closure scenario is activated, a corresponding real-time information user class 's demand input should be defined in demand_file_list.csv." << '\n';
+
+	if (bFoundFlag && dtm_lane_closure_count == 0 && assignment.total_real_time_demand_volume > 0.1) {
+		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the dynamic_traffic_management.csv file." << '\n';
+
+		for (int i = 0; i < assignment.g_ModeTypeVector.size(); i++) {
+			if (assignment.g_ModeTypeVector[i].real_time_information_type != 0) {
+				dtalog.output() << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the mode_type.csv file." << '\n';
+			}
+		}
+
 		g_program_stop();
 	}
-	dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
+
+
+	//dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
 	if (dtm_dms_count > 0 && assignment.g_number_of_DMS_mode_types == 0)
 	{
 		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
 		g_program_stop();
 	}
-	if (dtm_dms_count > 0 && dtm_lane_closure_count ==0 )
-	{
-		dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
-		g_program_stop();
-	}
+	//if (dtm_dms_count > 0 && dtm_lane_closure_count ==0 )
+	//{
+	//	dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
+	//	g_program_stop();
+	//}
 
 
 	//if (incident_count >= 1)

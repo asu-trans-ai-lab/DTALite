@@ -38,7 +38,8 @@ using std::fmin;
 
 void g_program_stop()
 {
-    dtalog.output() << "[ERROR] DTALite Program stops!" << std::endl;
+    dtalog.output() << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << '\n';
+
     exit(1);
 }
 

@@ -58,7 +58,7 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 	link.link_seq_no = assignment.g_number_of_links;
 	link.to_node_seq_no = internal_to_node_seq_no;
 
-	for (int si = 0; si < MAX_SCENARIOS; si++)
+	for (int si = 0; si < g_number_of_active_scenarios; si++)
 	{
 		link.link_type_si[si] = 1000;  // access_link
 	}
@@ -88,7 +88,7 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 		{
-		link.travel_time_per_period[tau][at] = link.free_flow_travel_time_in_min;
+		link.link_avg_travel_time_per_period[tau][at] = link.free_flow_travel_time_in_min;
 		link.VDF_period[tau].FFTT_at[at] = link.free_flow_travel_time_in_min;
 		}
 	}

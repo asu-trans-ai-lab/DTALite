@@ -1,0 +1,9 @@
+first_column,mode_type,mode_type_index,name,vot,multimodal_dedicated_assignment_flag,person_occupancy,headway_in_sec,DTM_real_time_info_type,activate
+0,auto,0,auto,10,1,1,1.5,0,1
+0,info,1,info,10,1,1,1,1,1
+0,bike,2,bike,10,1,1,1,0,0
+0,bus,3,bus,10,1,10,0.1,0,0
+0,truck,4,truck,10,0,1,0.2,0,0
+0,cav,5,cav,10,0,1,0.75,1,0
+0,ev,6,ev,10,0,1,1.5,0,0
+0,hov,7,hov,10,0,2,1.5,0,0

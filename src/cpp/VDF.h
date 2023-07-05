@@ -60,7 +60,7 @@ public:
         volume_after_dtm{ 0 }, speed_after_dtm{ 0 }, DoC_after_dtm{ 0 }, P_after_dtm{ 0 },
         ref_link_volume{ -1 }
 {
-        for (int at = 0; at < MAX_MODETYPES; at++)
+        for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
             toll[at] = 0;
             free_speed_at[at] = 0;
@@ -143,7 +143,9 @@ public:
 
     double calculate_travel_time_based_on_QVDF(int at, double FFTT, double volume, double mode_hourly_capacity, double peak_load_factor,
 
-        float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay])
+        float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay],
+        CLinkType link_type, int tau, double link_avg_co2_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES]
+        )
     {
 
         // QVDF
@@ -329,52 +331,122 @@ public:
 
            }
 
-           //// peak load duration
-           //double pl_t0 = t2 - max(0.5, 0.5 * P);
-           //double pl_t3 = t2 + max(0.5, 0.5 * P);
-           //double est_peak_load_demand = 0;
-           ////est_non_peak_load_demand should not be counted, as avg non-peak rates have been determined by (V-D)/(L-P)
 
-           //double hourly_rate_2_volume_factor = nlanes / 12.0;  // /12 to convert hourly to 5 min volume;
-           //// step 2
-           //for (int t_in_min = assign_period_start_time_in_hour * 60; t_in_min < assign_period_end_time_in_hour * 60; t_in_min += 5)
+           // peak load duration
+           double pl_t0 = t2 - max(0.5, 0.5 * P);
+           double pl_t3 = t2 + max(0.5, 0.5 * P);
+           double est_peak_load_demand = 0;
+           //est_non_peak_load_demand should not be counted, as avg non-peak rates have been determined by (V-D)/(L-P)
+
+           double hourly_rate_2_volume_factor = nlanes / 12.0;  // /12 to convert hourly to 5 min volume;
+           // step 2
+           for (int t_in_min = starting_time_in_hour * 60; t_in_min < ending_time_in_hour * 60; t_in_min += 5)
+           {
+               double t = t_in_min / 60.0;  // t in hour
+               int t_interval = t_in_min / 5;
+           
+                if (t >= pl_t0  && t <= pl_t3)
+                   {
+                    est_peak_load_demand += est_volume_per_hour_per_lane[t_interval] * hourly_rate_2_volume_factor;
+                   }
+           }
+           // step 3:
+           double peak_load_volume_scale_factor = lane_based_D / max(0.0001,est_peak_load_demand);
+
+
+           //step 4
+           for (int t_in_min = starting_time_in_hour * 60; t_in_min < ending_time_in_hour * 60; t_in_min += 5)
+           {
+               double t = t_in_min / 60.0;  // t in hour
+               int t_interval = t_in_min / 5;
+
+               if (t < pl_t0)
+               {
+                   est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
+               }
+               else if (t > pl_t3)
+               {
+                   est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
+               }
+               else
+               {
+                   est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval] * peak_load_volume_scale_factor);
+               }
+           }
+
+
+           ////final stage: compute avg emission in peak period 
+           // vq: speed in miles per hour, converted from km per hour
+           double vf_mph = vf / 1.609;
+           double vq = vf_mph / max(0.00001, avg_travel_time / FFTT) / 1.609;
+
+           // vf_minus_vq: difference between vf and vq
+           double vf_minus_vq = vf_mph - vq;
+
+           // waiting_time_w: waiting time, computed as the difference between average travel time and Free-Flow Travel Time (FFTT)
+           double waiting_time_w = avg_travel_time - FFTT;
+
+           // set speed v to be equal to vq
+           double v = vq;
+
+           // lambda_emission: CO2 emission rate, computed using a quadratic function of speed v
+           double lambda_emission = v * v * link_type.emissions_co2_matrix[at][1] + v * link_type.emissions_co2_matrix[at][2] + link_type.emissions_co2_matrix[at][3];
+           double ratio = 0.0;
+
+           // if the absolute difference between vf and vq is greater than 1
+           if (fabs(vf_mph - vq) > 1)
+           {
+               // update the ratio to adjust for changes in emission rate with respect to changes in speed
+               ratio = (lambda_emission * vf_mph - vq) / (vf_mph - vq);
+           }
+
+           // compute the emission rate as the product of the coefficient and the sum of FFTT and waiting time, adjusted for speed changes
+           double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT + waiting_time_w * ratio);
+
+           if (emission_rate < -1)
+           {
+               int debug_flag = 1;
+           }
+           // store the computed total CO2 emissions for the mode type in the link_avg_co2_emit_per_mode matrix
+           link_avg_co2_emit_per_mode[tau][at] = emission_rate /1000.0;  // convert to kg
+
+
+           //nox emissions 
+
+           // compute the NOx emission rate using a similar process to that of CO2 emissions
+           lambda_emission = v * v * link_type.emissions_nox_matrix[at][1] + v * link_type.emissions_nox_matrix[at][2] + link_type.emissions_nox_matrix[at][3];
+           ratio = 0.0;
+
+           if (fabs(vf_mph - vq) > 1)
+           {
+               ratio = (lambda_emission * vf_mph - vq) /( vf_mph - vq);
+           }
+
+           emission_rate = link_type.emissions_nox_matrix[at][0] * (FFTT + waiting_time_w * ratio);
+
+           // store the computed total NOx emissions for the mode type in the link_avg_nox_emit_per_mode matrix
+           link_avg_nox_emit_per_mode[tau][at] = emission_rate / 1000.0;  // convert to kg;
+
+
+           // to do for Mohammad 
+           //for (int t_in_min = starting_time_in_hour * 60; t_in_min <= ending_time_in_hour * 60; t_in_min += 5)
            //{
            //    double t = t_in_min / 60.0;  // t in hour
            //    int t_interval = t_in_min / 5;
-           //
-           //     if (t >= pl_t0  && t <= pl_t3)
-           //        {
-           //         est_peak_load_demand += est_volume_per_hour_per_lane[t_interval] * hourly_rate_2_volume_factor;
-           //        }
-           //}
-           //// step 3:
-           //double peak_load_volume_scale_factor = lane_based_D / max(0.0001,est_peak_load_demand);
+
+           //    double v = model_speed[t_interval] / 1.609;  // convert kmph to mph internally
+           //    double lambda_emission = v * v * link_type.emissions_co2_matrix[at][1] + v * link_type.emissions_co2_matrix[at][2] + link_type.emissions_co2_matrix[at][3];
+           //    double waiting_time_w  = 
+           //    double vf_minus_vq = vf-v;
+
+           //    double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT, + );
 
 
-           ////step 4
-           //for (int t_in_min = assign_period_start_time_in_hour * 60; t_in_min < assign_period_end_time_in_hour * 60; t_in_min += 5)
-           //{
-           //    double t = t_in_min / 60.0;  // t in hour
-           //    int t_interval = t_in_min / 5;
 
-           //    if (t < pl_t0)
-           //    {
-           //        est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
-           //    }
-           //    else if (t > pl_t3)
-           //    {
-           //        est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
-           //    }
-           //    else
-           //    {
-           //        est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval] * peak_load_volume_scale_factor);
-           //    }
+           //    /*CLinkType link_type, double link_avg_co2_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES]*/
            //}
 
-
-           //final stage: avg delay in peak load hours
-
-            return avg_travel_time;
+           return avg_travel_time;
      }
 
      e_VDF_type vdf_type;

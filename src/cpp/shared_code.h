@@ -57,7 +57,20 @@ int g_ParserIntSequence(std::string str, std::vector<int>& vect)
     return vect.size();
 }
 
+int g_ParserDoubleSequence(std::string str, std::vector<double>& vect)
+{
+    std::stringstream ss(str);
+    double i;
 
+    while (ss >> i)
+    {
+        vect.push_back(i);
+        if (ss.peek() == ';')
+            ss.ignore();
+    }
+
+    return vect.size();
+}
 int g_ParserStringSequence(std::string str_input, vector<string>& vect)
 {
 

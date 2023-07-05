@@ -56,6 +56,11 @@ enum e_assignment_mode { lue = 0, path_based_assignment= 1, simulation_dta=2};
 extern void g_OutputModelFiles(int mode);
 extern int g_related_zone_vector_size;
 
+extern int g_number_of_active_scenarios;
+extern int g_number_of_active_mode_types;
+extern int g_number_of_active_demand_perioids;
+
+
 class CDemand_Period {
 public:
     CDemand_Period() : demand_period_id { 0 }, demand_period { 0 }, starting_time_slot_no{ 0 }, ending_time_slot_no{ 0 }, t2_peak_in_hour{ 0 }, time_period_in_hour{ 1 }, number_of_demand_files{ 0 }
@@ -89,7 +94,7 @@ public:
         }
     }
 
-    void compute_cumulative_profile(int starting_slot_no, int ending_slot_no)
+    void compute_cumulative_profile(int starting_slot_no, int ending_slot_no, bool b_with_log = false)
     {
         for (int s = 0; s <= 96 * 3; s++)
         {
@@ -117,13 +122,18 @@ public:
 
             if(s== starting_slot_no + 1 || s== ending_slot_no)
             {
-            dtalog.output() << std::setprecision(5) << "[DATA INFO] cumulative profile no." << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
-                departure_time_ratio[s] << ",cumulative ratio " <<
-                cumulative_departure_time_ratio[s] << '\n';
+                if(b_with_log)
+                {
+            dtalog.output() << std::setprecision(5) << "[DATA INFO] Cumulative profile no." << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
+                departure_time_ratio[s] << '\n';
+                }
             }
         }
 
-       dtalog.output() << std::setprecision(5) << "[DATA INFO] final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
+        if (b_with_log)
+        {
+            dtalog.output() << std::setprecision(5) << "[DATA INFO] Final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
+        }
     }
 
     int get_time_slot_no(int agent_seq_no, int agent_size)
@@ -206,7 +216,7 @@ class CModeType_Summary
 {
 public:
     CModeType_Summary() : count{ 0 },
-        total_od_volume{ 0 }, total_person_distance_km{ 0 }, total_person_distance_mile{ 0 }, total_person_travel_time{ 0 }, avg_travel_time {0}, avg_travel_distance_km {0}, avg_travel_distance_mile{ 0 }
+        total_od_volume{ 0 }, total_person_distance_km{ 0 }, total_person_distance_mile{ 0 }, total_person_travel_time{ 0 }, total_person_co2{ 0 }, total_person_nox{ 0 }, avg_travel_time{ 0 }, avg_travel_distance_km{ 0 }, avg_travel_distance_mile{ 0 }, avg_co2{ 0 }, avg_nox { 0} 
     {}
 
     int count;
@@ -214,7 +224,12 @@ public:
     double total_person_distance_km;
     double total_person_distance_mile;
     double total_person_travel_time;
+    double total_person_co2;
+    double total_person_nox;
+
     double avg_travel_time;
+    double avg_co2;
+    double avg_nox;
     double avg_travel_distance_km;
     double avg_travel_distance_mile;
 };
@@ -239,6 +254,8 @@ public:
         data_by_demand_period_mode_type[tau][at].total_person_travel_time = 0;
         data_by_demand_period_mode_type[tau][at].total_person_distance_km = 0;
         data_by_demand_period_mode_type[tau][at].total_person_distance_mile = 0;
+        data_by_demand_period_mode_type[tau][at].total_person_co2 = 0;
+        data_by_demand_period_mode_type[tau][at].total_person_nox = 0;
 
     }
 
@@ -260,6 +277,8 @@ public:
         data_by_demand_period_mode_type[tau][at].total_person_travel_time += element.total_person_travel_time;
         data_by_demand_period_mode_type[tau][at].total_person_distance_km += element.total_person_distance_km;
         data_by_demand_period_mode_type[tau][at].total_person_distance_mile += element.total_person_distance_mile;
+        data_by_demand_period_mode_type[tau][at].total_person_co2+= element.total_person_co2;
+        data_by_demand_period_mode_type[tau][at].total_person_nox += element.total_person_nox;
 
     }
 
@@ -271,6 +290,8 @@ public:
             data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
             data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
             data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_co2 = data_by_demand_period_mode_type[tau][at].total_person_co2 / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_nox = data_by_demand_period_mode_type[tau][at].total_person_nox / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
         }
     }
 
@@ -316,23 +337,30 @@ class CLinkType
 public:
     CLinkType() : link_type{ 1 }, number_of_links{ 0 }, traffic_flow_code{ spatial_queue }, k_jam{ 300 }, vdf_type{ q_vdf }
     {
-        for (int at = 0; at < MAX_MODETYPES; at++)
+        for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
             free_speed_at[at] = 60;
             capacity_at[at] = 2000;
             FFTT_at[at] = 1;
             lanes_mode_type[at] = 1;
 
-            for (int at2 = 0; at2 < MAX_MODETYPES; at2++)
+            for (int at2 = 0; at2 < g_number_of_active_mode_types; at2++)
             {
                 meu_matrix[at][at2] = 1;
             }
+
+            for (int value_index = 0; value_index < 4; value_index++)
+            {
+                emissions_co2_matrix[at][value_index] = 0;
+                emissions_nox_matrix[at][value_index] = 0;
+            }
+            
         }
 
 
-        for (int tau = 0; tau < MAX_TIMEPERIODS; tau++)
+        for (int tau = 0; tau < g_number_of_active_demand_perioids; tau++)
         {
-            for (int at = 0; at < MAX_MODETYPES; at++)
+            for (int at = 0; at < g_number_of_active_mode_types; at++)
             {
               peak_load_factor_period_at[tau][at] = 1;
             }
@@ -355,6 +383,9 @@ public:
     std::string allow_uses_period[MAX_TIMEPERIODS];
     double peak_load_factor_period_at[MAX_TIMEPERIODS][MAX_MODETYPES];
     double meu_matrix[MAX_MODETYPES][MAX_MODETYPES];
+
+    double emissions_co2_matrix[MAX_MODETYPES][4];
+    double emissions_nox_matrix[MAX_MODETYPES][4];
 
 
 
@@ -609,7 +640,7 @@ public:
         departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, OD_based_UE_relative_gap{ 0 }
     {
 
-        for (int si = 0; si < MAX_SCENARIOS; si++)
+        for (int si = 0; si < g_number_of_active_scenarios; si++)
         {
             od_volume[si] = 0;
             avg_travel_time[si] = 0;
@@ -807,8 +838,8 @@ public:
         g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations_for_dtm{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
         g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_mode_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
-        shortest_path_log_zone_id{ -1 }, g_number_of_analysis_districts{ 1 },
-        active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }
+        shortest_path_log_zone_id{ 1 }, g_number_of_analysis_districts{ 1 },
+        active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }, g_first_link_type{ -1 }
 
     {
         m_LinkCumulativeArrivalVector  = NULL;
@@ -820,6 +851,9 @@ public:
         m_LinkOutFlowState =  NULL;
 
         sp_log_file.open("log_label_correcting.txt");
+
+        log_subarea_focusing_file.open("log_subarea_focusing.txt");
+        
 
         summary_file.open("final_summary.csv", std::fstream::out);
         if (summary_file &&!summary_file.is_open())
@@ -842,7 +876,7 @@ public:
             Deallocate3DDynamicArray(g_rt_network_pool, g_number_of_zones, g_number_of_mode_types);
 
         sp_log_file.close();
-
+        log_subarea_focusing_file.close();
         summary_file.close();
         summary_file2.close();
         summary_corridor_file.close();
@@ -1008,6 +1042,7 @@ public:
 
     int g_number_of_analysis_districts;
     std::map<int, CLinkType> g_LinkTypeMap;
+    int g_first_link_type; 
 
     std::map<std::string, int> demand_period_to_seqno_mapping;
     std::map<std::string, int> mode_type_2_seqno_mapping;
@@ -1057,6 +1092,8 @@ public:
 
     std::ofstream simu_log_file;
     std::ofstream sp_log_file;
+    std::ofstream log_subarea_focusing_file;
+
     std::ofstream summary_file;
     std::ofstream summary_file2;
     std::ofstream summary_corridor_file;
@@ -1083,13 +1120,13 @@ public:
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
         layer_no{ 0 }, AB_flag {1}, BA_link_no {-1}
    {
-        for (int si = 0; si < MAX_SCENARIOS; si++)
+        for (int si = 0; si < g_number_of_active_scenarios; si++)
         {
             link_type_si[si] = 0;
             number_of_lanes_si[si] = 1;  // default all open
 
-            for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
-                for (int at = 0; at < MAX_MODETYPES; ++at)
+            for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
+                for (int at = 0; at < g_number_of_active_mode_types; ++at)
                 {
 
                     penalty_si_at[si][at][tau] = 0;
@@ -1099,22 +1136,27 @@ public:
                     recorded_capacity_per_period_per_at[tau][at][si] = 0;
                     recorded_DOC_per_period_per_at[tau][at][si] = 0;
                     recorded_TT_per_period_per_at[tau][at][si] = 0;
+                    recorded_CO2_per_period_per_at[tau][at][si] = 0;
+                    recorded_NOX_per_period_per_at[tau][at][si] = 0;
                 }
 
         }
 
 
-        for (int tau = 0; tau < MAX_TIMEPERIODS; ++tau)
+        for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
         {
             total_volume_for_all_mode_types_per_period[tau] = 0;
             total_person_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
                        //cost_perhour[tau] = 0;
-            for (int at = 0; at < MAX_MODETYPES; ++at)
+            for (int at = 0; at < g_number_of_active_mode_types; ++at)
             {
                 volume_per_mode_type_per_period[tau][at] = 0;
                 converted_MEU_volume_per_period_per_at[tau][at] = 0;
-                travel_time_per_period[tau][at] = 0;
+                link_avg_travel_time_per_period[tau][at] = 0;
+
+                link_avg_co2_emit_per_mode[tau][at] = 0;
+                link_avg_nox_emit_per_mode[tau][at] = 0;
 
             }
 
@@ -1144,7 +1186,7 @@ public:
     double get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(int tau, int mode_type_no)
     {
         // *60 as 60 min per hour
-        double generalized_cost = travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
+        double generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
 
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
@@ -1170,6 +1212,8 @@ public:
     std::map <int, float> m_link_pedefined_information_response_map;  // per min, absolute time
 
     float model_speed[MAX_TIMEINTERVAL_PerDay];
+
+
     float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay];
 
     float est_avg_waiting_time_in_min[MAX_TIMEINTERVAL_PerDay]; // at link level
@@ -1427,10 +1471,15 @@ public:
     double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
     double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
+    double  recorded_CO2_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    double  recorded_NOX_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
 
     double  queue_link_distance_VDF_perslot[MAX_TIMEPERIODS];  // # of vehicles in the vertical point queue
-    double travel_time_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
+    double link_avg_travel_time_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
+    double link_avg_co2_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES];
+    double link_avg_nox_emit_per_mode[MAX_TIMEPERIODS][MAX_MODETYPES];
+
     double RT_waiting_time;
 
 //    std::map<int, float> RT_travel_time_map;
