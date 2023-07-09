@@ -1,3 +1,0 @@
-first_column,district_index,scenario_name,demand_period,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry
-,1,25s1,am,auto,7000,140000,87010.6,152310,20,12.4301,21.7585,1;,"POLYGON ((0.017882 -0.125179,))"
-,2,25s1,am,auto,7000,140000,87010.6,152310,20,12.4301,21.7585,2;,"POLYGON ((40.2539 0.053648,))"

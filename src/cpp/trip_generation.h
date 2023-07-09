@@ -1003,7 +1003,7 @@ void g_writing_demand_files(Assignment& assignment)
 						{
 							if (g_zone_vector[dest].gravity_attraction > 0)
 							{
-								float value = 0;
+								float value = 1;
 								if (g_zone_vector[orig].m_ODMatrix.value_map.find(dest) != g_zone_vector[orig].m_ODMatrix.value_map.end())
 								{
 									value = g_zone_vector[orig].m_ODMatrix.value_map[dest];

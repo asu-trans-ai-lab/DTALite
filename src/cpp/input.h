@@ -583,9 +583,10 @@ void g_create_subarea_related_zone_structure(int max_num_significant_zones_in_su
 	double total_preload_demand = g_pre_read_demand_file(assignment);
 
 
-	dtalog.output() << "[DATA INFO] total pre-load demand = " << total_preload_demand << '\n';
+
 	if (total_preload_demand <= 0.001)
 	{
+		dtalog.output() << "[ERROR] demand is missing " <<'\n';
 		g_program_stop();
 	}
 	else
@@ -3777,6 +3778,9 @@ void g_read_input_data(Assignment& assignment)
 	int link_type_warning_count = 0;
 	int link_penalty_info_count = 0;
 
+	int length_missing_error = 0; 
+	int free_speed_missing_error = 0;
+	int capacity_missing_error = 0; 
 	bool length_in_km_waring = false;
 	dtalog.output() << "[PROCESS INFO] Step 1.6: Reading link data in link.csv... " << '\n';
 
@@ -3898,6 +3902,21 @@ void g_read_input_data(Assignment& assignment)
 
 				parser_link.GetValueByFieldName("geometry", link.geometry, false);
 
+				if (link.geometry.size() == 0)
+				{
+					std::ostringstream out;
+
+					out << "LINESTRING (";
+
+					out << g_node_vector[link.from_node_seq_no].x  << " " << g_node_vector[link.from_node_seq_no].y  << ", ";
+					out << g_node_vector[link.to_node_seq_no].x << " " << g_node_vector[link.to_node_seq_no].y;
+
+
+					out << ")";
+
+					link.geometry = out.str();
+				}
+
 				parser_link.GetValueByFieldName("link_special_flag", link.link_specifical_flag_str, false);
 
 				link.tmc_corridor_name = "network_wide";
@@ -3916,8 +3935,8 @@ void g_read_input_data(Assignment& assignment)
 					link.main_node_id = main_node_id;
 				}
 
-				// Peiheng, 05/13/21, if settings.csv does not have corresponding link type or the whole section is missing, set it as 2 (i.e., Major arterial)
-				int default_link_type = 2;
+
+				int default_link_type = assignment.g_first_link_type;
 				char link_type_field_name[50];
 
 				parser_link.GetValueByFieldName("link_type", default_link_type, false);
@@ -3983,9 +4002,9 @@ void g_read_input_data(Assignment& assignment)
 					link.number_of_lanes_si[scenario_index] = number_of_lanes_value;
 				}
 
-				double length_in_meter = 1.0; // km or mile
+				double length_in_meter = 1000.0; // km or mile
 				double free_speed = 60.0;
-				double lane_capacity = 1800;
+				double lane_capacity = 2000;
 				// first step, get the initial value based on link type for speed and capacity
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 				{
@@ -4003,7 +4022,15 @@ void g_read_input_data(Assignment& assignment)
 				double bwtt_speed = 12;  //miles per hour
 
 
-				parser_link.GetValueByFieldName("length", length_in_meter);  // in meter
+				if (parser_link.GetValueByFieldName("length", length_in_meter, false, false) == false)
+				{
+					if(length_missing_error==0)
+					{
+					dtalog.output() << "[ERORR] Field length in link.csv is missing." << '\n';
+					length_in_meter = 999.0;
+					length_missing_error++; 
+					}
+				}
 
 				if (assignment.g_length_unit_flag == 1)  // mile;
 					length_in_meter = length_in_meter * 1609; // convert from mile to meter
@@ -4025,21 +4052,37 @@ void g_read_input_data(Assignment& assignment)
 				}
 
 				// second step, we read the link-specific value (only for based mode)
-				parser_link.GetValueByFieldName("free_speed", free_speed);  // free speed as km
+				if (parser_link.GetValueByFieldName("free_speed", free_speed, false, false) == false)
+				{
+
+					if (free_speed_missing_error == 0)
+					{
+						dtalog.output() << "[ERORR] Field free_speed in link.csv is missing." << '\n';
+						free_speed = 60;
+						free_speed_missing_error++; 
+					}
+				}
 				if (assignment.g_speed_unit_flag == 1)  // mph;
 					free_speed = free_speed / 1.609; // convert from mile per hour to km per hour
 
 				parser_link.GetValueByFieldName("capacity", lane_capacity, false);  // optional for capacity
 
+								// second step, we read the link-specific value (only for based mode)
+				if (parser_link.GetValueByFieldName("capacity", lane_capacity, false, false) == false)
+				{
+
+					if (capacity_missing_error == 0)
+					{
+						dtalog.output() << "[ERORR] Field capacity in link.csv is missing." << '\n';
+						lane_capacity = 1800;
+						capacity_missing_error++;
+					}
+				}
 				double free_speed_value;
 				//speed_unit: km/ph us_customary  si1
 				// mile per h our ->
 
 
-				if (link.link_id == "201065AB")
-				{
-					int idebug = 1;
-				}
 
 				cutoff_speed = free_speed * 0.85; //default;
 				parser_link.GetValueByFieldName("cutoff_speed", cutoff_speed, false);

@@ -1114,7 +1114,10 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 										int link_seq_no = it->second.path_link_vector[nl];
 										int next_link_seq_no = it->second.path_link_vector[nl + 1];
 
-										g_link_vector[link_seq_no].VDF_period[tau].turn_link_count_map[next_link_seq_no] += volume;
+										if (g_link_vector[link_seq_no].VDF_period[tau].turn_link_count_map.find(next_link_seq_no) == g_link_vector[link_seq_no].VDF_period[tau].turn_link_count_map.end())
+											g_link_vector[link_seq_no].VDF_period[tau].turn_link_count_map[next_link_seq_no] = volume;
+										else 
+											g_link_vector[link_seq_no].VDF_period[tau].turn_link_count_map[next_link_seq_no] += volume;
 
 									}
 								}
@@ -1545,7 +1548,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 
 
-				std::map<int, int>::iterator it, it_begin, it_end;
+				std::map<int, float>::iterator it, it_begin, it_end;
 				
 				it_begin = g_link_vector[i].VDF_period[tau].turn_link_count_map.begin();
 				it_end = g_link_vector[i].VDF_period[tau].turn_link_count_map.end();
@@ -1554,7 +1557,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				{
 					int link_no = it->first;  // the first key is link_no
 					int to_node_id = g_node_vector[g_link_vector[link_no].to_node_seq_no].node_id;  // outgoing node id of next link 
-					fprintf(g_pFileLinkMOE, "%d:%d;", to_node_id, it->second);
+					fprintf(g_pFileLinkMOE, "%d:%d;", to_node_id, (int)(it->second));
 				}
 
 

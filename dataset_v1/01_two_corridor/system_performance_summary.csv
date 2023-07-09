@@ -1,9 +1,2 @@
 first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,total_co2_kg,total_nox_kg,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,avg_co2_kg,avg_nox_kg,
-<<<<<<< HEAD
-,0,base,am,auto,7000,2,280000,174021,673914,7.3871e+06,1276.18,40,24.8602,96.2734,1055.3,0.182312,
-=======
-,0,base,am,auto,13860,4,306929,190757,419764,2.79204e+07,6887.64,22.1449,13.7632,30.286,2014.46,0.496944,
-,0,base,am,rt,140,4,3100.29,1926.84,4240.04,429507,105.762,22.1449,13.7632,30.286,3067.91,0.75544,
-,1,eco,am,auto,7000,2,140000,87010.6,140769,5.81389e+06,1543.96,20,12.4301,20.1099,830.556,0.220566,
-,1,eco,am,rt,7000,2,140000,87010.6,140769,8.72084e+06,2315.95,20,12.4301,20.1099,1245.83,0.330849,
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
+,0,25nb,am,auto,2,2,3.998,2.48477,3.998,83.1024,0.0221296,1.999,1.24239,1.999,41.5512,0.0110648,

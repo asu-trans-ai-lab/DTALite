@@ -1,0 +1,3 @@
+od_seq_id,o_zone_id,d_zone_id,mode_type,demand_period,volume_s0,avg_tt_s0,avg_distance_km_s0
+1,1,2,auto,am,1,2,2
+1,2,1,auto,am,1,0,0

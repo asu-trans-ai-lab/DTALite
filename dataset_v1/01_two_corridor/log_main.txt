@@ -16,35 +16,24 @@ Logbook for DTALite: The Open-Source, Lightweight Dynamic Traffic Assignment Sol
    |--- Link performance (link_performance_s.csv, link_performance_summary.csv)
    |--- Route assignment (route_assignment_s.csv)
    |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)
+   |--- Trajectory performance (agent_s.csv, trajectory.csv)
    |--- System performance (system_performance_summary.csv, final_summary.csv)
    |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)
 --------------------------
 Please provide feedback or report any issues you encounter on our GitHub site: https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem.
 [PROCESS INFO] Step 0.0: Reading settings.csv.
 [DATA INFO] number_of_iterations = 20 in settings.csv.
-[DATA INFO] route_output = 1 in settings.csv.
+[DATA INFO] UE_convergence_percentage = 0.100000 (%) in settings.csv.
 [DATA INFO] simulation_output = 0 in settings.csv.
-<<<<<<< HEAD
-000.
-[DATA INFO] Number of significant zones inside the subarea: 2. Total related demand inside significant zones: 7000.
-[DATA INFO] Number of insignificant zones inside the subarea: 0. Total related demand inside insignificant zones: 0.
-[DATA INFO] Ratio of total significant zone to  zones inside the subarea: 1.
-=======
-[DATA INFO] number_of_memory_blocks = 4 in settings.csv.
-length_unit = meter in settings.csv.
-speed_unit = kmph in settings.csv.
- of zones = 2
-[PROCESS INFO]   link_type,  link_name,    # links,    avg_mph,   avg_kmph,total_len_km,  total_cap,   avg_lane,    avg_len,
-[PROCESS INFO]           1    motorway           4          60     96.5604          40       16000        4000       10000
-[PROCESS INFO]           2       trunk           4          60     96.5604          60       12000        3000       15000
+OCESS INFO]           1    motorway           4          60     96.5604       3.999        7800        1950      999.75
 [PROCESS INFO] Step 1.7: reading input subarea.csv
 [PROCESS INFO] Validated subarea.csv. It contains 5 geometric points. Proceeding to FOCUSING analysis step.
 [PROCESS INFO] Step 1.8: Preloading Origin-Destination (OD) demand data as part of the focusing approach. 
-[DATA INFO] total pre-load demand = 14000
 [DATA INFO] Initiating the first stage of the subarea scanning process, where we determine cut-off zones.
-[DATA INFO] Number of zones inside the subarea: 2. Total demand related to these zones: 14000.
-[DATA INFO] Number of zones inside the subarea: 2. Total demand related to these zones from internal zones: 14000.
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
+[DATA INFO] Total demand related to these zones : 4.
+[DATA INFO] Number of significant zones inside the subarea: 2. Total related demand inside significant zones: 4.
+[DATA INFO] Number of insignificant zones inside the subarea: 0. Total related demand inside insignificant zones: 0.
+[DATA INFO] Ratio of total significant zone to  zones inside the subarea: 1.
 [DATA INFO] Number of external zones related to the subarea: 0. Total demand related to the subarea from these external zones: 0.
 [DATA INFO] Number of external zones related to the subarea with significant volume: 0.
 [DATA INFO] During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones 
@@ -53,254 +42,75 @@ speed_unit = kmph in settings.csv.
 [DATA INFO] Remaining external related demand percentage after the cut-off:  = 0 %
 [DATA INFO] 0 zones are not significantly related to the subarea, accounting for 0 % of the total.
 [DATA INFO] 2 zones are inside the subarea. 
-<<<<<<< HEAD
-[DATA INFO] Total demand = 14000. Subarea-related demand = 7000 (50%), accounting for 50% inside the subarea, i.e. 50 % outside the subarea.
-=======
-[DATA INFO] Total demand = 14000. Subarea-related demand = 14000 (100%), accounting for 100% inside the subarea, i.e. 0 % outside the subarea.
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
+[DATA INFO] Total demand = 8. Subarea-related demand = 4 (50%), accounting for 50% inside the subarea, i.e. 50 % outside the subarea.
 [PROCESS INFO] Step 2.0: Reading file departure_time_profile.csv
-[DATA INFO] At time 6:0 (T0600) , the demand ratio is 0.003242.
-[DATA INFO] At time 9:0 (T0900) , the demand ratio is 0.004833.
-[DATA INFO] Cumulative profile no.1, ratio at slot  73 (6:5) = 0.0033333
-[DATA INFO] Cumulative profile no.1, ratio at slot  108 (9:0) = 0.004833
-[DATA INFO] Final cumulative profile ratio = 0.97138
-[DATA INFO] Allocating 4D memory for zone index (start from 0) 0 with the following dimensions: nM = 2, nX = 2, nY = 2, nZ = 1
+[DATA INFO] At time 6:0 (T0600) , the demand ratio is 0.004343.
+[DATA INFO] At time 9:0 (T0900) , the demand ratio is 0.005907.
+[DATA INFO] Cumulative profile no.1, ratio at slot  73 (6:5) = 0.004343
+[DATA INFO] Cumulative profile no.1, ratio at slot  108 (9:0) = 0.005907
+[DATA INFO] Final cumulative profile ratio = 0.96513
+[DATA INFO] Allocating 4D memory for zone index (start from 0) 0 with the following dimensions: nM = 2, nX = 2, nY = 1, nZ = 1
 [PROCESS INFO] Step 2.1: Reading file demand_file_list.csv...
-[WARNING] Field scenario_index_vector is missing in file demand_file_list.csv.
 [STATUS INFO] reading demand file demand.csv for scenario index = 0
-<<<<<<< HEAD
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 7000
-[DATA INFO] scenario no: 0, cumulative total demand volume is 7000
-=======
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 6930
-[DATA INFO] o_zone_id:2, d_zone_id: 1, value = 6930
-[DATA INFO] cumulative total demand volume is 13860
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 70
-[DATA INFO] o_zone_id:2, d_zone_id: 1, value = 70
-[DATA INFO] cumulative total demand volume is 140
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 3500
-[DATA INFO] o_zone_id:2, d_zone_id: 1, value = 3500
-[DATA INFO] cumulative total demand volume is 7000
-[STATUS INFO] reading demand file demand.csv for scenario index = 0
-[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 3500
-[DATA INFO] o_zone_id:2, d_zone_id: 1, value = 3500
-[DATA INFO] cumulative total demand volume is 7000
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
+[DATA INFO] o_zone_id:1, d_zone_id: 2, value = 1
+[DATA INFO] o_zone_id:2, d_zone_id: 1, value = 1
+[DATA INFO] scenario no: 0, cumulative total demand volume is 2
 [PROCESS INFO]
 demand_period and mode_type   total_demand     #_of_links      speed_mph     speed_kmph      length km   avg_lane_cap   avg_length_m
-             am,auto          20860              8          60.00          96.56         100.00        3500.00       12500.00
-             am,rt        7140.00              8          60.00          96.56         100.00        3500.00       12500.00
+             am,auto              2              4          60.00          96.56           4.00        1950.00         999.75
 [PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing.
-[DATA INFO] There are 4 shortest path (SP) networks stored in memory for processing.
-[DATA INFO] There are 4 different agent types across various zones. These computations will be performed by the multi CPU processors.
+[DATA INFO] There are 2 shortest path (SP) networks stored in memory for processing.
+[DATA INFO] There are 2 different agent types across various zones. These computations will be performed by the multi CPU processors.
 [PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool
 [DATA INFO] Perform 20 iterations for the Column Generation process
 [PROCESS INFO] Creating a file named 'zonal_hierarchy_mapping.csv', which contains data about zones related to each subarea. This file will help us focus our approach on specific areas. 
-[DATA INFO] global scenario index = 0 --------------------------
+[PROCESS INFO] Current active scenario index: 0. Corresponding total demand: 2.00.
+--------------------------
 [PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data...
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
-<<<<<<< HEAD
 [DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     UE Gap (%)  
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 0           0.00        0.00e+00                      1.40e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 1           0.00        0.00e+00                      1.40e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 2           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 3           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 4           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 5           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 6           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 7           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 8           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 9           0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 10          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 11          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 12          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 13          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 14          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 15          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 16          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 17          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 18          0.00        3.37e+05                      3.37e+05            0.00        
-[DATA INFO] restricted movement 2 will not be used 
-[DATA INFO] 19          0.00        3.37e+05                      3.37e+05            0.00        
+[DATA INFO] 0           0.00        0.00e+00                      2.00e+00            0.00        
+[DATA INFO] 1           0.00        0.00e+00                      2.00e+00            0.00        
+[DATA INFO] 2           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 3           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 4           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 5           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 6           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 7           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 8           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 9           0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 10          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 11          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 12          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 13          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 14          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 15          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 16          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 17          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 18          0.00        2.00e+00                      2.00e+00            0.00        
+[DATA INFO] 19          0.00        2.00e+00                      2.00e+00            0.00        
 [PROCESS INFO] Step 5: Column Pool Updating
-[DATA INFO] Total number of column pool updating iterations = 5
+[DATA INFO] Total number of column pool updating iterations = 40
 [DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  UE Gap (%)          
-[DATA INFO] column updating           0             48.14          0.00e+00            0.0000
+[DATA INFO] column updating           0              2.00          0.00e+00            0.0000
 [PROCESS INFO] The User Equilibrium Convergence Percentage has been successfully achieved. The process of updating columns has now been completed
 [PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-ODME stage: # of sensors =,1
-[DATA INFO] ODME    Iter. No.   Link MAE        Link MAPE(%)    Sys. MPE(%)     Avg. TT (min)   UE Gap (min) (%)      
-[DATA INFO] ODME    0           2000.0000       100.0000        -100.0000       48.1371         0.0000    0.0000    
-[DATA INFO] ODME    1           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    2           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    3           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    4           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    5           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    6           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    7           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    8           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    9           2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    10          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    11          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    12          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    13          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    14          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    15          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    16          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    17          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    18          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    19          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    20          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    21          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    22          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    23          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    24          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    25          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    26          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    27          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    28          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    29          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    30          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    31          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    32          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    33          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    34          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    35          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    36          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    37          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    38          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    39          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    40          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    41          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    42          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    43          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    44          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    45          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    46          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    47          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    48          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    49          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
-[DATA INFO] ODME    49          2000.0000       100.0000        -100.0000       20.0003         0.0000    0.0000    
 [PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 0.0860 s
+[DATA INFO] Total CPU running time for the entire process = 0.0080 s
 [PROCESS INFO] Step 9: Collecting statistics, generating zonal hierarchy mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
 [PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results.
 [STATUS INFO] writing route_assignment.csv for each scenario
-[STATUS INFO] writing file link_performance_s0_base.csv
+[STATUS INFO] writing file link_performance_s0_25nb.csv
 [STATUS INFO] writing district_performance_s.csv..
 [STATUS INFO] writing route_assignment.csv for each scenario
 [STATUS INFO] writing subarea_link_performance.csv..
-=======
-[DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
-[DATA INFO] 0           0.01        0.00e+00                      2.80e+05            0.00e+00    
-[DATA INFO] 1           0.00e+00    0.00e+00                      2.80e+05            0.00e+00    
-[DATA INFO] 2           0.00e+00    6.58e+05                      4.20e+05            5.68e+01    
-[DATA INFO] 3           0.00e+00    6.58e+05                      4.20e+05            5.68e+01    
-[DATA INFO] 4           0.00e+00    3.84e+05                      3.55e+05            8.21e+00    
-[DATA INFO] 5           0.00e+00    4.18e+05                      3.04e+05            3.76e+01    
-[DATA INFO] 6           0.00e+00    3.84e+05                      3.29e+05            1.66e+01    
-[DATA INFO] 7           0.00e+00    3.84e+05                      3.55e+05            8.21e+00    
-[DATA INFO] 8           0.00e+00    3.94e+05                      3.79e+05            4.03e+00    
-[DATA INFO] 9           0.00e+00    4.07e+05                      4.00e+05            1.71e+00    
-[DATA INFO] 10          0.00e+00    4.20e+05                      4.18e+05            3.12e-01    
-[DATA INFO] 11          0.00e+00    4.33e+05                      4.23e+05            2.29e+00    
-[DATA INFO] 12          0.00e+00    4.45e+05                      4.22e+05            5.35e+00    
-[DATA INFO] 13          0.00e+00    4.07e+05                      4.00e+05            1.71e+00    
-[DATA INFO] 14          0.00e+00    3.88e+05                      3.67e+05            5.80e+00    
-[DATA INFO] 15          0.00e+00    3.94e+05                      3.79e+05            4.03e+00    
-[DATA INFO] 16          0.00e+00    4.00e+05                      3.89e+05            2.71e+00    
-[DATA INFO] 17          0.00e+00    4.07e+05                      4.00e+05            1.71e+00    
-[DATA INFO] 18          0.00e+00    4.13e+05                      4.09e+05            9.24e-01    
-[DATA INFO] 19          0.00e+00    4.20e+05                      4.18e+05            3.12e-01    
-[PROCESS INFO] Step 5: Column Pool Updating
-[DATA INFO] Total number of column pool updating iterations = 2
-[DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
-                               0             30.90           9695.44              1.11
-                               1             30.33            562.47              0.07
-[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
-[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 0.01 s
-[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
-[PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
-[STATUS INFO] writing file link_performance_s0_base.csv
-[STATUS INFO] writing route_assignment.csv for each scenario
-[STATUS INFO] writing district_performance_s0_base.csv774774794[STATUS INFO] writing subarea_link_performance.csv..
-[DATA INFO] global scenario index = 1 --------------------------
-[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data...
-[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
-[STATUS INFO] loading 0 dynamic lane use scenarios in dynamic_traffic_management.csv  
-[DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel Time (TT)    Least system TT     Gap (%)     
-[DATA INFO] 0           0.00        3.18e+05                      2.89e+05            1.00e+01    
-[DATA INFO] 1           0.00e+00    0.00e+00                      2.80e+05            0.00e+00    
-[DATA INFO] 2           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 3           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 4           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 5           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 6           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 7           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 8           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 9           0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 10          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 11          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 12          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 13          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 14          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 15          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 16          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 17          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 18          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[DATA INFO] 19          0.00e+00    2.82e+05                      2.82e+05            0.00e+00    
-[PROCESS INFO] Step 5: Column Pool Updating
-[DATA INFO] Total number of column pool updating iterations = 2
-[DATA INFO] Column Updating:Iter. No.   Avg Travel Time   Optimization Obj  Relative Gap (%)  
-                               0             20.11              0.00              0.00
-                               1             20.11              0.00              0.00
-[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided.
-[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. 
-[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 0.01 s
-[PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
-[PROCESS INFO] Step 10: Outputting Traffic Assignment Results.
-[STATUS INFO] writing file link_performance_s1_eco.csv
-[STATUS INFO] writing route_assignment.csv for each scenario
-[STATUS INFO] writing district_performance_s1_eco.csv774774794[STATUS INFO] writing subarea_link_performance.csv..
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 [STATUS INFO] writing od_performance_summary.csv..
 [STATUS INFO] writing data for 2  zones 
 [STATUS INFO] writing link_performances_summary.csv..
 [STATUS INFO] writing link_performances_summary_2way.csv..
-<<<<<<< HEAD
-[DATA INFO] CPU running time for outputting simulation results: 0.0150 s
+[DATA INFO] CPU running time for outputting simulation results: 2.6940 s
 [STATUS INFO] Freeing memory..
-[DATA INFO] CPU running time for the entire process: 0 min 43 sec
+[DATA INFO] CPU running time for the entire process: 0 min 11 sec
 [STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science.
-=======
-[DATA INFO] CPU running time for outputting simulation results: 0.02 s
-[STATUS INFO] Freeing memory..
-[DATA INFO] CPU running time for the entire process: 0 min 0 sec
-[STATUS INFO] DTALite computing process is complete.
->>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)

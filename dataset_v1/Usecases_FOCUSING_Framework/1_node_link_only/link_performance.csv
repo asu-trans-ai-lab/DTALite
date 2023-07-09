@@ -1,0 +1,5 @@
+link_seq_id,link_id,from_node_id,to_node_id,lanes,distance_km,fftt,time_period,volume,mode_type_volume,travel_time,speed_kmph,speed_mph,speed_ratio,VOC,DOC,lane_capacity,link_capacity
+1,3,1,4,1,0.999,0.999,0700_0800,0.55,0.55,0.999,60,37.29,1,0,0,1800,1800
+2,4,4,2,1,0.999,0.999,0700_0800,0.55,0.55,0.999,60,37.29,1,0,0,1800,1800
+3,1,1,3,1,0.999,0.999,0700_0800,0.45,0.45,0.999,60,37.29,1,0,0,1800,1800
+4,2,3,2,1,0.999,0.999,0700_0800,0.45,0.45,0.999,60,37.29,1,0,0,1800,1800

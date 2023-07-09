@@ -451,7 +451,7 @@ public:
            return avg_travel_time;
      }
 
-     std::map<int, int> turn_link_count_map;
+     std::map<int, float> turn_link_count_map;
      std::map<int, int> restricted_turn_nodes_map;
      string restricted_turn_nodes_str; 
      e_VDF_type vdf_type;
