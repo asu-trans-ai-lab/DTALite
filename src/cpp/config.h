@@ -28,7 +28,7 @@
         #define DTALIBRARY_API
     #endif
 
-    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_output, int number_of_memory_blocks, int length_unit_flag, int speed_unit_flag);
+    extern "C" DTALIBRARY_API double network_assignment(int assignment_mode, int iteration_number, int column_updating_iterations, int ODME_iterations, int sensitivity_analysis_iterations, int simulation_output, int number_of_memory_blocks, int length_unit_flag, int speed_unit_flag, double UE_convergence_percentage, int max_num_significant_zones_in_subarea, int max_num_significant_zones_outside_subarea);
     extern "C" DTALIBRARY_API void DTALiteAPI();
 #endif
 

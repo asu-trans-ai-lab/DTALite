@@ -266,7 +266,7 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 
 
 // changes here are also for odmes, don't need to implement the changes in this function for now
-double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links, int iteration_no, double& system_gap, bool update_link_volume_per_mode_flag)
+double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links, int iteration_no, int total_iteration_no,  double& system_gap, bool update_link_volume_per_mode_flag)
 {
 	float total_gap = 0;
 	float sub_total_gap_link_count = 0;
@@ -440,7 +440,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 								link_seq_no = it->second.path_link_vector[nl];
 
 
-								if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)
+								if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1 || update_link_volume_per_mode_flag == true)
 									// only record the link volume for links with sensor data
 								{
 									// MSA updating for the existing column pools
@@ -470,9 +470,9 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
 		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 		{
-			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0  || g_link_vector[i].link_type_si[0] == -1)
 				continue;
-
+			
 			if (g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)  // with data
 			{
 				g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] = g_link_vector[i].volume_per_mode_type_per_period[0][tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index];
@@ -484,7 +484,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
 				}
-				if (g_link_vector[i].VDF_period[tau].upper_bound_flag[0] == 0)
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag[assignment.active_scenario_index] == 0)
 				{
 					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index]);
 					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] / g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index]);
@@ -544,14 +544,27 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
 		<< '\n';
 
-	dtalog.output() << "[DATA INFO] ODME #" << iteration_no
-		<< ", link MAE= " << total_gap / max(1, total_link_count)
-		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
-		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
-		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
-		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
-		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< '\n';
+	//dtalog.output() << "[DATA INFO] ODME #" << iteration_no
+	//	<< ", link MAE= " << total_gap / max(1, total_link_count)
+	//	<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+	//	"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+	//	"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+	//	",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+	//	" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+	//	<< '\n';
+
+	// Data
+	dtalog.output() << std::left
+		<< std::setw(20) << "[DATA INFO] ODME"
+		<< std::setw(12) << iteration_no
+		<< std::setw(16) << total_gap / max(1, total_link_count)
+		<< std::setw(16) << (sub_total_gap_link_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << (sub_total_system_gap_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << total_system_travel_time / max(0.1, total_system_demand)
+		<< std::setw(10) << total_system_UE_gap / max(0.00001, total_system_demand)
+		<< std::setw(10) << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << '\n';
+
+
 	double gap = sub_total_gap_link_count / max(1, total_link_count);
 	system_gap = sub_total_system_gap_count / max(1, total_link_count);
 
@@ -738,14 +751,25 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
 		'\n';
 
-	dtalog.output() << "[DATA INFO] ODME #" << iteration_no
-		<< ", link MAE= " << total_gap / max(1, total_link_count)
-		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
-		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
-		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
-		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
-		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
-		<< '\n';
+	//dtalog.output() << "[DATA INFO] ODME #" << iteration_no
+	//	<< ", link MAE= " << total_gap / max(1, total_link_count)
+	//	<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+	//	"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+	//	"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+	//	",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+	//	" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+	//	<< '\n';
+
+	// Data
+	dtalog.output() << std::left
+		<< std::setw(12) << iteration_no
+		<< std::setw(20) << total_gap / max(1, total_link_count)
+		<< std::setw(12) << (sub_total_gap_link_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << (sub_total_system_gap_count) / max(1, total_link_count) * 100
+		<< std::setw(30) << total_system_travel_time / max(0.1, total_system_demand)
+		<< std::setw(20) << total_system_UE_gap / max(0.00001, total_system_demand)
+		<< std::setw(16) << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << '\n';
+
 	double gap = sub_total_gap_link_count / max(1, total_link_count);
 	system_gap = sub_total_system_gap_count / max(1, total_link_count);
 
@@ -1017,7 +1041,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 	return gap;
 }
-void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, bool b_sensitivity_analysis_flag)
+double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, bool b_sensitivity_analysis_flag)
 {
 	double total_system_cost_gap = 0;
 	float total_relative_gap = 0;
@@ -1235,7 +1259,7 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
+								path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at][assignment.active_scenario_index];
 								path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
@@ -1469,16 +1493,17 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 	}
 
 	double avg_travel_time = total_system_travel_time / max(0.001, total_system_demand);
+	double relative_gap = total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost);
 
 	assignment.summary_file << "[DATA INFO] column updating: iteration = " << inner_iteration_number << ", avg travel time = " <<
 		avg_travel_time << "(min), optimization obj = " << total_system_cost_gap
-		<< ", Relative_gap = " << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << " %" << '\n';
+		<< ", Relative_gap = " << relative_gap << " %" << '\n';
 
-	dtalog.output() << std::left << std::setw(20) << ""
+	dtalog.output() << std::left << std::setw(20) << "[DATA INFO] column updating"
 		<< std::right << std::setw(12) << inner_iteration_number
 		<< std::setw(18) << std::fixed << std::setprecision(2) << avg_travel_time
 		<< std::scientific << std::setw(18) <<  std::setprecision(2) << total_system_cost_gap
-		<< std::setw(18) << std::fixed << std::setprecision(2) << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << '\n';
+		<< std::setw(18) << std::fixed << std::setprecision(4) << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << '\n';
 	string stage_str;
 	stage_str = "Column updating";
 
@@ -1489,7 +1514,9 @@ void g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignm
 		",total_system_demand," << total_system_demand <<
 		",avg travel time," << avg_travel_time <<
 		",optimization obj," << total_system_cost_gap <<
-		",relative_gap," << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << "," << '\n';
+		",relative_gap," << relative_gap << "," << '\n';
+
+	return relative_gap; 
 }
 
 void g_reset_RT_link_penalty_in_column_pool(Assignment& assignment)  // after
@@ -1774,7 +1801,7 @@ CColumnPath* g_add_new_column(CColumnVector* pColumnVector, std::vector <int> li
 	return &(pColumnVector->path_node_sequence_map[node_sum]);  // a pointer to be used by other programs
 }
 
-void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations, bool dynamic_traffic_management_flag = false)
+void g_column_pool_optimization(Assignment& assignment, int column_updating_iterations, double UE_convergence_percentage, bool dynamic_traffic_management_flag = false)
 {
 	assignment.summary_file << "column updating" << '\n';
 
@@ -1782,11 +1809,17 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 
 	dtalog.output() << std::left << std::setw(20) << "[DATA INFO] Column Updating:"
 		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
-		<< std::setw(18) << "Optimization Obj" << std::setw(18) << "Relative Gap (%)" << '\n';
+		<< std::setw(18) << "Optimization Obj" << std::setw(20) << "UE Gap (%)" << '\n';
 
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
-		g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
+		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
+
+		if(relative_percentative_gap < UE_convergence_percentage )
+		{
+			dtalog.output() << std::left << std::setw(20) << "[PROCESS INFO] The User Equilibrium Convergence Percentage has been successfully achieved. The process of updating columns has now been completed" << '\n';
+			break; 
+		}
 
 		if (dtalog.debug_level() >= 3)
 		{
@@ -2027,7 +2060,12 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										if (b_optional_DMS_flag == false)
 										{
 											delete it->second.path_link_vector;
-											it->second.path_link_vector = new int[link_seq_vector.size()];
+											try {
+												it->second.path_link_vector = new int[link_seq_vector.size()];
+											}
+											catch (const std::bad_alloc& e) {
+												dtalog.output() << "Memory allocation failed: " << e.what() << std::endl;
+											}
 											for (int l = 0; l < link_seq_vector.size(); l++)
 											{
 												it->second.path_link_vector[l] = link_seq_vector[l];

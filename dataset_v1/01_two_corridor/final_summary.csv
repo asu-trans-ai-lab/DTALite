@@ -7,6 +7,15 @@
 mode_type =, auto, real time info flag = 0
 mode_type =, rt, real time info flag = 1
 link_type =, 1, link_type_name = motorway
+<<<<<<< HEAD
+,mode_type= auto,cap= 2000,free_speed=120
+link_type =, 2, link_type_name = trunk
+,mode_type= auto,cap= 1800,free_speed=100
+link_type =, 3, link_type_name = primary
+,mode_type= auto,cap= 1500,free_speed=80
+link_type =, 4, link_type_name = residential
+,mode_type= auto,cap= 1000,free_speed=30
+=======
 ,mode_type= auto,cap= 2000,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
 link_type =, 2, link_type_name = trunk
@@ -18,10 +27,18 @@ link_type =, 3, link_type_name = primary
 link_type =, 4, link_type_name = residential
 ,mode_type= auto,cap= 1000,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 link_type =, 5, link_type_name = secondary
 ,mode_type= auto,cap= 1400,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
 link_type =, 6, link_type_name = tertiary
+<<<<<<< HEAD
+,mode_type= auto,cap= 1300,free_speed=50
+link_type =, 7, link_type_name = unclassified
+,mode_type= auto,cap= 1200,free_speed=40
+link_type =, 9, link_type_name = collector
+,mode_type= auto,cap= 1200,free_speed=50
+=======
 ,mode_type= auto,cap= 1300,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
 link_type =, 7, link_type_name = unclassified
@@ -30,10 +47,18 @@ link_type =, 7, link_type_name = unclassified
 link_type =, 9, link_type_name = collector
 ,mode_type= auto,cap= 1200,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 link_type =, 10, link_type_name = connector
 ,mode_type= auto,cap= 15000,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
 link_type =, 100, link_type_name = shared_use
+<<<<<<< HEAD
+,mode_type= auto,cap= 200,free_speed=20
+link_type =, 200, link_type_name = bikeonly
+,mode_type= auto,cap= 200,free_speed=5
+link_type =, 300, link_type_name = walkonly
+,mode_type= auto,cap= 300,free_speed=25
+=======
 ,mode_type= auto,cap= 200,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
 link_type =, 200, link_type_name = bikeonly
@@ -42,6 +67,7 @@ link_type =, 200, link_type_name = bikeonly
 link_type =, 300, link_type_name = walkonly
 ,mode_type= auto,cap= 300,free_speed=60
 ,mode_type= rt,cap= 2000,free_speed=60
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 , number of activity nodes defined in node.csv=, 2
 , number of boundary activity nodes defined in node.csv=, 0
 [PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
@@ -68,8 +94,14 @@ link_type =, 300, link_type_name = walkonly
 ,,300,walkonly,0,0,0,0,0,0,0,
 ,,-1,,,,1,motorway,,,2,trunk,,,3,primary,,,4,residential,,,5,secondary,,,6,tertiary,,,7,unclassified,,,9,collector,,,10,connector,,,100,shared_use,,,200,bikeonly,,,300,walkonly,pre-read demand_file_list.csv.
 ,first stage scanning
+<<<<<<< HEAD
+,# of inside zones = 2, total_related_demand = 7000
+,# inside_significant_zone_count = 2, total_related_demand_from_internal zones = 7000
+,# inside_insignificant_zone_count = 0, total_related_demand_from_internal zones = 0
+=======
 ,# of inside zones = 2, total_related_demand = 14000
 ,# inside_zone_count = 2, total_related_demand_from_internal zones = 14000
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 ,# related_external_zone_count = 0, external related demand = 0
 ,# related_external_zone_count_with_significant_volume = 0
  During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones.
@@ -107,6 +139,26 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 [DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
 0,0,7000,0,0
 1,0,7000,0,0
+<<<<<<< HEAD
+2,0,7000,48.1367,0
+3,0,7000,48.1367,0
+4,0,7000,48.1367,0
+5,0,7000,48.1367,0
+6,0,7000,48.1367,0
+7,0,7000,48.1367,0
+8,0,7000,48.1367,0
+9,0,7000,48.1367,0
+10,0,7000,48.1367,0
+11,0,7000,48.1367,0
+12,0,7000,48.1367,0
+13,0,7000,48.1367,0
+14,0,7000,48.1367,0
+15,0,7000,48.1367,0
+16,0,7000,48.1367,0
+17,0,7000,48.1367,0
+18,0,7000,48.1367,0
+19,0,7000,48.1367,0
+=======
 2,0,7000,94.056,56.7583
 3,0,7000,94.056,56.7583
 4,0,7000,54.8397,8.21125
@@ -125,16 +177,97 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 17,0,7000,58.078,1.70506
 18,0,7000,59.0264,0.924301
 19,0,7000,59.9692,0.312267
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 [PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,2
 column updating
+<<<<<<< HEAD
+[DATA INFO] column updating: iteration = 0, avg travel time = 48.1371(min), optimization obj = 0, Relative_gap = 0 %
+[PROCESS INFO] Step 6: OD demand matrix estimation
+ODME stage: # of sensors =,1
+ODME #0, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 48.1371(min) ,UE gap =0(min) = (0 %)
+ODME #1, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #2, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #3, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #4, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #5, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #6, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #7, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #8, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #9, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #10, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #11, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #12, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #13, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #14, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #15, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #16, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #17, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #18, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #19, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #20, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #21, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #22, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #23, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #24, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #25, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #26, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #27, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #28, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #29, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #30, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #31, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #32, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #33, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #34, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #35, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #36, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #37, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #38, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #39, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #40, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #41, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #42, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #43, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #44, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #45, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #46, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #47, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #48, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #49, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+ODME #49, link MAE= 2000,link_MAPE: 100%,system_MPE: -100%,avg_tt = 20.0003(min) ,UE gap =0(min) = (0 %)
+,# of ODME_iterations=,50
+=======
 [DATA INFO] column updating: iteration = 0, avg travel time = 30.8979(min), optimization obj = 9695.44, Relative_gap = 1.1131 %
 [DATA INFO] column updating: iteration = 1, avg travel time = 30.3251(min), optimization obj = 562.466, Relative_gap = 0.0662593 %
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
 [PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. 
 [PROCESS INFO] Step 9: Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
+<<<<<<< HEAD
+,VMT=,87010.6,VKT=,140000
+,VHT=,5615.95
+,network vehicle speed (MPH) =,15.4935,,network vehicle speed (KPH) =,24.929
+,PMT=,87010.6,PKT=,140000
+,PHT=,5615.95
+,network person speed (MPH) =,15.4935,,network person speed (KPH) =,24.929
+,simple avg link volume=,3500
+,simple avg link speed=,42.4645
+,simple avg link speed ratio=,0.707742
+Output subarea Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,87010.6,VKT=,140000
+,VHT=,5615.95
+,network vehicle speed (MPH) =,15.4935,,network vehicle speed (KPH) =,24.929
+,PMT=,87010.6,PKT=,140000
+,PHT=,5615.95
+,network person speed (MPH) =,15.4935,,network person speed (KPH) =,24.929
+,simple avg link volume=,3500
+,simple avg link speed=,42.4645
+,simple avg link speed ratio=,0.707742
+=======
 ,VMT=,192684,VKT=,310029
 ,VHT=,7066.73
 ,network vehicle speed (MPH) =,27.2664,,network vehicle speed (KPH) =,43.8716
@@ -209,6 +342,7 @@ Output subarea Link Performance:
 ,simple avg link volume=,3500
 ,simple avg link speed=,59.836
 ,simple avg link speed ratio=,0.997267
+>>>>>>> parent of c0db8ba (Guidelines for Data Handling and Upcoming Focus on Traffic Attribute Sensitivity Analysis)
      Check OD connectivity and accessibility in od_performance_summary.csv
 , # of connected OD pairs =, 0
 , # of OD/mode_type/demand_type columns without paths =, 4

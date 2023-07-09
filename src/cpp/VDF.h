@@ -58,11 +58,13 @@ public:
         Q_mu{ 0 }, Q_gamma{ 0 }, dynamic_traffic_management_flag{ 0 },
         volume_before_dtm{ 0 }, speed_before_dtm{ 0 }, DoC_before_dtm{ 0 }, P_before_dtm { 0 },
         volume_after_dtm{ 0 }, speed_after_dtm{ 0 }, DoC_after_dtm{ 0 }, P_after_dtm{ 0 },
-        ref_link_volume{ -1 }
+        ref_link_volume{ -1 }, free_speed_diff_link_specific{ 0 }, capacity_diff_link_specific{ 0 }
 {
         for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
-            toll[at] = 0;
+            for (int si = 0; si < g_number_of_active_scenarios; si++)
+                toll[at][si] = 0;
+
             free_speed_at[at] = 0;
             capacity_at[at] = 0;
             FFTT_at[at] = 0;
@@ -449,6 +451,9 @@ public:
            return avg_travel_time;
      }
 
+     std::map<int, int> turn_link_count_map;
+     std::map<int, int> restricted_turn_nodes_map;
+     string restricted_turn_nodes_str; 
      e_VDF_type vdf_type;
     //double DOC;
     //double VOC;
@@ -505,11 +510,15 @@ public:
 
     int dynamic_traffic_management_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
-    double toll[MAX_MODETYPES];
+    double toll[MAX_MODETYPES][MAX_SCENARIOS];
     double occ[MAX_MODETYPES];
 
     double free_speed_at[MAX_MODETYPES];
     double capacity_at[MAX_MODETYPES];
+
+    double free_speed_diff_link_specific; 
+    double capacity_diff_link_specific;
+
     double FFTT_at[MAX_MODETYPES];
     double lanes_mode_type[MAX_MODETYPES];
 

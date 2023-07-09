@@ -171,6 +171,7 @@ public:
 		l_number_of_links = number_of_links;
 		number_of_origin_grids = nb_of_origin_grids;
 
+		try {
 		NodeForwardStarArray = new CNodeForwardStar[number_of_nodes];
 		NodeBackwardStarArray = new CNodeForwardStar[number_of_nodes];
 
@@ -190,6 +191,11 @@ public:
 		m_link_genalized_cost_array = new double[number_of_links];  //9
 
 		m_link_outgoing_connector_zone_seq_no_array = new int[number_of_links]; //10
+		}
+		catch (const std::bad_alloc& e) {
+			dtalog.output() << "Memory allocation failed: " << e.what() << std::endl;
+		}
+
 	}
 
 	bool UpdateGeneralizedLinkCost(int mode_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
@@ -204,7 +210,7 @@ public:
 
 			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
-				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
+				p_link->VDF_period[m_tau].toll[mode_type_no][assignment.active_scenario_index] / m_value_of_time * 60;
 
 			if (p_link->link_id == "7742")
 			{
@@ -247,7 +253,7 @@ public:
 
 			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
-				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
+				p_link->VDF_period[m_tau].toll[mode_type_no][assignment.active_scenario_index] / m_value_of_time * 60;
 
 			if (p_link->link_id == "7742")
 			{
@@ -329,8 +335,14 @@ public:
 
 			if (outgoing_link_size >= 1)
 			{
-				NodeForwardStarArray[node_seq_no].OutgoingLinkNoArray = new int[outgoing_link_size];
-				NodeForwardStarArray[node_seq_no].OutgoingNodeNoArray = new int[outgoing_link_size];
+				try {
+					NodeForwardStarArray[node_seq_no].OutgoingLinkNoArray = new int[outgoing_link_size];
+					NodeForwardStarArray[node_seq_no].OutgoingNodeNoArray = new int[outgoing_link_size];
+					}
+			catch (const std::bad_alloc& e) {
+				dtalog.output() << "Memory allocation failed: in function BuildNetwork() " << e.what() << std::endl;
+			}
+
 			}
 
 			for (int j = 0; j < outgoing_link_size; ++j)
@@ -1024,14 +1036,11 @@ public:
 				{
 					if (pred_link_seq_no >= 0)
 					{
-						string	movement_string;
-						string ib_link_id = g_link_vector[pred_link_seq_no].link_id;
-						string ob_link_id = g_link_vector[link_seq_no].link_id;
-						movement_string = ib_link_id + "->" + ob_link_id;
 
-						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
+						 
+						if (m_mode_type_no == 0 && g_link_vector[pred_link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.find(to_node) != g_link_vector[pred_link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.end())
 						{
-							dtalog.output() << "[DATA INFO] prohibited movement " << movement_string << " will not be used " << '\n';
+	/*						dtalog.output() << "[DATA INFO] restricted turn/movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';*/
 							continue;
 						}
 					}
@@ -1672,20 +1681,17 @@ public:
 					p_assignment->sp_log_file << "SP:  checking outgoing node " << g_node_vector[to_node].node_id << '\n';
 
 				// if(map (pred_link_seq_no, link_seq_no) is prohibitted )
-				//     then continue; //skip this is not an exact solution algorithm for movement
+				//     then continue; //skip this is not an exact solutfion algorithm for movement
 
 				if (g_node_vector[from_node].prohibited_movement_size >= 1)
 				{
 					if (pred_link_seq_no >= 0)
 					{
-						string	movement_string;
-						string ib_link_id = g_link_vector[pred_link_seq_no].link_id;
-						string ob_link_id = g_link_vector[link_seq_no].link_id;
-						movement_string = ib_link_id + "->" + ob_link_id;
 
-						if (g_node_vector[from_node].m_prohibited_movement_string_map.find(movement_string) != g_node_vector[from_node].m_prohibited_movement_string_map.end())
+
+						if (m_mode_type_no == 0 && g_link_vector[link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.find(to_node) != g_link_vector[link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.end())
 						{
-							p_assignment->sp_log_file << "prohibited movement " << movement_string << " will not be used " << '\n';
+							dtalog.output() << "[DATA INFO] restricted movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';
 							continue;
 						}
 					}

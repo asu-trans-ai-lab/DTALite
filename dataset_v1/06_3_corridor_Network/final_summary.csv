@@ -1,0 +1,84 @@
+[PROCESS INFO] Step 0: reading scenario_index_list.csv
+[STATUS INFO] scenario_index=0,scenario_name=,25nb
+[STATUS INFO] scenario_index=1,scenario_name=,2040
+[PROCESS INFO] Step 1.1: Reading demand_period.csv...
+,demand_period= 1, am,time_period=0700_0800
+[PROCESS INFO] Step 1.2: Reading file mode_type.csv...
+mode_type =, auto, real time info flag = 0
+mode_type =, info, real time info flag = 1
+link_type =, 1, link_type_name = motorway
+,mode_type= auto,cap= 2000,free_speed=120
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 2, link_type_name = trunk
+,mode_type= auto,cap= 1800,free_speed=100
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 3, link_type_name = primary
+,mode_type= auto,cap= 1500,free_speed=80
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 4, link_type_name = residential
+,mode_type= auto,cap= 1000,free_speed=30
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 5, link_type_name = secondary
+,mode_type= auto,cap= 1400,free_speed=60
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 6, link_type_name = tertiary
+,mode_type= auto,cap= 1300,free_speed=50
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 7, link_type_name = unclassified
+,mode_type= auto,cap= 1200,free_speed=40
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 9, link_type_name = collector
+,mode_type= auto,cap= 1200,free_speed=50
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 10, link_type_name = connector
+,mode_type= auto,cap= 15000,free_speed=60
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 100, link_type_name = shared_use
+,mode_type= auto,cap= 200,free_speed=20
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 200, link_type_name = bikeonly
+,mode_type= auto,cap= 200,free_speed=5
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 300, link_type_name = walkonly
+,mode_type= auto,cap= 300,free_speed=25
+,mode_type= info,cap= 2000,free_speed=60
+, number of activity nodes defined in node.csv=, 5
+, number of boundary activity nodes defined in node.csv=, 0
+[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,54
+,# of links =,79
+,# of zones =,5
+[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,54
+,# of links =,79
+,# of zones =,5
+,summary by road link type,link_type,link_type_name,# of links,avg_free_speed_mph,avg_free_speed_kmph,,total_length,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,-1,,0,0,0,0,0,0,0,
+,,1,motorway,77,60,96.5604,274.711,314900,1796.1,3567.67,
+,,2,trunk,1,10,16.0934,4.681,1800,900,4681,
+,,3,primary,0,0,0,0,0,0,0,
+,,4,residential,1,20,32.1868,6.2163,3600,1800,6216.3,
+,,5,secondary,0,0,0,0,0,0,0,
+,,6,tertiary,0,0,0,0,0,0,0,
+,,7,unclassified,0,0,0,0,0,0,0,
+,,9,collector,0,0,0,0,0,0,0,
+,,10,connector,0,0,0,0,0,0,0,
+,,100,shared_use,0,0,0,0,0,0,0,
+,,200,bikeonly,0,0,0,0,0,0,0,
+,,300,walkonly,0,0,0,0,0,0,0,
+,,-1,,,,1,motorway,,,2,trunk,,,3,primary,,,4,residential,,,5,secondary,,,6,tertiary,,,7,unclassified,,,9,collector,,,10,connector,,,100,shared_use,,,200,bikeonly,,,300,walkonly,pre-read demand_file_list.csv.
+,first stage scanning
+,# of inside zones = 5, total_related_demand = 7000
+,# inside_significant_zone_count = 5, total_related_demand_from_internal zones = 7000
+,# inside_insignificant_zone_count = 0, total_related_demand_from_internal zones = 0
+,# related_external_zone_count = 0, external related demand = 0
+,# related_external_zone_count_with_significant_volume = 0
+ During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones.
+,# cut off zone size = 5, total_related_demand_from_external_cutoff  = 0
+,cut off volume threshold to determine significance = 0.External origin zones with a volume larger than this threshold will be retained.
+, remaining external related demand percentage after the cut off  = 0 %
+[PROCESS INFO] Step 2.1: read demand, defined in demand_file_list.csv.
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO

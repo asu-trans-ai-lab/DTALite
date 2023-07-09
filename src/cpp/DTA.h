@@ -10,7 +10,7 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-constexpr auto MAX_SCENARIOS = 100;
+constexpr auto MAX_SCENARIOS = 30;
 constexpr auto MAX_MODETYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
 
@@ -421,10 +421,16 @@ public:
         }
 
         // dynamic array
+    try {
         path_node_vector = new int[node_size];
         path_link_vector = new int[link_size];
 
-        if (backwardflag)
+    }
+    catch (const std::bad_alloc& e) {
+        std::cout << "Memory allocation failed: " << e.what() << std::endl;
+    }
+
+    if (backwardflag)
         {
             // copy backward
             for (int i = 0; i < m_node_size; ++i)
@@ -833,13 +839,13 @@ class Assignment {
 public:
     // default is UE
     Assignment() : assignment_mode{ lue }, g_number_of_memory_blocks{ 4 }, g_number_of_threads{ 1 }, g_info_updating_freq_in_min{ 5 }, g_visual_distance_in_cells{ 5 },
-        g_link_type_file_loaded{ true }, g_mode_type_file_loaded{ false }, total_route_demand_volume{ 0 }, total_real_time_demand_volume{ 0 },
-        total_demand_volume{ 0.0 }, g_column_pool{ nullptr }, g_number_of_in_memory_simulation_intervals{ 500 },
+        g_link_type_file_loaded{ true }, g_mode_type_file_loaded{ false }, total_route_demand_volume{ 0 }, total_real_time_demand_volume{ 0 }, g_column_pool{ nullptr }, g_number_of_in_memory_simulation_intervals{ 500 },
         g_number_of_column_generation_iterations{ 20 }, g_number_of_column_updating_iterations{ 0 }, g_number_of_ODME_iterations{ 0 }, g_number_of_sensitivity_analysis_iterations_for_dtm{ -1 }, g_number_of_demand_periods{ 24 }, g_number_of_links{ 0 }, g_number_of_timing_arcs{ 0 },
         g_number_of_nodes{ 0 }, g_number_of_zones{ 0 }, g_number_of_mode_types{ 0 }, debug_detail_flag{ 1 }, path_output{ 1 }, trajectory_output_count{ -1 },
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
         shortest_path_log_zone_id{ 1 }, g_number_of_analysis_districts{ 1 },
-        active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }, g_first_link_type{ -1 }
+        active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }, g_first_link_type{ -1 },
+        g_max_num_significant_zones_in_subarea {50000}, g_max_num_significant_zones_outside_subarea {50000}
 
     {
         m_LinkCumulativeArrivalVector  = NULL;
@@ -887,10 +893,14 @@ public:
 
     void InitializeDemandMatrix(int number_of_signficant_zones, int number_of_zones, int number_of_mode_types, int number_of_time_periods)
     {
-        total_demand_volume = 0.0;
+
         g_number_of_zones = number_of_zones;
         g_number_of_mode_types = number_of_mode_types;
 
+        for(int i = 0; i< g_number_of_active_scenarios; i++)
+        {
+            total_demand_volume[i] = 0; 
+        }
         g_column_pool = Allocate4DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_mode_types), number_of_time_periods);
 
         for (int i = 0; i < number_of_zones; ++i)
@@ -906,6 +916,7 @@ public:
                 total_route_demand[i][tau] = 0.0;
             }
         }
+
 
         g_DemandGlobalMultiplier = 1.0f;
     }
@@ -976,7 +987,7 @@ public:
     bool g_link_type_file_loaded;
     bool g_mode_type_file_loaded;
 
-    float total_demand_volume;
+    float total_demand_volume[MAX_SCENARIOS];
     float total_real_time_demand_volume;
 
     float total_route_demand_volume;
@@ -989,6 +1000,9 @@ public:
     int g_number_of_column_generation_iterations;
     int g_number_of_sensitivity_analysis_iterations_for_dtm;
     int g_number_of_column_updating_iterations;
+    int g_max_num_significant_zones_in_subarea;
+    int g_max_num_significant_zones_outside_subarea;
+
     int g_number_of_ODME_iterations;
     int g_number_of_demand_periods;
     int g_length_unit_flag;
@@ -1120,6 +1134,16 @@ public:
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
         layer_no{ 0 }, AB_flag {1}, BA_link_no {-1}
    {
+        penalty_si_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_volume_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_lanes_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_MEU_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_capacity_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_DOC_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_TT_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_CO2_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+        recorded_NOX_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+
         for (int si = 0; si < g_number_of_active_scenarios; si++)
         {
             link_type_si[si] = 0;
@@ -1129,7 +1153,7 @@ public:
                 for (int at = 0; at < g_number_of_active_mode_types; ++at)
                 {
 
-                    penalty_si_at[si][at][tau] = 0;
+                    penalty_si_at[tau][at][si] = 0;
                     recorded_lanes_per_period_per_at[tau][at][si] = 0;
                     recorded_volume_per_period_per_at[tau][at][si] = 0;
                     recorded_MEU_per_period_per_at[tau][at][si] = 0;
@@ -1166,11 +1190,33 @@ public:
 
     ~CLink()
     {
+        //In our open source package, we dynamically allocate instances of CLinkand store their pointers in g_link_vector for later use.Considering the fact that these instances are still being used via the pointers in g_link_vector, we don't explicitly free memory in ~CLink().
+
+        //    Let's clarify the typical use of a destructor in C++. It is mainly to free resources that the object owns when it goes out of scope or is explicitly deleted. This can include memory, file descriptors, database connections, and other resources. However, the destructor is not meant to free resources that are still being used elsewhere, which is the case in our package.
+
+        //    If the object is still being used via g_link_vector, deleting the object would lead to undefined behavior, as there would be dangling pointers in g_link_vector pointing to memory that's no longer valid.
+
+        //    The proper approach that we've adopted is to keep track of all dynamically allocated CLink objects and delete them when they are no longer needed, i.e., when they are no longer accessible via g_link_vector. We handle this in a clean-up function or similar part of our code, or in the destructor of the class/structure that owns g_link_vector, making sure that by the time this destructor is called, there's no more need for the CLink objects.
+
+        //    Even though the best practice in modern C++ is to avoid explicit newand delete whenever possible, and instead use smart pointers like std::unique_ptr or std::shared_ptr that automatically manage the object's lifetime, our requirement is to use raw pointers and dynamic allocation. That's why we've clear ownership semantics and life-cycle management to ensure no memory leaks or undefined behavior occur.
+
+        //    Here's how we've improved our design :
+
+        //In this design, the CLink objects will be properly deallocated in the following function free_memory() when the Network object is destroyed.We are always mindful to remove any CLink objects from g_link_vector before we delete them elsewhere in our code to prevent dangling pointers.
     }
 
-    // Peiheng, 02/05/21, useless block
+
     void free_memory()
     {
+
+        Deallocate3DDynamicArray(recorded_volume_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_lanes_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_MEU_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_capacity_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_DOC_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_TT_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_CO2_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
+        Deallocate3DDynamicArray(recorded_NOX_per_period_per_at, g_number_of_active_demand_perioids, g_number_of_active_mode_types);
     }
 
     void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int vdf_type);
@@ -1186,7 +1232,7 @@ public:
     double get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(int tau, int mode_type_no)
     {
         // *60 as 60 min per hour
-        double generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
+        double generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no][assignment.active_scenario_index] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
 
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
@@ -1202,7 +1248,7 @@ public:
     int zone_seq_no_for_outgoing_connector;
 
     double number_of_lanes_si[MAX_SCENARIOS];
-    double penalty_si_at[MAX_SCENARIOS][MAX_MODETYPES][MAX_TIMEPERIODS];
+
 
 
     double lane_capacity;
@@ -1324,12 +1370,14 @@ public:
 
 
     std::map<int, int> capacity_reduction_map;
+    
     int global_minute_capacity_reduction_start;
     int global_minute_capacity_reduction_end;
 
     std::map<int, int> vms_map;
 
     std::string link_id;
+
     std::string geometry;
 
     int meso_link_id;
@@ -1445,6 +1493,9 @@ public:
 
     CPeriod_VDF VDF_period[MAX_TIMEPERIODS];
 
+
+
+
     int type;
 
     //static
@@ -1462,18 +1513,24 @@ public:
     double  volume_per_mode_type_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
     double  converted_MEU_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES];
 
-    double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-    double  recorded_lanes_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-    double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_volume_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_lanes_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_MEU_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_capacity_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_CO2_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
+    //double  recorded_NOX_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
 
-    // added by Xuesong 0603 2023
-    double  recorded_capacity_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-    double  recorded_DOC_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-    double  recorded_TT_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-
-    double  recorded_CO2_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-    double  recorded_NOX_per_period_per_at[MAX_TIMEPERIODS][MAX_MODETYPES][MAX_SCENARIOS];
-
+    double *** penalty_si_at;
+    double  ***recorded_volume_per_period_per_at;
+    double ***recorded_lanes_per_period_per_at;
+    double  ***recorded_MEU_per_period_per_at;
+    double*** recorded_capacity_per_period_per_at;
+    double*** recorded_DOC_per_period_per_at;
+    double*** recorded_TT_per_period_per_at;
+    double*** recorded_CO2_per_period_per_at;
+    double*** recorded_NOX_per_period_per_at;
 
     double  queue_link_distance_VDF_perslot[MAX_TIMEPERIODS];  // # of vehicles in the vertical point queue
     double link_avg_travel_time_per_period[MAX_TIMEPERIODS][MAX_MODETYPES];
@@ -1621,7 +1678,6 @@ public:
     std::vector<int> m_to_node_seq_no_vector;
     std::map<int, int> m_to_node_2_link_seq_no_map;
 
-    std::map<std::string, int> m_prohibited_movement_string_map;
     // for simulation
     std::map<int, int> next_link_for_resource_request;
 

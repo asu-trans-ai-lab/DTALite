@@ -227,6 +227,19 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				fprintf(g_pFileModel_LC, "dynamic lane use,final_number_of_lanes=%f,", final_lanes);
 				dtm_dynamic_lane_use_count++;
 			}
+
+			if (DTM_type == "dynamic_toll")
+			{
+				// capacity in the space time arcs
+				float toll_amount = 0;
+				parser.GetValueByFieldName("toll_amount", toll_amount);
+				
+				g_link_vector[link_seq_no].VDF_period[tau].toll[mode_type_no][assignment.active_scenario_index] = toll_amount;  // apply the change
+
+				fprintf(g_pFileModel_LC, "dynamic_toll,toll_amount=%f,", toll_amount);
+				dtm_dynamic_lane_use_count++;
+			}	
+
 			else if (DTM_type == "lane_closure")
 			{
 				// capacity in the space time arcs

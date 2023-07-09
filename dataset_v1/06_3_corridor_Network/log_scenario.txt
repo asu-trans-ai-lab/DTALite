@@ -1,3 +1,2 @@
 dtm_type,demand_period,from_node,to_node,geometry,values
 reading record 1
-am,9,10,"LINESTRING (-112.079717 33.668347,-112.062351 33.668466,)"

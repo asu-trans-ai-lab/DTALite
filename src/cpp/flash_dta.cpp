@@ -45,10 +45,13 @@ void write_default_setting_file_if_not_exist()
 			{"assignment", "number_of_iterations", "20"},
 			{"assignment", "route_output", "1"},
 			{"assignment", "simulation_output", "0"},
+			{"assignment", "UE_convergence_percentage", "0.1"},
 			{"cpu", "number_of_memory_blocks", "4"},
 			{"unit", "length_unit", "meter"},
 			{"unit", "speed_unit", "kmph"},
-	};
+			{"subarea", "max_num_significant_zones_in_subarea","50000"},
+			{"subarea", "max_num_significant_zones_outside_subarea","50000"}
+		};
 
 	// Open the file for output.
 	std::ofstream outFile("settings.csv");
@@ -398,7 +401,7 @@ void write_default_demand_file_list_if_not_exist() {
 	DemandFileListData dataItem_1 = { "0", "2", "1", "demand.csv", "am", "auto", "column", "2", "1", "" };
 
 	data.push_back(dataItem);
-	data.push_back(dataItem_1);
+	//data.push_back(dataItem_1);
 
 	// Add more entries in the same way...
 
@@ -608,10 +611,10 @@ void write_default_sensor_data_file_if_not_exist() {
 		outFile.open(filename.c_str());
 
 		// Write the headers
-		outFile << "sensor_id,from_node_id,to_node_id,demand_period,count,upper_bound_flag,scenario_index,activate\n";
+		outFile << "sensor_id,from_node_id,to_node_id,demand_period,count,scenario_index,activate\n";
 
 		// Write the data
-		outFile << "1,483,481,am,3000.975,1,0,0\n";
+		outFile << "1,483,481,am,3000.975,0,0\n";
 
 		// Close the file
 		outFile.close();
@@ -645,7 +648,13 @@ int main()
 	int sensitivity_analysis_iterations = 0;
 	int number_of_memory_blocks = 4;
 	float info_updating_freq_in_min = 5;
-	int simulation_output = 1;
+	int simulation_output = 0;
+	int max_num_significant_zones_in_subarea = 50000;
+	int max_num_significant_zones_outside_subarea = 50000;
+
+
+
+	double UE_convergence_percentage = 1.0; 
 
 	int signal_updating_output = 0;
 	// generate link performance and agent file
@@ -673,6 +682,7 @@ int main()
 	dtalog.output() << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
 	dtalog.output() << "   |--- Route assignment (route_assignment_s.csv)\n";
 	dtalog.output() << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)\n";
+	dtalog.output() << "   |--- Trajectory performance (agent_s.csv, trajectory.csv)\n";
 	dtalog.output() << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
 	dtalog.output() << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)\n";
 	dtalog.output() << "--------------------------" << '\n';
@@ -765,16 +775,18 @@ int main()
 		int route_output_value = -1;
 
 		int s = -1;
-		if (parser_settings.GetValueByKeyName("route_output", route_output_value, false, false) == true)
-		{
-			route_output = route_output_value;
-			if (route_output == 0)   // reset back to lue mode
-				assignment_mode = 0;
-		}
 
-		dtalog.output() << "[DATA INFO] route_output = " << route_output_value << " in settings.csv." << '\n';
+	
+			if (parser_settings.GetValueByKeyName("UE_convergence_percentage", UE_convergence_percentage, false, false) == true)
+			{
+				if (UE_convergence_percentage < -0.1)
+					UE_convergence_percentage = 1;
+			}
 
-		simulation_output = 1;  //default
+		dtalog.output() << "[DATA INFO] UE_convergence_percentage = " << UE_convergence_percentage << " (%) in settings.csv." << '\n';
+
+
+		simulation_output = 0;  //default
 		int simulation_output_value = -1;
 		if (parser_settings.GetValueByKeyName("simulation_output", simulation_output_value, false, false))
 		{
@@ -794,6 +806,19 @@ int main()
 			number_of_memory_blocks = number_of_memory_blocks_values;
 			dtalog.output() << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
 		}
+
+		if (parser_settings.GetValueByKeyName("max_num_significant_zones_in_subarea", max_num_significant_zones_in_subarea, false, false))
+		{
+			dtalog.output() << "[DATA INFO] max_num_significant_zones_in_subarea = " << max_num_significant_zones_in_subarea << " in settings.csv." << '\n';
+		}
+		
+
+		if (parser_settings.GetValueByKeyName("max_num_significant_zones_outside_subarea", max_num_significant_zones_outside_subarea, false, false))
+		{
+			dtalog.output() << "[DATA INFO] max_num_significant_zones_outside_subarea = " << max_num_significant_zones_outside_subarea << " in settings.csv." << '\n';
+		}	
+
+
 
 		string length_unit_str; 
 		if (parser_settings.GetValueByKeyName("length_unit", length_unit_str, false, false))
@@ -819,6 +844,8 @@ int main()
 				speed_unit_flag = 0; // always as default 0 
 
 		}
+
+
 		
 
 		double number_of_seconds_per_interval_input = 0.25;
@@ -839,7 +866,7 @@ int main()
 	// scenario
 	//
 	// obtain initial flow values
-	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, length_unit_flag, speed_unit_flag);
+	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, length_unit_flag, speed_unit_flag, UE_convergence_percentage, max_num_significant_zones_in_subarea, max_num_significant_zones_outside_subarea);
 
 	return 0;
 }

@@ -199,7 +199,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
     {
         if (x % 1000 == 0)
         {
-            dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
+            //dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
         }
 
         dynamicArray[x] = new (std::nothrow) T * [nY];

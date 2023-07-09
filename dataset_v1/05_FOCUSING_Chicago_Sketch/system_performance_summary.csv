@@ -1,3 +1,0 @@
-first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,
-,0,no_build,am,auto,1.13749e+06,286335,2.19647e+07,1.36511e+07,2.19697e+07,19.3097,12.0011,19.3141,
-,1,build,am,auto,1.13749e+06,146033,2.21048e+07,1.37382e+07,2.21048e+07,19.4329,12.0776,19.4329,

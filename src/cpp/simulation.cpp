@@ -91,6 +91,8 @@ void Assignment::AllocateLinkMemory4Simulation()
 		m_link_total_waiting_time_vector.push_back(0.0);
 	}
 
+	g_AgentTDListMap.clear();
+
 	dtalog.output() << "[STATUS INFO] initializing time dependent capacity data..." << '\n';
 
 #pragma omp parallel for
@@ -326,6 +328,8 @@ void Assignment::STTrafficSimulation()
 				}
 			}
 
+			p_link->EntranceQueue.clear();
+			p_link->ExitQueue.clear();
 		}
 
 	}
@@ -526,8 +530,15 @@ void Assignment::STTrafficSimulation()
 	dtalog.output() << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
 	dtalog.output() << "[STATUS INFO] generating " << g_agent_simu_vector.size() / 1000 << " K agents" << '\n';
 
-	dtalog.output() << "[DATA INFO] CI = cumulative impact count, CR= cumulative rerouting count" << '\n';
+	//dtalog.output() << "[DATA INFO] CI = cumulative impact count, CR= cumulative rerouting count" << '\n';
 	assignment.summary_file << ", # of simulated agents in agent.csv=," << g_agent_simu_vector.size() << "," <<'\n';
+	dtalog.output() << std::left << std::setprecision(4)
+		<< std::setw(20) << "[DATA INFO]" 
+		<< std::setw(25) << "In-simulation Time (min)"
+		<< std::setw(20) << "Cumu. Arrival"
+		<< std::setw(20) << "Cumu. Departure"
+		<< std::setw(15) << "Speed"
+		<< std::setw(15) << "Travel Time" << '\n';
 
 	int current_active_agent_id = 0;
 	// the number of threads is redifined.
@@ -625,15 +636,16 @@ void Assignment::STTrafficSimulation()
 
 					if (p_link->m_link_pedefined_capacity_map_in_sec.size() > 0)
 					{
-						int current_time_in_relative_sec = (current_time_in_min- assignment.g_LoadingStartTimeInMin) * 60;  // *10: 0.1 min, 6 seconds.
+						int current_time_in_relative_sec = (current_time_in_min - assignment.g_LoadingStartTimeInMin) * 60;  // *10: 0.1 min, 6 seconds.
 
 						if (p_link->m_link_pedefined_capacity_map_in_sec.find(current_time_in_relative_sec) != p_link->m_link_pedefined_capacity_map_in_sec.end())
 						{
 							p_link->RT_waiting_time = 99;
 						}
-					}else
+					}
+					else
 					{
-					p_link->RT_waiting_time = total_waiting_time_in_min / max((size_t)1, p_link->ExitQueue.size());  // average travel time
+						p_link->RT_waiting_time = total_waiting_time_in_min / max((size_t)1, p_link->ExitQueue.size());  // average travel time
 					}
 
 					//int timestamp_in_min = g_LoadingStartTimeInMin + t / number_of_simu_intervals_in_min;
@@ -654,11 +666,14 @@ void Assignment::STTrafficSimulation()
 
 		if (t % (number_of_simu_interval_per_min * 10) == 0)
 		{
-			dtalog.output() << std::setprecision(4) << "[DATA INFO] simu time= " << t / number_of_simu_interval_per_min << " min, CA = " << TotalCumulative_Arrival_Count << " CD=" << TotalCumulative_Departure_Count
-				<< ", speed=" << network_wide_speed << ", travel time = " << network_wide_travel_time <<
-				",CI=" << TotalCumulative_impact_count <<
-				",CR=" << TotalCumulative_rerouting_count
-				<< '\n';
+			// Log the information
+			dtalog.output() << std::left << std::setprecision(4)
+				<< std::setw(20) << "[DATA INFO]" 
+				<< std::setw(25) << t / number_of_simu_interval_per_min
+				<< std::setw(20) << TotalCumulative_Arrival_Count
+				<< std::setw(20) << TotalCumulative_Departure_Count
+				<< std::setw(15) << network_wide_speed
+				<< std::setw(15) << network_wide_travel_time << '\n';
 
 
 			assignment.summary_file << std::setprecision(5) << ",simu time=," << t / number_of_simu_interval_per_min << " min, CA =," << TotalCumulative_Arrival_Count << ",CD=," << TotalCumulative_Departure_Count
@@ -1012,7 +1027,7 @@ void Assignment::STTrafficSimulation()
 						for (int link_s = 0; link_s < p_agent->path_link_seq_no_vector.size(); link_s++)
 						{
 							int link_seq_no = p_agent->path_link_seq_no_vector[link_s];
-							//path_toll += g_link_vector[link_seq_no].VDF_period[p_agent->tau].toll[at];
+							//path_toll += g_link_vector[link_seq_no].VDF_period[p_agent->tau].toll[at][assignment.active_scenario_index];
 							p_agent->path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 						}
 

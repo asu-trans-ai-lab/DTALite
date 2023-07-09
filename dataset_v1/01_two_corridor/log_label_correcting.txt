@@ -1,0 +1,1200 @@
+ beginning of SP iteration k =  0: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking from node 1  to node 3 cost = 10.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  updating node: 3 current cost:1e+15 new cost 10.0002
+SP: add node 3 new cost:10.0002 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 10.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 10.0002,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking from node 3  to node 2 cost = 20.0002 , m_node_label_cost[from_node] 10.0002,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  updating node: 2 current cost:1e+15 new cost 20.0002
+SP: add node 2 new cost:20.0002 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 20.0002 , m_node_label_cost[from_node] 20.0002,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 20.0003 , m_node_label_cost[from_node] 20.0002,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 20.0003
+SP: add node -2 new cost:20.0003 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 20.0003 , m_node_label_cost[from_node] 20.0003,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 0 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 20.0002time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 10.0002time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 20.0003time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  0: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 0 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  1: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking from node 1  to node 3 cost = 10.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  updating node: 3 current cost:1e+15 new cost 10.0002
+SP: add node 3 new cost:10.0002 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 10.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 10.0002,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking from node 3  to node 2 cost = 20.0002 , m_node_label_cost[from_node] 10.0002,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  updating node: 2 current cost:1e+15 new cost 20.0002
+SP: add node 2 new cost:20.0002 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 20.0002 , m_node_label_cost[from_node] 20.0002,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 20.0003 , m_node_label_cost[from_node] 20.0002,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 20.0003
+SP: add node -2 new cost:20.0003 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 20.0003 , m_node_label_cost[from_node] 20.0003,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 1 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 20.0002time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 10.0002time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 20.0003time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  1: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 1 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  2: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 2 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  2: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 2 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  3: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 3 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  3: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 3 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  4: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 4 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  4: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 4 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  5: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 5 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  5: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 5 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  6: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 6 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  6: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 6 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  7: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 7 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  7: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 7 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  8: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 8 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  8: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 8 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  9: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 9 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  9: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 9 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  10: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 10 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  10: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 10 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  11: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 11 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  11: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 11 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  12: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 12 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  12: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 12 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  13: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 13 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  13: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 13 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  14: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 14 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  14: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 14 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  15: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 15 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  15: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 15 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  16: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 16 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  16: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 16 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  17: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 17 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  17: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 17 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  18: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 18 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  18: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 18 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1
+ beginning of SP iteration k =  19: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -1  to node 1 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 1 current cost:1e+15 new cost 0.000169717
+SP: add node 1 new cost:0.000169717 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  checking from node 1  to node 4 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15.0002
+SP: add node 4 new cost:15.0002 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15.0002 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 1  to node 3 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 3 current cost:1e+15 new cost 24.0685
+SP: add node 3 new cost:24.0685 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 24.0685 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 1  to node -1 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 15.0002,m_link_genalized_cost_array[link_seq_no] = 15
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 0.000339434 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  checking from node 3  to node 2 cost = 48.1369 , m_node_label_cost[from_node] 24.0685,m_link_genalized_cost_array[link_seq_no] = 24.0684
+SP:  updating node: 2 current cost:1e+15 new cost 48.1369
+SP: add node 2 new cost:48.1369 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 48.1369 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 48.1371 , m_node_label_cost[from_node] 48.1369,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: -2 current cost:1e+15 new cost 48.1371
+SP: add node -2 new cost:48.1371 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 48.1371 , m_node_label_cost[from_node] 48.1371,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 19 origin node: -1
+SP node: 1 label cost 0.000169717time -6.27744e+66node_pred_id -1
+SP node: 2 label cost 48.1369time -6.27744e+66node_pred_id 3
+SP node: 3 label cost 24.0685time -6.27744e+66node_pred_id 1
+SP node: 4 label cost 15.0002time -6.27744e+66node_pred_id 1
+SP node: -1 label cost 0time 0node_pred_id -1
+SP node: -2 label cost 48.1371time -6.27744e+66node_pred_id 2
+ beginning of SP iteration k =  19: origin node: -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node -2  to node 2 cost = 0.000169717 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  updating node: 2 current cost:1e+15 new cost 0.000169717
+SP: add node 2 new cost:0.000169717 into SE List 2
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 0.000169717 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SP:  checking from node 2  to node -2 cost = 0.000339434 , m_node_label_cost[from_node] 0.000169717,m_link_genalized_cost_array[link_seq_no] = 0.000169717
+SPtree at iteration k = 19 origin node: -2
+SP node: 2 label cost 0.000169717time -6.27744e+66node_pred_id -2
+SP node: -2 label cost 0time 0node_pred_id -1

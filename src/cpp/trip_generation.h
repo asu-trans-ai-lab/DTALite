@@ -60,7 +60,7 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 
 	for (int si = 0; si < g_number_of_active_scenarios; si++)
 	{
-		link.link_type_si[si] = 1000;  // access_link
+		link.link_type_si[si] = -1;  // access_link
 	}
 
 	//only for outgoing connectors
@@ -937,7 +937,7 @@ void g_trip_generation(Assignment& assignment)
 				}
 			}
 
-			dtalog.output() << "[DATA INFO] o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
+			//dtalog.output() << "[DATA INFO] o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
 
 			if (count > 0)
 			{
@@ -959,8 +959,8 @@ void g_trip_generation(Assignment& assignment)
 
 								if (trip_distribution_log_count < 100)
 								{
-									dtalog.output() << ", o: " << orig << ",d:" << dest << ", ratio =" << ratio <<
-										",trip = " << g_zone_vector[orig].m_ODMatrix.value_map[dest] << '\n';
+									//dtalog.output() << ", o: " << orig << ",d:" << dest << ", ratio =" << ratio <<
+									//	",trip = " << g_zone_vector[orig].m_ODMatrix.value_map[dest] << '\n';
 								}
 								trip_distribution_log_count++;
 

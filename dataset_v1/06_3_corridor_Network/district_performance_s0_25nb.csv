@@ -1,0 +1,11 @@
+first_column,district_seq_id,scenario_name,demand_period,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry
+,1,25nb,am,auto,6300,117841,73239,120515,18.705,11.6252,19.1293,1;,"POLYGON ((-112.216 33.6539,))"
+,1,25nb,am,info,700,13093.5,8137.66,13390.5,18.705,11.6252,19.1293,1;,"POLYGON ((-112.216 33.6539,))"
+,2,25nb,am,auto,0,0,0,0,0,0,0,2;,"POLYGON ((-112.03 33.6553,))"
+,2,25nb,am,info,0,0,0,0,0,0,0,2;,"POLYGON ((-112.03 33.6553,))"
+,3,25nb,am,auto,0,0,0,0,0,0,0,4;,"POLYGON ((-112.183 33.6676,))"
+,3,25nb,am,info,0,0,0,0,0,0,0,4;,"POLYGON ((-112.183 33.6676,))"
+,4,25nb,am,auto,0,0,0,0,0,0,0,42;,"POLYGON ((-112.12 33.6714,))"
+,4,25nb,am,info,0,0,0,0,0,0,0,42;,"POLYGON ((-112.12 33.6714,))"
+,5,25nb,am,auto,0,0,0,0,0,0,0,43;,"POLYGON ((-112.117 33.6349,))"
+,5,25nb,am,info,0,0,0,0,0,0,0,43;,"POLYGON ((-112.117 33.6349,))"

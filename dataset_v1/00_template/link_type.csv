@@ -1,7 +1,0 @@
-first_column,link_type,link_type_name,name_ description,type_code,traffic_flow_model,allowed_uses_p1,peak_load_factor_p1_auto,peak_load_factor_p1_bike,peak_load_factor_p1_walk,free_speed_auto,free_speed_bike,free_speed_walk,capacity_auto,capacity_bike,capacity_walk,lanes_bike,lanes_walk,k_jam_km,meu_auto_bike,meu_auto_walk,meu_auto_auto,meu_bike_bike,meu_bike_walk,meu_bike_auto,meu_walk_bike,meu_walk_walk,meu_walk_auto
-0,1,highway,Highway/Expressway,f,kw,,1,1,1,60,13.2,4.8,2000,600,1000,1,1,400,1.5,2,1,1,1.2,0.5,0.8,1,0.3
-0,2,arterial,Major arterial,a,spatial_queue,,1,1,1,60,13.2,4.8,2000,600,1000,1,1,400,2,2.5,1,1,1.5,0.4,0.7,1,0.2
-0,3,collector,Collector,a,spatial_queue,,1,1,1,60,13.2,4.8,2000,600,1000,1,1,400,1.5,2,1,1,1.3,0.6,0.8,1,0.3
-0,100,connector,connector,c,point_queue,,1,1,1,60,13.2,4.8,2000,600,1000,1,1,400,1.2,1.5,1,1,1.2,0.7,0.9,1,0.4
-0,4,bikeonly,Bike only,b,point_queue,b,1,1,1,60,13.2,4.8,2000,600,1000,1,1,600,0.8,1,1,1,1.1,0.9,1,1,0.5
-0,5,walkonly,walk only,w,point_queue,w,1,1,1,60,13.2,4.8,2000,600,1000,1,1,1000,0.7,0.8,1,1,1,0.8,1,1,0.6

@@ -120,7 +120,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 							if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
 								continue;
 							parser_measurement.GetValueByFieldName("count", count, true);
-							parser_measurement.GetValueByFieldName("upper_bound_flag", upper_bound_flag, true);
+							parser_measurement.GetValueByFieldName("upper_bound_flag", upper_bound_flag,false,false);
 
 						}
 						// map external node number to internal node seq no.
@@ -155,7 +155,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 						}
 						else
 						{
-							dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
+							dtalog.output() << "[WARNING] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
 							continue;
 						}
 					}
@@ -168,16 +168,33 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		}
 
 		assignment.summary_file << "ODME stage: # of sensors =," << sensor_count << '\n';
+		dtalog.output() << "ODME stage: # of sensors =," << sensor_count << '\n';
 
 		// step 1: input the measurements of
 		// Pi
 		// Dj
 		// link l
 
+		if (sensor_count == 0)
+		{
+				return;
+		}
+
+				// Headers
+		dtalog.output() << std::left
+			<< std::setw(20) << "[DATA INFO] ODME"
+			<< std::setw(12) << "Iter. No."
+			<< std::setw(16) << "Link MAE"
+			<< std::setw(16) << "Link MAPE(%)"
+			<< std::setw(16) << "Sys. MPE(%)"
+			<< std::setw(16) << "Avg. TT (min)"
+			<< std::setw(10) << "UE Gap (min)"
+			<< std::setw(10) << " (%)" << '\n';
 
 		// step 2: loop for adjusting OD demand
 		double prev_gap = 9999999;
-		for (int s = 0; s < OD_updating_iterations; ++s)
+
+		for (int odme_iter_no = 0; odme_iter_no < OD_updating_iterations; ++odme_iter_no)
 		{
 			double total_system_demand = 0;
 			float total_gap = 0;
@@ -188,25 +205,25 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 			// and use the newly generated path flow to add the additional 1/(k+1)
 			double system_gap = 0;
 
-			double gap = g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), s, system_gap, false);
+			double gap = g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), odme_iter_no, OD_updating_iterations, system_gap, false);
 			//step 2.2: based on newly calculated path volumn, update volume based travel time, and update volume based measurement error/deviation
 					// and use the newly generated path flow to add the additional 1/(k+1)
 
 			double gap_increase = gap - prev_gap;
 
-			if (s >= 5 && gap_increase > 0.01 )  // convergency criterion  // comment out to maintain consistency
+			if (odme_iter_no >= 5 && gap_increase > 0.01 )  // convergency criterion  // comment out to maintain consistency
 			{
-				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap increase = " << gap_increase * 100 << "% at iteration = " << s << '\n';
-				assignment.summary_file << "ODME stage terminates with gap increase = " << gap_increase*100 << "% at iteration = " << s <<  '\n';
+				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap increase = " << gap_increase * 100 << "% at iteration = " << odme_iter_no << '\n';
+				assignment.summary_file << "ODME stage terminates with gap increase = " << gap_increase*100 << "% at iteration = " << odme_iter_no <<  '\n';
 			    break;
 
 			}
 
 
-			if (gap < 0.01)  // convergency criterion  // comment out to maintain consistency
+			if (odme_iter_no >= 5 && gap < 0.01)  // convergency criterion  // comment out to maintain consistency
 			{
-				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << s << '\n';
-				assignment.summary_file << "ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << s << '\n';
+				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << odme_iter_no << '\n';
+				assignment.summary_file << "ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << odme_iter_no << '\n';
 				break;
 
 			}
@@ -278,13 +295,13 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									path_distance = 0;
 									path_travel_time = 0;
 
-									if (s == 0) // perform computing of path travel time for the first iteration
+									if (odme_iter_no == 0) // perform computing of path travel time for the first iteration
 									{
 
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a along the path
 										{
 											link_seq_no = it->second.path_link_vector[nl];
-											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
+											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at][assignment.active_scenario_index];
 											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 											double link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 											path_travel_time += link_travel_time;
@@ -319,7 +336,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 									column_path_counts++;
 
-									if (s >= 1 && it->second.measurement_flag == 0)  // after 1  iteration, if there are no data passing through this path column. we will skip it in the ODME process
+									if (odme_iter_no >= 1 && it->second.measurement_flag == 0)  // after 1  iteration, if there are no data passing through this path column. we will skip it in the ODME process
 									{
 										total_system_demand += it->second.path_volume;
 										continue;
@@ -368,7 +385,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 									it->second.path_gradient_cost = path_gradient_cost;
 
-									step_size = 1.0 / (OD_updating_iterations + 2.0);   // memo: with alicia, 0.05
+									step_size = 1.0 / (odme_iter_no + 2.0);   // memo: with alicia, 0.05
 									// memo: with Peiheng, use 1.0/(OD_updating_iterations+2.0) for stability
 									double prev_path_volume = it->second.path_volume;
 
@@ -424,18 +441,33 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 					}
 				}
 			}
-			if (s == 0)
+			if (odme_iter_no == 0)
 			{
+				// Calculate the percentage of columns and paths with sensors
 				float percentage_of_OD_columns_with_sensors = column_pool_with_sensor_counts * 1.0 / max(1, column_pool_counts) * 100;
 				float percentage_of_paths_with_sensors = column_path_with_sensor_counts * 1.0 / max(1, column_path_counts) * 100;
-				dtalog.output() << "[DATA INFO] count of all column pool vectors=" << column_pool_counts << ", "
-					<< "count of all paths =" << column_path_counts << ", "
-					<< "count of column_pools with sensors = " << column_pool_with_sensor_counts << "(" << percentage_of_OD_columns_with_sensors << "%), "
-					<< "count of column_paths with sensors = " << column_path_with_sensor_counts << " (" << percentage_of_paths_with_sensors << "%)" << '\n';
+
+				// Calculate the percentage of columns and paths with sensors
+				float percent_OD_with_sensors = column_pool_with_sensor_counts * 1.0 / max(1, column_pool_counts) * 100;
+				float percent_paths_with_sensors = column_path_with_sensor_counts * 1.0 / max(1, column_path_counts) * 100;
+
+				//// Prepare the header for the log
+				//dtalog.output() << std::left
+				//	<< std::setw(20) << "Col Pool Count"
+				//	<< std::setw(20) << "Paths Count"
+				//	<< std::setw(30) << "Col Pools with Sens. (%)"
+				//	<< std::setw(30) << "Paths with Sens. (%)" << '\n';
+
+				//// Log the information
+				//dtalog.output() << std::left
+				//	<< std::setw(20) << column_pool_counts
+				//	<< std::setw(20) << column_path_counts
+				//	<< std::setw(30) << column_pool_with_sensor_counts << " (" << percent_OD_with_sensors << "%)"
+				//	<< std::setw(30) << column_path_with_sensor_counts << " (" << percent_paths_with_sensors << "%)" << '\n';
+
 
 			}
 
-			dtalog.output() << "[DATA INFO] total_system_demand =" << total_system_demand << ", ";
 
 		}
 
@@ -443,7 +475,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		// post-procese link volume based on OD volumns
 		// very import: noted by Peiheng and Xuesong on 01/30/2022
 		double system_gap = 0;
-		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations, system_gap, true);
+		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations-1, OD_updating_iterations, system_gap, true);
 		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau]
 	}
 
