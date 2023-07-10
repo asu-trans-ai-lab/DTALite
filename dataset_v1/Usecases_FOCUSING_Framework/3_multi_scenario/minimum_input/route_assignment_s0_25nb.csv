@@ -1,3 +1,0 @@
-first_column,route_seq_id,o_zone_id,d_zone_id,mode_type,demand_period,volume,distance_km,travel_time,UE_OD_based_relative_gap_compared_to_least_time_path_travel_time,UE_path_based_gap,number_of_nodes,node_sequence,link_sequence,DTM_path_impact,DTM_#_of_lane_closure_links,DTM_new_path_generated,DTM_volume_before,DTM_volume_after,DTM_volume_diff, 
-,1,1,2,auto,am,1549.8319,30,30.3205,0.0014,0,3,1;4;2;,3;4;,,,,,,,
-,2,1,2,auto,am,5450.1682,20,30.34,0.0014,0.0018,3,1;3;2;,1;2;,,,,,,,

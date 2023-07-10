@@ -1,0 +1,10 @@
+section,key,value
+assignment,number_of_iterations,20
+assignment,route_output,1
+assignment,simulation_output,0
+assignment,UE_convergence_percentage,0.1
+cpu,number_of_memory_blocks,4
+unit,length_unit,mile
+unit,speed_unit,kmph
+subarea,max_num_significant_zones_in_subarea,50000
+subarea,max_num_significant_zones_outside_subarea,50000

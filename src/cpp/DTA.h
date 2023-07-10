@@ -59,7 +59,7 @@ extern int g_related_zone_vector_size;
 extern int g_number_of_active_scenarios;
 extern int g_number_of_active_mode_types;
 extern int g_number_of_active_demand_perioids;
-
+extern  std::ofstream  g_DTA_log_file;
 
 class CDemand_Period {
 public:
@@ -126,6 +126,8 @@ public:
                 {
             dtalog.output() << std::setprecision(5) << "[DATA INFO] Cumulative profile no." << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
                 departure_time_ratio[s] << '\n';
+            g_DTA_log_file << std::setprecision(5) << "[DATA INFO] Cumulative profile no." << departure_time_profile_no << ", ratio at slot  " << s << " (" << hour << ":" << minute << ") = " <<
+                departure_time_ratio[s] << '\n';
                 }
             }
         }
@@ -133,6 +135,7 @@ public:
         if (b_with_log)
         {
             dtalog.output() << std::setprecision(5) << "[DATA INFO] Final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
+            g_DTA_log_file << std::setprecision(5) << "[DATA INFO] Final cumulative profile ratio = " << cumulative_departure_time_ratio[ending_slot_no - 1] << '\n';
         }
     }
 
@@ -152,6 +155,7 @@ public:
                 int hour = s / 12;
                 int minute = s * 5 - hour * 60;
 //                dtalog.output() << "s=" << s <<" (" << hour << ":" << minute << ") = "  << ending_time_slot_no << '\n';
+//                g_DTA_log_file << "s=" << s <<" (" << hour << ":" << minute << ") = "  << ending_time_slot_no << '\n';
 
                 return s;
             }
@@ -159,6 +163,7 @@ public:
         int hour = starting_time_slot_no / 12;
         int minute = starting_time_slot_no * 5 - hour * 60;
 //        dtalog.output() << "s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
+//        g_DTA_log_file << "s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
         return starting_time_slot_no;  // first time slot as the default value
     }
 
@@ -178,6 +183,7 @@ public:
             if(idebug)
             {
             dtalog.output() << "[DATA INFO] s=" << s << " (" << hour << ":" << minute << ") = " << cumulative_departure_time_ratio[s] << '\n';
+            g_DTA_log_file << "[DATA INFO] s=" << s << " (" << hour << ":" << minute << ") = " << cumulative_departure_time_ratio[s] << '\n';
             }
             if (r < cumulative_departure_time_ratio[s])
             {
@@ -189,6 +195,7 @@ public:
                 if (idebug)
                 {
                     dtalog.output() << "[DATA INFO]  select: s=" << s << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << ", dep_time = " << time_in_min <<"," << '\n';
+                    g_DTA_log_file << "[DATA INFO]  select: s=" << s << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << ", dep_time = " << time_in_min <<"," << '\n';
                 }
                 return time_in_min;
             }
@@ -200,6 +207,7 @@ public:
             int minute = starting_time_slot_no * 5 - hour * 60;
 
             dtalog.output() << "[DATA INFO] s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
+            g_DTA_log_file << "[DATA INFO] s=" << starting_time_slot_no << " (" << hour << ":" << minute << ") = " << ending_time_slot_no << '\n';
         }
         return (r) * MIN_PER_TIMESLOT  ;  // first time slot as the default value
     }
@@ -460,6 +468,7 @@ public:
         {
             int i_debug = 1;
             dtalog.output() << "[ERROR] m_link_size == 0 in function CColumnPath::AllocateVector()!";
+            g_DTA_log_file << "[ERROR] m_link_size == 0 in function CColumnPath::AllocateVector()!";
             g_program_stop();
         }
 
@@ -865,9 +874,12 @@ public:
         if (summary_file &&!summary_file.is_open())
         {
             dtalog.output() << "[ERROR] File final_summary.csv cannot be open.";
+            g_DTA_log_file << "[ERROR] File final_summary.csv cannot be open.";
             g_program_stop();
         }
         simu_log_file.open("log_simulation.txt");
+
+
 //        simu_log_file << "start" << '\n';
         g_rt_network_pool = NULL;
         g_column_pool = NULL;
@@ -888,6 +900,7 @@ public:
         summary_corridor_file.close();
         summary_system_file.close();
         simu_log_file.close();
+
         DeallocateLinkMemory4Simulation();
     }
 
@@ -1105,6 +1118,7 @@ public:
     std::map<std::string, int> m_TMC_corridor_map;
 
     std::ofstream simu_log_file;
+
     std::ofstream sp_log_file;
     std::ofstream log_subarea_focusing_file;
 

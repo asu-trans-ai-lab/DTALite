@@ -27,7 +27,7 @@
 // loading vehicle trajectory file in demand through map matching
 
 using namespace std;
-
+std::ofstream  g_DTA_log_file;
 void write_default_setting_file_if_not_exist()
 {
 
@@ -633,7 +633,7 @@ int main()
 	std::ofstream::sync_with_stdio(false);
 	// reset all the log files to defult 0: not output; if want to output these logs set to 1
 
-
+	g_DTA_log_file.open("log_DTA.txt");
 
 	dtalog.debug_level() = 0;
 	dtalog.log_sig() = 0;
@@ -642,7 +642,7 @@ int main()
 	dtalog.log_dta() = 0;
 	dtalog.log_ue() = 0;
 
-	int column_generation_iterations = 0;
+	int column_generation_iterations = 20;
 	int column_updating_iterations = 40;
 	int ODME_iterations = 0;
 	int sensitivity_analysis_iterations = 0;
@@ -689,42 +689,68 @@ int main()
 	dtalog.output() << "Please provide feedback or report any issues you encounter on our GitHub site: "
 		<< "https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem." << '\n';
 
-	//dtalog.output() << "Input Files:" << '\n';
-	//dtalog.output() << "  Physical layer:" << '\n';
-	//dtalog.output() << "    node.csv: Defines nodes in the network." << '\n';
-	//dtalog.output() << "    link.csv: Defines links in the network with essential attributes for assignment." << '\n';
-	//dtalog.output() << "    zone.csv: Optional, as zone_id can be defined in node.csv." << '\n';
-	//dtalog.output() << "  Demand layer:" << '\n';
-	//dtalog.output() << "    demand.csv: Defines the demand of passengers on each OD pair. This information could be extracted by demand_file_list.csv." << '\n';
-	//dtalog.output() << "    demand_period.csv: Defines demand period, which could be extracted by demand_file_list.csv." << '\n';
-	//dtalog.output() << "    departure_time_profile.csv: Defines departure time in the agent-based simulation." << '\n';
-	//dtalog.output() << "    demand_file_list.csv: Defines demand type, period, and format type." << '\n';
-	//dtalog.output() << "    sensor_data.csv: Contains observed link volume for OD demand estimation." << '\n';
-	//dtalog.output() << "    choice_set.csv: Contains choice set data for agent-based modeling." << '\n';
-	//dtalog.output() << "    activity_travel_pattern.csv: (Optional) Defines activity and travel patterns of agents in the simulation." << '\n';
-	//dtalog.output() << "  Supply layer:" << '\n';
-	//dtalog.output() << "    dynamic_traffic_management.csv: Defines different dynamic traffic managementscenarios." << '\n';
-	//dtalog.output() << "    signal_timing.csv: Contains information about signal timings at intersections." << '\n';
-	//dtalog.output() << "  Configuration files:" << '\n';
-	//dtalog.output() << "    settings.csv: Defines basic setting for the network, the number of iterations, etc." << '\n';
-	//dtalog.output() << "    mode_type.csv: Defines attributes of each type of agent, including value of time (vot in dollars per hour) and passenger car equivalent (pce)." << '\n';
-	//dtalog.output() << "    link_type.csv: Defines types of links in the network." << '\n';
-	//dtalog.output() << "    link_vdf.csv: Contains analytical volume demand function parameters." << '\n';
-	//dtalog.output() << "  Scenarios settings:" << '\n';
-	//dtalog.output() << "    scenario_index_list.csv: Defines scenario name, scenario description and activate state." << '\n';
-	//dtalog.output() << "    subarea.csv: optional, extracts the subarea polygon information using NeXTA tool." << '\n';
-	//dtalog.output() << "--------------------------" << '\n';
+	g_DTA_log_file << "Logbook for DTALite: The Open-Source, Lightweight Dynamic Traffic Assignment Solution" << std::fixed << std::setw(12) << '\n';
+	g_DTA_log_file << " Overview of files and process\n";
+	g_DTA_log_file << "1. Input Files:\n";
+	g_DTA_log_file << "   |--- Physical Layer (node.csv, link.csv)\n";
+	g_DTA_log_file << "   |--- Demand Layer (demand.csv, mode_type.csv, demand_period.csv, departure_time_profile.csv, demand_file_list.csv, sensor_data.csv, subarea.csv)\n";
+	g_DTA_log_file << "   |--- Configuration Files (settings.csv, scenario_index_list.csv)\n";
+	g_DTA_log_file << "   |--- Supply Layer (link_type.csv, dynamic_traffic_management.csv)\n";
 
-	//dtalog.output() << "Output Files:" << '\n';
-	//dtalog.output() << "  link_performance_s(scenario_index)_(scenario_name).csv: Shows the performance of each link under different scenarios, including the travel time, volume, and resource balance." << '\n';
-	//dtalog.output() << "  route_assignment_s(scenario_index)_(scenario_name).csv: Shows the results of the assignment under different scenarios, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence." << '\n';
-	//dtalog.output() << "  choice_set_output_(scenario_index)_(scenario_name).csv: Shows the results of activity travel and mode choice." << '\n';
-	//dtalog.output() << "  od_performance_summary.csv: Shows the performance of the OD pairs, including the o_zone_id, d_zone_id and volume." << '\n';
-	//dtalog.output() << "  link_performance_summary.csv: Shows the summary of the performance of each link." << '\n';
-	//dtalog.output() << "  system_performance_summary.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
-	//dtalog.output() << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
-	//dtalog.output() << "  subarea_related_zone.csv: Shows the subarea internal zones and impacted zones." << '\n';
-	//dtalog.output() << "--------------------------" << '\n';
+	g_DTA_log_file << "\n2. Traffic Assignment and Simulation Process:\n";
+	g_DTA_log_file << "   |--- Demand estimation based on sensor data\n";
+	g_DTA_log_file << "   |--- Traffic assignment based on network and demand data\n";
+	g_DTA_log_file << "   |--- Simulation of traffic based on assignment results and scenario configurations\n";
+	g_DTA_log_file << "   |--- Performance evaluation based on simulation results and performance criteria\n";
+
+	g_DTA_log_file << "\n3. Output Files:\n";
+	g_DTA_log_file << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
+	g_DTA_log_file << "   |--- Route assignment (route_assignment_s.csv)\n";
+	g_DTA_log_file << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)\n";
+	g_DTA_log_file << "   |--- Trajectory performance (agent_s.csv, trajectory.csv)\n";
+	g_DTA_log_file << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
+	g_DTA_log_file << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)\n";
+	g_DTA_log_file << "--------------------------" << '\n';
+	g_DTA_log_file << "Please provide feedback or report any issues you encounter on our GitHub site: "
+		<< "https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem." << '\n';
+
+
+	g_DTA_log_file << "Input Files:" << '\n';
+	g_DTA_log_file << "  Physical layer:" << '\n';
+	g_DTA_log_file << "    node.csv: Defines nodes in the network." << '\n';
+	g_DTA_log_file << "    link.csv: Defines links in the network with essential attributes for assignment." << '\n';
+	g_DTA_log_file << "    zone.csv: Optional, as zone_id can be defined in node.csv." << '\n';
+	g_DTA_log_file << "  Demand layer:" << '\n';
+	g_DTA_log_file << "    demand.csv: Defines the demand of passengers on each OD pair. This information could be extracted by demand_file_list.csv." << '\n';
+	g_DTA_log_file << "    demand_period.csv: Defines demand period, which could be extracted by demand_file_list.csv." << '\n';
+	g_DTA_log_file << "    departure_time_profile.csv: Defines departure time in the agent-based simulation." << '\n';
+	g_DTA_log_file << "    demand_file_list.csv: Defines demand type, period, and format type." << '\n';
+	g_DTA_log_file << "    sensor_data.csv: Contains observed link volume for OD demand estimation." << '\n';
+	//g_DTA_log_file << "    choice_set.csv: Contains choice set data for agent-based modeling." << '\n';
+	//g_DTA_log_file << "    activity_travel_pattern.csv: (Optional) Defines activity and travel patterns of agents in the simulation." << '\n';
+	g_DTA_log_file << "  Supply layer:" << '\n';
+	g_DTA_log_file << "    dynamic_traffic_management.csv: Defines different dynamic traffic managementscenarios." << '\n';
+	g_DTA_log_file << "    signal_timing  which contains information about signal timings at intersections, coded in link.csv." << '\n';
+	g_DTA_log_file << "  Configuration files:" << '\n';
+	g_DTA_log_file << "    settings.csv: Defines basic setting for the network, the number of iterations, etc." << '\n';
+	g_DTA_log_file << "    mode_type.csv: Defines attributes of each type of agent, including value of time (vot in dollars per hour) and passenger car equivalent (pce)." << '\n';
+	g_DTA_log_file << "    link_type.csv: Defines types of links in the network." << '\n';
+	g_DTA_log_file << "    link_vdf.csv: Contains analytical volume demand function parameters." << '\n';
+	g_DTA_log_file << "  Scenarios settings:" << '\n';
+	g_DTA_log_file << "    scenario_index_list.csv: Defines scenario name, scenario description and activate state." << '\n';
+	g_DTA_log_file << "    subarea.csv: extracts the subarea polygon information using NeXTA tool." << '\n';
+	g_DTA_log_file << "--------------------------" << '\n';
+
+	g_DTA_log_file << "Output Files:" << '\n';
+	g_DTA_log_file << "  link_performance_s(scenario_index)_(scenario_name).csv: Shows the performance of each link under different scenarios, including the travel time, volume, and resource balance." << '\n';
+	g_DTA_log_file << "  route_assignment_s(scenario_index)_(scenario_name).csv: Shows the results of the assignment under different scenarios, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence." << '\n';
+	//g_DTA_log_file << "  choice_set_output_(scenario_index)_(scenario_name).csv: Shows the results of activity travel and mode choice." << '\n';
+	g_DTA_log_file << "  od_performance_summary.csv: Shows the performance of the OD pairs, including the o_zone_id, d_zone_id and volume." << '\n';
+	g_DTA_log_file << "  link_performance_summary.csv: Shows the summary of the performance of each link." << '\n';
+	g_DTA_log_file << "  system_performance_summary.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
+	g_DTA_log_file << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
+	g_DTA_log_file << "  zonal_hierarchy_mapping.csv: Shows the subarea internal zones and impacted zones." << '\n';
+	g_DTA_log_file << "--------------------------" << '\n';
 	write_default_setting_file_if_not_exist();
 	write_default_scenario_index_file_if_not_exist();
 	write_default_demand_period_file_if_not_exist();
@@ -735,14 +761,27 @@ int main()
 	write_default_subarea_file_if_not_exist();
 	write_default_sensor_data_file_if_not_exist();
 	write_default_dynamic_traffic_management_file_if_not_exist();
-	CDTACSVParser parser_settings;
 
+	bool bCorrectSettingFormat = false; 
+	CDTACSVParser parser_settings;
+	
 	parser_settings.IsFirstLineHeader = true;
 	if (parser_settings.OpenCSVFile("settings.csv", true))
 	{
+		if (parser_settings.CheckingSettingFormat() == true)
+		{
+			bCorrectSettingFormat = true; 
+			parser_settings.CloseCSVFile();
+		}
+	}
+
+
+	if (bCorrectSettingFormat)
+	{
 
 		dtalog.output() << "[PROCESS INFO] Step 0.0: Reading settings.csv." << '\n';
-		
+		g_DTA_log_file << "[PROCESS INFO] Step 0.0: Reading settings.csv." << '\n';
+
 		std::string assignment_mode_str;
 
 		int number_of_iterations=  1;
@@ -750,6 +789,7 @@ int main()
 			column_generation_iterations = number_of_iterations; // update
 
 		dtalog.output() << "[DATA INFO] number_of_iterations = " << number_of_iterations << " in settings.csv." << '\n';
+		g_DTA_log_file << "[DATA INFO] number_of_iterations = " << number_of_iterations << " in settings.csv." << '\n';
 		// these are the assignment modes
 		// two usually methods are ue (user equilibrium) and dta (dynamic traffic assignment)
 		// the main difference of these two methods are different output in link_performance.csv
@@ -784,7 +824,20 @@ int main()
 			}
 
 		dtalog.output() << "[DATA INFO] UE_convergence_percentage = " << UE_convergence_percentage << " (%) in settings.csv." << '\n';
+		g_DTA_log_file << "[DATA INFO] UE_convergence_percentage = " << UE_convergence_percentage << " (%) in settings.csv." << '\n';
 
+		if (parser_settings.GetValueByKeyName("number_of_column_updating_iterations", column_updating_iterations, false, false) == true)
+		{
+			if (column_updating_iterations < 1)
+				column_updating_iterations = 1;
+		}
+
+		dtalog.output() << "[DATA INFO] number_of_column_updating_iterations = " << column_updating_iterations << " (%) in settings.csv." << '\n';
+		g_DTA_log_file << "[DATA INFO] number_of_column_updating_iterations = " << column_updating_iterations << " (%) in settings.csv." << '\n';
+
+
+
+		
 
 		simulation_output = 0;  //default
 		int simulation_output_value = -1;
@@ -796,6 +849,7 @@ int main()
 		}
 
 		dtalog.output() << "[DATA INFO] simulation_output = " << simulation_output << " in settings.csv." << '\n';
+		g_DTA_log_file << "[DATA INFO] simulation_output = " << simulation_output << " in settings.csv." << '\n';
 
 
 		// the start interation of generating signals, if there is no signals set this number larger than the itertion number
@@ -805,18 +859,21 @@ int main()
 		{
 			number_of_memory_blocks = number_of_memory_blocks_values;
 			dtalog.output() << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
+			g_DTA_log_file << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.csv." << '\n';
 		}
 
 		if (parser_settings.GetValueByKeyName("max_num_significant_zones_in_subarea", max_num_significant_zones_in_subarea, false, false))
 		{
 			dtalog.output() << "[DATA INFO] max_num_significant_zones_in_subarea = " << max_num_significant_zones_in_subarea << " in settings.csv." << '\n';
+			g_DTA_log_file << "[DATA INFO] max_num_significant_zones_in_subarea = " << max_num_significant_zones_in_subarea << " in settings.csv." << '\n';
 		}
 		
 
 		if (parser_settings.GetValueByKeyName("max_num_significant_zones_outside_subarea", max_num_significant_zones_outside_subarea, false, false))
 		{
 			dtalog.output() << "[DATA INFO] max_num_significant_zones_outside_subarea = " << max_num_significant_zones_outside_subarea << " in settings.csv." << '\n';
-		}	
+			g_DTA_log_file << "[DATA INFO] max_num_significant_zones_outside_subarea = " << max_num_significant_zones_outside_subarea << " in settings.csv." << '\n';
+		}
 
 
 
@@ -824,11 +881,28 @@ int main()
 		if (parser_settings.GetValueByKeyName("length_unit", length_unit_str, false, false))
 		{
 			dtalog.output() << "length_unit = " << length_unit_str.c_str() << " in settings.csv." << '\n';
+			g_DTA_log_file << "length_unit = " << length_unit_str.c_str() << " in settings.csv." << '\n';
 
 			if (length_unit_str == "mile")
 				length_unit_flag = 1;
-			else
+			else if (length_unit_str == "km")
+				length_unit_flag = 2;
+			else if(length_unit_str == "meter")
 				length_unit_flag = 0; // always as default 0
+			else
+			{ if (length_unit_str.size () > 0)
+				{ 
+				dtalog.output() << "[ERROR] length_unit = " << length_unit_str.c_str() << " in settings.csv  is not supported. The supported unit of length is meter, km or mile.." << '\n';
+				g_DTA_log_file << "[ERROR] length_unit = " << length_unit_str.c_str() << " in settings.csv  is not supported. The supported unit of length is meter, km or mile.." << '\n';
+				length_unit_flag = 0;
+			}
+			else
+			{
+				length_unit_flag = 0;
+			}
+
+			
+			}
 
 		}
 
@@ -837,6 +911,7 @@ int main()
 		if (parser_settings.GetValueByKeyName("speed_unit", speed_unit_str, false, false))
 		{
 			dtalog.output() << "speed_unit = " << speed_unit_str.c_str() << " in settings.csv." << '\n';
+			g_DTA_log_file << "speed_unit = " << speed_unit_str.c_str() << " in settings.csv." << '\n';
 
 			if (speed_unit_str == "mph")
 				speed_unit_flag = 1;
@@ -868,6 +943,8 @@ int main()
 	// obtain initial flow values
 	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, length_unit_flag, speed_unit_flag, UE_convergence_percentage, max_num_significant_zones_in_subarea, max_num_significant_zones_outside_subarea);
 
+	if (g_DTA_log_file.is_open())
+		g_DTA_log_file.close(); 
 	return 0;
 }
 

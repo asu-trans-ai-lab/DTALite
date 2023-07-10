@@ -224,6 +224,7 @@ void g_grid_zone_generation(Assignment& assignment)
 	}
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4.1: mode for creating node 2 zone mapping" << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.4.1: mode for creating node 2 zone mapping" << '\n';
 
 	FILE* g_pFileZone = nullptr;
 	g_pFileZone = fopen("zone.csv", "w");
@@ -231,7 +232,8 @@ void g_grid_zone_generation(Assignment& assignment)
 	if (g_pFileZone == NULL)
 	{
 		dtalog.output() << "[WARNING] File zone.csv cannot be opened." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "[WARNING] File zone.csv cannot be opened." << '\n';
+		return;
 	}
 
 	fprintf(g_pFileZone, "first_column,zone_id,access_node_vector,cell_code,cell_id,access_distance,x_coord,y_coord,");
@@ -327,6 +329,7 @@ void g_grid_zone_generation(Assignment& assignment)
 	assignment.m_GridResolution = temp_resolution;
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4.2: Grid Resolution " << assignment.m_GridResolution << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.4.2: Grid Resolution " << assignment.m_GridResolution << '\n';
 
 	int activity_node_count = 0;
 	// check # of access nodes
@@ -461,6 +464,7 @@ void g_grid_zone_generation(Assignment& assignment)
 	}
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4.3: creating " << assignment.cell_id_mapping.size() << " zones." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.4.3: creating " << assignment.cell_id_mapping.size() << " zones." << '\n';
 	fclose(g_pFileZone);
 
 }
@@ -539,6 +543,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 	{
 		assignment.summary_file << "[NOTE] If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
 		//dtalog.output() << "If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
+		//g_DTA_log_file << "If zone.csv has not been prepared, please prepare TAZ.csv from the planning model so that DTALite can help with generating access nodes that connect zone to nodes in the network." << '\n';
 
 		//g_program_stop();
 		return false;
@@ -546,6 +551,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 
 	assignment.summary_file << "[DATA INFO] # of zones defined in TAZ.csv=,"<< l_TAZ_vector.size() << '\n';
 	dtalog.output() << "[DATA INFO] # of zones defined in TAZ.csv=," << l_TAZ_vector.size() << '\n';
+	g_DTA_log_file << "[DATA INFO] # of zones defined in TAZ.csv=," << l_TAZ_vector.size() << '\n';
 
 	std::vector<CNode> l_node_vector; // l as local
 
@@ -579,6 +585,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4.0: QEM mode for creating TAZ 2 zone mapping with " << l_TAZ_vector.size() << " TAZ and " << l_node_vector.size() << " nodes." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.4.0: QEM mode for creating TAZ 2 zone mapping with " << l_TAZ_vector.size() << " TAZ and " << l_node_vector.size() << " nodes." << '\n';
 
 	// step 3:
 	FILE* g_pFileZone = nullptr;
@@ -587,7 +594,8 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 	if (g_pFileZone == NULL)
 	{
 		dtalog.output() << "[WARNING] File zone.csv cannot be opened." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "[WARNING] File zone.csv cannot be opened." << '\n';
+		return false;
 	}
 
 
@@ -739,6 +747,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 	}
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4.3: creating " << l_TAZ_vector.size() << " zones." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.4.3: creating " << l_TAZ_vector.size() << " zones." << '\n';
 	fclose(g_pFileZone);
 
 	assignment.summary_file << "[DATA INFO] # of zones created based on zone definition in TAZ.csv=," << l_TAZ_vector.size() << '\n';
@@ -756,6 +765,7 @@ void g_create_zone_vector(Assignment& assignment)
 	std::map<int, int> waring_message_link_type_map;
 	// initialize zone vector
 	dtalog.output() << "[PROCESS INFO] Step 1.5: Initializing O-D zone vector..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 1.5: Initializing O-D zone vector..." << '\n';
 
 	std::map<int, int>::iterator it;
 
@@ -778,6 +788,8 @@ void g_create_zone_vector(Assignment& assignment)
 		dtalog.output() << "[DATA INFO] create zone id = " << ozone.zone_id << " with representive node id " << it->second << ",x = " << g_node_vector[it->second].x << ",y=" <<
 			ozone.cell_y << '\n';
 
+		g_DTA_log_file << "[DATA INFO] create zone id = " << ozone.zone_id << " with representive node id " << it->second << ",x = " << g_node_vector[it->second].x << ",y=" <<
+			ozone.cell_y << '\n';
 
 		assignment.g_zoneid_to_zone_seq_no_mapping[ozone.zone_id] = ozone.zone_seq_no;  // create the zone id to zone seq no mapping
 
@@ -837,7 +849,8 @@ void g_trip_generation(Assignment& assignment)
 	if (!g_pFileODMatrix)
 	{
 		dtalog.output() << "File gc_distance.csv cannot be opened." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "File gc_distance.csv cannot be opened." << '\n';
+		return; 
 	}
 	else
 	{
@@ -915,6 +928,11 @@ void g_trip_generation(Assignment& assignment)
 									", gc distance = " << g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[d] <<
 									", travel time =" << g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[d] <<
 									",value = " << exp_disutility << '\n';
+
+								g_DTA_log_file << ", o: " << orig << ",d:" << d <<
+									", gc distance = " << g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[d] <<
+									", travel time =" << g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[d] <<
+									",value = " << exp_disutility << '\n';
 							}
 							total_attraction_utility += exp_disutility;
 							trip_accessibility_log_count++;
@@ -928,6 +946,12 @@ void g_trip_generation(Assignment& assignment)
 									", gc distance = " << g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[d] <<
 									", travel time =" << g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[d] <<
 									",value = " << exp_disutility << '\n';
+
+								g_DTA_log_file << "[DATA INFO] out of bound: " << ",o:" << orig << ",d:" << d <<
+									", gc distance = " << g_zone_vector[orig].m_ODAccessibilityMatrix.distance_map[d] <<
+									", travel time =" << g_zone_vector[orig].m_ODAccessibilityMatrix.value_map[d] <<
+									",value = " << exp_disutility << '\n';
+
 							}
 
 							out_of_bound_log_count++;
@@ -938,6 +962,7 @@ void g_trip_generation(Assignment& assignment)
 			}
 
 			//dtalog.output() << "[DATA INFO] o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
+			//g_DTA_log_file << "[DATA INFO] o: " << orig << ", total_attraction_utility =" << total_attraction_utility << '\n';
 
 			if (count > 0)
 			{
@@ -960,6 +985,7 @@ void g_trip_generation(Assignment& assignment)
 								if (trip_distribution_log_count < 100)
 								{
 									//dtalog.output() << ", o: " << orig << ",d:" << dest << ", ratio =" << ratio <<
+									//g_DTA_log_file << ", o: " << orig << ",d:" << dest << ", ratio =" << ratio <<
 									//	",trip = " << g_zone_vector[orig].m_ODMatrix.value_map[dest] << '\n';
 								}
 								trip_distribution_log_count++;
@@ -980,6 +1006,7 @@ void g_trip_generation(Assignment& assignment)
 void g_writing_demand_files(Assignment& assignment)
 {
 	dtalog.output() << "[STATUS INFO] writing demand.csv.." << '\n';
+	g_DTA_log_file << "[STATUS INFO] writing demand.csv.." << '\n';
 
 	FILE* g_pFileODMatrix = nullptr;
 	fopen_ss(&g_pFileODMatrix, "demand.csv", "w");
@@ -987,7 +1014,8 @@ void g_writing_demand_files(Assignment& assignment)
 	if (!g_pFileODMatrix)
 	{
 		dtalog.output() << "[ERROR] File demand.csv cannot be opened." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "[ERROR] File demand.csv cannot be opened." << '\n';
+		return; 
 	}
 	else
 	{
@@ -1061,6 +1089,7 @@ void g_zone_to_access(Assignment& assignment)
 			{
 
 				dtalog.output() << "[DATA INFO] connector generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
+				g_DTA_log_file << "[DATA INFO] connector generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
 				// zone without multimodal access
 				debug_line_count++;
 			}
@@ -1078,6 +1107,7 @@ void g_zone_to_access(Assignment& assignment)
 					{
 
 						dtalog.output() << "[DATA INFO] connector generation generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
+						g_DTA_log_file << "[DATA INFO] connector generation generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
 						// zone without multimodal access
 						debug_line_count++;
 					}

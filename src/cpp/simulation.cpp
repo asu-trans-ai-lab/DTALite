@@ -58,9 +58,13 @@ void Assignment::AllocateLinkMemory4Simulation()
 	g_number_of_intervals_in_sec = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin + simulation_discharge_period_in_min) * 60;
 
 	dtalog.output() << "[DATA INFO] LoadingStartTimeInMin = " << g_LoadingStartTimeInMin << '\n';
+	g_DTA_log_file << "[DATA INFO] LoadingStartTimeInMin = " << g_LoadingStartTimeInMin << '\n';
 	dtalog.output() << "[DATA INFO] g_LoadingStartTimeInMin = " << g_LoadingEndTimeInMin << '\n';
+	g_DTA_log_file << "[DATA INFO] g_LoadingStartTimeInMin = " << g_LoadingEndTimeInMin << '\n';
 	dtalog.output() << "[DATA INFO] number_of_simulation_intervals = " << g_number_of_simulation_intervals << '\n';
+	g_DTA_log_file << "[DATA INFO] number_of_simulation_intervals = " << g_number_of_simulation_intervals << '\n';
 	dtalog.output() << "[DATA INFO] number_of_simu intervals in sec = " << g_number_of_intervals_in_sec << '\n';
+	g_DTA_log_file << "[DATA INFO] number_of_simu intervals in sec = " << g_number_of_intervals_in_sec << '\n';
 
 	g_number_of_loading_intervals_in_sec = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin) * 60;
 
@@ -69,20 +73,24 @@ void Assignment::AllocateLinkMemory4Simulation()
 	g_number_of_in_memory_simulation_intervals = g_number_of_simulation_intervals;
 
 	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector LinkOutFlowCapacity..." << '\n';
+	g_DTA_log_file << "[STATUS INFO] allocate 2D dynamic memory for vector LinkOutFlowCapacity..." << '\n';
 
 	m_LinkOutFlowCapacity = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_sec);  //1
 	m_LinkOutFlowState = Allocate2DDynamicArray <int>(g_number_of_links, g_number_of_intervals_in_sec);  //1
 	// discharge rate per simulation time interval
 	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeArrivalVector..." << '\n';
+	g_DTA_log_file << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeArrivalVector..." << '\n';
 	m_LinkCumulativeArrivalVector = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min);  //2
 
 	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeDepartureVector..." << '\n';
+	g_DTA_log_file << "[STATUS INFO] allocate 2D dynamic memory for vector m_LinkCumulativeDepartureVector..." << '\n';
 	m_LinkCumulativeDepartureVector = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min);  //3
 
 	m_link_CA_count = Allocate1DDynamicArray <float>(g_number_of_links);
 	m_link_CD_count = Allocate1DDynamicArray <float>(g_number_of_links);
 
 	dtalog.output() << "[STATUS INFO] allocate 2D dynamic memory for vector  m_link_TD_waiting_time..." << '\n';
+	g_DTA_log_file << "[STATUS INFO] allocate 2D dynamic memory for vector  m_link_TD_waiting_time..." << '\n';
 	m_link_TD_waiting_time = Allocate2DDynamicArray <float>(g_number_of_links, g_number_of_intervals_in_min); //5
 
 	m_link_total_waiting_time_vector.clear();
@@ -94,6 +102,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 	g_AgentTDListMap.clear();
 
 	dtalog.output() << "[STATUS INFO] initializing time dependent capacity data..." << '\n';
+	g_DTA_log_file << "[STATUS INFO] initializing time dependent capacity data..." << '\n';
 
 #pragma omp parallel for
 	for (int i = 0; i < g_number_of_links; ++i)
@@ -205,7 +214,10 @@ void Assignment::AllocateLinkMemory4Simulation()
 				",start_green_time = " << start_green_time <<
 				",end_green_time = " << end_green_time <<
 				'\n';
-
+			g_DTA_log_file << "[DATA INFO] signal timing data: link: cycle_length = " << cycle_length <<
+				",start_green_time = " << start_green_time <<
+				",end_green_time = " << end_green_time <<
+				'\n';
 			for (int cycle_no = 0; cycle_no < number_of_cycles; ++cycle_no)
 			{
 				int count = 0;
@@ -253,6 +265,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 	}
 
 	dtalog.output() << "[STATUS INFO] End of initializing time dependent capacity data." << '\n';
+	g_DTA_log_file << "[STATUS INFO] End of initializing time dependent capacity data." << '\n';
 }
 
 void Assignment::DeallocateLinkMemory4Simulation()
@@ -336,12 +349,14 @@ void Assignment::STTrafficSimulation()
 
 
 	dtalog.output() << "[STATUS INFO] system-wide information activate time = " << system_information_activate_time_in_min << " in min" << '\n';
+	g_DTA_log_file << "[STATUS INFO] system-wide information activate time = " << system_information_activate_time_in_min << " in min" << '\n';
 	assignment.summary_file << ", system - wide information activate time = " << system_information_activate_time_in_min << " in min" << '\n';
 
 	if (system_information_activate_time_in_min < 2000)
 	{
 		system_information_activate_time_in_simu_interval = (system_information_activate_time_in_min - g_LoadingStartTimeInMin) * 60 / number_of_seconds_per_interval;
 		//	dtalog.output() << "system-wide information activate time in simu interval = " << system_information_activate_time_in_simu_interval << '\n';
+		//	g_DTA_log_file << "system-wide information activate time in simu interval = " << system_information_activate_time_in_simu_interval << '\n';
 	}
 
 	CColumnVector* p_column_pool;
@@ -407,8 +422,10 @@ void Assignment::STTrafficSimulation()
 							else
 							{
 								dtalog.output() << "[ERROR] error in departure_time_profile_no=  " << p_column_pool->departure_time_profile_no << '\n';
+								g_DTA_log_file << "[ERROR] error in departure_time_profile_no=  " << p_column_pool->departure_time_profile_no << '\n';
 								dtalog.output() << "[DATA INFO] size of g_DepartureTimeProfileVector = " << assignment.g_DepartureTimeProfileVector.size() << '\n';
-								g_program_stop();
+								g_DTA_log_file << "[DATA INFO] size of g_DepartureTimeProfileVector = " << assignment.g_DepartureTimeProfileVector.size() << '\n';
+								continue; 
 
 							}
 
@@ -448,6 +465,7 @@ void Assignment::STTrafficSimulation()
 								//if (g_agent_simu_vector.size() < 10)
 								//{
 								//	dtalog.output() << std::setprecision(5) << "generate vehicle: slot_no = " << slot_no << ",t = " << time_stamp << ":" << time_stamp / 60 << " min, agent id = " << g_agent_simu_vector.size() << " with path node size = "
+								//	g_DTA_log_file << std::setprecision(5) << "generate vehicle: slot_no = " << slot_no << ",t = " << time_stamp << ":" << time_stamp / 60 << " min, agent id = " << g_agent_simu_vector.size() << " with path node size = "
 								//		<< it->second.m_link_size << '\n';
 								//}
 
@@ -490,6 +508,7 @@ void Assignment::STTrafficSimulation()
 								}
 
 //								 dtalog.output() << "generate vehicle: t = " << simulation_time_intervalNo << ":" << simulation_time_intervalNo / 4.0 / 60 << " min, agent id = " << p_agent->agent_id<< '\n';
+//								 g_DTA_log_file << "generate vehicle: t = " << simulation_time_intervalNo << ":" << simulation_time_intervalNo / 4.0 / 60 << " min, agent id = " << p_agent->agent_id<< '\n';
 
 
 								g_AgentTDListMap[simulation_time_intervalNo].m_AgentIDVector.push_back(p_agent->agent_id);
@@ -528,12 +547,23 @@ void Assignment::STTrafficSimulation()
 	}
 
 	dtalog.output() << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
+	g_DTA_log_file << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
 	dtalog.output() << "[STATUS INFO] generating " << g_agent_simu_vector.size() / 1000 << " K agents" << '\n';
+	g_DTA_log_file << "[STATUS INFO] generating " << g_agent_simu_vector.size() / 1000 << " K agents" << '\n';
 
 	//dtalog.output() << "[DATA INFO] CI = cumulative impact count, CR= cumulative rerouting count" << '\n';
+	//g_DTA_log_file << "[DATA INFO] CI = cumulative impact count, CR= cumulative rerouting count" << '\n';
 	assignment.summary_file << ", # of simulated agents in agent.csv=," << g_agent_simu_vector.size() << "," <<'\n';
 	dtalog.output() << std::left << std::setprecision(4)
 		<< std::setw(20) << "[DATA INFO]" 
+		<< std::setw(25) << "In-simulation Time (min)"
+		<< std::setw(20) << "Cumu. Arrival"
+		<< std::setw(20) << "Cumu. Departure"
+		<< std::setw(15) << "Speed"
+		<< std::setw(15) << "Travel Time" << '\n';
+
+	g_DTA_log_file << std::left << std::setprecision(4)
+		<< std::setw(20) << "[DATA INFO]"
 		<< std::setw(25) << "In-simulation Time (min)"
 		<< std::setw(20) << "Cumu. Arrival"
 		<< std::setw(20) << "Cumu. Departure"
@@ -572,6 +602,7 @@ void Assignment::STTrafficSimulation()
 	//for (it_agent = g_AgentTDListMap.begin(); it_agent != g_AgentTDListMap.end(); ++it_agent)
 	//{
 	//    dtalog.output() << "t = " << it_agent->first << ":" << it_agent->first/4.0/60 <<" min," << it_agent->second.m_AgentIDVector.size() << '\n';
+	//    g_DTA_log_file << "t = " << it_agent->first << ":" << it_agent->first/4.0/60 <<" min," << it_agent->second.m_AgentIDVector.size() << '\n';
 	//}
 
 
@@ -675,7 +706,14 @@ void Assignment::STTrafficSimulation()
 				<< std::setw(15) << network_wide_speed
 				<< std::setw(15) << network_wide_travel_time << '\n';
 
-
+			g_DTA_log_file << std::left << std::setprecision(4)
+				<< std::setw(20) << "[DATA INFO]"
+				<< std::setw(25) << t / number_of_simu_interval_per_min
+				<< std::setw(20) << TotalCumulative_Arrival_Count
+				<< std::setw(20) << TotalCumulative_Departure_Count
+				<< std::setw(15) << network_wide_speed
+				<< std::setw(15) << network_wide_travel_time << '\n';
+			
 			assignment.summary_file << std::setprecision(5) << ",simu time=," << t / number_of_simu_interval_per_min << " min, CA =," << TotalCumulative_Arrival_Count << ",CD=," << TotalCumulative_Departure_Count
 				<< ", speed=," << network_wide_speed << ", travel time =," << network_wide_travel_time <<
 				",CI=," << TotalCumulative_impact_count <<
@@ -749,6 +787,7 @@ void Assignment::STTrafficSimulation()
 				p_agent->m_veh_link_departure_time_in_simu_interval[p_agent->m_current_link_seq_no] = arrival_time_in_simu_interval + fftt_simu_interval;
 
 				//dtalog.output() << "reserve TD at time t = " << t << " on link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id <<
+				//g_DTA_log_file << "reserve TD at time t = " << t << " on link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id <<
 				//    " for agent = " << agent_id << " on link seq. no " << p_agent->m_current_link_seq_no << " with travel time in simu intervas = " << link_travel_time_in_simu_interavls << '\n';
 
 			}
@@ -970,6 +1009,7 @@ void Assignment::STTrafficSimulation()
 					incoming_link_index = (i + incoming_link_index_FIFO) % (g_node_vector[node].m_incoming_link_seq_no_vector.size());  // cycle loop
 					if (debug_node_resource_competing_mode)
 						dtalog.output() << "[DATA INFO] FIFO judgement i = " << i << '\n';
+						g_DTA_log_file << "[DATA INFO] FIFO judgement i = " << i << '\n';
 				}
 				else
 				{  // random mode
@@ -1083,6 +1123,7 @@ void Assignment::STTrafficSimulation()
 								// spatical queue in the next link is blocked, break the while loop from here, as a first in first out queue.
 								// g_fout << "spatical queue in the next link is blocked on link seq  " <<  g_node_vector[pNextLink->from_node_seq_no].node_id  << " -> " << g_node_vector[pNextLink->to_node_seq_no].node_id  <<'\n';
 								//dtalog.output() << "spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id <<
+								//g_DTA_log_file << "spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id <<
 								//    ",current_vehicle_count = " << current_vehicle_count << '\n';
 								if (node_resource_competing_mode)
 								{
@@ -1105,6 +1146,10 @@ void Assignment::STTrafficSimulation()
 									if (debug_node_resource_competing_mode)
 									{
 										dtalog.output() << "[DATA INFO] win:spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id
+											<< " to link" << g_node_vector[pNextLink->from_node_seq_no].node_id << " -> " << g_node_vector[pNextLink->to_node_seq_no].node_id
+											<< " time request " << p_agent->m_veh_link_departure_time_in_simu_interval[p_agent->m_current_link_seq_no]
+											<< '\n';
+										g_DTA_log_file << "[DATA INFO] win:spatical queue in the next link is blocked at time  = " << t << ",link" << g_node_vector[p_link->from_node_seq_no].node_id << " -> " << g_node_vector[p_link->to_node_seq_no].node_id
 											<< " to link" << g_node_vector[pNextLink->from_node_seq_no].node_id << " -> " << g_node_vector[pNextLink->to_node_seq_no].node_id
 											<< " time request " << p_agent->m_veh_link_departure_time_in_simu_interval[p_agent->m_current_link_seq_no]
 											<< '\n';

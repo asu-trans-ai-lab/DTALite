@@ -37,7 +37,7 @@ struct DTAGDPoint //geometry data
 
 void g_program_stop();
 void g_program_exit();
-
+extern  std::ofstream  g_DTA_log_file;
 bool g_get_line_polygon_intersection(
     double Ax, double Ay,
     double Bx, double By,
@@ -144,6 +144,7 @@ T** Allocate2DDynamicArray(int nRows, int nCols)
     if (!dynamicArray)
     {
         dtalog.output() << "[ERROR] insufficient memory.";
+        g_DTA_log_file << "[ERROR] insufficient memory.";
         g_program_stop();
     }
 
@@ -154,6 +155,7 @@ T** Allocate2DDynamicArray(int nRows, int nCols)
         if (!dynamicArray[i])
         {
             dtalog.output() << "[ERROR] insufficient memory.";
+            g_DTA_log_file << "[ERROR] insufficient memory.";
             g_program_stop();
         }
     }
@@ -192,6 +194,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
     if (!dynamicArray)
     {
         dtalog.output() << "[ERROR] insufficient memory.";
+        g_DTA_log_file << "[ERROR] insufficient memory.";
         g_program_stop();
     }
 
@@ -200,6 +203,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
         if (x % 1000 == 0)
         {
             //dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
+            //g_DTA_log_file << "[DATA INFO] allocating 3D memory for " << x << '\n';
         }
 
         dynamicArray[x] = new (std::nothrow) T * [nY];
@@ -207,6 +211,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
         if (!dynamicArray[x])
         {
             dtalog.output() << "[ERROR] insufficient memory.";
+            g_DTA_log_file << "[ERROR] insufficient memory.";
             g_program_stop();
         }
 
@@ -216,6 +221,7 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
             if (!dynamicArray[x][y])
             {
                 dtalog.output() << "[ERROR] insufficient memory.";
+                g_DTA_log_file << "[ERROR] insufficient memory.";
                 g_program_stop();
             }
         }
@@ -254,12 +260,14 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
     if (!dynamicArray)
     {
         dtalog.output() << "[ERROR] Insufficient memory.";
+        g_DTA_log_file << "[ERROR] Insufficient memory.";
         g_program_stop();
     }
 
     if (nM == 0 || nX == 0 || nY == 0 || nZ == 0)
     {
         dtalog.output() << "[ERROR] Allocating 4D memory but size = 0 in 1 dimension.";
+        g_DTA_log_file << "[ERROR] Allocating 4D memory but size = 0 in 1 dimension.";
         g_program_stop();
     }
 
@@ -272,6 +280,11 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
                 << "nX = " << nX << ", "
                 << "nY = " << nY << ", "
                 << "nZ = " << nZ << '\n';
+            g_DTA_log_file << "[DATA INFO] Allocating 4D memory for zone index (start from 0) " << m << " with the following dimensions: "
+                << "nM = " << nM << ", "
+                << "nX = " << nX << ", "
+                << "nY = " << nY << ", "
+                << "nZ = " << nZ << '\n';
         }
 
         dynamicArray[m] = new (std::nothrow) T * *[nX];
@@ -279,6 +292,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
         if (!dynamicArray[m])
         {
             dtalog.output() << "[ERROR] insufficient memory.";
+            g_DTA_log_file << "[ERROR] insufficient memory.";
             g_program_stop();
         }
 
@@ -289,6 +303,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
             if (!dynamicArray[m][x])
             {
                 dtalog.output() << "[ERROR] insufficient memory.";
+                g_DTA_log_file << "[ERROR] insufficient memory.";
                 g_program_stop();
             }
 
@@ -298,6 +313,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
                 if (!dynamicArray[m][x][y])
                 {
                     dtalog.output() << "[ERROR] insufficient memory.";
+                    g_DTA_log_file << "[ERROR] insufficient memory.";
                     g_program_stop();
                 }
             }
@@ -384,6 +400,30 @@ public:
     bool GetValueByFieldName(std::string field_name, std::string& value, bool required_field = true);
     template <class T> bool GetValueByFieldName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
     template <class T> bool GetValueByKeyName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
+    bool CDTACSVParser::CheckingSettingFormat()
+    {
+        ReadRecord();
+        std::string  field_name = "key";
+
+        if (FieldsIndices.find("key") == FieldsIndices.end())
+        {
+            dtalog.output() << "[CRITICAL ERROR] The 'key' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            g_DTA_log_file << "[CRITICAL ERROR] The 'key' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            return false;
+        }
+
+        if (FieldsIndices.find("value") == FieldsIndices.end())
+        {
+            dtalog.output() << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            g_DTA_log_file << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+        return false;
+    }
 };
 
 // Peiheng, 03/22/21, to avoid implicit instantiations in flash_dta.cpp and main_api.cpp for this template function only
@@ -396,6 +436,7 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
         if (required_field)
         {
             dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+            g_DTA_log_file << "[ERROR] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -447,24 +488,12 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool r
 template <class T>
 bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool required_field, bool NonnegativeFlag)
 {
+    if (inFile.is_open())
+        inFile.close();
+
+    OpenCSVFile(mFileName,false);
     ReadRecord();
-    std::string  field_name = "key";
-
-    if (FieldsIndices.find("key") == FieldsIndices.end())
-    {
-        dtalog.output() << "[ERROR] Field key in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
-        g_program_stop();
-        return false;
-    }
-
-    if (FieldsIndices.find("value") == FieldsIndices.end())
-    {
-        dtalog.output() << "[ERROR] Field value  in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
-        g_program_stop();
-        return false;
-    }
-    else
-    {
+ 
         do
         {
             std::string  key_name_record = "key";
@@ -476,8 +505,8 @@ bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool requi
                 return true;
             }
         } while (ReadRecord());
-    }
     return false;
 }
+
 
 #endif

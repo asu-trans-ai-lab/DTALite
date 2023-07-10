@@ -76,6 +76,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 					if (g_scenario_summary_map.find(scenario_index) == g_scenario_summary_map.end())
 					{
 						dtalog.output() << "[ERROR] scenario_index =  " << scenario_index << " in file sensor_data.csv is not defined in scenario_index_list.csv." << '\n';
+						g_DTA_log_file << "[ERROR] scenario_index =  " << scenario_index << " in file sensor_data.csv is not defined in scenario_index_list.csv." << '\n';
 						//has not been defined
 						continue;
 
@@ -91,12 +92,14 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 					if (g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
 						dtalog.output() << "[ERROR] from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
+						g_DTA_log_file << "[ERROR] from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
 						//has not been defined
 						continue;
 					}
 					if (g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 					{
 						dtalog.output() << "[ERROR] to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
+						g_DTA_log_file << "[ERROR] to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
 						//has not been defined
 						continue;
 					}
@@ -156,6 +159,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 						else
 						{
 							dtalog.output() << "[WARNING] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
+							g_DTA_log_file << "[WARNING] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
 							continue;
 						}
 					}
@@ -169,6 +173,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 		assignment.summary_file << "ODME stage: # of sensors =," << sensor_count << '\n';
 		dtalog.output() << "ODME stage: # of sensors =," << sensor_count << '\n';
+		g_DTA_log_file << "ODME stage: # of sensors =," << sensor_count << '\n';
 
 		// step 1: input the measurements of
 		// Pi
@@ -182,6 +187,16 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 				// Headers
 		dtalog.output() << std::left
+			<< std::setw(20) << "[DATA INFO] ODME"
+			<< std::setw(12) << "Iter. No."
+			<< std::setw(16) << "Link MAE"
+			<< std::setw(16) << "Link MAPE(%)"
+			<< std::setw(16) << "Sys. MPE(%)"
+			<< std::setw(16) << "Avg. TT (min)"
+			<< std::setw(10) << "UE Gap (min)"
+			<< std::setw(10) << " (%)" << '\n';
+
+		g_DTA_log_file << std::left
 			<< std::setw(20) << "[DATA INFO] ODME"
 			<< std::setw(12) << "Iter. No."
 			<< std::setw(16) << "Link MAE"
@@ -214,6 +229,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 			if (odme_iter_no >= 5 && gap_increase > 0.01 )  // convergency criterion  // comment out to maintain consistency
 			{
 				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap increase = " << gap_increase * 100 << "% at iteration = " << odme_iter_no << '\n';
+				g_DTA_log_file << "[PROCESS INFO] ODME stage terminates with gap increase = " << gap_increase * 100 << "% at iteration = " << odme_iter_no << '\n';
 				assignment.summary_file << "ODME stage terminates with gap increase = " << gap_increase*100 << "% at iteration = " << odme_iter_no <<  '\n';
 			    break;
 
@@ -223,6 +239,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 			if (odme_iter_no >= 5 && gap < 0.01)  // convergency criterion  // comment out to maintain consistency
 			{
 				dtalog.output() << "[PROCESS INFO] ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << odme_iter_no << '\n';
+				g_DTA_log_file << "[PROCESS INFO] ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << odme_iter_no << '\n';
 				assignment.summary_file << "ODME stage terminates with gap < 1% as " << gap * 100 << "% at iteration = " << odme_iter_no << '\n';
 				break;
 
@@ -394,6 +411,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									double change = step_size * (weight_of_measurements * it->second.path_gradient_cost + (1 - weight_of_measurements) * it->second.UE_gap);
 
 									//dtalog.output() <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << '\n';
+									//g_DTA_log_file <<" path =" << i << ", gradient cost of measurements =" << it->second.path_gradient_cost << ", UE gap=" << it->second.UE_gap << '\n';
 
 									float bound = 0.1;
 									float change_lower_bound = it->second.path_volume * bound * (-1);
@@ -414,6 +432,14 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									if (dtalog.log_odme() == 1)
 									{
 										dtalog.output() << "[DATA INFO] OD " << orig << "-> " << dest << " path id:" << i << ", prev_vol"
+											<< prev_path_volume << ", gradient_cost = " << it->second.path_gradient_cost
+											<< " UE gap," << it->second.UE_gap
+											<< " link," << g_link_vector[link_seq_no].VDF_period[tau].est_count_dev
+											<< "proposed change = " << step_size * it->second.path_gradient_cost
+											<< "actual change = " << change
+											<< "new vol = " << it->second.path_volume << '\n';
+
+										g_DTA_log_file << "[DATA INFO] OD " << orig << "-> " << dest << " path id:" << i << ", prev_vol"
 											<< prev_path_volume << ", gradient_cost = " << it->second.path_gradient_cost
 											<< " UE gap," << it->second.UE_gap
 											<< " link," << g_link_vector[link_seq_no].VDF_period[tau].est_count_dev
@@ -453,6 +479,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 				//// Prepare the header for the log
 				//dtalog.output() << std::left
+				//g_DTA_log_file << std::left
 				//	<< std::setw(20) << "Col Pool Count"
 				//	<< std::setw(20) << "Paths Count"
 				//	<< std::setw(30) << "Col Pools with Sens. (%)"
@@ -460,6 +487,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 				//// Log the information
 				//dtalog.output() << std::left
+				//g_DTA_log_file << std::left
 				//	<< std::setw(20) << column_pool_counts
 				//	<< std::setw(20) << column_path_counts
 				//	<< std::setw(30) << column_pool_with_sensor_counts << " (" << percent_OD_with_sensors << "%)"

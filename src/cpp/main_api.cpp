@@ -132,7 +132,9 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 	start_t = clock();
 	
 	dtalog.output() << "[PROCESS INFO] Step 5: Column Re-Generation for Traffic Assignment..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 5: Column Re-Generation for Traffic Assignment..." << '\n';
 	dtalog.output() << "[DATA INFO] Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations_for_dtm << '\n';
+	g_DTA_log_file << "[DATA INFO] Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations_for_dtm << '\n';
 	// stage II: column re-generation at the sensitivity analysis stage
 
 	// for K = 5 iterations, which should be sufficient
@@ -151,9 +153,11 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 
 		
 		dtalog.output() << "[DATA INFO] Regenerating column for real-time information provision - Iteration Number: " << iteration_number << '\n';
+		g_DTA_log_file << "[DATA INFO] Regenerating column for real-time information provision - Iteration Number: " << iteration_number << '\n';
 		end_t = clock();
 		iteration_t = end_t - start_t;
 		dtalog.output() << ", CPU time: " << iteration_t / 1000.0 << " s" << '\n';
+		g_DTA_log_file << ", CPU time: " << iteration_t / 1000.0 << " s" << '\n';
 
 		// step 3.1 update travel time and resource consumption
 		clock_t start_t_lu = clock();
@@ -185,8 +189,12 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 		if (dtalog.debug_level() >= 3)
 		{
 			dtalog.output() << "[DATA INFO] Results:" << '\n';
+			g_DTA_log_file << "[DATA INFO] Results:" << '\n';
 			for (int i = 0; i < g_link_vector.size(); ++i) {
 				dtalog.output() << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
+					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
+				g_DTA_log_file << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
 					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
 			}
@@ -386,6 +394,7 @@ void g_assign_computing_tasks_to_memory_blocks(Assignment& assignment)
 	//fprintf(g_pFileDebugLog, "-------g_assign_computing_tasks_to_memory_blocks-------\n");
 	// step 2: assign node to thread
 	dtalog.output() << "[PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 3: Allocating tasks to different memory blocks for efficient computing." << '\n';
 
 	NetworkForSP* PointerMatrx[MAX_MODETYPES][MAX_TIMEPERIODS][MAX_MEMORY_BLOCKS] = { NULL };
 	NetworkForSP* RTPointerMatrx[MAX_MODETYPES][MAX_TIMEPERIODS][MAX_MEMORY_BLOCKS] = { NULL };
@@ -451,7 +460,9 @@ void g_assign_computing_tasks_to_memory_blocks(Assignment& assignment)
 
 
 	dtalog.output() << "[DATA INFO] There are " << g_NetworkForSP_vector.size() << " shortest path (SP) networks stored in memory for processing." << '\n';
+	g_DTA_log_file << "[DATA INFO] There are " << g_NetworkForSP_vector.size() << " shortest path (SP) networks stored in memory for processing." << '\n';
 	dtalog.output() << "[DATA INFO] There are " << computing_zone_count << " different agent types across various zones. These computations will be performed by the multi CPU processors." << '\n';
+	g_DTA_log_file << "[DATA INFO] There are " << computing_zone_count << " different agent types across various zones. These computations will be performed by the multi CPU processors." << '\n';
 
 }
 
@@ -460,6 +471,7 @@ void g_assign_RT_computing_tasks_to_memory_blocks(Assignment& assignment)
 	//fprintf(g_pFileDebugLog, "-------g_assign_computing_tasks_to_memory_blocks-------\n");
 	// step 2: assign node to thread
 	dtalog.output() << "[PROCESS INFO] Step 2: Assigning real time info computing tasks to memory blocks..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 2: Assigning real time info computing tasks to memory blocks..." << '\n';
 
 	int computing_zone_count = 0;
 
@@ -501,6 +513,7 @@ void g_assign_RT_computing_tasks_to_memory_blocks(Assignment& assignment)
 	}
 
 	dtalog.output() << "[DATA INFO] There are " << g_NetworkForRTSP_vector.size() << " RTSP networks in memory." << '\n';
+	g_DTA_log_file << "[DATA INFO] There are " << g_NetworkForRTSP_vector.size() << " RTSP networks in memory." << '\n';
 
 }
 
@@ -842,6 +855,7 @@ int read_route_information_to_replace_column_generation_and_ODME()
 					std::vector <int> node_sequence;
 
 					dtalog.output() << "[STATUS INFO] Reading preload route file" << '\n';
+					g_DTA_log_file << "[STATUS INFO] Reading preload route file" << '\n';
 
 					while (parser.ReadRecord())
 					{
@@ -850,6 +864,7 @@ int read_route_information_to_replace_column_generation_and_ODME()
 						total_path_in_demand_file++;
 						if (total_path_in_demand_file % 100000 == 0)
 							dtalog.output() << "[DATA INFO] total_path_in_demand_file is " << total_path_in_demand_file << '\n';
+							g_DTA_log_file << "[DATA INFO] total_path_in_demand_file is " << total_path_in_demand_file << '\n';
 
 						parser.GetValueByFieldName("o_zone_id", o_zone_id);
 						parser.GetValueByFieldName("d_zone_id", d_zone_id);
@@ -979,9 +994,11 @@ int read_route_information_to_replace_column_generation_and_ODME()
 						line_no++;
 						if (line_no % 100000 == 0)
 							dtalog.output() << "[STATUS INFO] Reading demand file line no =  " << line_no / 1000 << "k" << '\n';
+							g_DTA_log_file << "[STATUS INFO] Reading demand file line no =  " << line_no / 1000 << "k" << '\n';
 
 					}
 					dtalog.output() << "[DATA INFO] total_demand_volume loaded from route file is " << sum_of_path_volume << " with " << path_counts << " paths." << '\n';
+					g_DTA_log_file << "[DATA INFO] total_demand_volume loaded from route file is " << sum_of_path_volume << " with " << path_counts << " paths." << '\n';
 
 					return 1;
 				}
@@ -996,8 +1013,19 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	int max_num_significant_zones_in_subarea, int max_num_significant_zones_outside_subarea)
 {
 
+	// k iterations for column generation
+	assignment.g_number_of_column_generation_iterations = column_generation_iterations;
+	assignment.g_number_of_column_updating_iterations = column_updating_iterations;
+	assignment.g_number_of_ODME_iterations = ODME_iterations;
+	assignment.g_number_of_sensitivity_analysis_iterations_for_dtm = sensitivity_analysis_iterations;
+	assignment.g_length_unit_flag = length_unit_flag;
+	assignment.g_speed_unit_flag = speed_unit_flag;
+
+	assignment.active_scenario_index = 0;
+
 	assignment.summary_file << "[PROCESS INFO] Step 0: reading scenario_index_list.csv" << '\n';
 	dtalog.output() << "[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
 
 	CDTACSVParser parser_scenario_index_file_list;
 	if (parser_scenario_index_file_list.OpenCSVFile("scenario_index_list.csv", false))
@@ -1021,6 +1049,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			{
 				assignment.summary_file << "[ERROR] " << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS -1 << ". Users have too many scenarios now as " << assignment.g_DTA_scenario_vector.size() << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
 				dtalog.output() << "[ERROR]" << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS-1 << ". Users have too many scenarios now as " << assignment.g_DTA_scenario_vector.size() << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
+				g_DTA_log_file << "[ERROR]" << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS-1 << ". Users have too many scenarios now as " << assignment.g_DTA_scenario_vector.size() << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
 				g_program_stop();
 
 			}
@@ -1032,6 +1061,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	else
 	{
 		dtalog.output() << "[ERROR] File scenario_index_list.csv does not exist!" << '\n';
+		g_DTA_log_file << "[ERROR] File scenario_index_list.csv does not exist!" << '\n';
 		g_program_stop();
 	}
 
@@ -1039,13 +1069,6 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	clock_t start_t0, end_t0, total_t0;
 	int signal_updating_iterations = 0;
 	start_t0 = clock();
-	// k iterations for column generation
-	assignment.g_number_of_column_generation_iterations = column_generation_iterations;
-	assignment.g_number_of_column_updating_iterations = column_updating_iterations;
-	assignment.g_number_of_ODME_iterations = ODME_iterations;
-	assignment.g_number_of_sensitivity_analysis_iterations_for_dtm = sensitivity_analysis_iterations;
-
-	assignment.active_scenario_index = 0;
 
 	// 0: link UE: 1: path UE, 2: Path SO, 3: path resource constraints
 
@@ -1126,7 +1149,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	//step 3: column generation stage: find shortest path and update path cost of tree using TD travel time
 	
 	dtalog.output() << "[PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool" << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 4: Optimizing traffic assignment with Column Generation, an iterative method of adding (path) variables to solve large-scale problems. The optimization process involves creating and updating a set of candidate routes, known as the column pool" << '\n';
 	dtalog.output() << "[DATA INFO] Perform " << assignment.g_number_of_column_generation_iterations << " iterations for the Column Generation process" << '\n';
+	g_DTA_log_file << "[DATA INFO] Perform " << assignment.g_number_of_column_generation_iterations << " iterations for the Column Generation process" << '\n';
 
 	assignment.summary_file << "[PROCESS INFO]Step 4: Column Generation for Traffic Assignment" << '\n';
 	assignment.summary_file << ",Total number of column generation iterations =, " << assignment.g_number_of_column_generation_iterations << '\n';
@@ -1147,9 +1172,16 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			<< assignment.total_demand_volume[assignment.active_scenario_index]
 			<< ".\n--------------------------\n";
 
+		g_DTA_log_file << "[PROCESS INFO] Current active scenario index: "
+			<< assignment.g_DTA_scenario_vector[sii].scenario_index
+			<< ". Corresponding total demand: "
+			<< assignment.total_demand_volume[assignment.active_scenario_index]
+			<< ".\n--------------------------\n";
+
 		if (assignment.total_demand_volume[assignment.active_scenario_index] < 0.1)
 		{
 			dtalog.output() << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
+			g_DTA_log_file << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
 			continue; 
 		}
 		g_load_dynamic_traffic_management_file(assignment);
@@ -1158,6 +1190,13 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		{  // apply column generation and ODME
 
 			dtalog.output()  << "[DATA INFO] " 
+				<< std::setw(12) << std::left << "Iter. No."
+				<< std::setw(12) << std::left << "CPU time(s)"
+				<< std::setw(30) << std::left << "Sys. Wide Travel Time (TT)"
+				<< std::setw(20) << std::left << "Least system TT"
+				<< std::setw(12) << std::left << "UE Gap (%)" << '\n';
+
+			g_DTA_log_file << "[DATA INFO] "
 				<< std::setw(12) << std::left << "Iter. No."
 				<< std::setw(12) << std::left << "CPU time(s)"
 				<< std::setw(30) << std::left << "Sys. Wide Travel Time (TT)"
@@ -1197,10 +1236,16 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				if (dtalog.debug_level() >= 3)
 				{
 					dtalog.output() << "[DATA INFO] Results:" << '\n';
+					g_DTA_log_file << "[DATA INFO] Results:" << '\n';
 					for (int i = 0; i < g_link_vector.size(); ++i) {
 						dtalog.output() << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 							<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
 							<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
+
+						g_DTA_log_file << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
+							<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
+							<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
+
 					}
 				}
 
@@ -1297,6 +1342,13 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 					<< std::scientific << std::setw(20) << std::left << total_least_system_travel_time
 					<< std::fixed << std::setw(12) << std::left << relative_gap * 100 << '\n';
 
+				g_DTA_log_file << "[DATA INFO] "
+					<< std::setw(12) << std::left << iteration_number
+					<< std::setw(12) << std::left << iteration_t * 1.0 / 1000.0
+					<< std::scientific << std::setw(30) << std::left << total_system_wide_travel_time
+					<< std::scientific << std::setw(20) << std::left << total_least_system_travel_time
+					<< std::fixed << std::setw(12) << std::left << relative_gap * 100 << '\n';
+
 				if (iteration_number == 0)
 				{
 
@@ -1315,7 +1367,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			}
 			// column updating stage: for given column pool, update volume assigned for each column
 			dtalog.output() << "[PROCESS INFO] Step 5: Column Pool Updating" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 5: Column Pool Updating" << '\n';
 			dtalog.output() << "[DATA INFO] Total number of column pool updating iterations = " << column_updating_iterations << '\n';
+			g_DTA_log_file << "[DATA INFO] Total number of column pool updating iterations = " << column_updating_iterations << '\n';
 
 			assignment.summary_file << "[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment " << '\n';
 			assignment.summary_file << ",# of flow updating iterations=," << column_updating_iterations << '\n';
@@ -1343,6 +1397,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 
 			dtalog.output() << "[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided." << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided." << '\n';
 
 			if (assignment.g_number_of_ODME_iterations >= 1)
 			{
@@ -1385,6 +1440,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 		assignment.summary_file << "[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. " << '\n';
 		dtalog.output() << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. " << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. " << '\n';
 		
 		g_reset_link_district_performance_per_scenario(assignment);
 		g_record_link_district_performance_per_scenario(assignment, 0);
@@ -1394,6 +1450,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 
 			dtalog.output() << "[PROCESS INFO] Step 7.1: Applying dynamic traffic_management scenarios" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 7.1: Applying dynamic traffic_management scenarios" << '\n';
 
 			int count = 0; 
 			// apply dynamic traffic managementscenarios
@@ -1419,6 +1476,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 
 			dtalog.output() << "[DATA INFO]  # of DTM records = " << count << '\n';
+			g_DTA_log_file << "[DATA INFO]  # of DTM records = " << count << '\n';
 
 			// apply demand side scenarios
 
@@ -1483,11 +1541,13 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
 			
 			dtalog.output() << "[PROCESS INFO] Step 7.2: record route volume before applying dynamic traffic_management scenarios" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 7.2: record route volume before applying dynamic traffic_management scenarios" << '\n';
 
 
 			g_update_sa_volume_in_column_pool(assignment, 0);  // SA before
 
 			dtalog.output() << "[PROCESS INFO] Step 7.3: path column regeneration for applying dynamic traffic_management scenarios" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 7.3: path column regeneration for applying dynamic traffic_management scenarios" << '\n';
 
 			g_column_regeneration(assignment, true);
 
@@ -1496,26 +1556,31 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			if (assignment.active_dms_count >= 1)
 			{
 				dtalog.output() << "[PROCESS INFO] Step 7.4: path column modification for dms users" << '\n';
+				g_DTA_log_file << "[PROCESS INFO] Step 7.4: path column modification for dms users" << '\n';
 
 				g_column_pool_route_modification(assignment, column_updating_iterations);
 			}
 			else
 			{
 				dtalog.output() << "[PROCESS INFO] Step 7.4: skip: path column modification for dms users, as dms count = 0" << '\n';
+				g_DTA_log_file << "[PROCESS INFO] Step 7.4: skip: path column modification for dms users, as dms count = 0" << '\n';
 
 			}
 
 			dtalog.output() << "[PROCESS INFO] Step 7.5: path column pool optimization for real time information users" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 7.5: path column pool optimization for real time information users" << '\n';
 			// stage III: after DMS path modification, we enable further user equilibirum computing for real time info users by switching their routes
 			g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations_for_dtm, true);
 
 			dtalog.output() << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';
 			g_update_sa_volume_in_column_pool(assignment, 1);  // SA after
 		}// SA change
 
 		g_classification_in_column_pool(assignment);
 
 		dtalog.output() << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . " << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . " << '\n';
 
 		assignment.summary_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. " << '\n';
 
@@ -1524,11 +1589,13 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			start_simu = clock();
 
 			dtalog.output() << "[PROCESS INFO] Step 8: Simulation for traffic assignment.." << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 8: Simulation for traffic assignment.." << '\n';
 			assignment.STTrafficSimulation();
 			end_simu = clock();
 			total_simu = end_simu - end_simu;
 
 			dtalog.output() << "[DATA INFO] CPU running time for traffic simulation: " << total_simu / 1000.0 << " s" << '\n';
+			g_DTA_log_file << "[DATA INFO] CPU running time for traffic simulation: " << total_simu / 1000.0 << " s" << '\n';
 			
 		}
 
@@ -1536,17 +1603,20 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		total_t = (end_t - start_t);
 
 		dtalog.output() << "[DATA INFO] Total CPU running time for the entire process = " << total_t / 1000.0 << " s" << '\n';
+		g_DTA_log_file << "[DATA INFO] Total CPU running time for the entire process = " << total_t / 1000.0 << " s" << '\n';
 
 		start_t = clock();
 
 		//step 5: output simulation results of the new demand
 		dtalog.output() << "[PROCESS INFO] Step 9: Collecting statistics, generating zonal hierarchy mapping (e.g., Zone to Super-Zone and Zone to District Mapping)" << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 9: Collecting statistics, generating zonal hierarchy mapping (e.g., Zone to Super-Zone and Zone to District Mapping)" << '\n';
 		assignment.summary_file << "[PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) " << '\n';
 
 		// zonal_hierarchy_mapping
 
 
 		dtalog.output() << "[PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results." << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results." << '\n';
 
 		g_output_assignment_result(assignment,0);
 
@@ -1587,8 +1657,10 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	end_t = clock();
 	total_t = (end_t - start_t);
 	dtalog.output() << "[DATA INFO] CPU running time for outputting simulation results: " << total_t / 1000.0 << " s" << '\n';
+	g_DTA_log_file << "[DATA INFO] CPU running time for outputting simulation results: " << total_t / 1000.0 << " s" << '\n';
 
 	dtalog.output() << "[STATUS INFO] Freeing memory.." << '\n';
+	g_DTA_log_file << "[STATUS INFO] Freeing memory.." << '\n';
 
 	end_t0 = clock();
 	total_t0 = (end_t0 - start_t0);
@@ -1596,7 +1668,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	int min = second / 60;
 	int sec = second - min * 60;
 	dtalog.output() << "[DATA INFO] CPU running time for the entire process: " << min << " min " << sec << " sec" << '\n';
+	g_DTA_log_file << "[DATA INFO] CPU running time for the entire process: " << min << " min " << sec << " sec" << '\n';
 	dtalog.output() << "[STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science." << std::endl;
+	g_DTA_log_file << "[STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science." << std::endl;
 
 	return 1;
 }

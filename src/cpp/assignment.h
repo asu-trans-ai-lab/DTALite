@@ -483,6 +483,10 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
+					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag[assignment.active_scenario_index] == 0)
 				{
@@ -513,6 +517,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
+	//            g_DTA_log_file << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
 	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << '\n';
 	//        }
 
@@ -527,6 +532,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
+	//            g_DTA_log_file << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
 	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << '\n';
 	//        }
 
@@ -545,6 +551,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		<< '\n';
 
 	//dtalog.output() << "[DATA INFO] ODME #" << iteration_no
+	//g_DTA_log_file << "[DATA INFO] ODME #" << iteration_no
 	//	<< ", link MAE= " << total_gap / max(1, total_link_count)
 	//	<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
 	//	"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
@@ -555,6 +562,15 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 
 	// Data
 	dtalog.output() << std::left
+		<< std::setw(20) << "[DATA INFO] ODME"
+		<< std::setw(12) << iteration_no
+		<< std::setw(16) << total_gap / max(1, total_link_count)
+		<< std::setw(16) << (sub_total_gap_link_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << (sub_total_system_gap_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << total_system_travel_time / max(0.1, total_system_demand)
+		<< std::setw(10) << total_system_UE_gap / max(0.00001, total_system_demand)
+		<< std::setw(10) << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << '\n';
+	g_DTA_log_file << std::left
 		<< std::setw(20) << "[DATA INFO] ODME"
 		<< std::setw(12) << iteration_no
 		<< std::setw(16) << total_gap / max(1, total_link_count)
@@ -724,6 +740,10 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
+					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag[0] == 0)
 				{
@@ -752,6 +772,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 		'\n';
 
 	//dtalog.output() << "[DATA INFO] ODME #" << iteration_no
+	//g_DTA_log_file << "[DATA INFO] ODME #" << iteration_no
 	//	<< ", link MAE= " << total_gap / max(1, total_link_count)
 	//	<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
 	//	"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
@@ -762,6 +783,15 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 
 	// Data
 	dtalog.output() << std::left
+		<< std::setw(12) << iteration_no
+		<< std::setw(20) << total_gap / max(1, total_link_count)
+		<< std::setw(12) << (sub_total_gap_link_count) / max(1, total_link_count) * 100
+		<< std::setw(16) << (sub_total_system_gap_count) / max(1, total_link_count) * 100
+		<< std::setw(30) << total_system_travel_time / max(0.1, total_system_demand)
+		<< std::setw(20) << total_system_UE_gap / max(0.00001, total_system_demand)
+		<< std::setw(16) << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << '\n';
+
+	g_DTA_log_file << std::left
 		<< std::setw(12) << iteration_no
 		<< std::setw(20) << total_gap / max(1, total_link_count)
 		<< std::setw(12) << (sub_total_gap_link_count) / max(1, total_link_count) * 100
@@ -967,6 +997,12 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
 						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
 						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
+
+					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count[assignment.active_scenario_index] << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev[assignment.active_scenario_index] << '\n';
+
 				}
 				if (g_link_vector[i].VDF_period[tau].upper_bound_flag[0] == 0)
 				{
@@ -997,6 +1033,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
+	//            g_DTA_log_file << "zone " << g_zone_vector[orig].zone_id << "A: obs:" << g_zone_vector[orig].obs_attraction
 	//                << ",est:," << g_zone_vector[orig].est_attraction << ",dev:," << g_zone_vector[orig].est_attraction_dev << '\n';
 	//        }
 
@@ -1011,6 +1048,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	//        if (dtalog.debug_level() == 2)
 	//        {
 	//            dtalog.output() << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
+	//            g_DTA_log_file << "zone " << g_zone_vector[orig].zone_id << "P: obs:" << g_zone_vector[orig].obs_production
 	//                << ",est:," << g_zone_vector[orig].est_production << ",dev:," << g_zone_vector[orig].est_production_dev << '\n';
 	//        }
 
@@ -1029,6 +1067,15 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 		<< '\n';
 
 	dtalog.output() << "[DATA INFO] ODME #" << iteration_no
+		<< ", link MAE= " << total_gap / max(1, total_link_count)
+		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
+		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
+		"%,avg_tt = " << total_system_travel_time / max(0.1, total_system_demand) << "(min) " <<
+		",UE gap =" << total_system_UE_gap / max(0.00001, total_system_demand) << "(min)" <<
+		" = (" << total_system_UE_gap / max(0.00001, total_system_travel_time) * 100 << " %)"
+		<< '\n';
+
+	g_DTA_log_file << "[DATA INFO] ODME #" << iteration_no
 		<< ", link MAE= " << total_gap / max(1, total_link_count)
 		<< ",link_MAPE: " << (sub_total_gap_link_count) / max(1, total_link_count) * 100 <<
 		"%,system_MPE: " << (sub_total_system_gap_count) / max(1, total_link_count) * 100 <<
@@ -1504,6 +1551,13 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 		<< std::setw(18) << std::fixed << std::setprecision(2) << avg_travel_time
 		<< std::scientific << std::setw(18) <<  std::setprecision(2) << total_system_cost_gap
 		<< std::setw(18) << std::fixed << std::setprecision(4) << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << '\n';
+
+	g_DTA_log_file << std::left << std::setw(20) << "[DATA INFO] column updating"
+		<< std::right << std::setw(12) << inner_iteration_number
+		<< std::setw(18) << std::fixed << std::setprecision(2) << avg_travel_time
+		<< std::scientific << std::setw(18) << std::setprecision(2) << total_system_cost_gap
+		<< std::setw(18) << std::fixed << std::setprecision(4) << total_system_cost_gap * 100.0 / max(0.00001, total_system_travel_cost) << '\n';
+
 	string stage_str;
 	stage_str = "Column updating";
 
@@ -1811,6 +1865,10 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
 		<< std::setw(18) << "Optimization Obj" << std::setw(20) << "UE Gap (%)" << '\n';
 
+	g_DTA_log_file << std::left << std::setw(20) << "[DATA INFO] Column Updating:"
+		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
+		<< std::setw(18) << "Optimization Obj" << std::setw(20) << "UE Gap (%)" << '\n';
+
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
 		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
@@ -1818,6 +1876,7 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 		if(relative_percentative_gap < UE_convergence_percentage )
 		{
 			dtalog.output() << std::left << std::setw(20) << "[PROCESS INFO] The User Equilibrium Convergence Percentage has been successfully achieved. The process of updating columns has now been completed" << '\n';
+			g_DTA_log_file << std::left << std::setw(20) << "[PROCESS INFO] The User Equilibrium Convergence Percentage has been successfully achieved. The process of updating columns has now been completed" << '\n';
 			break; 
 		}
 
@@ -1826,6 +1885,9 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 			for (int i = 0; i < g_link_vector.size(); ++i)
 			{
 				dtalog.output() << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
+					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
+				g_DTA_log_file << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
 					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
 			}
@@ -1915,6 +1977,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									{
 
 										dtalog.output() << "[DATA INFO] nl= " << nl << " link sequence = " << link_seq_no << '\n';
+										g_DTA_log_file << "[DATA INFO] nl= " << nl << " link sequence = " << link_seq_no << '\n';
 										p_column_pool->OD_impact_flag = 1;
 										p_column_pool->at_od_impacted_flag_map[at];
 
@@ -1971,6 +2034,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									if (p_2_stage_column_pool->path_node_sequence_map.size() == 0)  // if there is no path available int the precomputed column pool
 									{
 										dtalog.output() << "[ERROR] if there is no path available int the precomputed column pool";
+										g_DTA_log_file << "[ERROR] if there is no path available int the precomputed column pool";
 										g_program_stop();
 										continue;  //
 
@@ -2042,6 +2106,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 													link_seq_vector.push_back(it2->second.path_link_vector[nl2]);
 													// construct sub path C
 													dtalog.output() << "[DATA INFO] reroute B: l=" << nl2 << "," << g_node_vector[g_link_vector[it2->second.path_link_vector[nl2]].to_node_seq_no].node_id << '\n';
+													g_DTA_log_file << "[DATA INFO] reroute B: l=" << nl2 << "," << g_node_vector[g_link_vector[it2->second.path_link_vector[nl2]].to_node_seq_no].node_id << '\n';
 												}
 
 												b_sa_column_found_flag = true;
@@ -2065,6 +2130,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											}
 											catch (const std::bad_alloc& e) {
 												dtalog.output() << "Memory allocation failed: " << e.what() << std::endl;
+												g_DTA_log_file << "Memory allocation failed: " << e.what() << std::endl;
 											}
 											for (int l = 0; l < link_seq_vector.size(); l++)
 											{
@@ -2088,6 +2154,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											{
 												it->second.path_node_vector[l + 1] = g_link_vector[link_seq_vector[l]].to_node_seq_no;
 												dtalog.output() << "[DATA INFO] reroute: l=" << l << "," << g_node_vector[g_link_vector[link_seq_vector[l]].to_node_seq_no].node_id << '\n';
+												g_DTA_log_file << "[DATA INFO] reroute: l=" << l << "," << g_node_vector[g_link_vector[link_seq_vector[l]].to_node_seq_no].node_id << '\n';
 											}
 											it->second.m_node_size = link_seq_vector.size() + 1;
 
@@ -2128,6 +2195,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									if(output_flag == 0)
 									{
 										dtalog.output() << "[STATUS INFO] route modification for DMS or real time information users" << '\n'; 
+										g_DTA_log_file << "[STATUS INFO] route modification for DMS or real time information users" << '\n'; 
 										output_flag = 1;
 									}
 									p_2_stage_column_pool->information_type = 1;
@@ -2202,6 +2270,7 @@ void g_column_pool_reset(Assignment& assignment)
 void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in_min, int recording_flag = 0)
 {
 	//dtalog.output() << "Begin the computing of " << g_NetworkForRTSP_vector.size() << " RTSP networks in CPU." << '\n';
+	//g_DTA_log_file << "Begin the computing of " << g_NetworkForRTSP_vector.size() << " RTSP networks in CPU." << '\n';
 
 	clock_t start_t0, end_t0, total_t0;
 
@@ -2225,6 +2294,7 @@ void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in
 	int min = second / 60;
 	int sec = second - min * 60;
 	//dtalog.output() << "CPU running time for RT shortest path: " << min << " min " << sec << " sec" << '\n';
+	//g_DTA_log_file << "CPU running time for RT shortest path: " << min << " min " << sec << " sec" << '\n';
 	assignment.summary_file << ", RT shortest path at time =," << current_time_in_min << "min" << '\n';
 
 }

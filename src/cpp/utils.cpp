@@ -35,10 +35,11 @@ using std::sqrt;
 using std::min;
 using std::fmin;
 #include "shared_code.h"
-
+extern  std::ofstream  g_DTA_log_file;
 void g_program_stop()
 {
     dtalog.output() << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << '\n';
+    g_DTA_log_file << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << '\n';
 
     exit(1);
 }
@@ -46,6 +47,7 @@ void g_program_stop()
 void g_program_exit()
 {
     dtalog.output() << "[STATUS INFO] DTALite Program completes!" << std::endl;
+    g_DTA_log_file << "[STATUS INFO] DTALite Program completes!" << std::endl;
     exit(0);
 }
 
@@ -276,6 +278,7 @@ bool CDTACSVParser::OpenCSVFile(string fileName, bool b_required)
         if (b_required)
         {
             dtalog.output() << "[WARNING] File " << fileName << " does not exist. Please check." << '\n';
+            g_DTA_log_file << "[WARNING] File " << fileName << " does not exist. Please check." << '\n';
             //g_program_stop();
         }
         return false;
@@ -472,6 +475,7 @@ bool CDTACSVParser::GetValueByFieldName(string field_name, string& value, bool r
         if (required_field)
         {
             dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << '\n';
+            g_DTA_log_file << "[ERROR] Field " << field_name << " in file " << mFileName << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;

@@ -50,6 +50,7 @@ using std::istringstream;
 void g_load_dynamic_traffic_management_file(Assignment& assignment)
 {
 	dtalog.output() << "[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data..." << '\n';
 
 
 	// we setup the initial number of lanes per demand period, per mode and for each scenario, then we will load the dynamic_traffic_management file to overwrite the # of lanes for dynamic lane use in some special cases
@@ -99,23 +100,26 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			if (!parser.GetValueByFieldName("dtm_id", DTM_id))
 			{
 				dtalog.output() << "[ERROR] Field dtm_id in file dynamic_traffic_management.csv does not have a valid value." << '\n';
+				g_DTA_log_file << "[ERROR] Field dtm_id in file dynamic_traffic_management.csv does not have a valid value." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] field dtm_id %d in file dynamic_traffic_management.csv does not have a valid value\n");
-				g_program_stop();
+				return;
 			}
 			int from_node_id = 0;
 			if (!parser.GetValueByFieldName("from_node_id", from_node_id))
 			{
 				dtalog.output() << "[ERROR] from_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
+				g_DTA_log_file << "[ERROR] from_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file dynamic_traffic_management.csv is not defined\n", from_node_id);
-				g_program_stop();
+				return;
 			}
 
 			int to_node_id = 0;
 			if (!parser.GetValueByFieldName("to_node_id", to_node_id))
 			{
 				dtalog.output() << "[ERROR] to_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
+				g_DTA_log_file << "[ERROR] to_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file dynamic_traffic_management.csv is not defined\n", to_node_id);
-				g_program_stop();
+				return;
 			}
 
 
@@ -127,12 +131,14 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			if (assignment.g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
 				dtalog.output() << "[ERROR] from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
+				g_DTA_log_file << "[ERROR] from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file scenario.csv is not defined in node.csv\n", from_node_id);
 				continue;
 			}
 			if (assignment.g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
 				dtalog.output() << "[ERROR] to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
+				g_DTA_log_file << "[ERROR] to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file scenario.csv is not defined in node.csv\n", to_node_id);
 				//has not been defined
 				continue;
@@ -153,6 +159,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file dynamic_traffic_management.csv is not defined in link.csv." << '\n';
+				g_DTA_log_file << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file dynamic_traffic_management.csv is not defined in link.csv." << '\n';
 				fprintf(g_pFileModel_LC, "[ERROR] link %d-> %d in file scenario.csv is not defined in link.csv\n", from_node_id, to_node_id);
 				continue;
 			}
@@ -185,6 +192,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "[ERROR] Please ensure that the mode type '" << str_mode_type << "' specified in dynamic_traffic_management.csv for record number " << DTM_id << " is present in the mode_type.csv file." << '\n';
+				g_DTA_log_file << "[ERROR] Please ensure that the mode type '" << str_mode_type << "' specified in dynamic_traffic_management.csv for record number " << DTM_id << " is present in the mode_type.csv file." << '\n';
 			}
 
 
@@ -255,7 +263,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 				if (assignment.g_ModeTypeVector[mode_type_no].real_time_information_type == 0) {
 					dtalog.output() << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
-					g_program_stop();
+					g_DTA_log_file << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
+					continue;
 				}
 
 
@@ -271,7 +280,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				if (assignment.node_seq_no_2_zone_id_mapping.find(g_link_vector[link_seq_no].to_node_seq_no) == assignment.node_seq_no_2_zone_id_mapping.end())
 				{
 					dtalog.output() << "[ERROR]  The upstream node ('to_node_id' = " << to_node_id << ") of a DMS link must be associated with a 'zone_id' in 'node.csv' for the simulation of DMS information provision strategies." << '\n';
-					g_program_stop();
+					g_DTA_log_file << "[ERROR]  The upstream node ('to_node_id' = " << to_node_id << ") of a DMS link must be associated with a 'zone_id' in 'node.csv' for the simulation of DMS information provision strategies." << '\n';
+					return;
 
 				}
 
@@ -293,8 +303,10 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "[ERROR] DTALite does not support DTM_type = " << DTM_type.c_str() << " in dynamic_traffic_management.csv " << '\n';
+				g_DTA_log_file << "[ERROR] DTALite does not support DTM_type = " << DTM_type.c_str() << " in dynamic_traffic_management.csv " << '\n';
 				dtalog.output() << "[INFO] DTALite only support DTM_type = lane_closure or dms in dynamic_traffic_management.csv " << '\n';
-				g_program_stop();
+				g_DTA_log_file << "[INFO] DTALite only support DTM_type = lane_closure or dms in dynamic_traffic_management.csv " << '\n';
+				continue;
 			}
 
 
@@ -306,6 +318,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			//	if (!parser.GetValueByFieldName("time_period", time_period))
 			//	{
 			//		dtalog.output() << "Error: Field time_window in file scenario.csv cannot be read." << '\n';
+			//		g_DTA_log_file << "Error: Field time_window in file scenario.csv cannot be read." << '\n';
 			//		g_program_stop();
 			//		break;
 			//	}
@@ -408,6 +421,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			//	if (DTM_type.size() >= 1)
 			//	{
 			//		dtalog.output() << "Error: DTM_type = " << DTM_type << " is not supported. Currently DTALite supports DTM_type such as sa, incident, dms" << '\n';
+			//		g_DTA_log_file << "Error: DTM_type = " << DTM_type << " is not supported. Currently DTALite supports DTM_type such as sa, incident, dms" << '\n';
 			//		g_program_stop();
 			//	}
 			//}
@@ -419,48 +433,61 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	}
 	// allocate
 
-	if(dtm_dynamic_lane_use_count = 0)
+	if(dtm_dynamic_lane_use_count = 0){
 		dtalog.output() << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
-	else 
+		g_DTA_log_file << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
+	}
+	else {
 		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
-
+		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+	}
 	if (dtm_lane_closure_count = 0)
+	{
 		dtalog.output() << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
-	else
+		g_DTA_log_file << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
+	}
+	else{
 		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 
-
+	}
 
 	if (dtm_lane_closure_count  > 0  && assignment.g_number_of_real_time_mode_types ==0)
 	{
 		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
+		return;
 	}
 
 
 	if (bFoundFlag && dtm_lane_closure_count == 0 && assignment.total_real_time_demand_volume > 0.1) {
 		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the dynamic_traffic_management.csv file." << '\n';
+		g_DTA_log_file << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the dynamic_traffic_management.csv file." << '\n';
 
 		for (int i = 0; i < assignment.g_ModeTypeVector.size(); i++) {
 			if (assignment.g_ModeTypeVector[i].real_time_information_type != 0) {
 				dtalog.output() << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the mode_type.csv file." << '\n';
+				g_DTA_log_file << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the mode_type.csv file." << '\n';
 			}
 		}
 
-		g_program_stop();
+		return; 
 	}
 
 
 	//dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
+	//g_DTA_log_file << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
 	if (dtm_dms_count > 0 && assignment.g_number_of_DMS_mode_types == 0)
 	{
 		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
-		g_program_stop();
+		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
+		return;
 	}
 	//if (dtm_dms_count > 0 && dtm_lane_closure_count ==0 )
 	//{
 	//	dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
-	//	g_program_stop();
+	//	g_DTA_log_file << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
+	//	return;
 	//}
 
 
@@ -490,6 +517,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 void g_load_demand_side_scenario_file(Assignment& assignment)
 {
 	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
 
 	CDTACSVParser parser;
 
@@ -523,7 +551,8 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
-				g_program_stop();
+				g_DTA_log_file <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
+				continue;
 			}
 
 			double scale_factor = 1;
@@ -566,13 +595,16 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 			else
 			{
 				dtalog.output() << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
+				g_DTA_log_file << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
 				dtalog.output() << DTM_type.c_str() << "is not supported." << '\n';
-				g_program_stop();
+				g_DTA_log_file << DTM_type.c_str() << "is not supported." << '\n';
+				continue;
 			}
 
 			demand_scenario_count++;
 
 			dtalog.output() << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
+			g_DTA_log_file << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
 
 		}
 	}
@@ -608,6 +640,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //		if (fabs(LR_RT_price) > 0.001)
 //		{
 //			dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
+//			g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
 //				<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //		}
 
@@ -616,6 +649,7 @@ void g_load_demand_side_scenario_file(Assignment& assignment)
 //	if (fabs(LR_ini_price) > 0.001)
 //	{
 //		dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
+//		g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
 //			<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //	}
 

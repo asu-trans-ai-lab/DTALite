@@ -1,0 +1,9 @@
+section,key,value
+assignment,number_of_iterations,100
+assignment,route_output,1
+assignment,UE_convergence_percentage,0.01
+assignment,number_of_column_updating_iterations,400
+assignment,simulation_output,0
+cpu,number_of_memory_blocks,4
+unit,length_unit,km
+unit,speed_unit,kmper

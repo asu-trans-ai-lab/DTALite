@@ -194,6 +194,7 @@ public:
 		}
 		catch (const std::bad_alloc& e) {
 			dtalog.output() << "Memory allocation failed: " << e.what() << std::endl;
+			g_DTA_log_file << "Memory allocation failed: " << e.what() << std::endl;
 		}
 
 	}
@@ -220,6 +221,7 @@ public:
 			// {
 
 			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
+			// 	g_DTA_log_file << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
 			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
 			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
@@ -263,6 +265,7 @@ public:
 			// {
 
 			// 	dtalog.output() << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
+			// 	g_DTA_log_file << "link " << p_link->link_id.c_str() << " " << g_node_vector[p_link->from_node_seq_no].node_id << "->" <<
 			// 		g_node_vector[p_link->to_node_seq_no].node_id << ","
 			// 		<< "  has a travel time of " << m_link_genalized_cost_array[i] << " for agent type "
 			// 		<< assignment.g_ModeTypeVector[mode_type_no].mode_type.c_str() << " at demand period =" << m_tau <<
@@ -321,11 +324,12 @@ public:
 					if (outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE)
 					{
 						dtalog.output() << "[ERROR] outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << '\n';
+						g_DTA_log_file << "[ERROR] outgoing_link_size >= MAX_LINK_SIZE_FOR_A_NODE" << '\n';
 						// output the log
 
 						g_OutputModelFiles(1);
 
-						g_program_stop();
+						return;
 					}
 				}
 			}
@@ -341,6 +345,7 @@ public:
 					}
 			catch (const std::bad_alloc& e) {
 				dtalog.output() << "Memory allocation failed: in function BuildNetwork() " << e.what() << std::endl;
+				g_DTA_log_file << "Memory allocation failed: in function BuildNetwork() " << e.what() << std::endl;
 			}
 
 			}
@@ -356,6 +361,7 @@ public:
 		if (dtalog.debug_level() == 2)
 		{
 			dtalog.output() << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
+			g_DTA_log_file << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
 
 			for (int i = 0; i < g_node_vector.size(); ++i)
 			{
@@ -363,11 +369,14 @@ public:
 				{ // we need to make sure we only create two way connectors between nodes and zones
 					dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
 						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
+					g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
+						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 					for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; j++)
 					{
 						int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
 						dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
+						g_DTA_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 					}
 				}
 				else
@@ -376,11 +385,14 @@ public:
 					{
 						dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
 							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
+						g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
+							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
 						for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; ++j)
 						{
 							int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
 							dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
+							g_DTA_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 						}
 					}
 				}
@@ -563,7 +575,8 @@ public:
 						if (l_node_size >= temp_path_node_vector_size)
 						{
 							dtalog.output() << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
-							g_program_stop();
+							g_DTA_log_file << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
+							return 1;
 						}
 
 						// this is valid node
@@ -586,6 +599,7 @@ public:
 									m_link_person_volume_array[current_link_seq_no] += volume;
 
 									//dtalog.output() << "node = " << g_node_vector[i].node_id
+									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
 									//    << "zone id= " << g_node_vector[i].zone_id << ","
 									//    << "l_link_size= " << l_link_size << ","
 									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
@@ -796,7 +810,8 @@ public:
 						if (l_node_size >= temp_path_node_vector_size)
 						{
 							dtalog.output() << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
-							g_program_stop();
+							g_DTA_log_file << "[ERROR] l_node_size >= temp_path_node_vector_size" << '\n';
+							return -1;
 						}
 
 						// this is valid node
@@ -826,7 +841,14 @@ public:
 									    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									    << ": add volume " << volume << '\n';
 
-									if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
+									g_DTA_log_file << "node = " << g_node_vector[i].node_id
+										<< "zone id= " << g_node_vector[i].zone_id << ","
+										<< "l_link_size= " << l_link_size << ","
+										<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+										<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+										<< ": add volume " << volume << '\n';
+										
+										if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									{
 									    int idebug = 1;
 									}
@@ -932,17 +954,22 @@ public:
 		if (negative_cost_flag == true && bsensitivity_analysis_flag == true)
 		{
 			dtalog.output() << "[DATA INFO] Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
+			g_DTA_log_file << "[DATA INFO] Negative Cost: SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
 			local_debugging_flag = 0;
 			negative_cost_label_correcting(processor_id, p_assignment, iteration_k, o_node_index, d_node_no);
 			return true;
 		}
 
-		if (p_assignment->g_number_of_nodes >= 1000 && origin_zone % 97 == 0)
-			dtalog.output() << "[STATUS INFO] label correcting for zone " << origin_zone << " in processor " << processor_id << '\n';
-
+		if (p_assignment->g_number_of_nodes >= 1000 && origin_zone % 97 == 0 && iteration_k%5==0)
+		{
+			dtalog.output() << "[CPU] short path for zone " << origin_zone << ", proc " << processor_id << '\n';
+			g_DTA_log_file << "[CPU] short path for zone " << origin_zone << ", proc " << processor_id << '\n';
+		}
 		if (dtalog.debug_level() >= 2)
+		{
 			dtalog.output() << "[DATA INFO] SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
-
+			g_DTA_log_file << "[DATA INFO] SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
+		}
 		if (local_debugging_flag == 1)
 		{
 			p_assignment->sp_log_file << " beginning of SP iteration k =  " << iteration_k << ": origin node: " << g_node_vector[origin_node].node_id << '\n';
@@ -1041,6 +1068,7 @@ public:
 						if (m_mode_type_no == 0 && g_link_vector[pred_link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.find(to_node) != g_link_vector[pred_link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.end())
 						{
 	/*						dtalog.output() << "[DATA INFO] restricted turn/movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';*/
+	/*						g_DTA_log_file << "[DATA INFO] restricted turn/movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';*/
 							continue;
 						}
 					}
@@ -1316,6 +1344,7 @@ public:
 
 		if (dtalog.debug_level() >= 2)
 			dtalog.output() << "[DATA INFO] Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
+			g_DTA_log_file << "[DATA INFO] Dest SP =  " << ": dest node: " << g_node_vector[destination_node].node_id << '\n';
 
 		if (local_debugging_flag == 0)
 		{
@@ -1416,7 +1445,9 @@ public:
 				//        g_node_vector[to_node].node_id == 21498)
 				//    {
 				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
+				//        g_DTA_log_file << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
 				//        dtalog.output() << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
+				//        g_DTA_log_file << "g_link_vector[link_seq_no].RT_waiting_time = " << g_link_vector[link_seq_no].RT_waiting_time << '\n';
 
 				//        if (g_link_vector[link_seq_no].RT_waiting_time >= 10 && g_node_vector[to_node].node_id == 21498)
 				//        {
@@ -1692,6 +1723,7 @@ public:
 						if (m_mode_type_no == 0 && g_link_vector[link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.find(to_node) != g_link_vector[link_seq_no].VDF_period[m_tau].restricted_turn_nodes_map.end())
 						{
 							dtalog.output() << "[DATA INFO] restricted movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';
+							g_DTA_log_file << "[DATA INFO] restricted movement " << g_node_vector[to_node].node_id << " will not be used " << '\n';
 							continue;
 						}
 					}

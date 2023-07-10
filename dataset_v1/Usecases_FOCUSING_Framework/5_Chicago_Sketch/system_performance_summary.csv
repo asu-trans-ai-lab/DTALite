@@ -1,0 +1,4 @@
+first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,total_co2_kg,total_nox_kg,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,avg_co2_kg,avg_nox_kg,
+,0,25nb,am,auto,1.13749e+06,571040,4.45268e+07,2.76736e+07,4.85785e+07,2.29407e+14,5.89962e+10,39.1446,24.3286,42.7067,2.01677e+08,51865.1,
+,1,2040,am,auto,1.70624e+06,1076986,6.76593e+07,4.20505e+07,8.98042e+07,7.22908e+14,1.72972e+11,39.6541,24.6452,52.6328,4.23685e+08,101376,
+,2,2050,am,auto,2.27499e+06,1558290,9.22688e+07,5.73455e+07,1.75453e+08,1.6261e+15,3.41478e+11,40.558,25.2069,77.1224,7.14774e+08,150101,

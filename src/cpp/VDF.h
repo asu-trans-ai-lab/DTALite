@@ -244,6 +244,7 @@ public:
                }
 
            //           dtalog.output() << "nonpeak_hourly_flow = " << nonpeak_hourly_flow << '\n';
+           //           g_DTA_log_file << "nonpeak_hourly_flow = " << nonpeak_hourly_flow << '\n';
 
            // setup the upper bound on nonpeak flow rates
            if (nonpeak_hourly_flow > mode_hourly_capacity)
@@ -317,6 +318,7 @@ public:
                }
 
                // dtalog.output() << "td_queue t" << t << " =  " << td_queue << ", speed =" << td_speed << '\n';
+               // g_DTA_log_file << "td_queue t" << t << " =  " << td_queue << ", speed =" << td_speed << '\n';
 
             int t_interval = t_in_min / 5;
 
