@@ -201,7 +201,7 @@ public:
 
 	bool UpdateGeneralizedLinkCost(int mode_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
 	{
-		int link_cost_debug_flag = 1;
+		int link_cost_debug_flag = 0;
 		bool negative_cost_flag = false;
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
@@ -213,7 +213,9 @@ public:
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
 				p_link->VDF_period[m_tau].toll[mode_type_no][assignment.active_scenario_index] / m_value_of_time * 60;
 
-			if (p_link->link_id == "7742")
+			if (p_link->link_type_si[assignment.active_scenario_index] < 0)  // connectors
+				m_link_genalized_cost_array[i] = 0.0; 
+			if (m_link_genalized_cost_array[i]  < -0.1)
 			{
 				int idebug = 1;
 			}
@@ -239,9 +241,10 @@ public:
 	}
 
 
+
 	bool UpdateRTGeneralizedLinkCost(int mode_type_no, Assignment* p_assignment, int origin_zone, int iteration_k, bool b_sensitivity_analysis_flag)
 	{
-		int link_cost_debug_flag = 1;
+		int link_cost_debug_flag = 0;
 		bool negative_cost_flag = false;
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
@@ -358,46 +361,43 @@ public:
 		}
 
 		// after dynamic arrays are created for forward star
-		if (dtalog.debug_level() == 2)
+#pragma omp critical
 		{
-			dtalog.output() << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
-			g_DTA_log_file << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
-
-			for (int i = 0; i < g_node_vector.size(); ++i)
+			if (p_assignment->b_forward_star_structure_log == false)
 			{
-				if (g_node_vector[i].zone_org_id > 0) // for each physical node
-				{ // we need to make sure we only create two way connectors between nodes and zones
-					dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
-						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
-					g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
-						<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
+				assignment.sp_log_file << "[STATUS INFO] add outgoing link data into dynamic array" << '\n';
 
-					for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; j++)
-					{
-						int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
-						dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
-						g_DTA_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
-					}
-				}
-				else
+				for (int i = 0; i < g_node_vector.size(); ++i)
 				{
-					if (dtalog.debug_level() == 3)
-					{
-						dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
-							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
-						g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
+					if (g_node_vector[i].zone_org_id > 0) // for each physical node
+					{ // we need to make sure we only create two way connectors between nodes and zones
+						assignment.sp_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << " and "
 							<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
 
-						for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; ++j)
+						for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; j++)
 						{
 							int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
-							dtalog.output() << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
-							g_DTA_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
+							assignment.sp_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
+						}
+					}
+					else
+					{
+						assignment.sp_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with "
+								<< NodeForwardStarArray[i].OutgoingLinkSize << " outgoing links." << '\n';
+
+							for (int j = 0; j < NodeForwardStarArray[i].OutgoingLinkSize; ++j)
+							{
+								int link_seq_no = NodeForwardStarArray[i].OutgoingLinkNoArray[j];
+								assignment.sp_log_file << "  outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
+							}
 						}
 					}
 				}
-			}
+
+
+				p_assignment->b_forward_star_structure_log = true;
 		}
+		
 
 		m_value_of_time = p_assignment->g_ModeTypeVector[m_mode_type_no].value_of_time;
 		bBuildNetwork = true;
@@ -507,7 +507,7 @@ public:
 		double ODvolume, volume;
 		CColumnVector* pColumnVector;
 
-		int local_debugging_flag = 0;
+		int local_debugging_flag = 1;
 		//if (iteration_number_outterloop == 0)
 		//{
 		//    if (g_node_vector[origin_node].zone_id == assignment.shortest_path_log_zone_id && number_of_nodes< 10000)
@@ -801,6 +801,7 @@ public:
 					if (m_link_predecessor[current_node_seq_no] >= 0)
 					{
 						total_origin_least_cost += ODvolume * m_node_label_cost[current_node_seq_no];
+						pColumnVector->least_travel_time = m_node_label_cost[current_node_seq_no];
 					}
 					// backtrace the sp tree from the destination to the root (at origin)
 					while (current_node_seq_no >= 0 && current_node_seq_no < number_of_nodes)
@@ -834,24 +835,24 @@ public:
 									m_link_person_volume_array[current_link_seq_no] += volume;
 
 
-									dtalog.output() << "node = " << g_node_vector[i].node_id
-									    << "zone id= " << g_node_vector[i].zone_id << ","
-									    << "l_link_size= " << l_link_size << ","
-									    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									    << ": add volume " << volume << '\n';
+									//dtalog.output() << "node = " << g_node_vector[i].node_id
+									//    << "zone id= " << g_node_vector[i].zone_id << ","
+									//    << "l_link_size= " << l_link_size << ","
+									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									//    << ": add volume " << volume << '\n';
 
-									g_DTA_log_file << "node = " << g_node_vector[i].node_id
-										<< "zone id= " << g_node_vector[i].zone_id << ","
-										<< "l_link_size= " << l_link_size << ","
-										<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-										<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-										<< ": add volume " << volume << '\n';
+									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
+									//	<< "zone id= " << g_node_vector[i].zone_id << ","
+									//	<< "l_link_size= " << l_link_size << ","
+									//	<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									//	<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									//	<< ": add volume " << volume << '\n';
 										
-										if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
-									{
-									    int idebug = 1;
-									}
+									//	if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
+									//{
+									//    int idebug = 1;
+									//}
 								}
 
 								//path_travel_time += g_link_vector[current_link_seq_no].link_avg_travel_time_per_period[tau];
@@ -938,6 +939,19 @@ public:
 	{
 		int local_debugging_flag = 0;
 
+		if (p_assignment->b_sp_log == false)
+		{
+			local_debugging_flag = 1;
+
+#pragma omp critical
+			{
+			p_assignment->b_sp_log = 1;
+			}
+		}
+		else
+		{
+			local_debugging_flag = 0;
+		}
 		int SE_loop_count = 0;
 
 
@@ -947,6 +961,8 @@ public:
 		int mode_type = m_mode_type_no; // assigned nodes for computing
 		int origin_node = m_origin_node_vector[o_node_index]; // assigned nodes for computing
 		int origin_zone = m_origin_zone_seq_no_vector[o_node_index]; // assigned nodes for computing
+
+
 
 		bool negative_cost_flag = UpdateGeneralizedLinkCost(mode_type, p_assignment, origin_zone, iteration_k, bsensitivity_analysis_flag);
 
@@ -1050,7 +1066,7 @@ public:
 						int debug = 1;
 						p_assignment->sp_log_file << "SP:  checking from node " << g_node_vector[from_node].node_id
 							<< "  to node " << g_node_vector[to_node].node_id << " cost = " << new_to_node_cost <<
-							" , m_node_label_cost[from_node] " << m_node_label_cost[from_node] << ",m_link_genalized_cost_array[link_seq_no] = " << m_link_genalized_cost_array[link_seq_no]
+							" , m_node_label_cost[from_node =" << from_node <<" ] " << m_node_label_cost[from_node] << ", m_link_genalized_cost_array[link_seq_no = "<< link_seq_no << "] = " << m_link_genalized_cost_array[link_seq_no]
 							<< '\n';
 
 				}
@@ -1114,6 +1130,10 @@ public:
 				//}
 
 
+				if (m_link_genalized_cost_array[link_seq_no] < -0.1)
+				{
+					int idebug = 1; 
+				}
 				new_to_node_cost = m_node_label_cost[from_node] + m_link_genalized_cost_array[link_seq_no];
 
 
@@ -1210,8 +1230,7 @@ public:
 
 				if (m_node_label_cost[i] < 9999)
 				{
-					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost " << m_node_label_cost[i] << "time "
-						<< m_label_time_array[i] << "node_pred_id " << node_pred_id << '\n';
+					p_assignment->sp_log_file << "SP node: " << g_node_vector[i].node_id << " label cost = " << m_node_label_cost[i] << ", node_pred_id = " << node_pred_id << '\n';
 				}
 			}
 		}
@@ -1462,7 +1481,8 @@ public:
 					int warnning = 1;
 				}
 
-				new_from_node_cost = m_node_label_cost[to_node] + g_link_vector[link_seq_no].VDF_period[m_tau].avg_travel_time + g_link_vector[link_seq_no].RT_waiting_time;
+				// this is for real time information, with only driving mode based travel time 
+				new_from_node_cost = m_node_label_cost[to_node] + g_link_vector[link_seq_no].VDF_period[m_tau].avg_travel_time_0 + g_link_vector[link_seq_no].RT_waiting_time;
 
 
 				if (local_debugging_flag)

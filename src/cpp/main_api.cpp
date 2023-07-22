@@ -109,6 +109,7 @@ std::map<int, CSystem_Summary>  g_scenario_summary_map;
 std::vector<COZone> g_zone_vector;
 int g_related_zone_vector_size;
 int g_number_of_active_scenarios = 1;
+int g_number_of_max_scenarios_index = 1;
 int g_number_of_active_mode_types = 1;
 int g_number_of_active_demand_perioids =1;
 
@@ -622,8 +623,9 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 				}
 			}
 
+			int scenario_no = assignment.g_active_DTAscenario_map[scenario_index];
 			// Recording the number of lanes for the current period, mode type, and scenario
-			recorded_lanes_per_period_per_at[tau][mode_type_index][scenario_index] = number_of_lanes;
+			recorded_lanes_per_period_per_at[tau][mode_type_index][scenario_no] = number_of_lanes;
 		}
 	}
 }
@@ -668,7 +670,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			}
 
 			double mode_hourly_capacity = 0;
-			double mode_FFFTT = 0;  // free-flow travel time
+			double mode_FFTT = 0;  // free-flow travel time
 			double mode_peak_load_factor = 1;
 
 			// Handling primary mode or non-major modes such as HOV or truck, they need to be mapped to the major auto mode for traffic assignment
@@ -677,20 +679,24 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				// The base mode type index
 				int primary_mode_index = 0;
 
-				mode_FFFTT = VDF_period[tau].FFTT_at[primary_mode_index];  // free flow travel time 
+				if(VDF_period[tau].user_given_FFTT_flag == true)  // user given FFTT, which could different from the length/speed limit
+					mode_FFTT = VDF_period[tau].FFTT_at[0];
+				else
+					mode_FFTT = link_distance_VDF/ max(0.0001, free_speed_si[assignment.active_scenario_index]) * 60.0;
+
 				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][primary_mode_index];  // peak load factor 
 
 				// Adding preloaded volume to the converted MEU volume for this period and mode type
 				link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][primary_mode_index] + VDF_period[tau].preload;
 
 				// Fetching the lane based ultimate hourly capacity
-				mode_hourly_capacity = VDF_period[tau].lane_based_ultimate_hourly_capacity;
+				mode_hourly_capacity = capacity_si[assignment.active_scenario_index];
 			}
 			else
 			{
 				// For active and public transportation modes, they have their own specific speed limit and capacity 
 
-				mode_FFFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[mode_type_index] * 60.0;
+				mode_FFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[mode_type_index] * 60.0;
 				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][mode_type_index];
 
 				// Fetching the converted MEU volume for this period and mode type
@@ -699,9 +705,9 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				// Fetching the hourly capacity for this mode type
 				mode_hourly_capacity = assignment.g_LinkTypeMap[link_type].capacity_at[mode_type_index];
 			}
-
+			int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 			// Fetching the number of lanes for this period and mode type
-			VDF_period[tau].nlanes = recorded_lanes_per_period_per_at[tau][mode_type_index][assignment.active_scenario_index];
+			VDF_period[tau].nlanes = recorded_lanes_per_period_per_at[tau][mode_type_index][scenario_no];
 
 			if (VDF_period[tau].nlanes == 0)  // if the number of lanes is zero, skip to next iteration
 			{
@@ -711,15 +717,23 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				continue;
 			}
 
+			if (VDF_period[tau].nlanes <= 0.1 && link_volume_to_be_assigned >=1 && mode_type_index ==0)  // if the number of lanes is zero, skip to next iteration
+			{
+				int idebug;
+				idebug = 1;
+			}
 			CLinkType link_type; 
 
 			link_type = assignment.g_LinkTypeMap[this->link_type_si[assignment.active_scenario_index]];
 
-
+			if (link_type.link_type < 0)  // connectors
+				link_avg_travel_time_per_period[tau][mode_type_index] = 0;
+			else
+			{
 			// Calculate travel time based on QVDF
 			link_avg_travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
 				mode_type_index,
-				VDF_period[tau].FFTT_at[mode_type_index],
+				mode_FFTT,
 				link_volume_to_be_assigned,
 				mode_hourly_capacity,
 				mode_peak_load_factor,
@@ -727,10 +741,16 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				this->est_volume_per_hour_per_lane,
 				link_type, tau, this->link_avg_co2_emit_per_mode, this->link_avg_nox_emit_per_mode);
 
+			}
 			// Add additional penalty if exists
-			if (fabs(penalty_si_at[tau][mode_type_index][assignment.active_scenario_index]) > 0.0001)
+			if (fabs(penalty_si_at[tau][mode_type_index][scenario_no]) > 0.0001)
 			{
-				link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[tau][mode_type_index][assignment.active_scenario_index];
+				link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[tau][mode_type_index][scenario_no];
+			}
+
+			if(mode_type_index ==0)  // primary driving mode 
+			{
+			VDF_period[tau].avg_travel_time_0 = link_avg_travel_time_per_period[tau][mode_type_index];
 			}
 
 			// Set link volume for the VDF period
@@ -802,8 +822,6 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //				}
 //
 //
-//				// direct read 
-//				VDF_period[tau].nlanes = recorded_lanes_per_period_per_at[tau][mode_type_index][assignment.active_scenario_index];
 //
 //
 //				if (VDF_period[tau].nlanes == 0)  // skip if the number of lanes is zero
@@ -824,9 +842,9 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //					this->model_speed,
 //					this->est_volume_per_hour_per_lane);
 //
-//				if(fabs(penalty_si_at[tau][mode_type_index][assignment.active_scenario_index]) >0.0001)
+//				if(fabs(penalty_si_at[tau][mode_type_index][scenario_no]) >0.0001)
 //				{
-//					link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[tau][mode_type_index][assignment.active_scenario_index];  // add additional penalty
+//					link_avg_travel_time_per_period[tau][mode_type_index] += penalty_si_at[tau][mode_type_index][scenario_no];  // add additional penalty
 //				}
 //
 //
@@ -1042,7 +1060,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 			parser_scenario_index_file_list.GetValueByFieldName("scenario_index", element.scenario_index);
 			parser_scenario_index_file_list.GetValueByFieldName("scenario_name", element.scenario_name);
+
 			assignment.g_active_DTAscenario_map[element.scenario_index] = assignment.g_DTA_scenario_vector.size();
+
 			assignment.g_DTA_scenario_vector.push_back(element);
 
 			if (assignment.g_DTA_scenario_vector.size() > MAX_SCENARIOS - 1)
@@ -1053,6 +1073,19 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				g_program_stop();
 
 			}
+
+			if (element.scenario_index > MAX_SCENARIOS - 1)
+			{
+				assignment.summary_file << "[ERROR] " << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS - 1 << ". Users have too many scenarios now as " << element.scenario_index << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
+				dtalog.output() << "[ERROR]" << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS - 1 << ". Users have too many scenarios now as " << element.scenario_index << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
+				g_DTA_log_file << "[ERROR]" << "MAX_SCENARIOS in DTALite " << MAX_SCENARIOS - 1 << ". Users have too many scenarios now as " << element.scenario_index << ". Please contact the developer to obtain a version with larger scenario size if needed." << '\n';
+				g_program_stop();
+
+			}
+
+			if (element.scenario_index >= g_number_of_max_scenarios_index)
+				g_number_of_max_scenarios_index = element.scenario_index +1; //this is really for the seting the fixed array type toll. 
+
 			assignment.summary_file << "[STATUS INFO] scenario_index=" << element.scenario_index << ",scenario_name=," << element.scenario_name.c_str() << '\n';
 
 			}
@@ -1192,18 +1225,43 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			dtalog.output()  << "[DATA INFO] " 
 				<< std::setw(12) << std::left << "Iter. No."
 				<< std::setw(12) << std::left << "CPU time(s)"
-				<< std::setw(30) << std::left << "Sys. Wide Travel Time (TT)"
-				<< std::setw(20) << std::left << "Least system TT"
+				<< std::setw(20) << std::left << "Sys. Wide Travel Time"
+				<< std::setw(20) << std::left << "Avg TT"
+				<< std::setw(20) << std::left << "Least sys. TT"
 				<< std::setw(12) << std::left << "UE Gap (%)" << '\n';
 
 			g_DTA_log_file << "[DATA INFO] "
 				<< std::setw(12) << std::left << "Iter. No."
 				<< std::setw(12) << std::left << "CPU time(s)"
-				<< std::setw(30) << std::left << "Sys. Wide Travel Time (TT)"
+				<< std::setw(20) << std::left << "Sys. Wide Travel Time"
+				<< std::setw(20) << std::left << "Avg TT"
 				<< std::setw(20) << std::left << "Least system TT"
 				<< std::setw(12) << std::left << "UE Gap (%)" << '\n';
 
-			for (int iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
+			int iteration_number = -1;
+			double total_system_wide_travel_time = 0;
+			double total_least_system_travel_time = 0;  // set the least system wide travel time 
+			double total_travel_distance = 0;
+			double avg_speed = 0;
+			// initialization at beginning of shortest path
+			 update_link_travel_time_and_cost(iteration_number, total_travel_distance);
+
+
+			//if (assignment.assignment_mode == lue)
+			//{
+			//	//fw link based UE
+			//	g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), iteration_number, true);
+			//	g_reset_link_volume_for_all_processors();
+			//}
+			//else
+			//{
+			//	// we can have a recursive formula to reupdate the current link volume by a factor of k/(k+1),
+			//	//  and use the newly generated path flow to add the additional 1/(k+1)
+			//	g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
+
+			//}
+
+			for (iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
 			{
 				end_t = clock();
 				iteration_t = end_t - start_t;
@@ -1211,14 +1269,6 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 				// step 3.1 update travel time and resource consumption
 				clock_t start_t_lu = clock();
-
-				double total_system_wide_travel_time = 0;
-				double total_least_system_travel_time = 0;
-				double total_travel_distance = 0;
-				double avg_speed = 0;
-
-				// initialization at beginning of shortest path
-				total_system_wide_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
 
 				if (assignment.assignment_mode == lue)
 				{
@@ -1230,8 +1280,12 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				{
 					// we can have a recursive formula to reupdate the current link volume by a factor of k/(k+1),
 					//  and use the newly generated path flow to add the additional 1/(k+1)
-					g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
+					total_least_system_travel_time = g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
 				}
+
+				// update link travel time 
+				total_system_wide_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
+
 
 				if (dtalog.debug_level() >= 3)
 				{
@@ -1307,11 +1361,6 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 							start_t_cp = clock();
 							double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, false);
 
-
-#pragma omp critical
-							{
-								total_least_system_travel_time += total_origin_least_travel_time;
-							}
 							end_t = clock();
 							cumulative_cp += end_t - start_t_cp;
 						}
@@ -1322,6 +1371,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				// link based computing mode, we have to collect link volume from all processors.
 				if (assignment.assignment_mode == lue)
 					g_fetch_link_volume_for_all_processors();
+
+
+
 
 				// g_fout << "LC with CPU time " << cumulative_lc / 1000.0 << " s; " << '\n';
 				// g_fout << "column generation with CPU time " << cumulative_cp / 1000.0 << " s; " << '\n';
@@ -1335,20 +1387,25 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				int number_of_agents = 0;
 				double Avg_Travel_Time = total_system_wide_travel_time / max(1.0f, assignment.total_demand_volume[assignment.active_scenario_index]);
 
+				if(iteration_number >0)
+				{
+
 				dtalog.output() << "[DATA INFO] "
 					<< std::setw(12) << std::left << iteration_number
 					<< std::setw(12) << std::left << iteration_t * 1.0 / 1000.0
-					<< std::scientific << std::setw(30) << std::left << total_system_wide_travel_time
+					<< std::scientific << std::setw(20) << std::left << total_system_wide_travel_time
+					<< std::fixed << std::setw(20) << std::left << Avg_Travel_Time
 					<< std::scientific << std::setw(20) << std::left << total_least_system_travel_time
 					<< std::fixed << std::setw(12) << std::left << relative_gap * 100 << '\n';
 
 				g_DTA_log_file << "[DATA INFO] "
 					<< std::setw(12) << std::left << iteration_number
 					<< std::setw(12) << std::left << iteration_t * 1.0 / 1000.0
-					<< std::scientific << std::setw(30) << std::left << total_system_wide_travel_time
+					<< std::scientific << std::setw(20) << std::left << total_system_wide_travel_time
+					<< std::fixed << std::setw(20) << std::left << Avg_Travel_Time
 					<< std::scientific << std::setw(20) << std::left << total_least_system_travel_time
 					<< std::fixed << std::setw(12) << std::left << relative_gap * 100 << '\n';
-
+				}
 				if (iteration_number == 0)
 				{
 
@@ -1375,6 +1432,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			assignment.summary_file << ",# of flow updating iterations=," << column_updating_iterations << '\n';
 
 			start_t = clock();
+
 			g_column_pool_optimization(assignment, column_updating_iterations, UE_convergence_percentage, false);
 
 
@@ -1462,7 +1520,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 					if (g_link_vector[i].VDF_period[tau].dynamic_traffic_management_flag == -1 /*sa flag*/)  // we
 					{
 						float old_lanes = g_link_vector[i].VDF_period[tau].nlanes;
-						g_link_vector[i].VDF_period[tau].nlanes = g_link_vector[i].VDF_period[tau].lane_closure_final_lanes; // apply the absolute lane changes
+						int mode_type_no = 0; 
+						g_link_vector[i].recorded_lanes_per_period_per_at[tau][mode_type_no][assignment.active_scenario_index] = g_link_vector[i].VDF_period[tau].lane_closure_final_lanes; // apply the absolute lane changes
 						g_link_vector[i].VDF_period[tau].allowed_uses[assignment.active_scenario_index] = g_link_vector[i].VDF_period[tau].sa_allowed_uses; // apply the lane changes
 
 						count += 1; 
@@ -1621,10 +1680,12 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		g_output_assignment_result(assignment,0);
 
 	// g_output_demand_bin(assignment);
-	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
-	{
-	g_output_assignment_result(assignment, 1);
-	}
+	// 
+	// do not output (and count) the results twice
+	//if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
+	//{
+	//g_output_assignment_result(assignment, 1);
+	//}
 
 	g_output_choice_set_result(assignment);
 

@@ -10,7 +10,7 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-constexpr auto MAX_SCENARIOS = 30;
+constexpr auto MAX_SCENARIOS = 20;
 constexpr auto MAX_MODETYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
 
@@ -57,6 +57,7 @@ extern void g_OutputModelFiles(int mode);
 extern int g_related_zone_vector_size;
 
 extern int g_number_of_active_scenarios;
+extern int  g_number_of_max_scenarios_index; 
 extern int g_number_of_active_mode_types;
 extern int g_number_of_active_demand_perioids;
 extern  std::ofstream  g_DTA_log_file;
@@ -652,10 +653,10 @@ class CColumnVector {
 public:
     // this is colletion of unique paths
     CColumnVector() :  prev_od_volume{ 0 }, bfixed_route{ false }, m_passing_sensor_flag{ -1 }, information_type{ 0 }, activity_mode_type_no{ 0 },
-        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, OD_based_UE_relative_gap{ 0 }
+        departure_time_profile_no{ -1 }, OD_impact_flag{ 0 }, subarea_passing_flag{ 1 }, OD_based_UE_relative_gap{ 0 }, least_travel_time{ 0 }
     {
 
-        for (int si = 0; si < g_number_of_active_scenarios; si++)
+        for (int si = 0; si < MAX_SCENARIOS; si++)
         {
             od_volume[si] = 0;
             avg_travel_time[si] = 0;
@@ -682,6 +683,7 @@ public:
     float avg_distance[MAX_SCENARIOS];
     // od volume
     double od_volume[MAX_SCENARIOS];
+    double least_travel_time; 
 
     double OD_based_UE_relative_gap;
     std::map<int, double> od_volume_per_iteration_map;
@@ -854,7 +856,7 @@ public:
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ -1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
         shortest_path_log_zone_id{ 1 }, g_number_of_analysis_districts{ 1 },
         active_scenario_index{ 0 }, g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }, g_first_link_type{ -1 },
-        g_max_num_significant_zones_in_subarea {50000}, g_max_num_significant_zones_outside_subarea {50000}
+        g_max_num_significant_zones_in_subarea{ 50000 }, g_max_num_significant_zones_outside_subarea{ 50000 }, b_forward_star_structure_log{ 0 }, b_sp_log { 0 }
 
     {
         m_LinkCumulativeArrivalVector  = NULL;
@@ -866,6 +868,8 @@ public:
         m_LinkOutFlowState =  NULL;
 
         sp_log_file.open("log_label_correcting.txt");
+        assignment_log_file.open("log_traffic_assignment.csv");
+        assignment_log_file << "iteration_no,link_id,from_node_id,to_node_id,volume,travel_time" << '\n';
 
         log_subarea_focusing_file.open("log_subarea_focusing.txt");
         
@@ -900,7 +904,7 @@ public:
         summary_corridor_file.close();
         summary_system_file.close();
         simu_log_file.close();
-
+        assignment_log_file.close();
         DeallocateLinkMemory4Simulation();
     }
 
@@ -910,7 +914,7 @@ public:
         g_number_of_zones = number_of_zones;
         g_number_of_mode_types = number_of_mode_types;
 
-        for(int i = 0; i< g_number_of_active_scenarios; i++)
+        for(int i = 0; i< MAX_SCENARIOS; i++)
         {
             total_demand_volume[i] = 0; 
         }
@@ -1024,6 +1028,8 @@ public:
     int g_number_of_links;
     int g_number_of_timing_arcs;
     int g_number_of_nodes;
+    int b_forward_star_structure_log; 
+    int b_sp_log;
     int g_number_of_zones;
     int g_number_of_mode_types;
     int g_number_of_real_time_mode_types;
@@ -1120,6 +1126,8 @@ public:
     std::ofstream simu_log_file;
 
     std::ofstream sp_log_file;
+    std::ofstream assignment_log_file;
+
     std::ofstream log_subarea_focusing_file;
 
     std::ofstream summary_file;
@@ -1137,18 +1145,32 @@ class CLink
 {
 public:
     // construction
-    CLink() :main_node_id{ -1 }, free_speed{ 100 }, v_congestion_cutoff{ 100 }, v_critical { 60 },
-        length_in_meter{ 1 }, link_distance_VDF {0.001},
+    CLink() :main_node_id{ -1 }, free_speed{ 100 }, v_congestion_cutoff{ 100 }, v_critical{ 60 },
+        length_in_meter{ 1 }, link_distance_VDF{ 0.001 },
         BWTT_in_simulation_interval{ 100 }, zone_seq_no_for_outgoing_connector{ -1 }, lane_capacity{ 1999 },
-         free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 },
+        free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 },
         timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
         cell_type{ -1 }, saturation_flow_rate{ 1800 }, dynamic_link_event_start_time_in_min{ 99999 }, b_automated_generated_flag{ false }, time_to_be_released{ -1 },
         RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, k_critical{ 45 }, vdf_type{ q_vdf },
         tmc_corridor_id{ -1 }, from_node_id{ -1 }, to_node_id{ -1 }, kjam{ 300 }, link_distance_km{ 0 }, link_distance_mile{ 0 }, meso_link_id{ -1 }, total_simulated_delay_in_min{ 0 },
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
-        layer_no{ 0 }, AB_flag {1}, BA_link_no {-1}
+        layer_no{ 0 }, AB_flag{ 1 }, BA_link_no{ -1 }, cost{ 0 }, win_count{ 0 }, lose_count{ 0 }
    {
+
+ 
+
+    }
+    void allocate_memory()
+    {
+        for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+        {
+            link_type_si[si] = 0;
+            number_of_lanes_si[si] = 1;  // default all open
+            free_speed_si[si] = 100;
+            capacity_si[si] = 2000;
+        }
         penalty_si_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
+
         recorded_volume_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
         recorded_lanes_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
         recorded_MEU_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
@@ -1158,17 +1180,17 @@ public:
         recorded_CO2_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
         recorded_NOX_per_period_per_at = Allocate3DDynamicArray<double>(g_number_of_active_demand_perioids, g_number_of_active_mode_types, g_number_of_active_scenarios);
 
+
+        //
         for (int si = 0; si < g_number_of_active_scenarios; si++)
         {
-            link_type_si[si] = 0;
-            number_of_lanes_si[si] = 1;  // default all open
-
             for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
                 for (int at = 0; at < g_number_of_active_mode_types; ++at)
                 {
 
                     penalty_si_at[tau][at][si] = 0;
                     recorded_lanes_per_period_per_at[tau][at][si] = 0;
+
                     recorded_volume_per_period_per_at[tau][at][si] = 0;
                     recorded_MEU_per_period_per_at[tau][at][si] = 0;
                     recorded_capacity_per_period_per_at[tau][at][si] = 0;
@@ -1186,7 +1208,7 @@ public:
             total_volume_for_all_mode_types_per_period[tau] = 0;
             total_person_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
-                       //cost_perhour[tau] = 0;
+            //cost_perhour[tau] = 0;
             for (int at = 0; at < g_number_of_active_mode_types; ++at)
             {
                 volume_per_mode_type_per_period[tau][at] = 0;
@@ -1199,9 +1221,9 @@ public:
             }
 
         }
-
     }
 
+    
     ~CLink()
     {
         //In our open source package, we dynamically allocate instances of CLinkand store their pointers in g_link_vector for later use.Considering the fact that these instances are still being used via the pointers in g_link_vector, we don't explicitly free memory in ~CLink().
@@ -1492,6 +1514,8 @@ public:
     int BA_link_no;
 
     int link_type_si[MAX_SCENARIOS];
+    double free_speed_si[MAX_SCENARIOS];
+    double capacity_si[MAX_SCENARIOS];
 
     bool b_automated_generated_flag;
 

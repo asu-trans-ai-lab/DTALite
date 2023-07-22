@@ -48,9 +48,9 @@ using std::ofstream;
 using std::istringstream;
 
 
-void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume, bool b_sensitivity_analysis_flag)
+double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume, bool b_sensitivity_analysis_flag)
 {
-
+	double total_least_system_travel_time = 0; 
 	// reset the link volume
 	for (int i = 0; i < number_of_links; ++i)
 	{
@@ -113,6 +113,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 						if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 						{
+							total_least_system_travel_time += p_column_pool->od_volume[assignment.active_scenario_index] * p_column_pool->least_travel_time;
 
 							column_vector_size = p_column_pool->path_node_sequence_map.size();
 
@@ -185,6 +186,7 @@ void g_reset_and_update_link_volume_based_on_columns(int number_of_links, int it
 			}
 		}
 	}
+	return total_least_system_travel_time; 
 }
 
 double update_link_travel_time_and_cost(int inner_iteration_number, double& total_distance)
@@ -222,18 +224,29 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 			{
 				float PCE_mode_type = 1;
 
+				int tau = 0;
+				int mode_type_index = 0;
+
 				// step 2: marginal cost for SO
 				g_link_vector[i].calculate_marginal_cost_for_mode_type(tau, at, PCE_mode_type);
-
-				//if (g_debug_level  >= 3 && assignment.assignment_mode >= 2 && assignment.g_pFileDebugLog != NULL)
-				//	fprintf(assignment.g_pFileDebugLog, "Update link cost: link %d->%d: tau = %d, at = %d, travel_marginal =  %.3f\n",
-
-				//		g_node_vector[g_link_vector[l].from_node_seq_no].node_id,
-				//		g_node_vector[g_link_vector[l].to_node_seq_no].node_id,
-				//		tau, at,
-				//		g_link_vector[l].travel_marginal_cost_per_period[tau][at]);
 			}
 		}
+	}
+
+	for (int i = 0; i < g_link_vector.size(); ++i)
+	{
+				int tau = 0;
+				int mode_type_index = 0;
+
+				if (inner_iteration_number >= 0 && g_link_vector[i].link_type_si[0] >= 0)  // physical node only 
+				{
+					assignment.assignment_log_file << inner_iteration_number << ","
+						<< g_link_vector[i].link_id << ","
+						<< g_node_vector[g_link_vector[i].from_node_seq_no].node_id << ","
+						<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ","
+						<< g_link_vector[i].VDF_period[tau].link_volume << ","
+						<< g_link_vector[i].link_avg_travel_time_per_period[tau][mode_type_index] << '\n';
+				}
 	}
 
 	double total_network_travel_time = 0;
@@ -1863,11 +1876,11 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 
 	dtalog.output() << std::left << std::setw(20) << "[DATA INFO] Column Updating:"
 		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
-		<< std::setw(18) << "Optimization Obj" << std::setw(20) << "UE Gap (%)" << '\n';
+		<< std::setw(18) << "UE Gap Obj" << std::setw(20) << "UE Gap (%)" << '\n';
 
 	g_DTA_log_file << std::left << std::setw(20) << "[DATA INFO] Column Updating:"
 		<< std::setw(12) << "Iter. No." << std::setw(18) << "Avg Travel Time"
-		<< std::setw(18) << "Optimization Obj" << std::setw(20) << "UE Gap (%)" << '\n';
+		<< std::setw(18) << "UE Gap Obj" << std::setw(20) << "UE Gap (%)" << '\n';
 
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{

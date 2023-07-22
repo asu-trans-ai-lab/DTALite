@@ -45,20 +45,20 @@ using std::vector;
 using std::map;
 using std::ifstream;
 using std::ofstream;
-using std::istringstream;
+using std::istringstream; 
 
 void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_seq_no, float link_distance_VDF, int mode_type_no, int zone_seq_no = -1)
 {
 	// create a link object
 	CLink link;
-
+	link.allocate_memory();
 	link.b_automated_generated_flag = true;
 	link.from_node_seq_no = internal_from_node_seq_no;
 	link.to_node_seq_no = internal_to_node_seq_no;
 	link.link_seq_no = assignment.g_number_of_links;
 	link.to_node_seq_no = internal_to_node_seq_no;
 
-	for (int si = 0; si < g_number_of_active_scenarios; si++)
+	for (int si = 0; si < MAX_SCENARIOS; si++)
 	{
 		link.link_type_si[si] = -1;  // access_link
 	}

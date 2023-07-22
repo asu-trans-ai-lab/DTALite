@@ -1,0 +1,1862 @@
+[STATUS INFO] add outgoing link data into dynamic array
+[DATA INFO] node id= 1 with zone id 1 and 3 outgoing links.
+  outgoing node = 2
+  outgoing node = 3
+  outgoing node = -1
+[DATA INFO] node id= 2 with zone id 2 and 3 outgoing links.
+  outgoing node = 1
+  outgoing node = 6
+  outgoing node = -2
+[DATA INFO] node id= 3 with zone id 3 and 4 outgoing links.
+  outgoing node = 1
+  outgoing node = 4
+  outgoing node = 12
+  outgoing node = -3
+[DATA INFO] node id= 4 with zone id 4 and 4 outgoing links.
+  outgoing node = 3
+  outgoing node = 5
+  outgoing node = 11
+  outgoing node = -4
+[DATA INFO] node id= 5 with zone id 5 and 4 outgoing links.
+  outgoing node = 4
+  outgoing node = 6
+  outgoing node = 9
+  outgoing node = -5
+[DATA INFO] node id= 6 with zone id 6 and 4 outgoing links.
+  outgoing node = 2
+  outgoing node = 5
+  outgoing node = 8
+  outgoing node = -6
+[DATA INFO] node id= 7 with zone id 7 and 3 outgoing links.
+  outgoing node = 8
+  outgoing node = 18
+  outgoing node = -7
+[DATA INFO] node id= 8 with zone id 8 and 5 outgoing links.
+  outgoing node = 6
+  outgoing node = 7
+  outgoing node = 9
+  outgoing node = 16
+  outgoing node = -8
+[DATA INFO] node id= 9 with zone id 9 and 4 outgoing links.
+  outgoing node = 5
+  outgoing node = 8
+  outgoing node = 10
+  outgoing node = -9
+[DATA INFO] node id= 10 with zone id 10 and 6 outgoing links.
+  outgoing node = 9
+  outgoing node = 11
+  outgoing node = 15
+  outgoing node = 16
+  outgoing node = 17
+  outgoing node = -10
+[DATA INFO] node id= 11 with zone id 11 and 5 outgoing links.
+  outgoing node = 4
+  outgoing node = 10
+  outgoing node = 12
+  outgoing node = 14
+  outgoing node = -11
+[DATA INFO] node id= 12 with zone id 12 and 4 outgoing links.
+  outgoing node = 3
+  outgoing node = 11
+  outgoing node = 13
+  outgoing node = -12
+[DATA INFO] node id= 13 with zone id 13 and 3 outgoing links.
+  outgoing node = 12
+  outgoing node = 24
+  outgoing node = -13
+[DATA INFO] node id= 14 with zone id 14 and 4 outgoing links.
+  outgoing node = 11
+  outgoing node = 15
+  outgoing node = 23
+  outgoing node = -14
+[DATA INFO] node id= 15 with zone id 15 and 5 outgoing links.
+  outgoing node = 10
+  outgoing node = 14
+  outgoing node = 19
+  outgoing node = 22
+  outgoing node = -15
+[DATA INFO] node id= 16 with zone id 16 and 5 outgoing links.
+  outgoing node = 8
+  outgoing node = 10
+  outgoing node = 17
+  outgoing node = 18
+  outgoing node = -16
+[DATA INFO] node id= 17 with zone id 17 and 4 outgoing links.
+  outgoing node = 10
+  outgoing node = 16
+  outgoing node = 19
+  outgoing node = -17
+[DATA INFO] node id= 18 with zone id 18 and 4 outgoing links.
+  outgoing node = 7
+  outgoing node = 16
+  outgoing node = 20
+  outgoing node = -18
+[DATA INFO] node id= 19 with zone id 19 and 4 outgoing links.
+  outgoing node = 15
+  outgoing node = 17
+  outgoing node = 20
+  outgoing node = -19
+[DATA INFO] node id= 20 with zone id 20 and 5 outgoing links.
+  outgoing node = 18
+  outgoing node = 19
+  outgoing node = 21
+  outgoing node = 22
+  outgoing node = -20
+[DATA INFO] node id= 21 with zone id 21 and 4 outgoing links.
+  outgoing node = 20
+  outgoing node = 22
+  outgoing node = 24
+  outgoing node = -21
+[DATA INFO] node id= 22 with zone id 22 and 5 outgoing links.
+  outgoing node = 15
+  outgoing node = 20
+  outgoing node = 21
+  outgoing node = 23
+  outgoing node = -22
+[DATA INFO] node id= 23 with zone id 23 and 4 outgoing links.
+  outgoing node = 14
+  outgoing node = 22
+  outgoing node = 24
+  outgoing node = -23
+[DATA INFO] node id= 24 with zone id 24 and 4 outgoing links.
+  outgoing node = 13
+  outgoing node = 21
+  outgoing node = 23
+  outgoing node = -24
+[DATA INFO] node id= -1 with 1 outgoing links.
+  outgoing node = 1
+[DATA INFO] node id= -2 with 1 outgoing links.
+  outgoing node = 2
+[DATA INFO] node id= -3 with 1 outgoing links.
+  outgoing node = 3
+[DATA INFO] node id= -4 with 1 outgoing links.
+  outgoing node = 4
+[DATA INFO] node id= -5 with 1 outgoing links.
+  outgoing node = 5
+[DATA INFO] node id= -6 with 1 outgoing links.
+  outgoing node = 6
+[DATA INFO] node id= -7 with 1 outgoing links.
+  outgoing node = 7
+[DATA INFO] node id= -8 with 1 outgoing links.
+  outgoing node = 8
+[DATA INFO] node id= -9 with 1 outgoing links.
+  outgoing node = 9
+[DATA INFO] node id= -10 with 1 outgoing links.
+  outgoing node = 10
+[DATA INFO] node id= -11 with 1 outgoing links.
+  outgoing node = 11
+[DATA INFO] node id= -12 with 1 outgoing links.
+  outgoing node = 12
+[DATA INFO] node id= -13 with 1 outgoing links.
+  outgoing node = 13
+[DATA INFO] node id= -14 with 1 outgoing links.
+  outgoing node = 14
+[DATA INFO] node id= -15 with 1 outgoing links.
+  outgoing node = 15
+[DATA INFO] node id= -16 with 1 outgoing links.
+  outgoing node = 16
+[DATA INFO] node id= -17 with 1 outgoing links.
+  outgoing node = 17
+[DATA INFO] node id= -18 with 1 outgoing links.
+  outgoing node = 18
+[DATA INFO] node id= -19 with 1 outgoing links.
+  outgoing node = 19
+[DATA INFO] node id= -20 with 1 outgoing links.
+  outgoing node = 20
+[DATA INFO] node id= -21 with 1 outgoing links.
+  outgoing node = 21
+[DATA INFO] node id= -22 with 1 outgoing links.
+  outgoing node = 22
+[DATA INFO] node id= -23 with 1 outgoing links.
+  outgoing node = 23
+[DATA INFO] node id= -24 with 1 outgoing links.
+  outgoing node = 24
+ beginning of SP iteration k =  0: origin node: -3
+ beginning of SP iteration k =  0: origin node: -4
+SP:scan SE node: -3 with  beginning of SP iteration k =  0: origin node: -2
+SP:scan SE node: -4 with 1SP:scan SE node: -2 with 11 outgoing link(s).  outgoing link(s). 
+
+ outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking outgoing node 3SP:  checking outgoing node 4
+SP:  checking from node -4  to node 4SP:  checking from node -2  to node 2 cost =  cost = 
+SP:  checking from node -3  to node 3 cost = 0 , m_node_label_cost[from_node =25 ] 0, m_link_genalized_cost_array[link_seq_no = 79] = 0
+0 , m_node_label_cost[from_node =26 ] 0, m_link_genalized_cost_array[link_seq_no = 81] = SP:  checking from node -2  to node 2 cost = 00 , m_node_label_cost[from_node =27 ] 0, m_link_genalized_cost_array[link_seq_no = 83] = 0
+ , m_node_label_cost[from_node] 0SP:  checking from node -40
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: 2 current cost:1e+15 new cost 0
+SP: add node 2 new cost:0 into SE List 2
+SP:scan SE node: 2 with 3 outgoing link(s). 
+  to node 4 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: 4 current cost:1e+15 new cost SP:  checking from node -3  to node SP:  checking outgoing node 1
+SP:  checking from node 2  to node 1 cost = 0 , m_node_label_cost[from_node =1 ] 0, m_link_genalized_cost_array[link_seq_no = 2] = 6
+SP:  checking from node 2  to node 1 cost = 60
+SP: add node 4 new cost:0 into SE List 4
+ , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 6
+3 cost = 0 , m_node_label_cost[from_node] 0SP:  updating node: 1 current cost:1e+15 new cost 6
+SP: add node 1 new cost:6 into SE List 1
+SP:scan SE node: 4 with 4 outgoing link(s). 
+,m_link_genalized_cost_array[link_seq_no] = SP:  checking outgoing node 6
+SP:  checking from node 2  to node 6 cost = 6 , m_node_label_cost[from_node =1 ] 0, m_link_genalized_cost_array[link_seq_no = 3] = 5
+SP:  checking from node 2  to node 6 cost = 50
+ , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 6 current cost:1e+15 new cost 5
+SP: add node 6SP:  checking outgoing node 3
+SP:  checking from node 4  to node 3 cost = 0 , m_node_label_cost[from_node =3 ] 0, m_link_genalized_cost_array[link_seq_no = 7] = 4
+SP:  checking from node 4  to node 3 cost = 4 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 3 current cost:1e+15 new cost 4
+SP: add node 3 new cost:4 into SE List 3
+ new cost:5SP:  checking outgoing node 5
+SP:  checking from node 4  to node 5 cost = 4 into SE List 6
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 5 , m_node_label_cost[from_node =1 ] 0SP:  updating node: , m_link_genalized_cost_array[link_seq_no = 783 , m_node_label_cost[from_node =3 ] 0 current cost:1e+15 new cost 0
+SP: add node 3 new cost:, m_link_genalized_cost_array[link_seq_no = 8] = 2
+] = SP:  checking from node 4  to node 5 cost = 2 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 5 current cost:1e+15 new cost 2
+SP: add node 5 new cost:2 into SE List 5
+SP:  checking outgoing node 11
+SP:  checking from node 4  to node 110 cost =  into SE List 32 , m_node_label_cost[from_node =3 ] 0, m_link_genalized_cost_array[link_seq_no = 9] = 60
+SP:  checking from node 2  to node -2 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0
+
+SP:  checking from node SP:scan SE node: 1 with 4  to node 113 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node  cost = 6
+ , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 6
+1  to node 2 cost = SP:scan SE node: 0 , m_node_label_cost[from_node =0 ] 6, m_link_genalized_cost_array[link_seq_no = 0] = 6
+SP:  updating node: 11 current cost:1e+15 new cost 6
+SP:  checking from node 1  to node 2SP: add node 11 new cost:6 into SE List 11
+3 with 4SP:  checking outgoing node -4 cost = 12 , m_node_label_cost[from_node] 6
+,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking from node 4  to node SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 12 , m_node_label_cost[from_node =0 ] 6, m_link_genalized_cost_array[link_seq_no = 1] =  outgoing link(s). 
+-4 cost = 6 , m_node_label_cost[from_node =3 ] 0, m_link_genalized_cost_array[link_seq_no = 4
+82] = 0SP:  checking from node 
+SP:  checking from node 4  to node -4 cost = 1  to node 3 cost = 10SP:  checking outgoing node 1
+SP:  checking from node 3  to node 1 cost =  , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 4
+0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0
+SP:scan SE node: 3 with 4 outgoing link(s). 
+SP:  updating node: 3 current cost:1e+15 new cost 10
+SP: add node 3 new cost:100 , m_node_label_cost[from_node =2 ] 0SP:  checking outgoing node 1
+SP:  checking from node 3  to node  into SE List 3
+1 cost = 0 , m_node_label_cost[from_node =2 ] 4, m_link_genalized_cost_array[link_seq_no = 4] = 4
+SP:  checking from node 3  to node 1 cost = 8 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node , m_link_genalized_cost_array[link_seq_no = 4] = 4
+SP:  checking from node 3  to node 1 cost = 4 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 1 current cost:1e+15 new cost 4
+SP: add node 1 new cost:4 into SE List 1
+-1
+SP:  checking from node 1  to node -1SP:  updating node: 1 current cost:1e+15 new cost 8
+SP: add node 1 new cost: cost = 10 , m_node_label_cost[from_node =0 ] 68 into SE List 1
+SP:  checking outgoing node 4
+SP:  checking from node 3  to node 4 cost = , m_link_genalized_cost_array[link_seq_no = 76] = 0
+4 , m_node_label_cost[from_node =2 ] 0, m_link_genalized_cost_array[link_seq_no = 5] = 4
+SP:  checking from node 3  to node 4 cost = 4 , m_node_label_cost[from_node] 0SP:  checking from node 1  to node -1 cost = 6,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 4 current cost:1e+15 new cost 4
+SP: add node SP:  checking outgoing node 4
+SP:  checking from node 3  to node  , m_node_label_cost[from_node] 64 cost = 4 new cost:4 into SE List 4
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -1 current cost:1e+15SP:  checking outgoing node 12
+SP:  checking from node 3  to node 128 , m_node_label_cost[from_node =2 ] 4 new cost 6
+SP: add node -1 new cost:6 into SE List -1
+, m_link_genalized_cost_array[link_seq_no = 5] = 4
+SP:  checking from node  cost = 3  to node 4 cost = 8 , m_node_label_cost[from_node] 44 , m_node_label_cost[from_node =,m_link_genalized_cost_array[link_seq_no] = SP:scan SE node: 6 with 4 outgoing link(s). 
+2 ] 0, m_link_genalized_cost_array[link_seq_no = SP:  checking outgoing node 2
+SP:  checking from node 6] = 4
+6  to node 2 cost = 6 , m_node_label_cost[from_node =5 ] 5, m_link_genalized_cost_array[link_seq_no = 13] = 5
+SP:  checking from node 6  to node 2 cost = 10 , m_node_label_cost[from_node] 54,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 5
+SP:  checking from node 6  to node 5 cost = 10 , m_node_label_cost[from_node =5 ] 5, m_link_genalized_cost_array[link_seq_no = 14] = 4
+SP:  checking from node 6  to node 5 cost = 9 , m_node_label_cost[from_node] 5,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 5 current cost:1e+15 new cost 9
+SP: add node 5 new cost:9 into SE List 5
+SP:  checking outgoing node 8
+SP:  checking from node 6  to node 8 cost = 9 , m_node_label_cost[from_node =5 ] 5
+, m_link_genalized_cost_array[link_seq_no = 15] = 2
+SP:  checking from node 6  to node 8 cost = 7 , m_node_label_cost[from_node] 5,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 8SP:  checking from node 3  to node 12 cost = 4 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 4 current cost:1e+15SP:  checking outgoing node  new cost 
+SP:  updating node: 12 current cost:1e+15 new cost 4
+SP: add node 12 new cost:4 into SE List 12
+SP:  checking outgoing node -3
+SP:  checking from node 12
+SP:  checking from node 7
+SP: add node 833  to node -3 cost = 4 , m_node_label_cost[from_node =2 ] 0, m_link_genalized_cost_array[link_seq_no = 80] = 0
+SP:  checking from node 3  to node -3 cost = 0 , m_node_label_cost[from_node]   to node 12 cost = 8 new cost:7 into SE List 8
+SP:  checking outgoing node -6
+SP:  checking from node 6  to node  , m_node_label_cost[from_node =20 ] 4, m_link_genalized_cost_array[link_seq_no = ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 2
+6-6SP:  checking from node  cost = 71  to node 2 cost =  , m_node_label_cost[from_node =5 ] 5] = 4
+SP:  checking from node 0 , m_node_label_cost[from_node =0 ] 4, m_link_genalized_cost_array[link_seq_no = 3  to node 12, m_link_genalized_cost_array[link_seq_no = 86] = 0
+SP:  checking from node 6  to node -6 cost = 8 cost = 0] = 6
+SP:  checking from node 1  to node 2 cost = 5 , m_node_label_cost[from_node] 5,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -6 current cost: , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 12 current cost:1e+15 new cost 8
+SP: add node 12 new cost:8 into SE List 12
+1e+15 new cost 5
+SP: add node SP:  checking outgoing node -3
+SP:  checking from node 3  to node -3 cost = 8 , m_node_label_cost[from_node =2 ] 4-6, m_link_genalized_cost_array[link_seq_no = 80] = 0
+SP:  checking from node 3  to node 10 , m_node_label_cost[from_node] 4 new cost:5 into SE List -6
+SP:scan SE node: 3-3 cost = 4 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -3 current cost:1e+15 new cost ,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node:  with 4 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node 3  to node 1 cost = 5 , m_node_label_cost[from_node =2 ] 10, m_link_genalized_cost_array[link_seq_no = 2 current cost:1e+15 new cost 10
+SP: add node 2 new cost:10 into SE List 2
+4
+SP: add node -3 new cost:4 into SE List -3
+SP:  checking outgoing node 3
+4SP:scan SE node: 5 with 4 outgoing link(s). 
+] = 4
+SP:  checking from node 3  to node 1 cost = 14 , m_node_label_cost[from_node] 10SP:  checking from node 1  to node SP:  checking outgoing node 4
+SP:  checking from node 5  to node 4 cost = 4 , m_node_label_cost[from_node =4 ] 2, m_link_genalized_cost_array[link_seq_no = 10] = 2
+3 cost = 10SP:  checking from node 5  to node 4 cost = 4 , m_node_label_cost[from_node] 2,m_link_genalized_cost_array[link_seq_no] = 2
+,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 6
+SP:  checking from node 5  to node 6 cost = 4 , m_node_label_cost[from_node =4 ] 2, m_link_genalized_cost_array[link_seq_no = 11] = 4
+SP:  checking from node 5  to node 6 , m_node_label_cost[from_node =0 ] 4 cost = 6 , m_node_label_cost[from_node] 2,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 6 current cost:1e+15, m_link_genalized_cost_array[link_seq_no = 1] = 4
+SP:  checking from node 1SP:  checking outgoing node   to node 3 cost = 8 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node -1
+ new cost SP:  checking from node 1  to node -146
+SP: add node 6 new cost:6 into SE List 6
+SP:  checking outgoing node 9
+SP:  checking from node 5
+SP:  checking from node 3  to node 4 cost = 14 , m_node_label_cost[from_node =2 ] 10  to node 9 cost = 6 cost = 8 , m_node_label_cost[from_node =0 ] , m_link_genalized_cost_array[link_seq_no = 5] = 4
+SP:  checking from node 3  to node 4 cost = 14 , m_node_label_cost[from_node] 10 , m_node_label_cost[from_node =4 ] 2,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 4 current cost:1e+15 new cost 14
+4, m_link_genalized_cost_array[link_seq_no = 76] = SP: add node 4 new cost:14 into SE List 40
+SP:  checking from node 1  to node -1 cost = 4 , m_node_label_cost[from_node] 
+4,m_link_genalized_cost_array[link_seq_no] = SP:  checking outgoing node 12
+, m_link_genalized_cost_array[link_seq_no = 12] = 50
+SP:  updating node: -1 current cost:1e+15 new cost 4
+SP:  checking from node SP: add node -1 new cost:4 into SE List -1
+SP:scan SE node: 4 with 3  to node 12 cost = 14 , m_node_label_cost[from_node =2 ] 10, m_link_genalized_cost_array[link_seq_no = 4 outgoing link(s). 
+SP:  checking outgoing node 3
+SP:  checking from node 4  to node 3 cost = 4
+6] = 4
+SP:  checking from node 3  to node SP:  checking from node 5  to node 9 cost = 7 , m_node_label_cost[from_node] 2 , m_node_label_cost[from_node =3 ] 4, m_link_genalized_cost_array[link_seq_no = 7] = 4
+SP:  checking from node 4  to node 3 cost = 8 , m_node_label_cost[from_node] 412 cost = 14 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 12 current cost:1e+15 new cost 14
+,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 9 current cost:1e+15 new cost 7
+SP: add node 9 new cost:7 into SE List 9
+SP:  checking outgoing node -5
+SP:  checking from node 5SP: add node 12 new cost:14,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 5
+SP:  checking from node 4  to node 5 cost = 8 into SE List 12
+  to node -5 cost = 7 , m_node_label_cost[from_node =4 ] 2SP:  checking outgoing node -3
+, m_link_genalized_cost_array[link_seq_no =  , m_node_label_cost[from_node =3 ] 4, m_link_genalized_cost_array[link_seq_no = 8] = 2SP:  checking from node 3  to node -3 cost = 14 , m_node_label_cost[from_node =84] = 0
+SP:  checking from node 5  to node -5
+SP:  checking from node 4  to node 2 ] 10, m_link_genalized_cost_array[link_seq_no = 80] = 0
+SP:  checking from node 3  to node -3 cost = 10 , m_node_label_cost[from_node] 10 cost = 2 , m_node_label_cost[from_node] 2,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -3 current cost:1e+15 new cost 10
+SP: add node -3 new cost:10 into SE List 5 cost = 6 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 5-3 current cost:1e+15 new cost 6
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -5 current cost:1e+15 new cost 2
+  to node 1 cost = 10 , m_node_label_cost[from_node =SP: add node 
+-5 new cost:2 into SE List -5
+24 ] SP:scan SE node: 11 with 56, m_link_genalized_cost_array[link_seq_no = 77 outgoing link(s). 
+SP:  checking outgoing node 4
+SP: add node 5 new cost:6SP:  checking from node 11  to node 4 cost = 2 , m_node_label_cost[from_node =10 ] 6 into SE List 5
+, m_link_genalized_cost_array[link_seq_no = 30] = 6
+SP:  checking outgoing node 11
+SP:  checking from node 4] = 0
+SP:scan SE node: SP:  checking from node 11  to node 4 cost = 12 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 6
+  to node 11 cost = 65 with 4 outgoing link(s). 
+ , m_node_label_cost[from_node =3 ] 4, m_link_genalized_cost_array[link_seq_no = 9] = 6
+SP:  checking from node 4  to node 11 cost = 10 , m_node_label_cost[from_node] 4SP:  checking outgoing node 4
+SP:  checking from node 5  to node 4 cost = 10 , m_node_label_cost[from_node =4 ] 9SP:  checking outgoing node , m_link_genalized_cost_array[link_seq_no = 10] = 2
+SP:  checking from node 5  to node 10
+SP:  checking from node 11  to node 10 cost = 124 cost = 11 , m_node_label_cost[from_node] 9,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 4 , m_node_label_cost[from_node =10,m_link_genalized_cost_array[link_seq_no] =  ] 6, m_link_genalized_cost_array[link_seq_no = 31] = 5
+ current cost:14 new cost 11
+SP: add node 46
+SP:  updating node: 11 current cost:1e+15 new cost 10
+SP: add node  new cost:11 into SE List 4
+SP:  checking outgoing node 6
+SP:  checking from node 5  to node 6 cost = 11 , m_node_label_cost[from_node =4 ] 9, m_link_genalized_cost_array[link_seq_no = 11] = 4
+SP:  checking from node SP:  checking from node 511  to node 10 cost = 11 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 10 current cost:1e+15 new cost 11
+SP: add node 10 new cost:11 into SE List 10
+SP:  checking outgoing node 12
+SP:  checking from node 11  to node 12 cost = 11 , m_node_label_cost[from_node =10  to node 6 cost = 13 , m_node_label_cost[from_node] 9,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 9
+SP:  checking from node 5  to node 9 cost = 11 new cost:10 into SE List 11
+ ] SP:  checking outgoing node -4
+SP:  checking from node 4  to node -4 cost = 10 , m_node_label_cost[from_node =3 ] 4, m_link_genalized_cost_array[link_seq_no = 82] = 0
+SP:  checking from node 4  to node -4 cost = 4 , m_node_label_cost[from_node] 413 , m_node_label_cost[from_node =4 ] 9, m_link_genalized_cost_array[link_seq_no = ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -4 current cost:1e+15 new cost 4
+SP: add node -4 new cost:4 into SE List -4
+12] = 6, m_link_genalized_cost_array[link_seq_no = 32] = 5
+SP:  checking from node 5  to node 9 cost = 14 , m_node_label_cost[from_node] 9,m_link_genalized_cost_array[link_seq_no] = 5
+SP:scan SE node: 12 with SP:  updating node: 9 current cost:1e+15 new cost 144 outgoing link(s). 
+SP:  checking outgoing node 3
+SP:  checking from node 12  to node 
+SP: add node 9 new cost:14 into SE List 9
+SP:  checking outgoing node -5
+SP:  checking from node 5  to node -5 cost = 14 , m_node_label_cost[from_node =4 ] 9, m_link_genalized_cost_array[link_seq_no = 84] = 0
+SP:  checking from node 5  to node -56
+SP:  checking from node 11  to node 12 cost = 12 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] =  cost = 9 , m_node_label_cost[from_node] 96
+3 cost = 4,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node:  , m_node_label_cost[from_node =11 ] 4, m_link_genalized_cost_array[link_seq_no = 34] = -5 current cost:1e+15 new cost 9
+4
+SP:  checking from node 12  to node 3 cost = 8 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 11
+SP:  checking from node 12  to node 11 cost = 8SP:  checking outgoing node 14
+SP:  checking from node 11  to node 14 cost = 12 , m_node_label_cost[from_node =10 ] 6, m_link_genalized_cost_array[link_seq_no = 33] = 4
+SP:  checking from node 11  to node 14 cost = 10 , m_node_label_cost[from_node] SP: add node -5 new cost:9 into SE List  , m_node_label_cost[from_node =11 ] -5
+SP:scan SE node: 8 with 5 outgoing link(s). 46,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: , m_link_genalized_cost_array[link_seq_no = 35] = 6
+SP:  checking from node 12  to node 11 cost = 10 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 13
+SP:  checking from node 12  to node 
+SP:  checking outgoing node 6
+SP:  checking from node 8  to node 6 cost = 9 , m_node_label_cost[from_node =7 ] 714 current cost:1e+15 new cost 10
+SP: add node 14 new cost:13 cost = 10 , m_node_label_cost[from_node =11 ] 4, m_link_genalized_cost_array[link_seq_no = 36] = 3
+SP:  checking from node 12  to node 13 cost = 7 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 13 current cost:1e+15 new cost 7
+SP: add node 13 new cost:7 into SE List 13
+SP:  checking outgoing node -12
+SP:  checking from node 12  to node -12 cost = 7 , m_node_label_cost[from_node =11 ] 4, m_link_genalized_cost_array[link_seq_no = 98] = 0
+SP:  checking from node 12  to node -12 cost = 4 , m_node_label_cost[from_node] 4,m_link_genalized_cost_array[link_seq_no] = , m_link_genalized_cost_array[link_seq_no = 0
+SP:  updating node: -12 current cost:18] = 2
+1e+15 new cost 4SP:  checking from node 8  to node 6 cost = 9 , m_node_label_cost[from_node] 7
+SP: add node -12,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 710 new cost: into SE List 14
+SP:  checking outgoing node -11
+4 into SE List SP:  checking from node 11  to node -11 cost = 10 , m_node_label_cost[from_node =10 ] 
+SP:  checking from node 8  to node 7 cost = -12
+SP:scan SE node: 2 with 3 outgoing link(s). 
+6, m_link_genalized_cost_array[link_seq_no = 96] = 90
+SP:  checking from node 11  to node  , m_node_label_cost[from_node =7 ] 7, m_link_genalized_cost_array[link_seq_no = 19] = 3
+SP:  checking from node 8SP:  checking outgoing node   to node 7 cost = 10 , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 7 current cost:-11 cost = 6 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -11 current cost:1e+15 new cost 6
+1e+15 new cost 10SP: add node -11 new cost:6 into SE List 
+SP: add node 7 new cost:10 into SE List 7
+SP:  checking outgoing node 9
+SP:  checking from node 8  to node 9 cost = 101
+SP:  checking from node 2  to node 1 cost = 4 , m_node_label_cost[from_node =1 ] 10 , m_node_label_cost[from_node =, m_link_genalized_cost_array[link_seq_no = 2] = 6
+SP:  checking from node 2  to node 1 cost = 16 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 6
+7-11
+ ] 7, m_link_genalized_cost_array[link_seq_no = 20] = 10
+SP:scan SE node: 1 with SP:  checking from node 8  to node 9 cost = 173 outgoing link(s). 
+ , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking from node 2  to node 6 cost = 16 , m_node_label_cost[from_node =1 ] 10, m_link_genalized_cost_array[link_seq_no = 3] = 5
+SP:  checking outgoing node 16
+SP:  checking outgoing node SP:  checking from node 8  to node 16 cost = 17SP:  checking from node 2  to node 6 cost = 152
+SP:  checking from node 1  to node 2 cost = 6 , m_node_label_cost[from_node =0 ] 8 , m_node_label_cost[from_node =7 ] 7, m_link_genalized_cost_array[link_seq_no = 21] = 5
+SP:  checking from node 8  to node 16 cost = 12 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 5
+, m_link_genalized_cost_array[link_seq_no = 0] = 6
+SP:  checking from node 1  to node  , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 16 current cost:1e+15 new cost 12
+2 cost = 14SP:  updating node: 6 current cost:1e+15 new cost 15
+SP: add node 6 new cost:15 into SE List 6
+SP:  checking outgoing node -2
+SP:  checking from node SP: add node 16 new cost:12 into SE List 16
+SP:  checking outgoing node -8
+SP:  checking from node 8  to node -8 cost = 12 , m_node_label_cost[from_node =7 ] 7, m_link_genalized_cost_array[link_seq_no = 90] = 2  to node -2 cost = 15 , m_node_label_cost[from_node =1 ] 10 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node: 2 current cost:1e+15 new cost 14
+SP: add node 2 new cost:14 into SE List 2
+SP:  checking outgoing node 3
+SP:  checking from node 10
+, m_link_genalized_cost_array[link_seq_no = SP:  checking from node 8  to node -8 cost = 7 , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: 78] = 0
+-8 current cost:1e+15 new cost 7
+SP: add node -8 new cost:7 into SE List -8
+SP:scan SE node: -6 with 1 outgoing link(s). 
+SP:  checking outgoing node 6
+SP:  checking from node SP:  checking from node 2  to node -2 cost = 10 , m_node_label_cost[from_node] -6  to node 6 cost = 107 , m_node_label_cost[from_node =29 ] 5, m_link_genalized_cost_array[link_seq_no = 87] = 0
+SP:scan SE node: 4 with ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -2 current cost:1e+15 new cost 10
+SP: add node -2 new cost:10 into SE List -2
+SP:scan SE node: -14 outgoing link(s). 
+SP:  checking outgoing node 3
+SP:  checking from node 4  to node 3 cost = 7 , m_node_label_cost[from_node =3 ] 11, m_link_genalized_cost_array[link_seq_no = 7] = 4
+SP:  checking from node 4  to node 3 cost = 15 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 4
+ cost = 10SP:  checking outgoing node 5
+SP:  checking from node 4  to node 5 cost = 15 , m_node_label_cost[from_node =3 ] 11, m_link_genalized_cost_array[link_seq_no = 8] = 2
+SP:  checking from node 4  to node 5 cost = 13 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] =  , m_node_label_cost[from_node =24 ]   to node 4, m_link_genalized_cost_array[link_seq_no = 77] = 32
+SP:  checking outgoing node 11
+SP:  checking from node 4  to node 11 cost = 13 , m_node_label_cost[from_node =3 ] 110
+SP:scan SE node: 5 with 4 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 5  to node  cost = 14, m_link_genalized_cost_array[link_seq_no = 9] = 6
+SP:  checking from node 44 cost = 10 , m_node_label_cost[from_node =4 ] 6  to node 11 cost = 17 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] =  , m_node_label_cost[from_node =0 ] 86
+SP:  updating node: 11 current cost:1e+15 new cost 17
+SP: add node 11 new cost:17 into SE List 11
+SP:  checking outgoing node -4
+SP:  checking from node 4  to node -4 cost = 17 , m_node_label_cost[from_node =3 ] 11, m_link_genalized_cost_array[link_seq_no = 82] = 0
+SP:  checking from node 4  to node -4 cost = 11 , m_node_label_cost[from_node] 11, m_link_genalized_cost_array[link_seq_no = ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -4 current cost:1e+15 new cost 111] = 4
+SP:  checking from node 1  to node 3 cost = 12
+SP: add node -4 new cost:11 into SE List  , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 12 , m_node_label_cost[from_node =0 ] -4
+SP:scan SE node: 12 with 4 outgoing link(s). 
+SP:  checking outgoing node 3
+SP:  checking from node 12  to node 3 cost = 11 , m_node_label_cost[from_node =11 ] 14, m_link_genalized_cost_array[link_seq_no = 34] = , m_link_genalized_cost_array[link_seq_no = 10] = 2
+4
+SP:  checking from node 12  to node 3 cost = 18 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking from node 8, m_link_genalized_cost_array[link_seq_no = 76] = 0
+SP:  checking from node 1  to node -1SP:  checking outgoing node 11
+SP:  checking from node 12  to node 11 cost = 18 , m_node_label_cost[from_node =11 ] 14, m_link_genalized_cost_array[link_seq_no = 35] = 6
+SP:  checking from node 12  to node 11 cost = 20 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 6
+5  to node SP:  checking outgoing node 13
+SP:  checking from node  cost = 8 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -1 current cost:1e+1512  to node 13 cost = 20 , m_node_label_cost[from_node =11 ] 14, m_link_genalized_cost_array[link_seq_no = 36] = 3
+SP:  checking from node 12  to node 13 cost = 17 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 13 current cost:1e+15 new cost 17
+SP: add node 13 new cost:17 into SE List 13
+SP:  checking outgoing node -12
+SP:  checking from node 12  to node -12 cost = 17 , m_node_label_cost[from_node =11 new cost 4 cost = 8 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 2
+ ] 14, m_link_genalized_cost_array[link_seq_no = 98] = SP:  checking outgoing node 6
+SP:  checking from node 5  to node 6 cost = 8 , m_node_label_cost[from_node =4 ] 6, m_link_genalized_cost_array[link_seq_no = 11] = 4
+SP:  checking from node 5  to node 6 cost = 10 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 6 current cost:15 new cost 10
+SP: add node 6 new cost:10 into SE List 6
+8SP:  checking outgoing node 9
+SP:  checking from node 5  to node 9 cost = 10 , m_node_label_cost[from_node =4 ] 6, m_link_genalized_cost_array[link_seq_no = 12] = 5
+SP:  checking from node 50
+SP:  checking from node 12  to node -12 cost = 14 , m_node_label_cost[from_node] 
+SP: add node -114,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -12 current cost:1e+15 new cost 14
+SP: add node -12 new cost:14 into SE List -12
+SP:scan SE node:   to node 9 cost = 11 , m_node_label_cost[from_node] 6-3 with  new cost:1 outgoing link(s). 
+SP:  checking outgoing node 38 into SE List -1
+SP:scan SE node: 12 with 4 outgoing link(s). 
+,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 9 current cost:1e+15 new cost SP:  checking outgoing node 3
+SP:  checking from node 12  to node 3 cost = 
+SP:  checking from node -38 , m_node_label_cost[from_node =11 ] 8, m_link_genalized_cost_array[link_seq_no = 1134] = 4
+SP:  checking from node 12  to node 3 cost =   to node 3 cost = 14 , m_node_label_cost[from_node =26 ] 10, m_link_genalized_cost_array[link_seq_no = 8112 , m_node_label_cost[from_node] 8
+SP: add node 9 new cost:11 into SE List 9
+SP:  checking outgoing node -5
+SP:  checking from node ,m_link_genalized_cost_array[link_seq_no] = 4
+5  to node -5 cost = ] = 011 , m_node_label_cost[from_node =4 ] 
+SP:scan SE node: 9 with 4 outgoing link(s). 
+SP:  checking outgoing node 5
+SP:  checking from node 9  to node 5 cost = 14 , m_node_label_cost[from_node =8 ] 14, m_link_genalized_cost_array[link_seq_no = 22] = 5
+SP:  checking outgoing node SP:  checking from node 9  to node 5 cost = 19 , m_node_label_cost[from_node] 1411
+SP:  checking from node 12  to node 11 cost = 12 , m_node_label_cost[from_node =11 ] 8, m_link_genalized_cost_array[link_seq_no = 35] = 6
+SP:  checking from node 12  to node 116,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 8
+SP:  checking from node 9  to node 8 cost = 19 , m_node_label_cost[from_node = cost = 14 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 13
+SP:  checking from node 12  to node 13 cost = 14 , m_node_label_cost[from_node =11 ] 88 ] 14, m_link_genalized_cost_array[link_seq_no = 23] = 10
+SP:  checking from node 9, m_link_genalized_cost_array[link_seq_no = 84, m_link_genalized_cost_array[link_seq_no = 36] = 3
+SP:  checking from node ] = 0
+  to node 8 cost = 24 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking outgoing node 12  to node 13 cost = 11SP:  checking from node 5  to node -5 cost = 610
+SP:  checking from node 9  to node 10 cost = 24 , m_node_label_cost[from_node =8 ] 14, m_link_genalized_cost_array[link_seq_no =  , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] =  , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 13 current cost:1e+150
+SP:  updating node: -5 current cost:1e+15 new cost 6
+SP: add node -5 new cost:6 into SE List 24] = 3
+SP:  checking from node 9  to node 10 cost = 17 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 10 current cost:1e+15 new cost 17
+SP: add node 10 new cost:17 into SE List 10
+SP:  checking outgoing node -9
+SP:  checking from node 9  to node -9 cost = 17 , m_node_label_cost[from_node =8 ] 14-5
+, m_link_genalized_cost_array[link_seq_no = 92] = 0
+SP:  checking from node 9SP:scan SE node: 11 with 5 outgoing link(s). 
+  to node -9 cost = 14 , m_node_label_cost[from_node] 14 new cost ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -9 current cost:1e+15 new cost 14
+SP: add node -9 new cost:14 into SE List -9
+SP:  checking outgoing node 4
+SP:  checking from node 11  to node 4 cost = 6 , m_node_label_cost[from_node =SP:scan SE node: -5 with 1 outgoing link(s). 
+SP:  checking outgoing node 5
+11
+SP: add node 13SP:  checking from node -5  to node  new cost:115 cost = 10 ] 1014, m_link_genalized_cost_array[link_seq_no = 30 , m_node_label_cost[from_node =28 ] 9, m_link_genalized_cost_array[link_seq_no = 85] = 0
+ into SE List SP:scan SE node: 7 with 3 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 7  to node 8 cost = 1413
+ , m_node_label_cost[from_node =6 ] 10, m_link_genalized_cost_array[link_seq_no = 16] = 3
+SP:  checking from node 7  to node 8 cost = 13 , m_node_label_cost[from_node] 10SP:  checking outgoing node -12
+SP:  checking from node 12  to node -12 cost = 11 , m_node_label_cost[from_node =11 ] ,m_link_genalized_cost_array[link_seq_no] = 8, m_link_genalized_cost_array[link_seq_no = 98] = 0
+] = 6SP:  checking from node 12  to node -12 cost = 8 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -12 current cost:1e+15 new cost 8
+SP: add node -12 new cost:8 into SE List -12
+SP:scan SE node: -3 with 1
+SP:  checking from node 11  to node 4 cost = 16 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 6
+ outgoing link(s). 
+SP:  checking outgoing node 3
+SP:  checking from node -3  to node 3 cost = 3
+SP:  checking outgoing node 10
+SP:  checking from node 11  to node 10 cost = 8 , m_node_label_cost[from_node =26 ] 4, m_link_genalized_cost_array[link_seq_no = 81SP:  checking outgoing node 18
+16 , m_node_label_cost[from_node =10 ] 10, m_link_genalized_cost_array[link_seq_no = 31] = 5
+SP:  checking from node 11  to node 10 cost = 15 , m_node_label_cost[from_node] 10SP:  checking from node 7  to node 18 cost = 13] = 0
+ , m_node_label_cost[from_node =6 ] 10, m_link_genalized_cost_array[link_seq_no = 17] = 2
+SP:  checking from node 7  to node 18 cost = 12 , m_node_label_cost[from_node] ,m_link_genalized_cost_array[link_seq_no] = 510,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 18 current cost:1e+15 new cost 12
+SP: add node 18 new cost:12 into SE List 18
+SP:scan SE node: SP:  checking outgoing node -7
+SP:  checking from node 7  to node -7 cost = 12 , m_node_label_cost[from_node =6 ] 10
+SP:  updating node: 10 current cost:1e+15 new cost 15
+SP: add node 10 new cost:15 into SE List 6 with 4 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 6  to node 2 cost = 810
+ , m_node_label_cost[from_node =5 ] 6, m_link_genalized_cost_array[link_seq_no = 13] = 5
+SP:  checking from node 6  to node 2 cost = 11 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 2 current cost:14 new cost 11
+SP: add node 2 new cost:11 into SE List 2
+SP:  checking outgoing node 5
+SP:  checking from node 6  to node 5 cost = 11 , m_node_label_cost[from_node =5 ] 6, m_link_genalized_cost_array[link_seq_no = 14] = 4
+SP:  checking from node 6  to node 5 cost = 10 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 8
+SP:  checking from node 6  to node 8 cost = 10 , m_node_label_cost[from_node =5 ] 6, m_link_genalized_cost_array[link_seq_no = 15] = 2
+SP:  checking from node 6  to node 8 cost = 8 , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 8 current cost:1e+15 new cost 8
+SP: add node 8 new cost:8 into SE List 8
+SP:  checking outgoing node SP:  checking outgoing node -6
+SP:  checking from node 6  to node -6 cost = 8 , m_node_label_cost[from_node =5 ] 6, m_link_genalized_cost_array[link_seq_no = 86] = 0
+SP:  checking from node 6  to node -6 cost = 12
+SP:  checking from node 11  to node 12 cost = 15 , m_node_label_cost[from_node =10, m_link_genalized_cost_array[link_seq_no = 88] = 0
+SP:  checking from node 7  to node -7 cost = 10 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -7 current cost:1e+15 new cost 10
+SP: add node -7 new cost:10 into SE List -7
+SP:scan SE node: 16 with 5 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 16  to node 8 cost = 10 , m_node_label_cost[from_node =15 ] 12, m_link_genalized_cost_array[link_seq_no = 46] = 5
+SP:  checking from node 16  to node 8 cost = 17 , m_node_label_cost[from_node] 126,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node  , m_node_label_cost[from_node] 6,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -6 current cost:1e+15 new cost 6
+SP: add node -6 new cost: ] 10
+SP:  checking from node 16  to node 10 cost = 17 , m_node_label_cost[from_node =15 ] 12, m_link_genalized_cost_array[link_seq_no = 47] = 4
+SP:  checking from node 16  to node 10 cost = 16 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 4
+6 into SE List -6
+SP:  updating node: 10SP:scan SE node: 9 with 4 outgoing link(s). 
+SP:  checking outgoing node 5
+SP:  checking from node 9  to node 5 cost = 6 , m_node_label_cost[from_node =8 ] 7, m_link_genalized_cost_array[link_seq_no = 22] = 10 current cost:17 new cost 16
+SP: add node 10 new cost:16 into SE List 10
+SP:  checking outgoing node 17
+, m_link_genalized_cost_array[link_seq_no = SP:  checking from node 16  to node 17 cost = 16 , m_node_label_cost[from_node =15 ] 12, m_link_genalized_cost_array[link_seq_no = 48] = 2
+SP:  checking from node 16  to node 32] = 56
+17 cost = 14 , m_node_label_cost[from_node] 12
+SP:  checking from node 9  to node 5 cost = 12,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking from node 11  to node 12 cost = SP:  updating node: 17 current cost:1e+15 new cost 14
+SP: add node 17 new cost:14 into SE List 17
+16 , m_node_label_cost[from_node] 10SP:  checking outgoing node 18
+SP:  checking from node 16  to node 18 cost = 14 , m_node_label_cost[from_node =15 ] 12 , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 5
+, m_link_genalized_cost_array[link_seq_no = 49] = 3
+SP:  checking from node 16SP:  checking outgoing node 8
+  to node 18 cost = 15 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node -16
+SP:  checking from node 9  to node SP:  checking from node 16  to node -16 cost = 15 , m_node_label_cost[from_node =15 ] 12,m_link_genalized_cost_array[link_seq_no] = , m_link_genalized_cost_array[link_seq_no = 106] = 0
+SP:  checking from node 16  to node -16 cost = 12 , m_node_label_cost[from_node] 128 cost = 12 , m_node_label_cost[from_node =68,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -16 current cost:1e+15 new cost 12
+SP: add node -16 new cost:12 into SE List -16
+SP:scan SE node: -8 with  ] 71 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node -8  to node 8 cost = 12 , m_node_label_cost[from_node =31 ] 7, m_link_genalized_cost_array[link_seq_no = 91] = 0
+, m_link_genalized_cost_array[link_seq_no = 23] = 10
+SP:  checking from node 9  to node 8SP:  checking outgoing node 14
+SP:  checking from node 11  to node 14 cost = 16 , m_node_label_cost[from_node = cost = 17 , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking outgoing node 10
+SP:  checking from node 
+SP:scan SE node: 11 with 9  to node 10 cost = 1710 ] 10, m_link_genalized_cost_array[link_seq_no = 33 , m_node_label_cost[from_node =8 ] 7, m_link_genalized_cost_array[link_seq_no = 24] = 3
+SP:  checking from node 9  to node 10 cost = 5 outgoing link(s). 
+] = 10SP:  checking outgoing node 4
+SP:  checking from node 11  to node 4 cost = 12 , m_node_label_cost[from_node =10 ] 17, m_link_genalized_cost_array[link_seq_no = 30] = 6
+SP:  checking from node  , m_node_label_cost[from_node] 711  to node 44 cost = 23 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 6
+
+,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 10
+SP:  checking from node 11  to node 10 cost = 23 , m_node_label_cost[from_node =10 ] 17, m_link_genalized_cost_array[link_seq_no = 31] = 5
+SP:  checking from node 11  to node 10 cost = 22SP:  updating node: 10 current cost:11 new cost 10
+SP:  checking from node 11  to node 14 cost = 14 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4SP: add node 10 new cost:10 into SE List 10
+SP:  checking outgoing node -9
+SP:  checking from node 9  to node -9 cost = 10 , m_node_label_cost[from_node =
+SP:  updating node: 14 current cost:1e+15 new cost 14
+SP: add node 148 ]  new cost:14 into SE List 14
+ , m_node_label_cost[from_node] 7, m_link_genalized_cost_array[link_seq_no = 92] = 0
+SP:  checking from node 917,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 12
+  to node -9 cost = 7 , m_node_label_cost[from_node] 7SP:  checking from node 11  to node 12 cost = 22 , m_node_label_cost[from_node =10 ] 17SP:  checking outgoing node -11
+SP:  checking from node 11  to node -11 cost = 14 , m_node_label_cost[from_node =10 ] 10, m_link_genalized_cost_array[link_seq_no = 32] = 6
+SP:  checking from node 11  to node 12 cost = ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -9 current cost:1e+15 new cost , m_link_genalized_cost_array[link_seq_no = 967
+SP: add node -9 new cost:7 into SE List -9
+SP:scan SE node: ] = 0
+SP:  checking from node 11  to node -11 cost = 10 , m_node_label_cost[from_node] 1023 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 6
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -11 current cost:-5 with 1 outgoing link(s). 
+SP:  checking outgoing node 1e+15 new cost SP:  checking outgoing node 5
+SP:  checking from node -5  to node 5 cost = 7 , m_node_label_cost[from_node =28 ] 2, m_link_genalized_cost_array[link_seq_no = 85] = 0
+SP:scan SE node: 10 with 6 outgoing link(s). 
+14
+SP:  checking from node 11  to node 14 cost = 23 , m_node_label_cost[from_node =10 ] 17SP:  checking outgoing node 9
+SP:  checking from node 10  to node 9 cost = 7 , m_node_label_cost[from_node =9 ] 10, m_link_genalized_cost_array[link_seq_no = 25] = 10
+SP: add node -11 new cost:10 into SE List , m_link_genalized_cost_array[link_seq_no = 33] = 4
+SP:  checking from node 11  to node 14-11
+ cost = 21 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 14 current cost:1e+15 new cost 21
+SP: add node 14 new cost:21 into SE List 14
+SP:  checking outgoing node -11
+SP:  checking from node 11  to node -11 cost = 21 , m_node_label_cost[from_node =10 ] 17SP:scan SE node: -4 with 1, m_link_genalized_cost_array[link_seq_no = 96] = 3
+ outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node -4  to node 4SP:  checking from node 10  to node 9 cost = 13 , m_node_label_cost[from_node] 100
+SP:  checking from node 11  to node -11 cost =  cost = 10 , m_node_label_cost[from_node =27 ] 4, m_link_genalized_cost_array[link_seq_no = 83] = 0
+SP:scan SE node: 13 with 3 outgoing link(s). 
+SP:  checking outgoing node 12
+SP:  checking from node 13  to node 12 cost = 10 , m_node_label_cost[from_node =12 ] 7, m_link_genalized_cost_array[link_seq_no = 37] = 3
+SP:  checking from node 13  to node 12 cost = 10 , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 3
+,m_link_genalized_cost_array[link_seq_no] = 3
+17 , m_node_label_cost[from_node] 17SP:  checking outgoing node 11
+SP:  checking outgoing node 24
+SP:  checking from node 13  to node 24 cost = 10 , m_node_label_cost[from_node =12 ] 7, m_link_genalized_cost_array[link_seq_no = 38,m_link_genalized_cost_array[link_seq_no] = ] = 4
+SP:  checking from node SP:  checking from node 10  to node 11 cost = 13 , m_node_label_cost[from_node =9 ] 100
+SP:  updating node: -11 current cost:1e+1513  to node 24, m_link_genalized_cost_array[link_seq_no = 26] = 5
+SP:  checking from node 10  to node 11 cost = 15 new cost 17
+ cost = SP: add node  , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 5
+-11SP:  checking outgoing node 15
+SP:  checking from node 10  to node 15 cost = 1511 , m_node_label_cost[from_node] 7 , m_node_label_cost[from_node =9 ] 10, m_link_genalized_cost_array[link_seq_no = 27] = 6
+SP:  checking from node 10  to node 15 cost = 16 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: ,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node: 15 current cost:1e+15 new cost 16
+SP: add node 15 new cost:16 into SE List 15
+SP:  checking outgoing node 16 new cost:24 current cost:1e+15 new cost 11
+SP: add node 24 new cost:11 into SE List 24
+SP:  checking outgoing node -13
+
+SP:  checking from node SP:  checking from node 13  to node -13 cost = 11 , m_node_label_cost[from_node =12 ] 71017 into SE List -11
+SP:scan SE node: -4 with 1 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node -4  to node 4 cost = 17 , m_node_label_cost[from_node =27 ] 11  to node , m_link_genalized_cost_array[link_seq_no = , m_link_genalized_cost_array[link_seq_no = 100] = 016 cost = 16 , m_node_label_cost[from_node =9 ] 1083] = 0
+, m_link_genalized_cost_array[link_seq_no = 28] = 4
+SP:  checking from node 10  to node 16 cost = 14 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 16 current cost:1e+15 new cost 14
+SP: add node 16 new cost:14
+SP:scan SE node: SP:  checking from node 13  to node -13 cost = 7 into SE List 16
+SP:  checking outgoing node 17
+SP:  checking from node 10  to node  , m_node_label_cost[from_node] 7,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -13 current cost:1e+1517 cost = 14 , m_node_label_cost[from_node =9 ] 10, m_link_genalized_cost_array[link_seq_no = 29] = 13 with 3 outgoing link(s). 
+SP:  checking outgoing node  new cost 7
+SP: add node -13 new cost:7 into SE List -13
+SP:scan SE node: -1212
+SP:  checking from node 13  to node 12 cost = 17 , m_node_label_cost[from_node =12 ] 17, m_link_genalized_cost_array[link_seq_no = 37 with 1 outgoing link(s). 
+] = 3
+SP:  checking from node 13  to node 12 cost = 20 , m_node_label_cost[from_node] 17SP:  checking outgoing node 12
+SP:  checking from node -12  to node 12 cost = 7 , m_node_label_cost[from_node =35 ] 4, m_link_genalized_cost_array[link_seq_no = 99] = 0
+8
+SP:  checking from node 10SP:scan SE node: 6 with 4 outgoing link(s). 
+  to node 17 cost = 18,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 24
+SP:  checking from node 13  to node 24 cost = 20SP:  checking outgoing node 2
+ , m_node_label_cost[from_node] 10SP:  checking from node 6  to node ,m_link_genalized_cost_array[link_seq_no] = 8
+2 cost = 7 , m_node_label_cost[from_node =12 ] 17 , m_node_label_cost[from_node =5 ] 10, m_link_genalized_cost_array[link_seq_no = 13, m_link_genalized_cost_array[link_seq_no = 38] = 4
+SP:  checking from node 13  to node 24 cost = 21SP:  updating node: 17 current cost:1e+15 new cost 18
+SP: add node ] = 5
+SP:  checking from node 6  to node 2 cost = 15 , m_node_label_cost[from_node] 10 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 17 new cost:18 into SE List ,m_link_genalized_cost_array[link_seq_no] = 5
+17
+SP:  checking outgoing node -10
+SP:  checking from node 10  to node SP:  checking outgoing node 4
+SP:  updating node: 24 current cost:1e+15 new cost -10 cost = 18 , m_node_label_cost[from_node =9 ] 10, m_link_genalized_cost_array[link_seq_no = 94] = 0
+21
+SP: add node 24 new cost:21 into SE List 24
+SP:  checking outgoing node -13
+SP:  checking from node 13  to node -13 cost = 215
+SP:  checking from node 6  to node SP:  checking from node 10  to node -10 cost = 10 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -10 current cost:1e+155 cost = 15 , m_node_label_cost[from_node =5 ] 10 , m_node_label_cost[from_node =12 ] 17, m_link_genalized_cost_array[link_seq_no = 100 new cost 10
+SP: add node , m_link_genalized_cost_array[link_seq_no = 14] = 4
+SP:  checking from node 6  to node 5-10 new cost:10 cost = 14 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4
+ into SE List -10
+SP:scan SE node: 14 with 4] = 0
+SP:  checking from node 13  to node -13 cost = 17 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -13 current cost:1e+15 new cost 17
+SP: add node -13 new cost:17 into SE List -13
+SP:scan SE node: -12 outgoing link(s). 
+SP:  checking outgoing node 11
+SP:  checking from node 14  to node  with 1 outgoing link(s). 
+SP:  checking outgoing node 12
+SP:  checking from node -12  to node 12 cost = 17 , m_node_label_cost[from_node =35SP:  checking outgoing node 8
+SP:  checking from node 6  to node 8 cost = 14 , m_node_label_cost[from_node =5 ] 10, m_link_genalized_cost_array[link_seq_no = 15] = 2
+SP:  checking from node 6  to node 11 cost = 10 , m_node_label_cost[from_node =13 ] 10, m_link_genalized_cost_array[link_seq_no = 39 ] 14, m_link_genalized_cost_array[link_seq_no = 99] = 0
+] = 4
+SP:  checking from node 8 cost = 12 , m_node_label_cost[from_node] 1014  to node 11 cost = 14 , m_node_label_cost[from_node] 10SP:scan SE node: 10 with 6,m_link_genalized_cost_array[link_seq_no] = 4
+,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: SP:  checking outgoing node 15
+SP:  checking from node 14  to node  outgoing link(s). 8 current cost:1e+15 new cost 12
+
+SP:  checking outgoing node 9
+SP:  checking from node 10  to node 9 cost = 17 , m_node_label_cost[from_node =9 ] 16, m_link_genalized_cost_array[link_seq_no = 25] = 3
+SP:  checking from node 10  to node 9 cost = 19 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 11
+SP:  checking from node 10  to node 11 cost = 19 , m_node_label_cost[from_node =9 ] 1615 cost = 14 , m_node_label_cost[from_node =13 ] 10, m_link_genalized_cost_array[link_seq_no = 40] = 5
+, m_link_genalized_cost_array[link_seq_no = 26] = 5
+SP:  checking from node 10  to node 11 cost = 21SP:  checking from node 14SP: add node 8 new cost:12 into SE List 8
+SP:  checking outgoing node -6
+  to node 15 cost = 15 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 15 current cost:16SP:  checking from node 6  to node -6 cost = 12 , m_node_label_cost[from_node =5 ] 10, m_link_genalized_cost_array[link_seq_no = 86] = 0
+ new cost SP:  checking from node 6  to node -6 cost = 10 , m_node_label_cost[from_node] 10 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 5
+15
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  checking outgoing node 15
+SP:  checking from node 10  to node 15 cost = 21 , m_node_label_cost[from_node =9 ] 16, m_link_genalized_cost_array[link_seq_no = 27] = 6
+SP:  updating node: -6 current cost:1e+15 new cost 10
+SP: add node -6 new cost:10 into SE List -6
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 10 , m_node_label_cost[from_node =25 ] 10, m_link_genalized_cost_array[link_seq_no = 79] = SP:  checking from node 10  to node 150
+SP:scan SE node: 9 with 4 outgoing link(s). 
+SP:  checking outgoing node 5
+ cost = 22 , m_node_label_cost[from_node] 16SP:  checking from node 9  to node 5 cost = 10 , m_node_label_cost[from_node =SP: add node 15 new cost:15 into SE List 15,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node: 15 current cost:1e+15 new cost 22
+SP: add node 15 new cost:22 into SE List 15
+
+SP:  checking outgoing node 23
+SP:  checking from node 14  to node 23 cost = 15 , m_node_label_cost[from_node =13SP:  checking outgoing node 16 ] 10, m_link_genalized_cost_array[link_seq_no = 41] = 
+SP:  checking from node 10  to node 164
+SP:  checking from node 14  to node 23 cost = 14 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 23 current cost:1e+15 cost = 22 , m_node_label_cost[from_node =9 ] 16, m_link_genalized_cost_array[link_seq_no = 28] = 4
+SP:  checking from node 10  to node 16 cost = 20 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 17
+SP:  checking from node 10  to node  new cost 14
+SP: add node 23 new cost:14 into SE List 23
+SP:  checking outgoing node -14
+SP:  checking from node 14817 cost = 20 , m_node_label_cost[from_node =9 ] 16, m_link_genalized_cost_array[link_seq_no = 29] = 8
+SP:  checking from node 10  to node 17 cost = 24 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 8
+  to node -14 cost = 14 , m_node_label_cost[from_node =13 ] 10, m_link_genalized_cost_array[link_seq_no = 102] = SP:  checking outgoing node 0
+SP:  checking from node 14  to node -14 cost = 10 , m_node_label_cost[from_node] 10,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -14 current cost:1e+15 new cost 10
+SP: add node -14 new cost:10 into SE List -14
+-10
+SP:  checking from node 10  to node -10 cost = 24 , m_node_label_cost[from_node =9 ] 16SP:scan SE node: -11 with 1 outgoing link(s). 
+SP:  checking outgoing node 11
+SP:  checking from node -11  to node 11 cost = 10 , m_node_label_cost[from_node =34 ] 6, m_link_genalized_cost_array[link_seq_no = 94] = 0
+SP:  checking from node 10  to node -10 cost = 16 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 0, m_link_genalized_cost_array[link_seq_no = 97] = 0
+SP:scan SE node: 2 with 3 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node 2  to node 1 cost = 10 , m_node_label_cost[from_node =1 ] 11, m_link_genalized_cost_array[link_seq_no = 2] = 6
+SP:  checking from node 2  to node 1 cost = 17 , m_node_label_cost[from_node] 11 ] 
+SP:  updating node: -10 current cost:1e+15 new cost 16
+SP: add node -10 new cost:16 into SE List -10
+SP:scan SE node: -9 with 1 outgoing link(s). 
+SP:  checking outgoing node 9
+SP:  checking from node -9  to node 9 cost = 16 , m_node_label_cost[from_node =32 ] 14, m_link_genalized_cost_array[link_seq_no = 93] = 0
+,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 6
+SP:  checking from node 2  to node 6 cost = 17SP:scan SE node: 18 with 4 outgoing link(s). 
+SP:  checking outgoing node 7
+SP:  checking from node 18  to node 7 cost = 16 , m_node_label_cost[from_node =17 ] 12, m_link_genalized_cost_array[link_seq_no = 53] = 2
+SP:  checking from node 18  to node 7 cost = 14 , m_node_label_cost[from_node =1 ] 11, m_link_genalized_cost_array[link_seq_no = 3] = 5
+SP:  checking from node 211  to node 6 cost = 16 , m_node_label_cost[from_node] 11, m_link_genalized_cost_array[link_seq_no = 22 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 16
+SP:  checking from node 18  to node 16 cost = 14 , m_node_label_cost[from_node =17 ] 12, m_link_genalized_cost_array[link_seq_no = 54] = ,m_link_genalized_cost_array[link_seq_no] = 5
+3
+SP:  checking from node 18  to node 16 cost = 15 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 3
+] = 5
+SP:  checking from node SP:  checking outgoing node 20
+9  to node 5 cost = 16 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 8
+SP:  checking from node 9  to node 8 cost = 16 , m_node_label_cost[from_node =8 ] 11, m_link_genalized_cost_array[link_seq_no = 23] = 10
+SP:  checking from node 9  to node 8 cost = 21SP:  checking from node  , m_node_label_cost[from_node] 11SP:  checking outgoing node ,m_link_genalized_cost_array[link_seq_no] = 10
+18  to node 20 cost = 15 , m_node_label_cost[from_node =17 ] 12, m_link_genalized_cost_array[link_seq_no = SP:  checking outgoing node 10
+SP:  checking from node 9  to node 10 cost = 21 , m_node_label_cost[from_node =8 ] 11, m_link_genalized_cost_array[link_seq_no = 24] = 3
+SP:  checking from node 9  to node 10 cost = 14 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 10 current cost:15 new cost 14
+SP: add node 10 new cost:14 into SE List 10
+55SP:  checking outgoing node -9
+SP:  checking from node 9  to node -9 cost = 14 , m_node_label_cost[from_node =8 ] 11, m_link_genalized_cost_array[link_seq_no = 92] = 0
+-2
+SP:  checking from node 9  to node SP:  checking from node 2  to node -2 cost = 16] = 4
+-9 cost = 11 , m_node_label_cost[from_node] 11SP:  checking from node 18  to node 20 cost = 16 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 4
+ , m_node_label_cost[from_node =1,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -9 current cost:1e+15 new cost 11
+SP: add node -9 new cost:11 into SE List -9
+ ] 11SP:scan SE node: -5 with 1 outgoing link(s). SP:  updating node: 20 current cost:1e+15 new cost 16
+SP: add node 20 new cost:16 into SE List 20
+SP:  checking outgoing node -18
+, m_link_genalized_cost_array[link_seq_no = SP:  checking from node 18
+  to node SP:  checking outgoing node 5
+SP:  checking from node -5  to node 5 cost = 11 , m_node_label_cost[from_node =28 ] 6, m_link_genalized_cost_array[link_seq_no = 85] = 0
+SP:scan SE node: 10 with 786-18 cost = 16] = 0
+SP:  checking from node 2 , m_node_label_cost[from_node =17 ] 12, m_link_genalized_cost_array[link_seq_no = 110] =   to node -2 cost = 11 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -2 outgoing link(s). 
+ current cost:1e+15 new cost 11
+SP: add node -2 new cost:SP:  checking outgoing node 911 into SE List -2
+0
+
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking from node 10SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 11 , m_node_label_cost[from_node =24SP:  checking from node 18  to node -18 cost = 12 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node:  ] 8, m_link_genalized_cost_array[link_seq_no = 77] = 0
+SP:scan SE node: 13 with 3 outgoing link(s). 
+SP:  checking outgoing node 12
+SP:  checking from node 13  to node 12 cost = 11 , m_node_label_cost[from_node =12 ] 11, m_link_genalized_cost_array[link_seq_no = 37] = 3
+-18 current cost:1e+15 new cost 12
+  to node SP: add node -18 new cost:12 into SE List -18
+SP:scan SE node: -7 with 9 cost = 11 , m_node_label_cost[from_node =9 ] 14, m_link_genalized_cost_array[link_seq_no = 25] = 3
+SP:  checking from node 1 outgoing link(s). 
+SP:  checking outgoing node 7
+SP:  checking from node -710  to node 9 cost = 17 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 3
+  to node 7 cost = SP:  checking outgoing node 11
+SP:  checking from node 10  to node 11 cost = 17 , m_node_label_cost[from_node =9 ] SP:  checking from node 14, m_link_genalized_cost_array[link_seq_no = 26] = 5
+SP:  checking from node 10  to node 11 cost = 19 , m_node_label_cost[from_node] 1412 , m_node_label_cost[from_node =,m_link_genalized_cost_array[link_seq_no] = 530 ] 10, m_link_genalized_cost_array[link_seq_no = 89] = 0
+
+SP:  checking outgoing node 15
+SP:  checking from node 10  to node 15 cost = 19 , m_node_label_cost[from_node =9 ] 14, m_link_genalized_cost_array[link_seq_no = 27] = 6
+SP:  checking from node 10  to node 15 cost = 20 , m_node_label_cost[from_node] 14SP:scan SE node: 17 with 4,m_link_genalized_cost_array[link_seq_no] = 6 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 17  to node 10 cost = 12 , m_node_label_cost[from_node =16 ] 14
+SP:  updating node: 1513  to node 12 cost = 14 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 3
+ current cost:1e+15 new cost 20
+SP: add node 15 new cost:SP:  checking outgoing node 24
+SP:  checking from node 13  to node 24 cost = 14 , m_node_label_cost[from_node =20 into SE List 15
+SP:  checking outgoing node 16
+, m_link_genalized_cost_array[link_seq_no = 50] = 8SP:  checking from node 10  to node 16 cost = 20
+SP:  checking from node 17  to node 10 cost = 22 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 8
+SP:  checking outgoing node 16
+SP:  checking from node  , m_node_label_cost[from_node =9 ] 14, m_link_genalized_cost_array[link_seq_no = 28] = 17  to node 16 cost = 2212 ] 11, m_link_genalized_cost_array[link_seq_no = 4
+SP:  checking from node 10 , m_node_label_cost[from_node =16 ] 1438] = , m_link_genalized_cost_array[link_seq_no = 51] = 2
+4
+SP:  checking from node 13  to node 24 cost = 15 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 24 current cost:1e+15 new cost 15
+SP: add node 24 new cost:15 into SE List 24
+SP:  checking from node 17  to node 16 cost = SP:  checking outgoing node -13
+  to node 16 cost = 18 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 16 current cost:1e+15 new cost 18
+SP: add node 16 new cost:18 into SE List 16
+SP:  checking outgoing node 17
+SP:  checking from node 10  to node 17 cost = 18 , m_node_label_cost[from_node =9 ] 1416, m_link_genalized_cost_array[link_seq_no = 29] = 8
+SP:  checking from node 10  to node 17 cost = 22 , m_node_label_cost[from_node] 14SP:  checking from node  , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 19
+SP:  checking from node 17  to node 19 cost = 16 , m_node_label_cost[from_node =16 ] 14, m_link_genalized_cost_array[link_seq_no = 52] = 2
+SP:  checking from node 17  to node 19 cost = 16 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 13,m_link_genalized_cost_array[link_seq_no] = 8
+SP:  updating node: 17 current cost:1e+15 new cost 22
+SP: add node 17 new cost:22 into SE List 17
+SP:  checking outgoing node -10
+SP:  checking from node 10  to node -10 cost = 2
+SP:  updating node: 19 current cost:1e+15 new cost 16
+SP: add node 19 new cost:16 into SE List 19
+SP:  checking outgoing node -17
+SP:  checking from node 17  to node -17 cost = 16 , m_node_label_cost[from_node =16 ] 14, m_link_genalized_cost_array[link_seq_no = 108] = 0
+SP:  checking from node 17  to node -17 cost = 14 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 022
+SP:  updating node: -17 current cost:1e+15 new cost 14
+SP: add node -17 new cost:14 into SE List -17
+SP:scan SE node: -16 with 1 outgoing link(s). 
+SP:  checking outgoing node 16
+SP:  checking from node -16  to node 16 cost = 14 , m_node_label_cost[from_node =39 ] 12, m_link_genalized_cost_array[link_seq_no = 107] = 0
+SP:scan SE node: 14 with 4 outgoing link(s). 
+SP:  checking outgoing node 11
+SP:  checking from node 14  to node 11 cost = 14 , m_node_label_cost[from_node =13 ] 21, m_link_genalized_cost_array[link_seq_no = 39] = 4
+SP:  checking from node 14  to node 11 cost = 25 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 15 , m_node_label_cost[from_node =9
+SP:  checking from node 14  to node 15 cost = 25 , m_node_label_cost[from_node =13 ] 21, m_link_genalized_cost_array[link_seq_no = 40] = 5
+SP:  checking from node 14  to node  ] 14, m_link_genalized_cost_array[link_seq_no = 94] = 15 cost = 26  to node  , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 5
+-13 cost = 150
+SP:  checking outgoing node 23
+SP:  checking from node 14SP:  checking from node  , m_node_label_cost[from_node =12 ] 11, m_link_genalized_cost_array[link_seq_no = 100] =   to node 10  to node -10 cost = 0
+SP:  checking from node 13  to node -13 cost = 11 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 0
+14SP:  updating node: -13 current cost:1e+15 new cost 11
+SP: add node -13 new cost:11 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -10 current cost:1e+15 new cost 2314
+ cost = 26 , m_node_label_cost[from_node =13SP: add node  ] 21 into SE List -13
+SP:scan SE node: -12 with 1 outgoing link(s). -10 new cost:14 into SE List -10
+SP:scan SE node: 14 with 4 outgoing link(s). 
+SP:  checking outgoing node 11
+SP:  checking from node 14  to node 11 cost = 14 , m_node_label_cost[from_node =13 ] 14, m_link_genalized_cost_array[link_seq_no = 39] = 4
+, m_link_genalized_cost_array[link_seq_no = 41] = 4
+SP:  checking from node 14  to node 23 cost = 25 , m_node_label_cost[from_node] 21SP:  checking from node 14  to node 
+SP:  checking outgoing node 12
+SP:  checking from node -12  to node 12 cost = 11 , m_node_label_cost[from_node =35 ] 8, m_link_genalized_cost_array[link_seq_no = 99] = 0
+SP:scan SE node: 8 with 5 outgoing link(s). 
+,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 23 current cost:1e+15 new cost 25
+SP: add node 23 new cost:25 into SE List 23
+SP:  checking outgoing node -14
+SP:  checking outgoing node 11 cost = 18 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 15
+SP:  checking from node 14  to node 15 cost = 18 , m_node_label_cost[from_node =13 ] 14, m_link_genalized_cost_array[link_seq_no = 40] = 5
+SP:  checking from node 146  to node 15 cost = 19 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking from node 14  to node -14SP:  updating node: 15 current cost:20 new cost 19
+SP: add node 15 new cost:19 into SE List 15
+SP:  checking outgoing node 23
+SP:  checking from node 14  to node 23 cost = 19 , m_node_label_cost[from_node =13 ] 14, m_link_genalized_cost_array[link_seq_no = 41] = 4
+SP:  checking from node 14  to node 23 cost = 18 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 4
+
+SP:  checking from node 8  to node 6 cost = SP:  updating node: 23 current cost:1e+15 new cost 18
+SP: add node 23 new cost:18 into SE List 23
+ cost = 25 , m_node_label_cost[from_node =13 ] 21, m_link_genalized_cost_array[link_seq_no = 102] = 0
+SP:  checking from node 1411  to node -14 , m_node_label_cost[from_node =7 ] 8, m_link_genalized_cost_array[link_seq_no = 18] = 2
+SP:  checking from node 8  to node 6 cost = 10SP:  checking outgoing node -14
+SP:  checking from node 14  to node -14 cost = 18 , m_node_label_cost[from_node =13 ] 14, m_link_genalized_cost_array[link_seq_no = 102] = 0
+SP:  checking from node 14  to node -14 cost = 14 , m_node_label_cost[from_node] 14 cost = 21 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -14,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -14 current cost:1e+15 new cost 14
+SP: add node -14 new cost:14 into SE List -14
+ current cost:SP:scan SE node: -11 with 1 outgoing link(s). 
+SP:  checking outgoing node 11
+SP:  checking from node -11  to node 11 cost = 141e+15 new cost 21
+SP: add node -14 new cost:21 into SE List -14
+SP:scan SE node:  , m_node_label_cost[from_node] -11 with 1 outgoing link(s). 
+8,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 7
+SP:  checking from node 8  to node 7 cost = 10 , m_node_label_cost[from_node =7 , m_node_label_cost[from_node = ] SP:  checking outgoing node 11
+SP:  checking from node -11  to node 11 cost = 21 , m_node_label_cost[from_node =34 ] 17, m_link_genalized_cost_array[link_seq_no = 97] = 8, m_link_genalized_cost_array[link_seq_no = 19] = 3
+SP:  checking from node 8  to node 34 ] 10, m_link_genalized_cost_array[link_seq_no = 97] = 0
+0
+SP:scan SE node: 24 with 4 outgoing link(s). 
+SP:  checking outgoing node 13
+SP:  checking from node 24  to node 13 cost = 14SP:scan SE node: 24 with 4 outgoing link(s). 
+ , m_node_label_cost[from_node =23 ] 11, m_link_genalized_cost_array[link_seq_no = 73] = SP:  checking outgoing node 74
+ cost = 11 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 7 current cost:1e+15 new cost 13
+SP:  checking from node 24  to node 13 cost = 21 , m_node_label_cost[from_node =1123 ] 21
+SP: add node SP:  checking from node 24  to node 13 cost = 15 , m_node_label_cost[from_node] 7 new cost:11 into SE List , m_link_genalized_cost_array[link_seq_no = 11,m_link_genalized_cost_array[link_seq_no] = 4
+73] = 4
+SP:  checking from node 24  to node 13 cost = 25 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node SP:  checking outgoing node 21
+SP:  checking from node 24  to node 21 cost = 15 , m_node_label_cost[from_node =23 ] 117
+SP:  checking outgoing node 9
+SP:  checking from node 21
+8  to node 9 cost = 11 , m_node_label_cost[from_node =7 ] 8, m_link_genalized_cost_array[link_seq_no = 20] = 10
+SP:  checking from node 8  to node 9 cost = 18 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 10
+, m_link_genalized_cost_array[link_seq_no = 74] = 3
+SP:  checking from node 24  to node 21 cost = 14 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: SP:  checking outgoing node 16
+SP:  checking from node SP:  checking from node 8  to node 16 cost = 18 , m_node_label_cost[from_node =7 ] 8, m_link_genalized_cost_array[link_seq_no = 21] = 5
+SP:  checking from node 8  to node 16 cost = 13 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 16 current cost:14 new cost 13
+SP: add node 16 new cost:13 into SE List 16
+SP:  checking outgoing node -8
+SP:  checking from node 8  to node -8 cost = 13 , m_node_label_cost[from_node =7 ] 8, m_link_genalized_cost_array[link_seq_no = 90] = 0
+SP:  checking from node 8  to node -8 cost = 8 , m_node_label_cost[from_node] 8,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -8 current cost:1e+15 new cost 8
+SP: add node -8 new cost:8 into SE List -8
+SP:scan SE node: -6 with 1 outgoing link(s). 
+SP:  checking outgoing node 6
+SP:  checking from node -6  to node 6 cost = 8 , m_node_label_cost[from_node =29 ] 6, m_link_genalized_cost_array[link_seq_no = 87] = 0
+21SP:scan SE node: -9 with 1 outgoing link(s). 
+SP:  checking outgoing node 9
+SP:  checking from node -9  to node 9 cost = 8 , m_node_label_cost[from_node =32 ] 7, m_link_genalized_cost_array[link_seq_no = 93] = 0
+SP:scan SE node: 15 with 5 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 15  to node 10 cost = 8 , m_node_label_cost[from_node =14 ] 15, m_link_genalized_cost_array[link_seq_no = 42] = 6
+SP:  checking from node 15  to node 10 cost = 21 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 6
+24SP:  checking outgoing node 14
+SP:  checking from node 15  to node   to node 21 cost = 25 , m_node_label_cost[from_node =23 ] 21 current cost:1e+15 new cost 14
+14 cost = 21 , m_node_label_cost[from_node =14 ] 15, m_link_genalized_cost_array[link_seq_no = 43] = 5
+SP:  checking from node 15  to node 14 cost = 20 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 5
+, m_link_genalized_cost_array[link_seq_no = 74] = 3
+SP:  checking from node 24  to node 21 cost = 24 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 21 current cost:1e+15 new cost 24
+SP: add node 21 new cost:14 into SE List SP:  checking outgoing node 19
+SP:  checking from node 15  to node 19 cost = 20 , m_node_label_cost[from_node =14 ] 15, m_link_genalized_cost_array[link_seq_no = 44] = 3
+SP:  checking from node 15  to node 19 cost = 18 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 321
+SP:  checking outgoing node 23
+SP:  checking from node 24  to node 23 cost = 14 , m_node_label_cost[from_node =23 ] 11, m_link_genalized_cost_array[link_seq_no = 75] = 2
+SP:  checking from node 24  to node 23 cost = 13 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 23 current cost:18
+SP:  updating node: 19 current cost:1e+15 new cost 18
+SP: add node 19 new cost:18 into SE List 19
+SP:  checking outgoing node 22
+SP:  checking from node 15  to node 22 cost = 18 , m_node_label_cost[from_node =14 ] 15, m_link_genalized_cost_array[link_seq_no = 45] = 3
+SP:  checking from node 15  to node 22 cost = 18 , m_node_label_cost[from_node] SP: add node 21 new cost:15,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 22 current cost:1e+15 new cost 18
+SP: add node 22 new cost:18 into SE List 22
+SP:  checking outgoing node -15
+SP:  checking from node 15  to node -15 cost = 1824 into SE List 21
+SP:  checking outgoing node 23
+SP:  checking from node 24  to node 23 cost = 24 , m_node_label_cost[from_node =23 ] 21, m_link_genalized_cost_array[link_seq_no = 75] = 2
+SP:  checking from node 24  to node 23 cost = 23 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 23 current cost:25 new cost 23
+SP: add node 23 new cost:23 into SE List 23
+SP:  checking outgoing node -24
+SP:  checking from node 24  to node -24 cost = 23 new cost  , m_node_label_cost[from_node =23 ] 2113
+SP: add node 23 new cost:13, m_link_genalized_cost_array[link_seq_no = 122] = 0
+SP:  checking from node 24  to node -24 cost = 21 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -24 current cost:1e+15 new cost 21
+SP: add node -24 new cost:21 into SE List -24
+SP:scan SE node: -13 with 1 outgoing link(s). 
+SP:  checking outgoing node 13
+SP:  checking from node -13  to node 13 cost =  into SE List 21 , m_node_label_cost[from_node =36 ] 17, m_link_genalized_cost_array[link_seq_no = 101] = 0
+SP:scan SE node: 15 with 5 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 15  to node 10 cost = 21 , m_node_label_cost[from_node =14 ] 22, m_link_genalized_cost_array[link_seq_no = 42] = 6
+SP:  checking from node 15  to node 10 cost = 28 , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 6
+ , m_node_label_cost[from_node =SP:  checking outgoing node 14
+SP:  checking from node 15  to node 14 cost = 2823
+ , m_node_label_cost[from_node =14 ] 22, m_link_genalized_cost_array[link_seq_no = 43] = 5
+SP:  checking from node 15  to node 14 cost = SP:  checking outgoing node -24
+SP:  checking from node 24  to node -24 cost = 1327 , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 19
+SP:  checking from node 15  to node 19 cost = 27 , m_node_label_cost[from_node =14 ] 22, m_link_genalized_cost_array[link_seq_no = 44] = 3
+SP:  checking from node 15  to node 19 cost = 25 , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 3 , m_node_label_cost[from_node =23 ] 11, m_link_genalized_cost_array[link_seq_no = 122
+14 ] 15SP:  checking outgoing node 22
+SP:  checking from node 15  to node 22 cost = 25 , m_node_label_cost[from_node =14 ] 22, m_link_genalized_cost_array[link_seq_no = 45] = 3
+SP:  checking from node 15  to node 22 cost = 25 , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 22 current cost:1e+15 new cost 25
+SP: add node 22 new cost:25 into SE List 22
+SP:  checking outgoing node -15
+SP:  checking from node 15  to node -15 cost = 25 , m_node_label_cost[from_node =14 ] 22, m_link_genalized_cost_array[link_seq_no = 104] = 0
+SP:  checking from node 15, m_link_genalized_cost_array[link_seq_no = 104] = 0
+  to node -15 cost = 22 , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -15 current cost:1e+15 new cost 22
+SP: add node -15 new cost:22 into SE List -15
+SP:scan SE node: -10 with 1 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node -10  to node 10 cost = 22 , m_node_label_cost[from_node =33 ] 16, m_link_genalized_cost_array[link_seq_no = 95] = 0
+SP:  checking from node SP:scan SE node: 20 with 5 outgoing link(s). 
+SP:  checking outgoing node 18
+SP:  checking from node 20  to node 18 cost = 22 , m_node_label_cost[from_node =19 ] 16, m_link_genalized_cost_array[link_seq_no = 15  to node -15 cost = 1559] = 4
+SP:  checking from node 20  to node 18 cost = 20 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -15 current cost:1e+15 new cost 15
+SP: add node -15 new cost: , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 19
+SP:  checking from node 20  to node 19 cost = 20 , m_node_label_cost[from_node =19 ] 16, m_link_genalized_cost_array[link_seq_no = 60] = 4
+SP:  checking from node 20  to node 19 cost = 20 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 21
+SP:  checking from node 20  to node 21 cost = 20 , m_node_label_cost[from_node =19 ] 16, m_link_genalized_cost_array[link_seq_no = 61] = 6
+SP:  checking from node 20  to node 21 cost = 22 , m_node_label_cost[from_node] 1615 into SE List -15
+SP:scan SE node: 16 with ,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node: 21 current cost:24 new cost 22
+SP: add node 21 new cost:22 into SE List 21
+SP:  checking outgoing node 22
+SP:  checking from node 20  to node 22 cost = 22 , m_node_label_cost[from_node =19 ] 16, m_link_genalized_cost_array[link_seq_no = 62] = 5
+SP:  checking from node 20  to node 22 cost = 21 , m_node_label_cost[from_node] ] = 160
+SP:  checking from node 24  to node -24 cost = ,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 22 current cost:25 new cost 21
+SP: add node 22 new cost:21 into SE List 22
+SP:  checking outgoing node -20
+SP:  checking from node 20  to node -20 cost = 21 , m_node_label_cost[from_node =19 ] 16, m_link_genalized_cost_array[link_seq_no = 114] = 0
+SP:  checking from node 20  to node -20 cost = 16 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -20 current cost:1e+15 new cost 16
+SP: add node -20 new cost:16 into SE List -20
+SP:scan SE node: -18 with 1 outgoing link(s). 
+SP:  checking outgoing node 18
+SP:  checking from node -18  to node 18 cost = 1611 , m_node_label_cost[from_node] 11 , m_node_label_cost[from_node =41 ] 12, m_link_genalized_cost_array[link_seq_no = 111] = 0
+SP:scan SE node: 19 with 4 outgoing link(s). 
+SP:  checking outgoing node 15
+SP:  checking from node 19  to node 15 cost = 16 , m_node_label_cost[from_node =18 ] 165 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 16  to node 8 cost = 15, m_link_genalized_cost_array[link_seq_no = 56] = 3
+SP:  checking from node 19  to node 15 cost = 19 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 15 current cost:22 new cost 19
+SP: add node 15 new cost:19 into SE List 15
+ , m_node_label_cost[from_node =15 ] 13SP:  checking outgoing node 17
+SP:  checking from node 19  to node 17 cost = 19 , m_node_label_cost[from_node =18 ] 16,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -24 current cost:1e+15 new cost 11
+, m_link_genalized_cost_array[link_seq_no = 57] = 2
+SP:  checking from node 19  to node 17SP: add node -24 new cost:11 into SE List -24
+SP:scan SE node: -13 with 1 outgoing link(s). 
+, m_link_genalized_cost_array[link_seq_no = 46] = 5
+SP:  checking from node 16  to node 8 cost = 18SP:  checking outgoing node 13
+SP:  checking from node -13  to node 13 cost = 11 , m_node_label_cost[from_node =36 ] 7 , m_node_label_cost[from_node] 13 cost = 18 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 20
+SP:  checking from node 19  to node 20 cost = 18 , m_node_label_cost[from_node =18 ] 16, m_link_genalized_cost_array[link_seq_no = 58] = 4
+SP:  checking from node 19  to node 20 cost = 20 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node -19
+SP:  checking from node 19  to node -19 cost = 20 , m_node_label_cost[from_node =18 ] 16, m_link_genalized_cost_array[link_seq_no = 112] = 0
+SP:  checking from node 19  to node -19, m_link_genalized_cost_array[link_seq_no =  cost = 16 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -19 current cost:1e+15 new cost 16101] = 0
+,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 10
+SP:  checking from node 16  to node 10 cost = 18 , m_node_label_cost[from_node =15 ] 13, m_link_genalized_cost_array[link_seq_no = 47] = 4
+
+SP: add node -19 new cost:16 into SE List -19
+SP:scan SE node: 15 with 5 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 15  to node 10 cost = 16 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 42] = 6
+SP:  checking from node 15  to node 10 cost = 25 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 14
+SP:  checking from node 15  to node 14 cost = 25 , m_node_label_cost[from_node =14 ] 19SP:  checking from node 16  to node 10 cost = 17 , m_node_label_cost[from_node] 13, m_link_genalized_cost_array[link_seq_no = 43] = 5
+SP:  checking from node 15  to node 14 cost = 24 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 19
+SP:  checking from node 15  to node 19 cost = 24 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 44] = 3
+SP:  checking from node 15  to node ,m_link_genalized_cost_array[link_seq_no] = 419 cost = 22 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 22
+SP:  checking from node 15  to node 22 cost = 22 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 45] = 3
+SP:  checking from node 15  to node 22 cost = 22 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node -15
+SP:  checking from node 15  to node -15 cost = 22 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 104] = 0
+SP:  checking from node 15  to node -15 cost = 19 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -15 current cost:22 new cost 19
+SP: add node -15 new cost:19 into SE List -15
+SP:scan SE node: -17 with 1 outgoing link(s). 
+SP:  checking outgoing node 17
+SP:  checking from node -17  to node 17 cost = 
+19 , m_node_label_cost[from_node =40 ] 14, m_link_genalized_cost_array[link_seq_no = 109] = 0
+SP:scan SE node: 23 with 4 outgoing link(s). 
+SP:  checking outgoing node 14
+SP:  checking from node 23  to node 14 cost = 19 , m_node_label_cost[from_node =22 ] 23, m_link_genalized_cost_array[link_seq_no = 70] = 4
+SP:  checking from node 23  to node 14 cost = 27 , m_node_label_cost[from_node] 23,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 22
+SP:  checking from node 23  to node 22 cost = 27 , m_node_label_cost[from_node =22 ] 23, m_link_genalized_cost_array[link_seq_no = 71] = 4
+SP:  checking from node 23  to node 22 cost = 27SP:  checking outgoing node  , m_node_label_cost[from_node] 23,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 24
+SP:  checking from node 23  to node 2417
+SP:  checking from node 16  to node 17 cost = 17 , m_node_label_cost[from_node = cost = 27 , m_node_label_cost[from_node =22 ] 23, m_link_genalized_cost_array[link_seq_no = 72] = 2
+SP:  checking from node 23SP:scan SE node: 15  to node 24 cost = 25 ] 13, m_link_genalized_cost_array[link_seq_no = 48] = 2
+SP:  checking from node 16  to node 17 cost = 158 with  , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 2
+ , m_node_label_cost[from_node] 5 outgoing link(s). 
+SP:  checking outgoing node 6
+SP:  checking from node 8  to node 23,m_link_genalized_cost_array[link_seq_no] = 6 cost = 11 , m_node_label_cost[from_node =SP:  updating node: 17 current cost:18 new cost 15
+SP: add node 17 new cost:152
+SP:  checking outgoing node -23
+SP:  checking from node 7 ] 23  to node -23 cost = 25 , m_node_label_cost[from_node =22 ] 23, m_link_genalized_cost_array[link_seq_no = 120] = 0 into SE List 17
+SP:  checking outgoing node 18
+SP:  checking from node 16  to node 18 cost = 
+SP:  checking from node 231215 , m_node_label_cost[from_node =15 ] 13  to node -23 cost = 23 , m_node_label_cost[from_node] 23,m_link_genalized_cost_array[link_seq_no] = 0, m_link_genalized_cost_array[link_seq_no = 18] = 2
+SP:  checking from node 8  to node 6 cost = 14 , m_node_label_cost[from_node] 12
+,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: -23, m_link_genalized_cost_array[link_seq_no = 49] = 3
+SP:  checking from node SP:  checking outgoing node 7
+SP:  checking from node 8  to node 7 cost = 14 , m_node_label_cost[from_node =7 ] 1216  to node 18 cost = 16 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 18 current cost:1e+15 new cost 16
+SP: add node , m_link_genalized_cost_array[link_seq_no = 19] = 3
+ current cost:1e+15 new cost 23
+SP: add node -23SP:  checking from node 8  to node 7 cost = 1518 new cost:16 new cost:23 into SE List -23
+SP:scan SE node: -14 with 1 outgoing link(s). 
+SP:  checking outgoing node 14 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node:  into SE List 18
+7 current cost:1e+15 new cost 15
+SP: add node 7 new cost:
+SP:  checking outgoing node -16
+15 into SE List 7
+SP:  checking from node -14  to node 14 cost = 23 , m_node_label_cost[from_node =SP:  checking outgoing node 9
+SP:  checking from node 8  to node 9 cost = 15 , m_node_label_cost[from_node =7 ] 12, m_link_genalized_cost_array[link_seq_no = 20] = 10
+SP:  checking from node 8  to node 37 ] 219 cost = 22, m_link_genalized_cost_array[link_seq_no = 103] = 0 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 10
+SP:  checking outgoing node 16
+SP:  checking from node 8  to node 16 cost = SP:  checking from node 
+SP:scan SE node: 21 with 4 outgoing link(s). 
+22SP:  checking outgoing node  , m_node_label_cost[from_node =7 ] 12, m_link_genalized_cost_array[link_seq_no = 21] = 5
+SP:  checking from node 20
+SP:  checking from node 8  to node 16 cost = 21  to node 20 cost = 23 , m_node_label_cost[from_node =20 ] 22, m_link_genalized_cost_array[link_seq_no = 63] = 6
+SP:  checking from node 2116  to node -16 cost = 16 , m_node_label_cost[from_node =1517  to node 20 cost = 28 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  updating node: 16 current cost:18 new cost 17 ] 13
+ , m_node_label_cost[from_node] 22,m_link_genalized_cost_array[link_seq_no] = 6
+SP: add node 16 new cost:17 into SE List 16
+SP:  checking outgoing node 22
+, m_link_genalized_cost_array[link_seq_no = 106] = 0
+SP:  checking outgoing node SP:  checking from node -8
+SP:  checking from node 8  to node -8 cost = 17 , m_node_label_cost[from_node =7 ] SP:  checking from node 16  to node -16 cost = 13 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 0
+2112  to node 22 cost = 28 , m_node_label_cost[from_node =20 ] 22SP:  updating node: , m_link_genalized_cost_array[link_seq_no = 90] = 0, m_link_genalized_cost_array[link_seq_no = 64] = 2
+SP:  checking from node 21  to node 22 cost = -16 current cost:
+SP:  checking from node 8  to node 24 , m_node_label_cost[from_node] -8 cost = 12 , m_node_label_cost[from_node] 12,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -8 current cost:1e+15 new cost 12
+SP: add node -8 new cost:12 into SE List -8
+221e+15 new cost 13
+SP: add node -16 new cost:13 into SE List SP:scan SE node: -6 with 1 outgoing link(s). ,m_link_genalized_cost_array[link_seq_no] = 2
+
+-16
+SP:  checking outgoing node 24
+SP:  checking from node 21  to node 24 cost = 24SP:scan SE node: 17 with 4 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 17  to node 10 cost = 13 , m_node_label_cost[from_node =SP:  checking outgoing node 6
+SP:  checking from node  , m_node_label_cost[from_node =20 ] 22, m_link_genalized_cost_array[link_seq_no = 65] = 3
+-6  to node 6 cost = 12 , m_node_label_cost[from_node =29 ] 1016 ] 15SP:  checking from node 21  to node , m_link_genalized_cost_array[link_seq_no = 87] = 0
+, m_link_genalized_cost_array[link_seq_no = 50] = 8
+SP:  checking from node 17SP:scan SE node: -9 with 1 outgoing link(s). 
+SP:  checking outgoing node 9
+24 cost = 25 , m_node_label_cost[from_node] SP:  checking from node -9  to node 9 cost = 12 , m_node_label_cost[from_node =32 ] 11, m_link_genalized_cost_array[link_seq_no = 93] = 0
+SP:scan SE node: 15 with 5 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 15  to node 10  to node 10 cost = 23 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 8
+22,m_link_genalized_cost_array[link_seq_no] = 3
+ cost = 12 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 42] = 6
+SP:  checking from node 15  to node 10 cost = 25SP:  checking outgoing node -21
+SP:  checking from node  , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 21  to node -21 cost = 25 , m_node_label_cost[from_node =20 ] SP:  checking outgoing node 1416
+SP:  checking from node 2217  to node 16 cost = 23 , m_node_label_cost[from_node =16 ] 15, m_link_genalized_cost_array[link_seq_no = 51] = 2
+
+SP:  checking from node 15, m_link_genalized_cost_array[link_seq_no = 116] = 0
+SP:  checking from node 21  to node -21 cost = 22 , m_node_label_cost[from_node] 22SP:  checking from node 17  to node ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -21 current cost:1e+15  to node 14 cost = 25 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 43] = 5
+SP:  checking from node 15  to node 14 cost = 24 , m_node_label_cost[from_node] 19 new cost 22
+SP: add node -21 new cost:22 into SE List -21
+SP:scan SE node: -24 with 1,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 19
+SP:  checking from node 15  to node 19 cost = 24 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 44] = 3
+SP:  checking from node 15  to node 19 cost = 22 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 19 outgoing link(s). 
+SP:  checking outgoing node 24
+SP:  checking from node -24  to node 24 cost = 22 , m_node_label_cost[from_node =47 ] 21 current cost:1e+15 new cost 22
+SP: add node 16 cost = 17 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 2
+19 new cost:22 into SE List 19
+SP:  checking outgoing node 22
+, m_link_genalized_cost_array[link_seq_no = SP:  checking from node 15  to node 22 cost = 22123] = 0
+SP:  checking outgoing node 19
+SP:  checking from node 17  to node SP:scan SE node:  , m_node_label_cost[from_node =14 ] 1919 cost = 17 , m_node_label_cost[from_node =16 ] 15, m_link_genalized_cost_array[link_seq_no = 52] = 2
+SP:  checking from node 17  to node 22 with 5 outgoing link(s). 
+SP:  checking outgoing node 15
+, m_link_genalized_cost_array[link_seq_no = 45] = 3
+SP:  checking from node 22  to node 15 cost = 22 , m_node_label_cost[from_node =21SP:  checking from node 15  to node 22 cost = 2219 cost = 17 , m_node_label_cost[from_node] 15 ] 21 , m_node_label_cost[from_node] , m_link_genalized_cost_array[link_seq_no = 66] = 3
+SP:  checking from node 22  to node 15 cost = 24 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 3
+,m_link_genalized_cost_array[link_seq_no] = 19,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 22 current cost:1e+15 new cost 22
+SP: add node 22 new cost:22 into SE List 22
+SP:  checking outgoing node -15
+SP:  checking outgoing node 20
+SP:  checking from node 22  to node 20 cost = 24 , m_node_label_cost[from_node =21 ] 21SP:  checking from node 15  to node -15 cost = 22 , m_node_label_cost[from_node =14 ] 19, m_link_genalized_cost_array[link_seq_no = 104] = 0
+SP:  checking from node 15  to node -15 cost = 19 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 0
+, m_link_genalized_cost_array[link_seq_no = 67] = 5
+SP:  checking from node 22  to node 2
+SP:  updating node: 19 current cost:18 new cost 17
+SP: add node 19 new cost:17 into SE List 19
+SP:  updating node: -15 current cost:1e+15 new cost 19
+20 cost = 26 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node -17
+SP:  checking from node 17  to node -17 cost = 17 , m_node_label_cost[from_node =16 ] 15, m_link_genalized_cost_array[link_seq_no = 108] = 0
+SP:  checking from node 17  to node -17 cost = 15 , m_node_label_cost[from_node] 15SP:  checking outgoing node 21
+SP:  checking from node 22  to node 21 cost = 26 , m_node_label_cost[from_node =21 ] 21,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -17 current cost:1e+15 new cost 15
+SP: add node -17 new cost:15 into SE List -17, m_link_genalized_cost_array[link_seq_no = SP: add node -15 new cost:19 into SE List -15
+68] = 2
+SP:  checking from node 22  to node 21
+SP:scan SE node: -10 with 1 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node -10  to node 10 cost = 15 , m_node_label_cost[from_node =33 ] 10, m_link_genalized_cost_array[link_seq_no = 95] = 0
+SP:scan SE node: 23 with 4 outgoing link(s).  cost = 23 , m_node_label_cost[from_node] 
+21,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 23
+SP:  checking from node 22  to node 23 cost = 23 , m_node_label_cost[from_node =21 ] 21, m_link_genalized_cost_array[link_seq_no = SP:  checking outgoing node 14
+SP:  checking from node 69] = 4
+SP:  checking from node 22  to node 23 cost = 25 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node -22
+SP:  checking from node 22  to node -22 cost = 25 , m_node_label_cost[from_node =21 ] 21, m_link_genalized_cost_array[link_seq_no = 118] = 0
+SP:  checking from node 22  to node -22 cost = 21 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -22 current cost:1e+15 new cost 21
+SP: add node -22 new cost:21 into SE List -22
+SP:scan SE node: -15 with 1 outgoing link(s). 
+SP:  checking outgoing node 15
+SP:  checking from node -15  to node 15 cost = 21 , m_node_label_cost[from_node =38 ] 19, m_link_genalized_cost_array[link_seq_no = 105] = 0SP:scan SE node: 16
+SP:scan SE node: -20 with 1 outgoing link(s). 
+SP:  checking outgoing node 20
+SP:  checking from node -20  to node 20 cost = 21 , m_node_label_cost[from_node =43 ] 16, m_link_genalized_cost_array[link_seq_no = 115] = 0
+SP:scan SE node: -19 with 1 outgoing link(s). 
+SP:  checking outgoing node 19
+SP:  checking from node -19  to node 19 cost = 21 , m_node_label_cost[from_node =42 ] 16, m_link_genalized_cost_array[link_seq_no = 113] = 0
+SP:scan SE node: -23 with 1 outgoing link(s). 
+SP:  checking outgoing node 23
+SP:  checking from node -23  to node 23 cost = 21 , m_node_label_cost[from_node =46 ] 23, m_link_genalized_cost_array[link_seq_no = 121] = 0
+SP:scan SE node: -21 with 1 outgoing link(s). 
+SP:  checking outgoing node 21
+SP:  checking from node -21  to node 21 with 5 cost = 21 , m_node_label_cost[from_node =44 ] 22, m_link_genalized_cost_array[link_seq_no = 117] = 0
+SP:scan SE node: -22 with 1 outgoing link(s). 
+SP:  checking outgoing node 22
+SP:  checking from node -22  to node 22 cost = 21 , m_node_label_cost[from_node =45 ] 21, m_link_genalized_cost_array[link_seq_no = 119] = 0
+SPtree at iteration k = 0 origin node: -2
+SP node: 1 label cost = 6, node_pred_id = 2
+SP node: 2 label cost = 0, node_pred_id = -2
+SP node: 3 label cost = 10, node_pred_id = 1
+SP node: 4 label cost = 11, node_pred_id = 5
+SP node: 5 label cost = 9, node_pred_id = 6
+SP node: 6 label cost = 5, node_pred_id = 2
+SP node: 723 label cost = 10, node_pred_id = 8
+SP node: 8 label cost = 7, node_pred_id = 6
+SP node: 9 label cost = 14, node_pred_id = 5
+SP node: 10 label cost = 16, node_pred_id =   to node 14 cost = 15 , m_node_label_cost[from_node =22 ] 14 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 1616
+SP node: 11 label cost = , m_link_genalized_cost_array[link_seq_no = 70] = 4
+SP:  checking from node 23  to node 14 cost = 18 , m_node_label_cost[from_node] 14  to node 8 cost = 19 , m_node_label_cost[from_node =15 ] 17, m_link_genalized_cost_array[link_seq_no = 46] = 5
+SP:  checking from node 16  to node 8 cost = 22 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 517, node_pred_id = 4
+SP node: 12 label cost = 14, node_pred_id = 3
+SP node: 13 label cost = 17, node_pred_id = 12
+SP node: 14 label cost = 21, node_pred_id = 11
+SP node: 15 label cost = 19, node_pred_id = 19
+SP node: 16 label cost = 12, node_pred_id = 8
+SP node: 17 label cost = 14, node_pred_id = 16
+SP:  checking outgoing node 10
+SP:  checking from node 16  to node 10 cost = 22 , m_node_label_cost[from_node =15 ] 17, m_link_genalized_cost_array[link_seq_no = 
+SP node: 18 label cost = 47] = 4
+SP:  checking from node 16  to node 10 cost = 12, node_pred_id = 7
+SP node: 19 label cost = 16, node_pred_id = 17
+SP node: 20 label cost = 16, node_pred_id = 18
+SP node: 21 label cost = 22, node_pred_id = 20
+SP node: 22,m_link_genalized_cost_array[link_seq_no] = 21 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 17
+SP:  checking from node 16  to node 17 cost = 21 , m_node_label_cost[from_node =15 ] 17, m_link_genalized_cost_array[link_seq_no = 48] = 4
+ label cost = 21, node_pred_id = 20SP:  checking outgoing node 22
+SP:  checking from node 23  to node 22 cost = 
+SP node: 2
+SP:  checking from node 16  to node 17 cost = 18 , m_node_label_cost[from_node =22 ] 14, m_link_genalized_cost_array[link_seq_no = 71] = 4
+SP:  checking from node 23  to node 222319 , m_node_label_cost[from_node] 17 label cost = 23, node_pred_id = 24
+SP node: 24 label cost = 21, node_pred_id = 13
+SP node: -1 label cost = 6, node_pred_id = 1
+,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 17 current cost:22 new cost 19
+SP: add node  cost = 18SP node: -2 label cost = 17 new cost:19 into SE List 17
+SP:  checking outgoing node 18
+0, node_pred_id = -1
+SP:  checking from node 16  to node 18 cost = 19 , m_node_label_cost[from_node =15 ] 17, m_link_genalized_cost_array[link_seq_no = 49] = 3
+ , m_node_label_cost[from_node] SP node: -3 label cost = 10, node_pred_id = 3
+14,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking from node 16  to node 18 cost = 20SP:  checking outgoing node 24
+ , m_node_label_cost[from_node] 17SP node: SP:  checking from node 23  to node 24 cost = 18 , m_node_label_cost[from_node =22 ] 14, m_link_genalized_cost_array[link_seq_no = 72] = 2
+SP:  checking from node -4 label cost = 11, node_pred_id = 4
+23  to node 24 cost = 16SP node:  , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node ,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 18 current cost:1e+15 new cost 20
+-5 label cost = 9, node_pred_id = 5
+SP node: -6 label cost = 5, node_pred_id = 6
+SP node: -7 label cost = 10, node_pred_id = 7
+SP node: -8 label cost = 7, node_pred_id = 8
+SP node: -9 label cost = 14, node_pred_id = 9
+SP: add node SP node: -10 label cost = 16, node_pred_id = 10
+SP node: -11 label cost = 17, node_pred_id = 11
+SP node: -12 label cost = 14-23
+SP:  checking from node 23  to node -23 cost = 1618 new cost:20 into SE List 18
+, node_pred_id = 12
+SP node: -13 label cost = 17, node_pred_id = 13
+SP node:  , m_node_label_cost[from_node =22 ] 14, m_link_genalized_cost_array[link_seq_no = 120] = 0
+-14 label cost = 21, node_pred_id = SP:  checking outgoing node -16
+SP:  checking from node 16  to node -16 cost = 2014
+SP node: -15SP:  checking from node 23  to node -23 cost = 14 , m_node_label_cost[from_node] 14 , m_node_label_cost[from_node =15 ] 17, m_link_genalized_cost_array[link_seq_no = 106] = 0
+SP:  checking from node 16  to node -16 cost = 17 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -16 current cost:1e+15 new cost 17
+SP: add node -16 new cost:,m_link_genalized_cost_array[link_seq_no] = 0
+17 into SE List -16
+SP:  updating node: -23 current cost:1e+15 new cost 14
+SP: add node -23 new cost:14 into SE List -23
+SP:scan SE node: SP:scan SE node: -1417 with 4 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node 17  to node 10 cost = 17 , m_node_label_cost[from_node =16 ]  with 1 outgoing link(s). 
+SP:  checking outgoing node 1419, m_link_genalized_cost_array[link_seq_no = 50 label cost = 19
+SP:  checking from node -14] = 8
+SP:  checking from node 17  to node 10 cost = 27 , m_node_label_cost[from_node] 19, node_pred_id = 15
+SP node: -16,m_link_genalized_cost_array[link_seq_no] = 8
+SP:  checking outgoing node 16
+SP:  checking from node 17  to node 16 cost = 27 , m_node_label_cost[from_node =16 ] 19  to node 14 cost = 14 label cost = 12, node_pred_id = , m_link_genalized_cost_array[link_seq_no = 51] = 2
+SP:  checking from node 17  to node 16 , m_node_label_cost[from_node =37 ] 10, m_link_genalized_cost_array[link_seq_no = 103] = 0
+ cost = 21 , m_node_label_cost[from_node] 19SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+,m_link_genalized_cost_array[link_seq_no] = SP:  checking from node -2  to node 2 cost = 14 , m_node_label_cost[from_node =25 ] 1116
+SP node: -17 label cost = 14, node_pred_id = 17
+SP node: -18 label cost = , m_link_genalized_cost_array[link_seq_no = 79] = 0
+SP:scan SE node: 24 with 4 outgoing link(s). 
+SP:  checking outgoing node 13
+SP:  checking from node 24  to node 13 cost = 14 , m_node_label_cost[from_node =23 ] 15, m_link_genalized_cost_array[link_seq_no = 73] = 4
+12SP:  checking from node 24  to node 13 cost = 19 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 21
+SP:  checking from node 24  to node 21 cost = 19 , m_node_label_cost[from_node =232, node_pred_id = 18
+SP node: -19 label cost = 16 ] 15, m_link_genalized_cost_array[link_seq_no = 
+SP:  checking outgoing node 19
+SP:  checking from node 17  to node 19 cost = 21 , m_node_label_cost[from_node =16 ] 1974] = 3
+, m_link_genalized_cost_array[link_seq_no = 52] = 2
+SP:  checking from node 24, node_pred_id = 19
+  to node 21 cost = 18 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  updating node: 21 current cost:1e+15 new cost 18
+SP:  checking from node 17  to node 19 cost = 21 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 2
+SP: add node 21 new cost:18 into SE List 21
+SP:  checking outgoing node 23
+SP:  checking from node SP:  updating node: 24  to node 23 cost = 18 , m_node_label_cost[from_node =23 ] 1519, m_link_genalized_cost_array[link_seq_no = 75] = 2
+SP:  checking from node  current cost:22 new cost 21
+SP: add node 19 new cost:24  to node 23 cost = 17 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node -24
+SP:  checking from node 24  to node -24 cost = 17 , m_node_label_cost[from_node =23 ] 15SP node: -20 label cost = 16, node_pred_id = 20
+, m_link_genalized_cost_array[link_seq_no = 122] = 0
+SP:  checking from node 24  to node -24 cost = 15 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -24 current cost:1e+15 new cost 15
+SP: add node -24 new cost:15SP node: -21 label cost = 22, node_pred_id = 21 into SE List 19
+SP:  checking outgoing node -17
+ into SE List -24
+21
+SP node: -22 label cost = 21, node_pred_id = 22
+SP node: -23 label cost = 23, node_pred_id = 23
+SP node: SP:scan SE node: -13 with 1SP:  checking from node 17  to node -17 outgoing link(s). 
+ cost = 21 , m_node_label_cost[from_node =16 ] 19, m_link_genalized_cost_array[link_seq_no = 108] = 0
+SP:  checking outgoing node 13
+-24 label cost = 21, node_pred_id = 24
+SP:  checking from node 17  to node -17 cost = 19 , m_node_label_cost[from_node] 19,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -17 current cost:1e+15 new cost 19
+SP: add node -17 new cost:19 into SE List -17
+SP:scan SE node: -10 with 1 outgoing link(s). 
+SP:  checking outgoing node 10
+SP:  checking from node -10  to node 10 cost = 19 , m_node_label_cost[from_node =33 ] 14, m_link_genalized_cost_array[link_seq_no = 95] = 0
+SP:scan SE node: 23 with 4 outgoing link(s). 
+SP:  checking from node -13  to node 13 cost = 15 , m_node_label_cost[from_node =36 ] 11, m_link_genalized_cost_array[link_seq_no = 101] = 0
+SP:scan SE node: 7 with 3 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 7  to node 8 cost = 15 , m_node_label_cost[from_node =6 ] 11, m_link_genalized_cost_array[link_seq_no = 16] = 3
+SP:  checking from node 7  to node 8 cost = 14 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 18
+SP:  checking from node 7  to node 18 cost = 14 , m_node_label_cost[from_node =6 ] 11, m_link_genalized_cost_array[link_seq_no = 17] = 2
+SP:  checking from node 7  to node 18 cost = 13SP:  checking outgoing node 14 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  updating node: 18 current cost:16 new cost 13
+SP: add node 18 new cost:13 into SE List 18
+SP:  checking outgoing node -7
+SP:  checking from node 7  to node -7 cost = 13 , m_node_label_cost[from_node =6 ] 11, m_link_genalized_cost_array[link_seq_no = 88] = 0
+SP:  checking from node 7  to node -7 cost = 11 , m_node_label_cost[from_node] 11,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -7 current cost:1e+15 new cost 11
+SP: add node -7 new cost:11 into SE List -7
+SP:scan SE node: -8 with 1 outgoing link(s). 
+
+SP:  checking from node 23  to node 14 cost = 19 , m_node_label_cost[from_node =22 ] 13, m_link_genalized_cost_array[link_seq_no = 70] = 4
+SP:  checking from node 23  to node 14 cost = 17 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 22
+SP:  checking from node 23  to node 22 cost = 17 , m_node_label_cost[from_node =22 ] 13, m_link_genalized_cost_array[link_seq_no = 71] = 4
+SP:  checking from node 23  to node 22 cost = 17SP:  checking outgoing node 8
+SP:  checking from node -8  to node 8 cost = 11 , m_node_label_cost[from_node =31 ] 8, m_link_genalized_cost_array[link_seq_no = 91] = 0
+SP:scan SE node: 19 with 4 outgoing link(s). 
+SP:  checking outgoing node 15
+SP:  checking from node 19  to node 15 cost = 11 , m_node_label_cost[from_node =18 ] 17, m_link_genalized_cost_array[link_seq_no = 56] = 3
+SP:  checking from node 19  to node 15 cost = 20 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 17
+SP:  checking from node 19  to node 17 cost = 20 , m_node_label_cost[from_node =18 ] 17, m_link_genalized_cost_array[link_seq_no = 57] = 2
+SP:  checking from node 19 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 22 current cost:22 new cost 17
+SP: add node 22 new cost:17 into SE List 22
+SP:  checking outgoing node 24
+SP:  checking from node 23  to node 24 cost = 17 , m_node_label_cost[from_node =22 ] 13, m_link_genalized_cost_array[link_seq_no = 72] = 2
+SP:  checking from node 23  to node 24 cost = 15 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node -23
+SP:  checking from node 23  to node -23 cost = 15 , m_node_label_cost[from_node =22 ] 13, m_link_genalized_cost_array[link_seq_no = 120] = 0
+SP:  checking from node 23  to node -23 cost = 13 , m_node_label_cost[from_node] 13,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -23  to node  current cost:1e+15 new cost 13
+SP: add node -23 new cost:13 into SE List -23
+SP:scan SE node: -14 with 1 outgoing link(s). 
+17SP:  checking outgoing node 14
+SP:  checking from node -14  to node 14 cost = 13 cost =  , m_node_label_cost[from_node =37 ] 1419, m_link_genalized_cost_array[link_seq_no = 103] = 0
+ , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 2SP:scan SE node: 21 with 4 outgoing link(s). 
+
+SP:  checking outgoing node 20
+SP:  checking from node 21  to node 20 cost = SP:  checking outgoing node 20
+SP:  checking from node 13 , m_node_label_cost[from_node =20 ] 14, m_link_genalized_cost_array[link_seq_no = 63] = 19  to node 6
+SP:  checking from node 21  to node 20 cost = 2020 cost =  , m_node_label_cost[from_node] 1419,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  updating node: 20 current cost:1e+15 new cost  , m_node_label_cost[from_node =18 ] 20
+SP: add node 20 new cost:1720 into SE List 20
+, m_link_genalized_cost_array[link_seq_no = 58] = SP:  checking outgoing node 22
+SP:  checking from node 21  to node 22 cost = 204 , m_node_label_cost[from_node =20 ] 
+14SP:  checking from node 19  to node 20 cost = 21, m_link_genalized_cost_array[link_seq_no = 64] = 2
+ , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = SP:  checking from node 21  to node 22 cost = 16 , m_node_label_cost[from_node] 4
+SP:  updating node: 20 current cost:141e+15 new cost ,m_link_genalized_cost_array[link_seq_no] = 21
+2
+SP:  updating node: 22 current cost:SP: add node 17 new cost 20 new cost:21 into SE List 16
+SP: add node 22 new cost:20
+16 into SE List 22
+SP:  checking outgoing node -19
+SP:  checking outgoing node 24
+SP:  checking from node 21  to node 24 cost = 16 , m_node_label_cost[from_node =20 ] 14, m_link_genalized_cost_array[link_seq_no = SP:  checking from node 19  to node -19 cost = 2165] = 3
+ , m_node_label_cost[from_node =18 ] 17SP:  checking from node 21  to node 24 cost = 17 , m_node_label_cost[from_node] 14,m_link_genalized_cost_array[link_seq_no] = 3
+, m_link_genalized_cost_array[link_seq_no = 112] = SP:  checking outgoing node -21
+SP:  checking from node 21  to node -21 cost = 170
+ , m_node_label_cost[from_node =SP:  checking from node 20 ] 19  to node -19 cost = 1714, m_link_genalized_cost_array[link_seq_no = 116] = 0 , m_node_label_cost[from_node] 17
+SP:  checking from node 21  to node -21 cost = 14,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node:  , m_node_label_cost[from_node] 14-19 current cost:1e+15 new cost 17
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -21 current cost:1e+15 new cost 14
+SP: add node -21 new cost:SP: add node -19 new cost:17 into SE List -19
+SP:scan SE node: 2214 with  into SE List 5-21
+SP:scan SE node: -24 with 1 outgoing link(s). 
+ outgoing link(s). 
+SP:  checking outgoing node SP:  checking outgoing node 24
+SP:  checking from node -24  to node 24 cost = 1415
+SP:  checking from node 22  to node 15 cost = 17 , m_node_label_cost[from_node =47 ] 11, m_link_genalized_cost_array[link_seq_no = 123] = 0
+ , m_node_label_cost[from_node =21 ] SP:scan SE node: 7 with 3 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node 7  to node 8 cost = 14 , m_node_label_cost[from_node =6 ] 1815, m_link_genalized_cost_array[link_seq_no = 66] = 3
+SP:  checking from node 22  to node 15 cost = 21, m_link_genalized_cost_array[link_seq_no = 16] = 3
+ , m_node_label_cost[from_node] 18SP:  checking from node 7  to node 8 cost = 18,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 20
+SP:  checking from node 22  to node 20 cost = 21 , m_node_label_cost[from_node] 15 , m_node_label_cost[from_node =21 ] 18, m_link_genalized_cost_array[link_seq_no = 67] = 5
+,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 18
+SP:  checking from node 7  to node 18 cost = 18SP:  checking from node 22  to node 20 cost = 23 , m_node_label_cost[from_node] 18,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node 21
+SP:  checking from node 22  to node 21 cost = 23 , m_node_label_cost[from_node =21 ] 18 , m_node_label_cost[from_node =6 ] 15, m_link_genalized_cost_array[link_seq_no = 17] = 2
+, m_link_genalized_cost_array[link_seq_no = 68] = 2SP:  checking from node 7  to node 18 cost = 
+SP:  checking from node 22  to node 21 cost = 20 , m_node_label_cost[from_node] 17 , m_node_label_cost[from_node] 1518,m_link_genalized_cost_array[link_seq_no] = 2
+,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 23
+SP:  checking from node 22  to node 23 cost = 20SP:  updating node: 18 current cost:20 new cost 17
+SP: add node 18 new cost:17 into SE List 18
+ , m_node_label_cost[from_node =21 ] 18, m_link_genalized_cost_array[link_seq_no = 69] = 4
+SP:  checking from node 22  to node 23 cost = 22 , m_node_label_cost[from_node] 18SP:  checking outgoing node ,m_link_genalized_cost_array[link_seq_no] = 4
+-7SP:  checking outgoing node -22
+SP:  checking from node 22  to node -22 cost = 22
+SP:  checking from node 7  to node -7 cost =  , m_node_label_cost[from_node =21 ] 1817, m_link_genalized_cost_array[link_seq_no = 118] = 0
+ , m_node_label_cost[from_node =SP:  checking from node 22  to node -22 cost = 186 ] 15 , m_node_label_cost[from_node] 18, m_link_genalized_cost_array[link_seq_no = 88] = 0
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -22 current cost:1e+15 new cost 18
+SP:  checking from node 7  to node -7 cost = 15SP: add node -22 new cost:18 , m_node_label_cost[from_node] 15 into SE List ,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -7 current cost:1e+15 new cost 15
+SP: add node -7 new cost:-22
+SP:scan SE node: -15 with 15 into SE List -7
+1 outgoing link(s). 
+SP:scan SE node: -8 with 1 outgoing link(s). 
+SP:  checking outgoing node 8
+SP:  checking from node -8  to node 8 cost = 15 , m_node_label_cost[from_node =31 ] 12SP:  checking outgoing node 15
+SP:  checking from node , m_link_genalized_cost_array[link_seq_no = 91] = 0
+-15  to node 15 cost = 18SP:scan SE node:  , m_node_label_cost[from_node =38 ] 1519 with 4 outgoing link(s). 
+SP:  checking outgoing node 15
+SP:  checking from node 19  to node 15 cost = 15 , m_node_label_cost[from_node =18 ] 21, m_link_genalized_cost_array[link_seq_no = , m_link_genalized_cost_array[link_seq_no = 105] = 0
+56] = 3
+SP:  checking from node 19  to node 15 cost = 24 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 3
+SP:scan SE node: 18 with 4 outgoing link(s). 
+SP:  checking outgoing node 17
+SP:  checking from node 19  to node 17 cost = 24 , m_node_label_cost[from_node =18 ] 21SP:  checking outgoing node 7
+SP:  checking from node 18  to node 7 cost = 18, m_link_genalized_cost_array[link_seq_no = 57] = 2
+ , m_node_label_cost[from_node =17 ] 13SP:  checking from node 19  to node 17 cost = 23 , m_node_label_cost[from_node] 21, m_link_genalized_cost_array[link_seq_no = 53] = 2
+SP:  checking from node 18  to node 7 cost = 15,m_link_genalized_cost_array[link_seq_no] = 2 , m_node_label_cost[from_node] 13
+SP:  checking outgoing node 20
+SP:  checking from node 19  to node 20 cost = 23 , m_node_label_cost[from_node =18 ] 21,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 16
+SP:  checking from node 18  to node 16 cost = 15 , m_node_label_cost[from_node =17 ] 13, m_link_genalized_cost_array[link_seq_no = 58] = 4
+, m_link_genalized_cost_array[link_seq_no = 54] = 3
+SP:  checking from node 19  to node 20 cost = 25 , m_node_label_cost[from_node] 21SP:  checking from node 18  to node 16 cost = ,m_link_genalized_cost_array[link_seq_no] = 4
+16 , m_node_label_cost[from_node] 13SP:  checking outgoing node -19
+SP:  checking from node 19  to node -19 cost = 25,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 20
+ , m_node_label_cost[from_node =18 ] 21, m_link_genalized_cost_array[link_seq_no = 112] = 0
+SP:  checking from node 18  to node 20 cost = 16SP:  checking from node 19  to node -19 cost = 21 , m_node_label_cost[from_node =17 ] 13 , m_node_label_cost[from_node] 21,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -19, m_link_genalized_cost_array[link_seq_no = 55] = 4
+SP:  checking from node 18  to node 20 cost = 17 current cost:1e+15 new cost 21
+SP: add node -19 new cost:21 into SE List -19
+ , m_node_label_cost[from_node] 13SP:scan SE node: 22 with 5 outgoing link(s). 
+,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  updating node: 20 current cost:21 new cost 17
+SP: add node 20 new cost:17 into SE List 20
+SP:  checking outgoing node 15
+SP:  checking from node 22  to node 15 cost = SP:  checking outgoing node -18
+SP:  checking from node 21 , m_node_label_cost[from_node =21 ] 18  to node -18 cost = 17 , m_node_label_cost[from_node =17 ] 13, m_link_genalized_cost_array[link_seq_no = 110] = 0
+16SP:  checking from node 18  to node -18 cost = 13 , m_node_label_cost[from_node] , m_link_genalized_cost_array[link_seq_no = 66] = 3
+SP:  checking from node 22  to node 15 cost = 19 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node 20
+SP:  checking from node 22  to node 20 cost = 1319 , m_node_label_cost[from_node =21 ] 16,m_link_genalized_cost_array[link_seq_no] = 0
+, m_link_genalized_cost_array[link_seq_no = 67] = 5
+SP:  updating node: SP:  checking from node 22  to node 20 cost = -18 current cost:1e+15 new cost 13
+SP: add node -18 new cost:13 into SE List -18
+SP:scan SE node: -16 with 1 outgoing link(s). 
+SP:  checking outgoing node 16
+SP:  checking from node 21 , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 5-16  to node 16 cost = 
+SP:  checking outgoing node 21
+SP:  checking from node 22  to node 21 cost = 21 , m_node_label_cost[from_node =21 ] 16, m_link_genalized_cost_array[link_seq_no = 68] = 2
+13SP:  checking from node 22  to node 21 cost = 18 , m_node_label_cost[from_node] 16 , m_node_label_cost[from_node =39 ] 13,m_link_genalized_cost_array[link_seq_no] = 2
+, m_link_genalized_cost_array[link_seq_no = 107] = 0
+SP:scan SE node: SP:  checking outgoing node -17 with 1 outgoing link(s). 
+23
+SP:  checking from node 22  to node 23 cost = 18 , m_node_label_cost[from_node =21 ] 16, m_link_genalized_cost_array[link_seq_no = 69] = 4
+SP:  checking outgoing node 17
+SP:  checking from node -17  to node 17 cost = 13 , m_node_label_cost[from_node =SP:  checking from node 22  to node 23 cost = 20 , m_node_label_cost[from_node] 1640 ] 15,m_link_genalized_cost_array[link_seq_no] = 4, m_link_genalized_cost_array[link_seq_no = 109] = 0
+SP:  checking outgoing node -22
+SP:  checking from node 22  to node -22 cost = 20 , m_node_label_cost[from_node =21 ] 16, m_link_genalized_cost_array[link_seq_no = 118] = 0
+SP:  checking from node 22  to node -22 cost = 16
+ , m_node_label_cost[from_node] 16,m_link_genalized_cost_array[link_seq_no] = 0
+SP:scan SE node: SP:  updating node: -22-23 with 1 outgoing link(s). 
+SP:  checking outgoing node 23
+SP:  checking from node -23  to node 23 cost = 13 , m_node_label_cost[from_node =46 ] 14 current cost:1e+15 new cost 16
+SP: add node -22 new cost:16 into SE List -22
+, m_link_genalized_cost_array[link_seq_no = SP:scan SE node: -15 with 1 outgoing link(s). 
+SP:  checking outgoing node 15
+SP:  checking from node -15  to node 15 cost = 16121] = 0
+ , m_node_label_cost[from_node =38 ] 19SP:scan SE node: 21 with , m_link_genalized_cost_array[link_seq_no = 105] = 0
+4 outgoing link(s). 
+SP:scan SE node: 18 with 4 outgoing link(s). 
+SP:  checking outgoing node 20
+SP:  checking from node 21  to node 20 cost = 13 , m_node_label_cost[from_node =20 ] SP:  checking outgoing node 7
+18SP:  checking from node 18  to node 7 cost = 16, m_link_genalized_cost_array[link_seq_no = 63] = 6
+ , m_node_label_cost[from_node =17 ] 17SP:  checking from node , m_link_genalized_cost_array[link_seq_no = 53] = 2
+SP:  checking from node 21  to node 20 cost = 24 , m_node_label_cost[from_node] 1818  to node 7 cost = ,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 22
+SP:  checking from node 21  to node 22 cost = 24 , m_node_label_cost[from_node =20 ] 1819 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 2
+SP:  checking outgoing node 16
+SP:  checking from node 18  to node 16 cost = 19 , m_node_label_cost[from_node =17 ] 17, m_link_genalized_cost_array[link_seq_no = 64] = 2
+SP:  checking from node 21  to node 22 cost = 20 , m_node_label_cost[from_node] 18,m_link_genalized_cost_array[link_seq_no] = 2
+, m_link_genalized_cost_array[link_seq_no = 54] = 3
+SP:  checking from node 18  to node 16 cost = 20 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node SP:  checking outgoing node 24
+SP:  checking from node 21  to node 24 cost = 20 , m_node_label_cost[from_node =20 ] 1820
+SP:  checking from node 18  to node 20 cost = 20, m_link_genalized_cost_array[link_seq_no = 65] = 3
+SP:  checking from node  , m_node_label_cost[from_node =17 ] 1721  to node , m_link_genalized_cost_array[link_seq_no = 55] = 4
+SP:  checking from node 24 cost = 21 , m_node_label_cost[from_node] 1818  to node 20 cost = ,m_link_genalized_cost_array[link_seq_no] = 3
+SP:  checking outgoing node -21
+SP:  checking from node 21  to node -21 cost = 21 , m_node_label_cost[from_node =20 ] 1821 , m_node_label_cost[from_node] 17, m_link_genalized_cost_array[link_seq_no = 116] = 0
+,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking from node 21  to node -21 cost = SP:  checking outgoing node -18
+SP:  checking from node 18  to node -18 cost = 2118 , m_node_label_cost[from_node =17 ] 17, m_link_genalized_cost_array[link_seq_no = 110] = 0
+SP:  checking from node 18  to node -18 cost =  , m_node_label_cost[from_node] 1718 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 0
+,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -21 current cost:SP:  updating node: -18 current cost:1e+151e+15 new cost 18
+SP: add node -21 new cost: new cost 17
+SP: add node -18 new cost:17 into SE List -18
+SP:scan SE node: -16 with 1 outgoing link(s). 
+18SP:  checking outgoing node 16
+SP:  checking from node -16  to node 16 cost = 17 into SE List -21
+SP:scan SE node: -24 with 1 outgoing link(s). 
+SP:  checking outgoing node 24
+SP:  checking from node -24  to node 24 cost = 18 , m_node_label_cost[from_node =47 ] 15 , m_node_label_cost[from_node =39 ] 17, m_link_genalized_cost_array[link_seq_no = , m_link_genalized_cost_array[link_seq_no = 123] = 0
+107] = 0
+SP:scan SE node: -7 with 1 outgoing link(s). 
+SP:scan SE node: SP:  checking outgoing node 7
+-17 with 1 outgoing link(s). 
+SP:  checking from node -7  to node 7 cost = 18SP:  checking outgoing node 17
+SP:  checking from node -17  to node 17 cost = 17 , m_node_label_cost[from_node =30 ]  , m_node_label_cost[from_node =40 ] 19, m_link_genalized_cost_array[link_seq_no = 109] = 0
+SP:scan SE node: -23 with 111 outgoing link(s). 
+, m_link_genalized_cost_array[link_seq_no = 89] = 0
+SP:  checking outgoing node 23
+SP:  checking from node -23  to node 23 cost = SP:scan SE node: 1720 with 5 outgoing link(s). 
+ , m_node_label_cost[from_node =46 ] 13, m_link_genalized_cost_array[link_seq_no = 121] = 0SP:  checking outgoing node 18
+SP:  checking from node 20  to node 18 cost = 18 , m_node_label_cost[from_node =19 ] 
+SP:scan SE node: 20 with 517, m_link_genalized_cost_array[link_seq_no = 59] = 4
+SP:  checking from node 20  to node 18 cost = 21 outgoing link(s). 
+ , m_node_label_cost[from_node] 17SP:  checking outgoing node 18
+SP:  checking from node 20  to node 18 cost = ,m_link_genalized_cost_array[link_seq_no] = 4
+17 , m_node_label_cost[from_node =19 ] 20, m_link_genalized_cost_array[link_seq_no = 59] = 4
+SP:  checking outgoing node 19
+SP:  checking from node 20  to node 19 cost = 21SP:  checking from node 20  to node 18 cost =  , m_node_label_cost[from_node =19 ] 1724 , m_node_label_cost[from_node] 20,m_link_genalized_cost_array[link_seq_no] = 4
+, m_link_genalized_cost_array[link_seq_no = 60] = 4
+SP:  checking from node 20  to node 19 cost = SP:  checking outgoing node 19
+SP:  checking from node 20  to node 19 cost = 24 , m_node_label_cost[from_node =19 ] 2021 , m_node_label_cost[from_node] 17, m_link_genalized_cost_array[link_seq_no = 60] = 4
+,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking from node 20  to node 19 cost = 24 , m_node_label_cost[from_node] 20SP:  checking outgoing node 21
+SP:  checking from node 20  to node 21 cost = 21,m_link_genalized_cost_array[link_seq_no] = 4
+SP:  checking outgoing node 21
+SP:  checking from node 20 , m_node_label_cost[from_node =19 ] 17  to node 21 cost = 24 , m_node_label_cost[from_node =19 ] 20, m_link_genalized_cost_array[link_seq_no = 61] = 6
+SP:  checking from node 20  to node 21 cost = , m_link_genalized_cost_array[link_seq_no = 61] = 6
+23SP:  checking from node 20  to node 21 cost =  , m_node_label_cost[from_node] 1726 , m_node_label_cost[from_node] 20,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 22
+SP:  checking from node 20  to node 22 cost = 23 , m_node_label_cost[from_node =19 ] 17,m_link_genalized_cost_array[link_seq_no] = 6
+SP:  checking outgoing node 22
+SP:  checking from node 20  to node 22 cost = , m_link_genalized_cost_array[link_seq_no = 62] = 5
+SP:  checking from node 20  to node 22 cost = 2226 , m_node_label_cost[from_node]  , m_node_label_cost[from_node =19 ] 20, m_link_genalized_cost_array[link_seq_no = 62] = 5
+SP:  checking from node 20  to node 22 cost = 1725 , m_node_label_cost[from_node] 20,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node -20
+SP:  checking from node 20  to node -20 cost = 22 , m_node_label_cost[from_node =19 ] 17,m_link_genalized_cost_array[link_seq_no] = 5
+SP:  checking outgoing node , m_link_genalized_cost_array[link_seq_no = 114] = 0
+SP:  checking from node 20  to node -20 cost = 17 , m_node_label_cost[from_node] 17,m_link_genalized_cost_array[link_seq_no] = 0
+-20
+SP:  checking from node 20  to node -20 cost = 25SP:  updating node:  , m_node_label_cost[from_node =19 ] 20, m_link_genalized_cost_array[link_seq_no = 114] = 0
+SP:  checking from node 20  to node -20 cost = 20 , m_node_label_cost[from_node] 20,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -20 current cost:1e+15 new cost 20
+SP: add node -20 new cost:20 into SE List -20
+SP:scan SE node: -20-21 with 1 outgoing link(s). 
+ current cost:1e+15 new cost 17SP:  checking outgoing node 21
+SP:  checking from node -21  to node 21 cost = 
+SP: add node 20 , m_node_label_cost[from_node =44 ] 14, m_link_genalized_cost_array[link_seq_no = 117] = 0
+-20 new cost:17 into SE List -20SP:scan SE node: -7 with 1 outgoing link(s). 
+
+SP:  checking outgoing node 7
+SP:  checking from node -7  to node 7 cost = 20 , m_node_label_cost[from_node =30 ] 15, m_link_genalized_cost_array[link_seq_no = 89] = 0
+SP:scan SE node: -19 with 1 outgoing link(s). 
+SP:scan SE node: -19 with 1 outgoing link(s). 
+SP:  checking outgoing node 19
+SP:  checking from node -19  to node 19 cost = 20 , m_node_label_cost[from_node =42 ] 21SP:  checking outgoing node 19
+SP:  checking from node -19  to node 19 cost = 17 , m_node_label_cost[from_node =42 ] 17, m_link_genalized_cost_array[link_seq_no = 113] = 0
+SP:scan SE node: , m_link_genalized_cost_array[link_seq_no = 113] = 0
+-22 with 1 outgoing link(s). 
+SP:  checking outgoing node 22
+SP:  checking from node -22  to node 22 cost = SP:scan SE node: -22 with 117 outgoing link(s). 
+SP:  checking outgoing node 22
+SP:  checking from node -22  to node 22 , m_node_label_cost[from_node =45 ] 18 cost = 20 , m_node_label_cost[from_node =45 ] 16, m_link_genalized_cost_array[link_seq_no = 119] = 0
+SP:scan SE node: -18 with 1 outgoing link(s). 
+SP:  checking outgoing node 18
+SP:  checking from node -18  to node 18 cost = 17, m_link_genalized_cost_array[link_seq_no = 119] =  , m_node_label_cost[from_node =41 ] 130
+SP:scan SE node: -18 with 1 outgoing link(s). 
+SP:  checking outgoing node 18
+SP:  checking from node , m_link_genalized_cost_array[link_seq_no = 111] = 0
+SP:scan SE node: -21 with 1 outgoing link(s). 
+SP:  checking outgoing node 21
+SP:  checking from node -21  to node 21 cost = 17-18  to node 18 cost = 20 , m_node_label_cost[from_node =44 ] 18, m_link_genalized_cost_array[link_seq_no = 117] = 0
+SP:scan SE node: -20 with 1 outgoing link(s). 
+SP:  checking outgoing node 20
+SP:  checking from node -20  to node 20 cost = 17 , m_node_label_cost[from_node =43 ] 17, m_link_genalized_cost_array[link_seq_no = 115] = 0
+SPtree at iteration k = 0 origin node: -4
+SP node: 1 label cost = 8, node_pred_id = 3
+SP node: 2 label cost = 11, node_pred_id = 6
+SP node: 3 , m_node_label_cost[from_node = label cost = 4, node_pred_id = 4
+SP node: 4 label cost = 0, node_pred_id = -4
+SP node: 5 label cost = 2, node_pred_id = 4
+SP node: 6 label cost = 6, node_pred_id = 5
+SP node: 7 label cost = 11, node_pred_id = 8
+SP node: 8 label cost = 8, node_pred_id = 6
+SP node: 9 label cost = 7, node_pred_id = 5
+SP node: 10 label cost = 10, node_pred_id = 9
+SP node: 11 label cost = 6, node_pred_id = 4
+SP node: 12 label cost = 8, node_pred_id = 3
+SP node: 13 label cost = 11, node_pred_id = 12
+SP node: 14 label cost = 10, node_pred_id = 11
+SP node: 15 label cost = 15, node_pred_id = 14
+SP node: 16 label cost = 13, node_pred_id = 8
+SP node: 17 label cost = 15, node_pred_id = 16
+SP node: 18 label cost = 13, node_pred_id = 7
+SP node: 19 label cost = 17, node_pred_id = 17
+SP node: 20 label cost = 17, node_pred_id = 18
+SP node: 21 label cost = 18, node_pred_id = 24
+SP node: 22 label cost = 18, node_pred_id = 15
+SP node: 23 label cost = 14, node_pred_id = 14
+SP node: 24 label cost = 15, node_pred_id = 13
+SP node: -1 label cost = 8, node_pred_id = 1
+SP node: -2 label cost = 11, node_pred_id = 2
+SP node: -3 label cost = 4, node_pred_id = 3
+SP node: -4 label cost = 0, node_pred_id = -1
+SP node: -5 label cost = 2, node_pred_id = 5
+SP node: -6 label cost = 6, node_pred_id = 6
+SP node: -7 label cost = 11, node_pred_id = 7
+SP node: -8 label cost = 8, node_pred_id = 8
+SP node: -9 label cost = 7, node_pred_id = 9
+SP node: -10 label cost = 10, node_pred_id = 10
+SP node: -11 label cost = 6, node_pred_id = 11
+SP node: -12 label cost = 8, node_pred_id = 12
+SP node: -13 label cost = 11, node_pred_id = 13
+SP node: -14 label cost = 10, node_pred_id = 14
+SP node: -15 label cost = 15, node_pred_id = 15
+SP node: -16 label cost = 13, node_pred_id = 16
+SP node: -17 label cost = 15, node_pred_id = 17
+SP node: -18 label cost = 13, node_pred_id = 18
+SP node: -19 label cost = 17, node_pred_id = 19
+SP node: -20 label cost = 17, node_pred_id = 20
+SP node: -21 label cost = 18, node_pred_id = 21
+SP node: -22 label cost = 18, node_pred_id = 22
+SP node: -23 label cost = 14, node_pred_id = 23
+SP node: -24 label cost = 15, node_pred_id = 24
+41 ] 17, m_link_genalized_cost_array[link_seq_no = 111] = 0
+SP:scan SE node: -20 with 1 outgoing link(s). 
+SP:  checking outgoing node 20
+SP:  checking from node -20  to node 20 cost = 20 , m_node_label_cost[from_node =43 ] 20, m_link_genalized_cost_array[link_seq_no = 115] = 0
+SPtree at iteration k = 0 origin node: -3
+SP node: 1 label cost = 4, node_pred_id = 3
+SP node: 2 label cost = 10, node_pred_id = 1
+SP node: 3 label cost = 0, node_pred_id = -3
+SP node: 4 label cost = 4, node_pred_id = 3
+SP node: 5 label cost = 6, node_pred_id = 4
+SP node: 6 label cost = 10, node_pred_id = 5
+SP node: 7 label cost = 15, node_pred_id = 8
+SP node: 8 label cost = 12, node_pred_id = 6
+SP node: 9 label cost = 11, node_pred_id = 5
+SP node: 10 label cost = 14, node_pred_id = 9
+SP node: 11 label cost = 10, node_pred_id = 4
+SP node: 12 label cost = 4, node_pred_id = 3
+SP node: 13 label cost = 7, node_pred_id = 12
+SP node: 14 label cost = 14, node_pred_id = 11
+SP node: 15 label cost = 19, node_pred_id = 14
+SP node: 16 label cost = 17, node_pred_id = 8
+SP node: 17 label cost = 19, node_pred_id = 16
+SP node: 18 label cost = 17, node_pred_id = 7
+SP node: 19 label cost = 21, node_pred_id = 17
+SP node: 20 label cost = 20, node_pred_id = 21
+SP node: 21 label cost = 14, node_pred_id = 24
+SP node: 22 label cost = 16, node_pred_id = 21
+SP node: 23 label cost = 13, node_pred_id = 24
+SP node: 24 label cost = 11, node_pred_id = 13
+SP node: -1 label cost = 4, node_pred_id = 1
+SP node: -2 label cost = 10, node_pred_id = 2
+SP node: -3 label cost = 0, node_pred_id = -1
+SP node: -4 label cost = 4, node_pred_id = 4
+SP node: -5 label cost = 6, node_pred_id = 5
+SP node: -6 label cost = 10, node_pred_id = 6
+SP node: -7 label cost = 15, node_pred_id = 7
+SP node: -8 label cost = 12, node_pred_id = 8
+SP node: -9 label cost = 11, node_pred_id = 9
+SP node: -10 label cost = 14, node_pred_id = 10
+SP node: -11 label cost = 10, node_pred_id = 11
+SP node: -12 label cost = 4, node_pred_id = 12
+SP node: -13 label cost = 7, node_pred_id = 13
+SP node: -14 label cost = 14, node_pred_id = 14
+SP node: -15 label cost = 19, node_pred_id = 15
+SP node: -16 label cost = 17, node_pred_id = 16
+SP node: -17 label cost = 19, node_pred_id = 17
+SP node: -18 label cost = 17, node_pred_id = 18
+SP node: -19 label cost = 21, node_pred_id = 19
+SP node: -20 label cost = 20, node_pred_id = 20
+SP node: -21 label cost = 14, node_pred_id = 21
+SP node: -22 label cost = 16, node_pred_id = 22
+SP node: -23 label cost = 13, node_pred_id = 23
+SP node: -24 label cost = 11, node_pred_id = 24

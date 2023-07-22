@@ -526,10 +526,10 @@ void g_check_demand_volume_with_mode_type(Assignment& assignment)
 				if (g_link_vector[i].link_type_si[0] >= 0 && g_link_vector[i].AllowModeType(assignment.g_ModeTypeVector[at].mode_type, tau, assignment.active_scenario_index))
 				{
 					link_count++;
-					total_speed += g_link_vector[i].free_speed;
+					total_speed += g_link_vector[i].free_speed_si[assignment.active_scenario_index];
 					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
-					total_lane_capacity += g_link_vector[i].lane_capacity;
-					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
+					total_lane_capacity += g_link_vector[i].capacity_si[assignment.active_scenario_index];
+					total_link_capacity += g_link_vector[i].capacity_si[assignment.active_scenario_index] * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 				}
 			}
 			assignment.summary_file << link_count << "," <<
@@ -1249,6 +1249,8 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					continue;
 
 				int si = scenario_index_vector[scenario_index_i];
+
+
 				if (assignment.g_active_DTAscenario_map.find(si) == assignment.g_active_DTAscenario_map.end())
 				{
 					if(scenario_index_vector_error_count <3)
@@ -1260,7 +1262,10 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					continue;
 				}
 
-
+				if (si > 0)
+				{
+					int idebug = 1;
+				}
 				if (this_departure_time_profile_no >= assignment.g_DepartureTimeProfileVector.size())
 				{
 					dtalog.output() << "[ERROR] departure_time_profile_no = " << this_departure_time_profile_no << " in  file demand_file_list.csv  has not been defined in file departure_time_profile.csv." << '\n';
@@ -1296,7 +1301,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					{
 						dtalog.output() << "[ERROR]  demand_period= " << demand_period_str.c_str() << " in  demand_file_list.csv has not been defined in demand_period.csv." << '\n';
 						g_DTA_log_file << "[ERROR]  demand_period= " << demand_period_str.c_str() << " in  demand_file_list.csv has not been defined in demand_period.csv." << '\n';
-						demand_period_no = 0;
+						continue; 
 					}
 
 				}
@@ -2136,6 +2141,7 @@ void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int interna
 {
 	// create a link object
 	CLink link;
+	link.allocate_memory();
 	link.link_id = "connector";
 	link.link_type_code = "connector";
 
@@ -2145,9 +2151,11 @@ void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int interna
 	link.to_node_seq_no = internal_to_node_seq_no;
 	//virtual connector
 
-	for (int si = 0; si < g_number_of_active_scenarios; si++)
+	for (int si = 0; si < g_number_of_max_scenarios_index; si++)
 	{
 		link.link_type_si[si] = -1;
+		link.free_speed_si[si] = 100;
+		link.capacity_si[si] = 2000;
 		link.number_of_lanes_si[si] = 20;  // default all open
 	}
 	//only for outgoing connectors
@@ -2470,6 +2478,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 				{
 					int demand_period_id = assignment.g_DemandPeriodVector[tau].demand_period_id;
 					CLink this_link;
+					this_link.allocate_memory();
 					char CSV_field_name[50];
 					bool VDF_required_field_flag = true;
 					//					sprintf(CSV_field_name, "QVDF_plf%d", demand_period_id);
@@ -2516,6 +2525,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					//has not been defined
 					continue;
 				}
+
 
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 				{
@@ -3986,6 +3996,7 @@ void g_read_input_data(Assignment& assignment)
 
 				// create a link object  // this should be place inside
 				CLink link;
+				link.allocate_memory();
 
 				string link_type_name_str;
 				parser_link.GetValueByFieldName("link_type_name", link_type_name_str, false);
@@ -3997,6 +4008,9 @@ void g_read_input_data(Assignment& assignment)
 				long to_node_id = -1;
 				if (!parser_link.GetValueByFieldName("to_node_id", to_node_id))
 					continue;
+
+				link.from_node_id = from_node_id;
+				link.to_node_id = to_node_id;
 
 				string linkID;
 				parser_link.GetValueByFieldName("link_id", linkID, false);
@@ -4102,7 +4116,12 @@ void g_read_input_data(Assignment& assignment)
 					link.geometry = out.str();
 				}
 
-				parser_link.GetValueByFieldName("link_special_flag", link.link_specifical_flag_str, false);
+				if (parser_link.GetValueByFieldName("link_special_flag", link.link_specifical_flag_str, false) && link.link_specifical_flag_str.size() > 0)
+				{
+					dtalog.output() << "[INFO] link_special_flag =  " << link.link_specifical_flag_str.c_str() << " is defined for link " << from_node_id << "->" << to_node_id << " in link.csv." << '\n';
+					g_DTA_log_file << "[INFO] link_special_flag =  " << link.link_specifical_flag_str.c_str() << " is defined for link " << from_node_id << "->" << to_node_id << " in link.csv." << '\n';
+
+				}
 
 				link.tmc_corridor_name = "network_wide";
 				parser_link.GetValueByFieldName("tmc_corridor_name", link.tmc_corridor_name, false);
@@ -4174,6 +4193,8 @@ void g_read_input_data(Assignment& assignment)
 				}
 
 				char lanes_scenario_field_name[50];
+				char free_speed_scenario_field_name[50];
+				char capacity_scenario_field_name[50];
 
 				int default_number_of_lanes = 1;
 				parser_link.GetValueByFieldName("lanes", default_number_of_lanes, false);
@@ -4190,7 +4211,9 @@ void g_read_input_data(Assignment& assignment)
 				}
 
 				double length_in_meter = 1000.0; // km or mile
+				double free_speed_original = 100.0;
 				double free_speed = 60.0;
+
 				double lane_capacity = 2000;
 				// first step, get the initial value based on link type for speed and capacity
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
@@ -4244,21 +4267,43 @@ void g_read_input_data(Assignment& assignment)
 				{
 					length_in_meter = 1;  // minimum link_distance_VDF
 				}
-
+				//-----------------
 				// second step, we read the link-specific value (only for based mode)
-				if (parser_link.GetValueByFieldName("free_speed", free_speed, false, false) == false)
+				if (parser_link.GetValueByFieldName("free_speed", free_speed_original, false, false) == false)
 				{
 
 					if (free_speed_missing_error == 0)
 					{
 						dtalog.output() << "[ERORR] Field free_speed in link.csv is missing." << '\n';
 						g_DTA_log_file << "[ERORR] Field free_speed in link.csv is missing." << '\n';
-						free_speed = 60;
+						free_speed_original = 100;
 						free_speed_missing_error++; 
 					}
 				}
 				if (assignment.g_speed_unit_flag == 1)  // mph;
-					free_speed = free_speed / 1.609; // convert from mile per hour to km per hour
+					free_speed = free_speed_original * 1.609; // convert from mile per hour to km per hour ( by multipling the original speed values by 1.609)
+
+				double default_free_speed = free_speed; 
+				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
+				{
+					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
+					sprintf(free_speed_scenario_field_name, "free_speed_s%d", scenario_index);
+
+					if (parser_link.GetValueByFieldName(free_speed_scenario_field_name, free_speed_original, false))
+					{
+						if (assignment.g_speed_unit_flag == 1)  // mph;
+							free_speed = free_speed_original * 1.609; // convert from mile per hour to km per hour ( by multipling the original speed values by 1.609)
+						
+						link.free_speed_si[scenario_index] = free_speed;
+					}
+					else
+					{
+						link.free_speed_si[scenario_index] = default_free_speed;  // use default value
+					}
+
+				}
+
+				//-----------------
 
 				parser_link.GetValueByFieldName("capacity", lane_capacity, false);  // optional for capacity
 
@@ -4273,6 +4318,23 @@ void g_read_input_data(Assignment& assignment)
 						lane_capacity = 1800;
 						capacity_missing_error++;
 					}
+				}
+
+				double default_capacity = lane_capacity;
+				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
+				{
+					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
+					sprintf(capacity_scenario_field_name, "capacity_s%d", scenario_index);
+
+					if (parser_link.GetValueByFieldName(capacity_scenario_field_name, lane_capacity, false))
+					{
+						link.capacity_si[scenario_index] = lane_capacity;
+					}
+					else
+					{
+						link.capacity_si[scenario_index] = default_capacity;
+					}
+
 				}
 				double free_speed_value;
 				//speed_unit: km/ph us_customary  si1
@@ -4392,13 +4454,22 @@ void g_read_input_data(Assignment& assignment)
 					parser_link.GetValueByFieldName("VDF_alpha", link.VDF_period[tau].alpha, false);
 					parser_link.GetValueByFieldName("VDF_beta", link.VDF_period[tau].beta, false);
 
+					double VDF_FFTT = 0; 
+					if (parser_link.GetValueByFieldName("VDF_FFTT", VDF_FFTT, false, false) == true)
+					{
+						link.VDF_period[tau].user_given_FFTT_flag = true;
+						link.VDF_period[tau].FFTT_at[0] = VDF_FFTT;
+						link.free_flow_travel_time_in_min = VDF_FFTT;
+					}
+
+
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
 						link.VDF_period[tau].toll[at][assignment.active_scenario_index] = 0;
 						link.VDF_period[tau].LR_price[at] = 0;
 						link.VDF_period[tau].LR_RT_price[at] = 0;
 
-						for (int si = 0; si < g_number_of_active_scenarios; si++)
+						for (int si = 0; si < g_number_of_max_scenarios_index; si++)
 						{
 							link.VDF_period[tau].allowed_uses[si] = assignment.g_LinkTypeMap[link.link_type_si[si]].allow_uses_period[tau];
 						}
@@ -4535,7 +4606,7 @@ void g_read_input_data(Assignment& assignment)
 				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
 				{
 					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
-
+					int scenario_no = assignment.g_active_DTAscenario_map[scenario_index];
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
 						char penalty_field_name[50];
@@ -4559,7 +4630,7 @@ void g_read_input_data(Assignment& assignment)
 							for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 							{
 
-								link.penalty_si_at[tau][at][scenario_index] = penalty;
+								link.penalty_si_at[tau][at][scenario_no] = penalty;
 							}
 
 
@@ -4603,50 +4674,94 @@ void g_read_input_data(Assignment& assignment)
 						link_seq_no = link.link_seq_no;
 						link.AB_flag = 1;
 
-						if (dir_flag == 0 || dir_flag == 2)
+						if (dir_flag == 0 || dir_flag == 2)//
 						{
 							link.BA_link_no = link.link_seq_no + 1;
 						}
 						else
 							link.BA_link_no = -1;
 
+						g_node_vector[internal_from_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+						g_node_vector[internal_to_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+
+						g_node_vector[internal_from_node_seq_no].m_to_node_seq_no_vector.push_back(link.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+						g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[link.to_node_seq_no] = link.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
+						g_link_vector.push_back(link);  // copy the memory to the global vector 
+											
+						assignment.g_number_of_links++;
+
+
+
 
 					}
 					else //link_code_start ==2
 					{
-						// switch the node sequence no
-						int temp_node_no = internal_to_node_seq_no;
-						internal_to_node_seq_no = internal_from_node_seq_no;
-						internal_from_node_seq_no = temp_node_no;
+						CLink link2; 
+						link2 = link;  // first copy the content from link to link 2
 
-						int temp_node_id = link.to_node_id;
-						link.to_node_id = link.from_node_id;
-						link.from_node_id = temp_node_id;
+						link2.allocate_memory();  // then allocate memory 
 
+						// the following copy the content for fixed and dynamic array
 
-						link.AB_flag = -1;
-						link.BA_link_no = -1;
-
-
-						link.link_seq_no += 1;  // update link seq no by + 1 for BA link
-						link_seq_no = link.link_seq_no;
+						for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
+						{
+							for (int si = 0; si < g_number_of_active_scenarios; si++)
+							{
+								link2.VDF_period[tau].allowed_uses[si] = link.VDF_period[tau].allowed_uses[si];
+							}
 
 
-						link.from_node_seq_no = internal_from_node_seq_no;
-						link.to_node_seq_no = internal_to_node_seq_no;
+						}
 
+							for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+							{
+								link2.link_type_si[si] = link.link_type_si[si];
+								link2.number_of_lanes_si[si] = link.number_of_lanes_si[si];  
+								link2.free_speed_si[si] = link.free_speed_si[si];
+								link2.capacity_si[si] = link.capacity_si[si];
+							}
+							//
+							for (int si = 0; si < g_number_of_active_scenarios; si++)
+							{
+								for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
+									for (int at = 0; at < g_number_of_active_mode_types; ++at)
+									{
+
+										link2.penalty_si_at[tau][at][si] = link.penalty_si_at[tau][at][si];
+										link2.recorded_lanes_per_period_per_at[tau][at][si] = link.recorded_lanes_per_period_per_at[tau][at][si];
+									}
+
+							}
+
+
+
+						link2.to_node_id = link.from_node_id;
+						link2.from_node_id = link.to_node_id;
+
+
+						link2.AB_flag = -1;
+						link2.BA_link_no = -1;
+
+
+						link2.link_seq_no = link.link_seq_no + 1;  // update link seq no by + 1 for BA link
+						link_seq_no = link2.link_seq_no;
+
+
+						link2.from_node_seq_no = internal_to_node_seq_no;
+						link2.to_node_seq_no = internal_from_node_seq_no;
+
+						g_node_vector[internal_to_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+						g_node_vector[internal_from_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+
+						g_node_vector[internal_to_node_seq_no].m_to_node_seq_no_vector.push_back(link2.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+						g_node_vector[internal_to_node_seq_no].m_to_node_2_link_seq_no_map[link2.to_node_seq_no] = link2.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
+						g_link_vector.push_back(link2);  // copy the memory to the global vector 
+
+
+						assignment.g_number_of_links++;
 
 					}
 
-					g_node_vector[internal_from_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-					g_node_vector[internal_to_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-
-					g_node_vector[internal_from_node_seq_no].m_to_node_seq_no_vector.push_back(link.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-					g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[link.to_node_seq_no] = link.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
-					g_link_vector.push_back(link);
-
-
-					assignment.g_number_of_links++;
 				}
 
 				if (assignment.g_number_of_links % 10000 == 0)

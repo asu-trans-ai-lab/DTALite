@@ -217,7 +217,9 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			{ 
 				if (scenario_index_vector[scenario_index_i] == assignment.active_scenario_index)
 				{
-					assignment.g_DTA_scenario_vector[assignment.active_scenario_index].dtm_flag = 1;
+					int scenaro_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+
+					assignment.g_DTA_scenario_vector[scenaro_no].dtm_flag = 1;
 					bFoundFlag = true;
 				}
 				
@@ -230,8 +232,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				// capacity in the space time arcs
 				float final_lanes = 0;
 				parser.GetValueByFieldName("final_lanes", final_lanes);
-
-				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no][assignment.active_scenario_index] = final_lanes;  // apply the change
+				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no][scenario_no] = final_lanes;  // apply the change
 				fprintf(g_pFileModel_LC, "dynamic lane use,final_number_of_lanes=%f,", final_lanes);
 				dtm_dynamic_lane_use_count++;
 			}
@@ -253,13 +255,15 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				// capacity in the space time arcs
 				float final_lanes = 0;
 				parser.GetValueByFieldName("final_lanes", final_lanes);
-
+				mode_type_no = 0; //this lane_closure is only for driving mode
+				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
 				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = -1;
 				g_link_vector[link_seq_no].link_specifical_flag_str = "lane_closure";
 				//
 				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "lane_closure";
 				dtm_lane_closure_count++;
+				
 
 				if (assignment.g_ModeTypeVector[mode_type_no].real_time_information_type == 0) {
 					dtalog.output() << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
@@ -433,7 +437,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	}
 	// allocate
 
-	if(dtm_dynamic_lane_use_count = 0){
+	if(dtm_dynamic_lane_use_count == 0){
 		dtalog.output() << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
 		g_DTA_log_file << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
 	}
@@ -441,14 +445,16 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 	}
-	if (dtm_lane_closure_count = 0)
+
+
+	if (dtm_lane_closure_count == 0)
 	{
 		dtalog.output() << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
 		g_DTA_log_file << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
 	}
 	else{
-		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
-		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+		dtalog.output() << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+		g_DTA_log_file << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
 
 	}
 

@@ -1,0 +1,3 @@
+first_column,scenario_index,year,scenario_name,scenario_description,activate
+0,0,2025,base,base,1
+0,1,2025,info,info,1

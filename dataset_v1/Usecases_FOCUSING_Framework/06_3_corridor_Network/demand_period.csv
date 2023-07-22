@@ -1,0 +1,5 @@
+first_column,demand_period_id,demand_period,notes,time_period,peak_time
+0,1,am7,weekday,0700_0800,730
+0,2,am8,weekday,0800_0900,830
+0,3,am9,weekday,0900_1000,930
+0,4,am10,weekday,1000_1100,1030

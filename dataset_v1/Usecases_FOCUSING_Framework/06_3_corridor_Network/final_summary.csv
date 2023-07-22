@@ -1,0 +1,245 @@
+[PROCESS INFO] Step 0: reading scenario_index_list.csv
+[STATUS INFO] scenario_index=0,scenario_name=,base
+[STATUS INFO] scenario_index=1,scenario_name=,info
+[PROCESS INFO] Step 1.1: Reading demand_period.csv...
+,demand_period= 1, am7,time_period=0700_0800
+,demand_period= 2, am8,time_period=0800_0900
+,demand_period= 3, am9,time_period=0900_1000
+,demand_period= 4, am10,time_period=1000_1100
+[PROCESS INFO] Step 1.2: Reading file mode_type.csv...
+mode_type =, auto, real time info flag = 0
+mode_type =, info, real time info flag = 1
+link_type =, 1, link_type_name = motorway
+,mode_type= auto,cap= 2000,free_speed=120
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 2, link_type_name = trunk
+,mode_type= auto,cap= 1800,free_speed=100
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 3, link_type_name = primary
+,mode_type= auto,cap= 1500,free_speed=80
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 4, link_type_name = residential
+,mode_type= auto,cap= 1000,free_speed=30
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 5, link_type_name = secondary
+,mode_type= auto,cap= 1400,free_speed=60
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 6, link_type_name = tertiary
+,mode_type= auto,cap= 1300,free_speed=50
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 7, link_type_name = unclassified
+,mode_type= auto,cap= 1200,free_speed=40
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 9, link_type_name = collector
+,mode_type= auto,cap= 1200,free_speed=50
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 10, link_type_name = connector
+,mode_type= auto,cap= 15000,free_speed=60
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 100, link_type_name = shared_use
+,mode_type= auto,cap= 200,free_speed=20
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 200, link_type_name = bikeonly
+,mode_type= auto,cap= 200,free_speed=5
+,mode_type= info,cap= 2000,free_speed=60
+link_type =, 300, link_type_name = walkonly
+,mode_type= auto,cap= 300,free_speed=25
+,mode_type= info,cap= 2000,free_speed=60
+, number of activity nodes defined in node.csv=, 2
+, number of boundary activity nodes defined in node.csv=, 0
+[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,6
+,# of links =,4
+,# of zones =,2
+[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv 
+,# of nodes = ,6
+,# of links =,4
+,# of zones =,2
+,summary by road link type,link_type,link_type_name,# of links,avg_free_speed_mph,avg_free_speed_kmph,,total_length,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,-1,,0,0,0,0,0,0,0,
+,,1,motorway,0,0,0,0,0,0,0,
+,,2,trunk,0,0,0,0,0,0,0,
+,,3,primary,4,60,96.5604,90,12000,3000,22500,
+,,4,residential,0,0,0,0,0,0,0,
+,,5,secondary,0,0,0,0,0,0,0,
+,,6,tertiary,0,0,0,0,0,0,0,
+,,7,unclassified,0,0,0,0,0,0,0,
+,,9,collector,0,0,0,0,0,0,0,
+,,10,connector,0,0,0,0,0,0,0,
+,,100,shared_use,0,0,0,0,0,0,0,
+,,200,bikeonly,0,0,0,0,0,0,0,
+,,300,walkonly,0,0,0,0,0,0,0,
+,,-1,,,,1,motorway,,,2,trunk,,,3,primary,,,4,residential,,,5,secondary,,,6,tertiary,,,7,unclassified,,,9,collector,,,10,connector,,,100,shared_use,,,200,bikeonly,,,300,walkonly,pre-read demand_file_list.csv.
+,first stage scanning
+,# of inside zones = 2, total_related_demand = 3000
+,# inside_significant_zone_count = 2, total_related_demand_from_internal zones = 3000
+,# inside_insignificant_zone_count = 0, total_related_demand_from_internal zones = 0
+,# related_external_zone_count = 0, external related demand = 0
+,# related_external_zone_count_with_significant_volume = 0
+ During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones.
+,# cut off zone size = 2, total_related_demand_from_external_cutoff  = 0
+,cut off volume threshold to determine significance = 0.External origin zones with a volume larger than this threshold will be retained.
+, remaining external related demand percentage after the cut off  = 0 %
+[PROCESS INFO] Step 2.1: read demand, defined in demand_file_list.csv.
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+[STATUS INFO] reading demand file for scenario index = 0
+,summary by multi-modal and demand types,demand_period,mode_type,total demmand volume in scenario 0, # of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
+,,am7,auto,4200,4,60,96.5604,90,12000,3000,22500,
+,,am7,info,1800,4,60,96.5604,90,12000,3000,22500,
+,,am8,auto,4200,4,60,96.5604,90,12000,3000,22500,
+,,am8,info,1800,4,60,96.5604,90,12000,3000,22500,
+,,am9,auto,4200,4,60,96.5604,90,12000,3000,22500,
+,,am9,info,1800,4,60,96.5604,90,12000,3000,22500,
+,,am10,auto,4200,4,60,96.5604,90,12000,3000,22500,
+,,am10,info,1800,4,60,96.5604,90,12000,3000,22500,
+,from_flag,to_flag,volume
+,from_flag,to_flag,volume
+FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly related external but not in cutoff, 2= cut-off external, 3= inside
+,0,1,2,3,
+0,0,0,0,0
+1,0,0,0,0
+2,0,0,0,0
+3,0,0,0,48000
+FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume
+,,1,1,2,3,3,auto,am7,2700
+,,2,1,2,3,3,auto,am8,2700
+,,3,1,2,3,3,auto,am9,2700
+,,4,1,2,3,3,auto,am10,2700
+,,5,1,2,3,3,info,am7,300
+,,6,1,2,3,3,info,am8,300
+,,7,1,2,3,3,info,am9,300
+,,8,1,2,3,3,info,am10,300
+[PROCESS INFO]Step 4: Column Generation for Traffic Assignment
+,Total number of column generation iterations =, 20
+,Total number of column generation iterations =, 20
+,read dynamic traffic managementscenario
+, # of lane closure records in dynamic_traffic_management.csv=,1,
+, # of dms records in dynamic_traffic_management.csv=,0,
+[DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
+0,0,12000,0,0
+1,0,12000,32.9524,9.8415
+2,0,12000,32.9524,0
+3,0.001,12000,32.9524,0
+4,0,12000,32.9524,0
+5,0,12000,32.9524,0
+6,0,12000,32.9524,0
+7,0,12000,32.9524,0
+8,0,12000,32.9524,0
+9,0,12000,32.9524,0
+10,0,12000,32.9524,0
+11,0,12000,32.9524,0
+12,0,12000,32.9524,0
+13,0,12000,32.9524,0
+14,0.001,12000,32.9524,0
+15,0,12000,32.9524,0
+16,0,12000,32.9524,0
+17,0,12000,32.9524,0
+18,0,12000,32.9524,0
+19,0,12000,32.9524,0
+[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
+,# of flow updating iterations=,40
+column updating
+[DATA INFO] column updating: iteration = 0, avg travel time = 32.9525(min), optimization obj = 0, Relative_gap = 0 %
+[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+Sensitivity analysis stage
+,Iteration,Avg Travel Time(min)
+0,51.3334,
+column updating
+[DATA INFO] column updating: iteration = 0, avg travel time = 51.3334(min), optimization obj = 13942.9, Relative_gap = 20.5604 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 51.0798(min), optimization obj = 10899.9, Relative_gap = 18.0406 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 50.9108(min), optimization obj = 8871.22, Relative_gap = 15.9249 %
+[DATA INFO] column updating: iteration = 3, avg travel time = 50.784(min), optimization obj = 7349.73, Relative_gap = 14.0609 %
+[DATA INFO] column updating: iteration = 4, avg travel time = 50.6825(min), optimization obj = 6132.53, Relative_gap = 12.3703 %
+[DATA INFO] column updating: iteration = 5, avg travel time = 50.598(min), optimization obj = 5118.2, Relative_gap = 10.8073 %
+[DATA INFO] column updating: iteration = 6, avg travel time = 50.5256(min), optimization obj = 4248.78, Relative_gap = 9.34214 %
+[DATA INFO] column updating: iteration = 7, avg travel time = 50.4622(min), optimization obj = 3488.03, Relative_gap = 7.95463 %
+[DATA INFO] column updating: iteration = 8, avg travel time = 50.4058(min), optimization obj = 2811.81, Relative_gap = 6.63017 %
+[DATA INFO] column updating: iteration = 9, avg travel time = 50.3551(min), optimization obj = 2203.21, Relative_gap = 5.35792 %
+[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. 
+[PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
+Output Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,228451,VKT=,367578
+,VHT=,10071
+,network vehicle speed (MPH) =,22.684,,network vehicle speed (KPH) =,36.4986
+,PMT=,228451,PKT=,367578
+,PHT=,10071
+,network person speed (MPH) =,22.684,,network person speed (KPH) =,36.4986
+,simple avg link volume=,1500
+,simple avg link speed=,54.5231
+,simple avg link speed ratio=,0.908718
+,read dynamic traffic managementscenario
+, # of lane closure records in dynamic_traffic_management.csv=,1,
+, # of dms records in dynamic_traffic_management.csv=,0,
+[DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
+0,0,12000,0,0
+1,0,12000,30.2812,0.9375
+2,0,12000,30.2812,0
+3,0,12000,30.2812,0
+4,0,12000,30.2812,0
+5,0,12000,30.2812,0
+6,0,12000,30.2812,0
+7,0,12000,30.2812,0
+8,0,12000,30.2812,0
+9,0,12000,30.2812,0
+10,0,12000,30.2812,0
+11,0,12000,30.2812,0
+12,0,12000,30.2812,0
+13,0,12000,30.2812,0
+14,0,12000,30.2812,0
+15,0,12000,30.2812,0
+16,0,12000,30.2812,0
+17,0,12000,30.2812,0
+18,0,12000,30.2812,0
+19,0,12000,30.2812,0
+[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
+,# of flow updating iterations=,40
+column updating
+[DATA INFO] column updating: iteration = 0, avg travel time = 30.2812(min), optimization obj = 0, Relative_gap = 0 %
+[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. 
+Sensitivity analysis stage
+,Iteration,Avg Travel Time(min)
+0,48.9961,
+column updating
+[DATA INFO] column updating: iteration = 0, avg travel time = 48.9961(min), optimization obj = 67710.9, Relative_gap = 20.2278 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 47.7848(min), optimization obj = 53175.6, Relative_gap = 17.7707 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 46.9773(min), optimization obj = 43485.3, Relative_gap = 15.7196 %
+[DATA INFO] column updating: iteration = 3, avg travel time = 46.3717(min), optimization obj = 36217.7, Relative_gap = 13.9211 %
+[DATA INFO] column updating: iteration = 4, avg travel time = 45.8871(min), optimization obj = 30403.5, Relative_gap = 12.2968 %
+[DATA INFO] column updating: iteration = 5, avg travel time = 45.4834(min), optimization obj = 25558.4, Relative_gap = 10.8007 %
+[DATA INFO] column updating: iteration = 6, avg travel time = 45.1373(min), optimization obj = 21405.4, Relative_gap = 9.40316 %
+[DATA INFO] column updating: iteration = 7, avg travel time = 44.8345(min), optimization obj = 17771.6, Relative_gap = 8.084 %
+[DATA INFO] column updating: iteration = 8, avg travel time = 44.5653(min), optimization obj = 14541.5, Relative_gap = 6.8287 %
+[DATA INFO] column updating: iteration = 9, avg travel time = 44.3231(min), optimization obj = 11634.4, Relative_gap = 5.62644 %
+[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. 
+[PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
+Output Link Performance:
+,ref_link_vol_count=,0,MAPE=,0%
+,VMT=,246904,VKT=,397268
+,VHT=,8864.61
+,network vehicle speed (MPH) =,27.8527,,network vehicle speed (KPH) =,44.815
+,PMT=,246904,PKT=,397268
+,PHT=,8864.61
+,network person speed (MPH) =,27.8527,,network person speed (KPH) =,44.815
+,simple avg link volume=,1500
+,simple avg link speed=,56.6312
+,simple avg link speed ratio=,0.943853
+     Check OD connectivity and accessibility in od_performance_summary.csv
+, # of connected OD pairs =, 0
+, # of OD/mode_type/demand_type columns without paths =, 8
+Output Link Performance Summary
+Output 2 Way Link Performance Summary

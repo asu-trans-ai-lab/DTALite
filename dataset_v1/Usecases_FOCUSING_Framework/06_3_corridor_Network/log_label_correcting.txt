@@ -1,0 +1,72 @@
+[STATUS INFO] add outgoing link data into dynamic array
+[DATA INFO] node id= 1 with zone id 1 and 3 outgoing links.
+  outgoing node = 4
+  outgoing node = 3
+  outgoing node = -1
+[DATA INFO] node id= 2 with zone id 2 and 1 outgoing links.
+  outgoing node = -2
+[DATA INFO] node id= 3 with 1 outgoing links.
+  outgoing node = 2
+[DATA INFO] node id= 4 with 1 outgoing links.
+  outgoing node = 2
+[DATA INFO] node id= -1 with 1 outgoing links.
+  outgoing node = 1
+[DATA INFO] node id= -2 with 1 outgoing links.
+  outgoing node = 2
+ beginning of SP iteration k =  0: origin node: -1
+SP:scan SE node: -1 with 1 outgoing link(s). 
+SP:  checking outgoing node 1
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node =4 ] 0, m_link_genalized_cost_array[link_seq_no = 5] = 0
+SP:  checking from node -1  to node 1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: 1 current cost:1e+15 new cost 0
+SP: add node 1 new cost:0 into SE List 1
+SP:scan SE node: 1 with 3 outgoing link(s). 
+SP:  checking outgoing node 4
+SP:  checking from node 1  to node 4 cost = 0 , m_node_label_cost[from_node =0 ] 0, m_link_genalized_cost_array[link_seq_no = 0] = 15
+SP:  checking from node 1  to node 4 cost = 15 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 4 current cost:1e+15 new cost 15
+SP: add node 4 new cost:15 into SE List 4
+SP:  checking outgoing node 3
+SP:  checking from node 1  to node 3 cost = 15 , m_node_label_cost[from_node =0 ] 0, m_link_genalized_cost_array[link_seq_no = 2] = 30
+SP:  checking from node 1  to node 3 cost = 30 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 30
+SP:  updating node: 3 current cost:1e+15 new cost 30
+SP: add node 3 new cost:30 into SE List 3
+SP:  checking outgoing node -1
+SP:  checking from node 1  to node -1 cost = 30 , m_node_label_cost[from_node =0 ] 0, m_link_genalized_cost_array[link_seq_no = 4] = 0
+SP:  checking from node 1  to node -1 cost = 0 , m_node_label_cost[from_node] 0,m_link_genalized_cost_array[link_seq_no] = 0
+SP:scan SE node: 4 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 4  to node 2 cost = 0 , m_node_label_cost[from_node =3 ] 15, m_link_genalized_cost_array[link_seq_no = 1] = 15
+SP:  checking from node 4  to node 2 cost = 30 , m_node_label_cost[from_node] 15,m_link_genalized_cost_array[link_seq_no] = 15
+SP:  updating node: 2 current cost:1e+15 new cost 30
+SP: add node 2 new cost:30 into SE List 2
+SP:scan SE node: 3 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node 3  to node 2 cost = 30 , m_node_label_cost[from_node =2 ] 30, m_link_genalized_cost_array[link_seq_no = 3] = 30
+SP:  checking from node 3  to node 2 cost = 60 , m_node_label_cost[from_node] 30,m_link_genalized_cost_array[link_seq_no] = 30
+SP:scan SE node: 2 with 1 outgoing link(s). 
+SP:  checking outgoing node -2
+SP:  checking from node 2  to node -2 cost = 60 , m_node_label_cost[from_node =1 ] 30, m_link_genalized_cost_array[link_seq_no = 6] = 0
+SP:  checking from node 2  to node -2 cost = 30 , m_node_label_cost[from_node] 30,m_link_genalized_cost_array[link_seq_no] = 0
+SP:  updating node: -2 current cost:1e+15 new cost 30
+SP: add node -2 new cost:30 into SE List -2
+SP:scan SE node: -2 with 1 outgoing link(s). 
+SP:  checking outgoing node 2
+SP:  checking from node -2  to node 2 cost = 30 , m_node_label_cost[from_node =5 ] 30, m_link_genalized_cost_array[link_seq_no = 7] = 0
+SPtree at iteration k = 0 origin node: -1
+SP node: 1 label cost = 0, node_pred_id = -1
+SP node: 2 label cost = 30, node_pred_id = 4
+SP node: 3 label cost = 30, node_pred_id = 1
+SP node: 4 label cost = 15, node_pred_id = 1
+SP node: -1 label cost = 0, node_pred_id = -1
+SP node: -2 label cost = 30, node_pred_id = 2
+backtrace from zone_id =2, index: 0 node_id = -2
+backtrace from zone_id =2, index: 1 node_id = 2
+backtrace from zone_id =2, index: 2 node_id = 3
+backtrace from zone_id =2, index: 3 node_id = 1
+backtrace from zone_id =2, index: 4 node_id = -1
+backtrace from zone_id =2, index: 0 node_id = -2
+backtrace from zone_id =2, index: 1 node_id = 2
+backtrace from zone_id =2, index: 2 node_id = 3
+backtrace from zone_id =2, index: 3 node_id = 1
+backtrace from zone_id =2, index: 4 node_id = -1

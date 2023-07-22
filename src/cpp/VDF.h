@@ -58,12 +58,14 @@ public:
         Q_mu{ 0 }, Q_gamma{ 0 }, dynamic_traffic_management_flag{ 0 },
         volume_before_dtm{ 0 }, speed_before_dtm{ 0 }, DoC_before_dtm{ 0 }, P_before_dtm { 0 },
         volume_after_dtm{ 0 }, speed_after_dtm{ 0 }, DoC_after_dtm{ 0 }, P_after_dtm{ 0 },
-        ref_link_volume{ -1 }, free_speed_diff_link_specific{ 0 }, capacity_diff_link_specific{ 0 }
+        ref_link_volume{ -1 }, free_speed_diff_link_specific{ 0 }, capacity_diff_link_specific{ 0 }, user_given_FFTT_flag { false}
 {
         for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
-            for (int si = 0; si < g_number_of_active_scenarios; si++)
+            for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+            {
                 toll[at][si] = 0;
+            }
 
             free_speed_at[at] = 0;
             capacity_at[at] = 0;
@@ -150,6 +152,7 @@ public:
         )
     {
 
+        double avg_travel_time = 0; 
         // QVDF
             double dc_transition_ratio = 1;
 
@@ -159,6 +162,17 @@ public:
             // uncongested states D <C
             // congested states D > C, leading to P > 1
             double DOC = lane_based_D / max(0.00001, mode_hourly_capacity);
+
+            if (nlanes < 0.6)  // dynamic lane closure scenario 
+            {
+                lane_based_D = max(0.0, volume) * peak_load_factor;
+                DOC = lane_based_D / max(0.00001, mode_hourly_capacity* nlanes);
+                
+            }
+
+            if (DOC > 9.99)  //regulation 
+                DOC = 9.99; 
+
 
             //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
             // we could have a period based FFTT, so we need to convert FFTT to vfree
@@ -381,6 +395,14 @@ public:
 
            ////final stage: compute avg emission in peak period 
            // vq: speed in miles per hour, converted from km per hour
+
+           // apply final travel time range constraints 
+
+           double time_period_in_min = (ending_time_in_hour - starting_time_in_hour)* 60;
+           
+           if (avg_travel_time > max(15, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound 
+               avg_travel_time = max(15, time_period_in_min * 1.5);
+
            double vf_mph = vf / 1.609;
            double vq = vf_mph / max(0.00001, avg_travel_time / FFTT) / 1.609;
 
@@ -522,6 +544,7 @@ public:
     double capacity_diff_link_specific;
 
     double FFTT_at[MAX_MODETYPES];
+    bool user_given_FFTT_flag; 
     double lanes_mode_type[MAX_MODETYPES];
 
     double DOC_mode[MAX_MODETYPES];
@@ -572,8 +595,8 @@ public:
 //    std::map <int, double> link_volume_per_iteration_map;
 
     //output
-    double avg_delay;
-    double avg_travel_time;
+    double avg_delay_0;  // 0 mean driving mode
+    double avg_travel_time_0; // 0 mean driving mode
 
     //// t starting from starting_time_slot_no if we map back to the 24 hour horizon
     float queue_length;

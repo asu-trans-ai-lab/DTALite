@@ -1,0 +1,5 @@
+node_id,node_no,layer_no,MRM_gate_flag,node_type,is_boundary,#_of_outgoing_nodes,activity_node_flag,mode_type,zone_id,cell_code,info_zone_flag,x_coord,y_coord
+1,0,0,-1,,0,3,1,, 1,,0,0.000000,-0.100000
+2,1,0,-1,,0,1,1,, 2,,0,40.300000,0.100000
+3,2,0,-1,,0,1,0,, -1,,0,19.800000,14.800000
+4,3,0,-1,,0,1,0,, -1,,0,19.700000,-9.700000
