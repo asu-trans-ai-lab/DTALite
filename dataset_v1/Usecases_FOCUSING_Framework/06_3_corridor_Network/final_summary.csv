@@ -130,10 +130,10 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 , # of lane closure records in dynamic_traffic_management.csv=,1,
 , # of dms records in dynamic_traffic_management.csv=,0,
 [DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,12000,0,0
+0,0.001,12000,0,0
 1,0,12000,32.9524,9.8415
 2,0,12000,32.9524,0
-3,0.001,12000,32.9524,0
+3,0,12000,32.9524,0
 4,0,12000,32.9524,0
 5,0,12000,32.9524,0
 6,0,12000,32.9524,0
@@ -144,7 +144,7 @@ FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside
 11,0,12000,32.9524,0
 12,0,12000,32.9524,0
 13,0,12000,32.9524,0
-14,0.001,12000,32.9524,0
+14,0,12000,32.9524,0
 15,0,12000,32.9524,0
 16,0,12000,32.9524,0
 17,0,12000,32.9524,0

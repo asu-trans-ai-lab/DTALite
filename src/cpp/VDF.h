@@ -152,20 +152,23 @@ public:
         )
     {
 
+        double time_period_in_min = max(0.1, (ending_time_in_hour - starting_time_in_hour) * 60);
+        double time_period_in_hour = max(0.1,(ending_time_in_hour - starting_time_in_hour));
+
         double avg_travel_time = 0; 
         // QVDF
             double dc_transition_ratio = 1;
 
              // step 1: calculate lane_based D based on plf and nlanes from link volume V over the analysis period  take nonnegative values
-            lane_based_D = max(0.0, volume) * peak_load_factor / max(0.000001, nlanes);
+            lane_based_D = max(0.0, volume) / time_period_in_hour/ max(0.000001, nlanes)/ peak_load_factor;
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity,
             // uncongested states D <C
             // congested states D > C, leading to P > 1
             double DOC = lane_based_D / max(0.00001, mode_hourly_capacity);
 
-            if (nlanes < 0.6)  // dynamic lane closure scenario 
+            if (nlanes < 0.6)  // dynamic lane closure scenario, we computing D, we assume nlanes = 1
             {
-                lane_based_D = max(0.0, volume) * peak_load_factor;
+                lane_based_D = max(0.0, volume) / time_period_in_hour/ peak_load_factor;
                 DOC = lane_based_D / max(0.00001, mode_hourly_capacity* nlanes);
                 
             }
@@ -398,7 +401,6 @@ public:
 
            // apply final travel time range constraints 
 
-           double time_period_in_min = (ending_time_in_hour - starting_time_in_hour)* 60;
            
            if (avg_travel_time > max(15, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound 
                avg_travel_time = max(15, time_period_in_min * 1.5);
@@ -427,7 +429,7 @@ public:
            }
 
            // compute the emission rate as the product of the coefficient and the sum of FFTT and waiting time, adjusted for speed changes
-           double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT + waiting_time_w * ratio);
+           double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT/60.0 + waiting_time_w/60.0 * ratio);
 
            if (emission_rate < -1)
            {
@@ -448,7 +450,7 @@ public:
                ratio = (lambda_emission * vf_mph - vq) /( vf_mph - vq);
            }
 
-           emission_rate = link_type.emissions_nox_matrix[at][0] * (FFTT + waiting_time_w * ratio);
+           emission_rate = link_type.emissions_nox_matrix[at][0] * (FFTT / 60.0 + waiting_time_w / 60.0 * ratio);
 
            // store the computed total NOx emissions for the mode type in the link_avg_nox_emit_per_mode matrix
            link_avg_nox_emit_per_mode[tau][at] = emission_rate / 1000.0;  // convert to kg;

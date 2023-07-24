@@ -212,7 +212,7 @@ No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 [PROCESS INFO] Step 5: Column Re-Generation for Traffic Assignment...
 [DATA INFO] Total Column Re-Generation iteration: 10
 [DATA INFO] Regenerating column for real-time information provision - Iteration Number: 0
-, CPU time: 0.0040 s
+, CPU time: 0.0070 s
 [PROCESS INFO] Step 7.4: skip: path column modification for dms users, as dms count = 0
 [PROCESS INFO] Step 7.5: path column pool optimization for real time information users
 [DATA INFO] Column Updating:Iter. No.   Avg Travel Time   UE Gap Obj        UE Gap (%)          
@@ -228,7 +228,7 @@ No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 [DATA INFO] column updating           9             50.36          2.20e+03            5.3579
 [PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 0.0590 s
+[DATA INFO] Total CPU running time for the entire process = 0.0640 s
 [PROCESS INFO] Step 9: Collecting statistics, generating zonal hierarchy mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
 [PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results.
 [STATUS INFO] writing route_assignment.csv for each scenario
@@ -241,25 +241,25 @@ No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 [STATUS INFO] loading 1 dynamic lane use scenarios in dynamic_traffic_management.csv  
 [DATA INFO] Iter. No.   CPU time(s) Sys. Wide Travel TimeAvg TT              Least system TT     UE Gap (%)  
-[DATA INFO] 1           0.0010      3.6337e+05          30.2812             3.6000e+05          0.9375      
-[DATA INFO] 2           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 1           0.0000      3.6337e+05          30.2812             3.6000e+05          0.9375      
+[DATA INFO] 2           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [DATA INFO] 3           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [DATA INFO] 4           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 5           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 6           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 7           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 5           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 6           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 7           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [DATA INFO] 8           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 9           0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 10          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 9           0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 10          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [DATA INFO] 11          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 12          0.0020      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 13          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 12          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 13          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [DATA INFO] 14          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 15          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 16          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 17          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 18          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
-[DATA INFO] 19          0.0010      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 15          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 16          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 17          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 18          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
+[DATA INFO] 19          0.0000      3.6337e+05          30.2812             3.6337e+05          0.0000      
 [PROCESS INFO] Step 5: Column Pool Updating
 [DATA INFO] Total number of column pool updating iterations = 40
 [DATA INFO] Column Updating:Iter. No.   Avg Travel Time   UE Gap Obj        UE Gap (%)          
@@ -290,7 +290,7 @@ No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 [DATA INFO] column updating           9             44.32          1.16e+04            5.6264
 [PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . 
-[DATA INFO] Total CPU running time for the entire process = 0.0480 s
+[DATA INFO] Total CPU running time for the entire process = 0.0570 s
 [PROCESS INFO] Step 9: Collecting statistics, generating zonal hierarchy mapping (e.g., Zone to Super-Zone and Zone to District Mapping)
 [PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results.
 [STATUS INFO] writing route_assignment.csv for each scenario
@@ -300,7 +300,7 @@ No dynamic lane use scenarios found in dynamic_traffic_management.csv.
 [STATUS INFO] writing data for 2  zones 
 [STATUS INFO] writing link_performances_summary.csv..
 [STATUS INFO] writing link_performances_summary_2way.csv..
-[DATA INFO] CPU running time for outputting simulation results: 0.0280 s
+[DATA INFO] CPU running time for outputting simulation results: 0.0340 s
 [STATUS INFO] Freeing memory..
 [DATA INFO] CPU running time for the entire process: 0 min 0 sec
 [STATUS INFO] DTALite computing process has successfully completed. Congratulations on a successful execution! Feel free to review the results and explore the generated outputs. Thank you for using DTALite and contributing to the advancement of transportation analysis and open science.
