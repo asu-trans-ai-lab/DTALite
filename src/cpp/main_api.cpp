@@ -351,7 +351,7 @@ void g_reset_link_volume_in_master_program_without_columns(int number_of_links, 
 					// after link volumn "tally", self-deducting the path volume by 1/(k+1) (i.e. keep k/(k+1) ratio of previous flow)
 					// so that the following shortes path will be receiving 1/(k+1) flow
 					g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] * ratio;
-					g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] * ratio;
+					g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] * ratio;
 
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
@@ -555,7 +555,7 @@ void g_reset_link_volume_for_all_processors()
 				for (int i = 0; i < number_of_links; ++i)
 				{
 					pNetwork->m_link_mode_type_volume_array[i] = 0;
-					pNetwork->m_link_person_volume_array[i] = 0;
+					pNetwork->m_link_agent_volume_array[i] = 0;
 
 
 				}
@@ -576,7 +576,7 @@ void g_fetch_link_volume_for_all_processors()
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
 			g_link_vector[i].total_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_mode_type_volume_array[i];
-			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_person_volume_array[i];
+			g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_agent_volume_array[i];
 
 			g_link_vector[i].volume_per_mode_type_per_period[pNetwork->m_tau][pNetwork->m_mode_type_no] += pNetwork->m_link_mode_type_volume_array[i];
 
@@ -1678,6 +1678,11 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		g_DTA_log_file << "[PROCESS INFO] Step 10: Outputting Traffic Assignment and Simulation Results." << '\n';
 
 		g_output_assignment_result(assignment,0);
+
+		if (simulation_iterations >= 1)
+		{
+			g_output_agent_csv(assignment);
+		}
 
 	// g_output_demand_bin(assignment);
 	// 

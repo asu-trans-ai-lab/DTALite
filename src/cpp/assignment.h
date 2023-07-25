@@ -58,7 +58,7 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 		{
 			// used in travel time calculation
 			g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
-			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
+			g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = 0;
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
@@ -134,7 +134,7 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 #pragma omp critical
 									{
 										g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume ;
-										g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+										g_link_vector[link_seq_no].total_agent_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
 										g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 
@@ -299,7 +299,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 		{
 			// used in travel time calculation
 			g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
-			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
+			g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = 0;
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
@@ -461,7 +461,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 #pragma omp critical
 									{
 										g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
-										g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+										g_link_vector[link_seq_no].total_agent_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
 										g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 									}
@@ -624,7 +624,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 			{
 				// used in travel time calculation
 				g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
-				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
+				g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
@@ -720,7 +720,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
 									g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
-									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].total_agent_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
 									g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 								}
@@ -842,7 +842,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 			{
 				// used in travel time calculation
 				g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
-				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
+				g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
@@ -977,7 +977,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
 									g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
-									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
+									g_link_vector[link_seq_no].total_agent_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * OCC_ratio;
 									g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 								}

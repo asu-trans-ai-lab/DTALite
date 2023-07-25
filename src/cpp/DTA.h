@@ -225,18 +225,20 @@ class CModeType_Summary
 {
 public:
     CModeType_Summary() : count{ 0 },
-        total_od_volume{ 0 }, total_person_distance_km{ 0 }, total_person_distance_mile{ 0 }, total_person_travel_time{ 0 }, total_person_co2{ 0 }, total_person_nox{ 0 }, avg_travel_time{ 0 }, avg_travel_distance_km{ 0 }, avg_travel_distance_mile{ 0 }, avg_co2{ 0 }, avg_nox { 0} 
+        total_od_volume{ 0 }, total_agent_distance_km{ 0 }, total_agent_distance_mile{ 0 }, total_agent_travel_time{ 0 }, total_agent_co2{ 0 }, total_agent_nox{ 0 }, avg_travel_time{ 0 }, avg_travel_distance_km{ 0 }, avg_travel_distance_mile{ 0 }, avg_co2{ 0 }, avg_nox { 0} 
     {}
 
     int count;
     double total_od_volume;
-    double total_person_distance_km;
-    double total_person_distance_mile;
-    double total_person_travel_time;
-    double total_person_co2;
-    double total_person_nox;
+    double total_agent_distance_km;
+    double total_agent_distance_mile;
+    double total_agent_travel_time;
+    double total_agent_delay;
+    double total_agent_co2;
+    double total_agent_nox;
 
     double avg_travel_time;
+    double avg_travel_delay;
     double avg_co2;
     double avg_nox;
     double avg_travel_distance_km;
@@ -260,11 +262,11 @@ public:
 
         data_by_demand_period_mode_type[tau][at].count =0;
         data_by_demand_period_mode_type[tau][at].total_od_volume = 0;
-        data_by_demand_period_mode_type[tau][at].total_person_travel_time = 0;
-        data_by_demand_period_mode_type[tau][at].total_person_distance_km = 0;
-        data_by_demand_period_mode_type[tau][at].total_person_distance_mile = 0;
-        data_by_demand_period_mode_type[tau][at].total_person_co2 = 0;
-        data_by_demand_period_mode_type[tau][at].total_person_nox = 0;
+        data_by_demand_period_mode_type[tau][at].total_agent_travel_time = 0;
+        data_by_demand_period_mode_type[tau][at].total_agent_distance_km = 0;
+        data_by_demand_period_mode_type[tau][at].total_agent_distance_mile = 0;
+        data_by_demand_period_mode_type[tau][at].total_agent_co2 = 0;
+        data_by_demand_period_mode_type[tau][at].total_agent_nox = 0;
 
     }
 
@@ -283,11 +285,13 @@ public:
             return;
 
         data_by_demand_period_mode_type[tau][at].count += 1;
-        data_by_demand_period_mode_type[tau][at].total_person_travel_time += element.total_person_travel_time;
-        data_by_demand_period_mode_type[tau][at].total_person_distance_km += element.total_person_distance_km;
-        data_by_demand_period_mode_type[tau][at].total_person_distance_mile += element.total_person_distance_mile;
-        data_by_demand_period_mode_type[tau][at].total_person_co2+= element.total_person_co2;
-        data_by_demand_period_mode_type[tau][at].total_person_nox += element.total_person_nox;
+        data_by_demand_period_mode_type[tau][at].total_agent_travel_time += element.total_agent_travel_time;
+        data_by_demand_period_mode_type[tau][at].total_agent_distance_km += element.total_agent_distance_km;
+        data_by_demand_period_mode_type[tau][at].total_agent_distance_mile += element.total_agent_distance_mile;
+        data_by_demand_period_mode_type[tau][at].total_agent_delay += element.total_agent_delay;
+        
+        data_by_demand_period_mode_type[tau][at].total_agent_co2+= element.total_agent_co2;
+        data_by_demand_period_mode_type[tau][at].total_agent_nox += element.total_agent_nox;
 
     }
 
@@ -296,11 +300,12 @@ public:
         float count = data_by_demand_period_mode_type[tau][at].count;
         if (count >= 1)
         {
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_person_distance_km / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_person_distance_mile / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_person_travel_time / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_co2 = data_by_demand_period_mode_type[tau][at].total_person_co2 / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_nox = data_by_demand_period_mode_type[tau][at].total_person_nox / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_agent_distance_km / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_agent_distance_mile / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_agent_travel_time / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_delay = data_by_demand_period_mode_type[tau][at].total_agent_delay / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_co2 = data_by_demand_period_mode_type[tau][at].total_agent_co2 / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_nox = data_by_demand_period_mode_type[tau][at].total_agent_nox / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
         }
     }
 
@@ -402,7 +407,7 @@ public:
 
 class CColumnPath {
 public:
-    CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
+    CColumnPath() : path_node_vector{ nullptr }, path_link_vector{ nullptr }, path_seq_no{ 0 }, route_seq_id{ 0 }, m_link_size{ 0 }, m_node_size{ 0 },
         path_switch_volume{ 0 }, path_volume{ 0 }, path_preload_volume{ 0 }, path_volume_before_ODME{ -1 }, path_volume_after_ODME{ -1 }, path_volume_before_dtm{ -1 }, path_volume_after_dtm{ -1 }, path_travel_time{ 0 }, path_distance{ 0 }, path_toll{ 0 }, UE_gap{ 0 }, UE_relative_gap{ 0 },
         path_gradient_cost{ 0 }, path_gradient_cost_difference{ 0 }, path_gradient_cost_relative_difference{ 0 }, subarea_output_flag{ 1 }, measurement_flag{ 0 }, impacted_path_flag{ 0 },
         network_design_detour_mode{ 0 }, b_RT_new_path_flag{0}, global_path_no{ -1 }, b_sensitivity_analysis_flag{ false }
@@ -501,7 +506,8 @@ public:
     int* path_link_vector;
 
     std::vector<int> path_link_STL_vector;
-    int path_seq_no;
+    int path_seq_no;  // path id within an OD pair
+    int route_seq_id; // across all OD pairs
     int global_path_no;
     std::string path_id;
     // path volume
@@ -1206,7 +1212,7 @@ public:
         for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
         {
             total_volume_for_all_mode_types_per_period[tau] = 0;
-            total_person_volume_for_all_mode_types_per_period[tau] = 0;
+            total_agent_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
             //cost_perhour[tau] = 0;
             for (int at = 0; at < g_number_of_active_mode_types; ++at)
@@ -1543,7 +1549,7 @@ public:
     int subarea_id;
 
     double total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
-    double total_person_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
+    double total_agent_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
 
     double RT_flow_volume;
     double background_total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];

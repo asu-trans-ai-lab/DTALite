@@ -94,8 +94,8 @@ public:
 		if (m_link_mode_type_volume_array)  //8
 			delete[] m_link_mode_type_volume_array;
 
-		if (m_link_person_volume_array)  //8
-			delete[] m_link_person_volume_array;
+		if (m_link_agent_volume_array)  //8
+			delete[] m_link_agent_volume_array;
 
 		if (m_link_genalized_cost_array) //9
 			delete[] m_link_genalized_cost_array;
@@ -158,7 +158,7 @@ public:
 	int* m_link_predecessor;
 
 	double* m_link_mode_type_volume_array;  // for VDF computing based on PCE
-	double* m_link_person_volume_array;  // person delay counting based on agent type
+	double* m_link_agent_volume_array;  // person delay counting based on agent type
 
 	double* m_link_genalized_cost_array;
 	int* m_link_outgoing_connector_zone_seq_no_array;
@@ -186,7 +186,7 @@ public:
 		m_node_label_cost = new double[number_of_nodes];  //7
 
 		m_link_mode_type_volume_array = new double[number_of_links];  //8
-		m_link_person_volume_array = new double[number_of_links];  //8
+		m_link_agent_volume_array = new double[number_of_links];  //8
 
 		m_link_genalized_cost_array = new double[number_of_links];  //9
 
@@ -596,7 +596,7 @@ public:
 								{
 									// this is critical for parallel computing as we can write the volume to data
 									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
-									m_link_person_volume_array[current_link_seq_no] += volume;
+									m_link_agent_volume_array[current_link_seq_no] += volume;
 
 									//dtalog.output() << "node = " << g_node_vector[i].node_id
 									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
@@ -832,7 +832,7 @@ public:
 								{
 									// this is critical for parallel computing as we can write the volume to data
 									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
-									m_link_person_volume_array[current_link_seq_no] += volume;
+									m_link_agent_volume_array[current_link_seq_no] += volume;
 
 
 									//dtalog.output() << "node = " << g_node_vector[i].node_id

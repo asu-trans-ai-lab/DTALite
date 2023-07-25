@@ -1349,7 +1349,7 @@ void Assignment::STTrafficSimulation()
 			}
 		} // conditions
 	}  // departure time events
-	g_output_agent_csv(assignment);
+
 
 }
 
