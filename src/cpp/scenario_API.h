@@ -255,7 +255,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				// capacity in the space time arcs
 				float final_lanes = 0;
 				parser.GetValueByFieldName("final_lanes", final_lanes);
-				mode_type_no = 0; //this lane_closure is only for driving mode
+			//	mode_type_no = 0; //this lane_closure is only for driving mode, this should be commented out 
 				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
 				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = -1;

@@ -3264,7 +3264,7 @@ void g_read_input_data(Assignment& assignment)
 						continue; 
 					}
 
-					sprintf(CSV_field_name, "meu_%s_%s", assignment.g_ModeTypeVector[at].mode_type.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					sprintf(CSV_field_name, "meu_%s_%s", assignment.g_ModeTypeVector[at].mode_type.c_str(), assignment.g_ModeTypeVector[at2].mode_type.c_str());
 					if(parser_link_type.GetValueByFieldName(CSV_field_name, meu_value, false, false)== false)
 					{
 						if (line_no == 0 && meu_log_count < 3) {

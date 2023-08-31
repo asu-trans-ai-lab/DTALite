@@ -638,7 +638,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 	RT_waiting_time = 0;
 
 	// Fetching the link type for the active scenario
-	int link_type = link_type_si[assignment.active_scenario_index];
+	int link_type_index = link_type_si[assignment.active_scenario_index];
 
 	// Looping over all demand periods
 	for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
@@ -660,11 +660,15 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			for (int mode_type_index_secondary = 0; mode_type_index_secondary < assignment.g_ModeTypeVector.size(); mode_type_index_secondary++)
 			{
 				// Fetching the MEU conversion value for this mode type pair
-				double MEU_conversion_value = assignment.g_LinkTypeMap[link_type].meu_matrix[mode_type_index][mode_type_index_secondary];
+				double MEU_conversion_value = assignment.g_LinkTypeMap[link_type_index].meu_matrix[mode_type_index][mode_type_index_secondary];
 
 				if (mode_type_index == mode_type_index_secondary)
 					MEU_conversion_value = 1.0;
 
+				if (this->from_node_id == 1 && this->to_node_id == 3 && volume_per_mode_type_per_period[tau][mode_type_index_secondary] >0)
+				{
+					int idebug = 1;
+				}
 				// Adding the converted volume to the MEU conversion volume
 				converted_MEU_volume_per_period_per_at[tau][mode_type_index] += volume_per_mode_type_per_period[tau][mode_type_index_secondary] * MEU_conversion_value;
 			}
@@ -684,7 +688,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				else
 					mode_FFTT = link_distance_VDF/ max(0.0001, free_speed_si[assignment.active_scenario_index]) * 60.0;
 
-				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][primary_mode_index];  // peak load factor 
+				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type_index].peak_load_factor_period_at[tau][primary_mode_index];  // peak load factor 
 
 				// Adding preloaded volume to the converted MEU volume for this period and mode type
 				link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][primary_mode_index] + VDF_period[tau].preload;
@@ -697,13 +701,13 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				// For active and public transportation modes, they have their own specific speed limit and capacity 
 
 				mode_FFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[mode_type_index] * 60.0;
-				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][mode_type_index];
+				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type_index].peak_load_factor_period_at[tau][mode_type_index];
 
 				// Fetching the converted MEU volume for this period and mode type
 				link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][mode_type_index];
 
 				// Fetching the hourly capacity for this mode type
-				mode_hourly_capacity = assignment.g_LinkTypeMap[link_type].capacity_at[mode_type_index];
+				mode_hourly_capacity = assignment.g_LinkTypeMap[link_type_index].capacity_at[mode_type_index];
 			}
 			int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 			// Fetching the number of lanes for this period and mode type
@@ -730,6 +734,9 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				link_avg_travel_time_per_period[tau][mode_type_index] = 0;
 			else
 			{
+
+
+
 			// Calculate travel time based on QVDF
 			link_avg_travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
 				mode_type_index,
@@ -742,6 +749,12 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				link_type, tau, this->link_avg_co2_emit_per_mode, this->link_avg_nox_emit_per_mode);
 
 			}
+
+			if (mode_type_index == 0 && this->from_node_id == 1 && this->to_node_id == 3 && link_volume_to_be_assigned >= 1 && VDF_period[tau].DOC_mode[0] <0.0001)
+			{
+				int idebug = 1;
+			}
+
 			// Add additional penalty if exists
 			if (fabs(penalty_si_at[tau][mode_type_index][scenario_no]) > 0.0001)
 			{
@@ -1629,7 +1642,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			dtalog.output() << "[PROCESS INFO] Step 7.5: path column pool optimization for real time information users" << '\n';
 			g_DTA_log_file << "[PROCESS INFO] Step 7.5: path column pool optimization for real time information users" << '\n';
 			// stage III: after DMS path modification, we enable further user equilibirum computing for real time info users by switching their routes
-			g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations_for_dtm, true);
+			g_column_pool_optimization(assignment, assignment.g_number_of_sensitivity_analysis_iterations_for_dtm, UE_convergence_percentage, true);
 
 			dtalog.output() << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';
 			g_DTA_log_file << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';

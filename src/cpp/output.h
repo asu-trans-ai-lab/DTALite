@@ -639,18 +639,18 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 	//	fprintf(g_pFilePathMOE, "ODME_Vol_%d,", iteration_number);
 	//}
 
-	////stage 3: sensitivity analysi
-	//for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
-	//{
-	//	fprintf(g_pFilePathMOE, "DTM_TT_%d,", iteration_number);
-	//}
-	//for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
-	//{
-	//	if (iteration_number == 0)
-	//		fprintf(g_pFilePathMOE, "DTM_Vol_%d,", iteration_number);
-	//	else
-	//		fprintf(g_pFilePathMOE, "DTM_Delta_Vol_%d,", iteration_number);
-	//}
+	//stage 3: sensitivity analysis
+	for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
+	{
+		fprintf(g_pFilePathMOE, "DTM_TT_%d,", iteration_number);
+	}
+	for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
+	{
+		if (iteration_number == 0)
+			fprintf(g_pFilePathMOE, "DTM_Vol_%d,", iteration_number);
+		else
+			fprintf(g_pFilePathMOE, "DTM_Delta_Vol_%d,", iteration_number);
+	}
 	fprintf(g_pFilePathMOE, "\n");
 
 	int count = 1;
@@ -674,8 +674,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 	double path_travel_time = 0;
 	double path_travel_delay = 0;
 
-	double path_co2 = 0;
-	double path_nox = 0;
+
 
 	float path_travel_time_without_access_link = 0;
 	float path_delay = 0;
@@ -945,6 +944,9 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 							path_travel_delay = 0;
 							path_travel_time_without_access_link = 0;
 							path_FF_travel_time = 0;
+
+							double path_co2 = 0;
+							double path_nox = 0;
 
 							path_time_vector[0] = time_stamp;
 							path_time_vector[1] = time_stamp;
@@ -1254,6 +1256,8 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 									fprintf(g_pFilePathMOE, "0,,,,,,,");
 
 								}
+
+								fprintf(g_pFilePathMOE, ",");
 								//for (int nt = 0 + virtual_first_link_delta; nt < min(5000-1, it->second.m_node_size - virtual_last_link_delta); ++nt)
 								//{
 								//    if(path_time_vector[nt] < assignment.g_LoadingEndTimeInMin)
@@ -1325,31 +1329,31 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 								//stage III:
 
-								//// output the TT and vol of sensitivity analysis
-								//for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
-								//{
-								//	double TT = -1;
-								//	if (it->second.path_time_per_iteration_SA_map.find(iteration_number) != it->second.path_time_per_iteration_SA_map.end())
-								//	{
-								//		TT = it->second.path_time_per_iteration_SA_map[iteration_number];
-								//	}
+								// output the TT and vol of sensitivity analysis
+								for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
+								{
+									double TT = -1;
+									if (it->second.path_time_per_iteration_SA_map.find(iteration_number) != it->second.path_time_per_iteration_SA_map.end())
+									{
+										TT = it->second.path_time_per_iteration_SA_map[iteration_number];
+									}
 
-								//	fprintf(g_pFilePathMOE, "%f,", TT);
+									fprintf(g_pFilePathMOE, "%f,", TT);
 
-								//}
-								//double prev_value = 0;
-								//for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
-								//{
-								//	double Vol = 0;
-								//	if (it->second.path_volume_per_iteration_SA_map.find(iteration_number) != it->second.path_volume_per_iteration_SA_map.end())
-								//	{
-								//		Vol = it->second.path_volume_per_iteration_SA_map[iteration_number];
-								//	}
+								}
+								double prev_value = 0;
+								for (int iteration_number = 0; iteration_number <= assignment.g_number_of_sensitivity_analysis_iterations_for_dtm; iteration_number++)
+								{
+									double Vol = 0;
+									if (it->second.path_volume_per_iteration_SA_map.find(iteration_number) != it->second.path_volume_per_iteration_SA_map.end())
+									{
+										Vol = it->second.path_volume_per_iteration_SA_map[iteration_number];
+									}
 
-								//	fprintf(g_pFilePathMOE, "%f,", Vol - prev_value);
-								//	prev_value = Vol;
+									fprintf(g_pFilePathMOE, "%f,", Vol - prev_value);
+									prev_value = Vol;
 
-								//}
+								}
 
 
 
@@ -1686,8 +1690,21 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].VDF_period[tau].capacity_at[at] * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index]); //
 
+
+
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-					fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].VDF_period[tau].DOC_mode[at]);
+				{
+					fprintf(g_pFileLinkMOE, "%f,", g_link_vector[i].VDF_period[tau].DOC_mode[at]);
+
+					if (g_link_vector[i].from_node_id == 1 && g_link_vector[i].to_node_id == 3)
+					{
+
+						int idebug = 1;
+
+					}
+
+
+				}
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].link_avg_travel_time_per_period[tau][at]);
@@ -2406,7 +2423,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 						for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 						{
 
-							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);  // DOC
+							fprintf(g_pFileLinkMOE, "%.4f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);  // DOC
 
 						}
 					}
@@ -2482,7 +2499,7 @@ void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
 							fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_MEU_per_period_per_at[tau][at][scenario_no]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_capacity_per_period_per_at[tau][at][scenario_no]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].penalty_si_at[tau][at][scenario_no]);
-							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
+							fprintf(g_pFileLinkMOE, "%.4f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_TT_per_period_per_at[tau][at][scenario_no]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_CO2_per_period_per_at[tau][at][scenario_no]);
 							fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_NOX_per_period_per_at[tau][at][scenario_no]);
@@ -2839,7 +2856,7 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 						fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].penalty_si_at[tau][at][scenario_no]);
 
 						
-						fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
+						fprintf(g_pFileLinkMOE, "%.4f,", g_link_vector[i].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
 						fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[i].recorded_TT_per_period_per_at[tau][at][scenario_no]);
 
 					}
@@ -2866,7 +2883,7 @@ void g_output_2_way_assignment_summary_result(Assignment& assignment, int subare
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_capacity_per_period_per_at[tau][at][scenario_no]);
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].penalty_si_at[tau][at][scenario_no]);
 							
-								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
+								fprintf(g_pFileLinkMOE, "%.4f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_DOC_per_period_per_at[tau][at][scenario_no]);
 								fprintf(g_pFileLinkMOE, "%.3f,", g_link_vector[g_link_vector[i].BA_link_no].recorded_TT_per_period_per_at[tau][at][scenario_no]);
 							}
 							else
