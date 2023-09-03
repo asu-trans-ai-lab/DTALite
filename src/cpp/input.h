@@ -2831,6 +2831,10 @@ void g_read_input_data(Assignment& assignment)
 			}
 
 			parser_mode_type.GetValueByFieldName("vot", mode_type.value_of_time, false, false);
+			parser_mode_type.GetValueByFieldName("eco_so_flag", mode_type.eco_so_flag, false, false);
+			parser_mode_type.GetValueByFieldName("eco_so_flow_switch_bound", mode_type.eco_so_flow_switch_bound, false, false);
+
+			
 
 			// scan through the map with different node sum for different paths
 
@@ -3353,7 +3357,7 @@ void g_read_input_data(Assignment& assignment)
 				g_ParserDoubleSequence(emissions_co2_str, emissions_co2_coeff_vector);
 
 				// Store up to the first 4 emissions coefficients in the element's matrix
-				for (int i = 0; i < min(4, emissions_co2_coeff_vector.size()); i++)
+				for (int i = 0; i < min(static_cast<size_t>(4), emissions_co2_coeff_vector.size()); i++)
 				{
 					element.emissions_co2_matrix[at][i] = emissions_co2_coeff_vector[i];
 				}
@@ -3374,7 +3378,7 @@ void g_read_input_data(Assignment& assignment)
 				std::vector<double> emissions_nox_coeff_vector;
 				g_ParserDoubleSequence(emissions_nox_str, emissions_nox_coeff_vector);
 
-				for (int i = 0; i < min(4, emissions_nox_coeff_vector.size()); i++)
+				for (int i = 0; i < min(static_cast<size_t>(4), emissions_nox_coeff_vector.size()); i++)
 				{
 					element.emissions_nox_matrix[at][i] = emissions_nox_coeff_vector[i];
 				}

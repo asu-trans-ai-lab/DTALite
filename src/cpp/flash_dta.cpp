@@ -807,9 +807,20 @@ int main()
 
 
 		if (CheckSupplySideScenarioFileExist() == true)
-			sensitivity_analysis_iterations = 10;
+		{
+
+			sensitivity_analysis_iterations = 20;
+			int sensitivity_analysis_iterations_value = -1;
+			if (parser_settings.GetValueByKeyName("sensitivity_analysis_iterations", sensitivity_analysis_iterations_value, false, false))
+			{
+				sensitivity_analysis_iterations = sensitivity_analysis_iterations_value;
+			}
+		}
+			
 		else
+		{
 			sensitivity_analysis_iterations = -1;
+		}
 
 		int route_output = 1;
 		int route_output_value = -1;

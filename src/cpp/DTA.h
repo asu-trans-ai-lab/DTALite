@@ -310,13 +310,12 @@ public:
     }
 
     CModeType_Summary data_by_demand_period_mode_type[MAX_TIMEPERIODS][MAX_MODETYPES];
-};
-
+}; 
 
 class Cmode_type {
 public:
     Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information_type{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
-         OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }
+        OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }
     {
     }
 
@@ -325,6 +324,8 @@ public:
     int mode_type_no;
     // dollar per hour
     float value_of_time;
+    int eco_so_flag;
+    int eco_so_flow_switch_bound;
     // link type, product consumption equivalent used, for travel time calculation
     double OCC;
     double DSR;
@@ -1276,6 +1277,17 @@ public:
         // *60 as 60 min per hour
         double generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no] + VDF_period[tau].penalty + VDF_period[tau].toll[mode_type_no][assignment.active_scenario_index] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
 
+
+        if (assignment.g_ModeTypeVector[mode_type_no].eco_so_flag == 1)  // eo so users; 
+        {
+        
+        double speed_mph = this->link_distance_VDF / 1.6 / (max(0.001, link_avg_travel_time_per_period[tau][mode_type_no] / 60));
+        
+        generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no];
+
+        }
+        //double emission_marginal = function(link_avg_travel_time_per_period[tau][mode_type_no], this->link_distance_VDF);
+      
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
         //    generalized_cost += travel_marginal_cost_per_period[tau][mode_type_no];

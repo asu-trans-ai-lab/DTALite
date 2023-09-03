@@ -400,7 +400,7 @@ public:
     bool GetValueByFieldName(std::string field_name, std::string& value, bool required_field = true);
     template <class T> bool GetValueByFieldName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
     template <class T> bool GetValueByKeyName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
-    bool CDTACSVParser::CheckingSettingFormat()
+    bool CheckingSettingFormat()
     {
         ReadRecord();
         std::string  field_name = "key";

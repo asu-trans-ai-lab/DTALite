@@ -1399,6 +1399,12 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 									{
 										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference / max(0.0001, largest_gradient_cost);
 
+										if (assignment.g_ModeTypeVector[at].eco_so_flag == 1)  // eo so users; 
+										{
+											 // without considering the relative difference
+										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference ;
+										}
+
 										total_OD_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);
 										total_OD_travel_time += (it->second.path_gradient_cost * it->second.path_volume);
 
@@ -1427,7 +1433,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 										// real time and DMS users only switch when they see the DMS or pass through the incident on the original routes
 
 //										step_size = 1.0 / (inner_iteration_number + 2) * p_column_pool->od_volume[assignment.active_scenario_index]; // small changes
-										step_size = 1.0 / (inner_iteration_number + 2);
+										step_size = 1.0 / (inner_iteration_number + 1);
 
 										if (step_size < 0.05)
 											step_size = 0.05;
@@ -1451,6 +1457,14 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 									flow_shift = step_size* max(0.0000, it->second.path_gradient_cost_relative_difference* p_column_pool->od_volume[assignment.active_scenario_index]);  // version 3: relative grad * OD volume
 
 
+									if (assignment.g_ModeTypeVector[at].eco_so_flag == 1)  // eo so users; 
+									{
+										// without considering the relative difference
+										if (inner_iteration_number >= 5 && flow_shift >= assignment.g_ModeTypeVector[at].eco_so_flow_switch_bound)
+										{
+											flow_shift = assignment.g_ModeTypeVector[at].eco_so_flow_switch_bound;
+										}
+									}
 
 									//if (it->second.path_gradient_cost_relative_difference > 3 * 60)  // difference more than 3 hours
 									//{

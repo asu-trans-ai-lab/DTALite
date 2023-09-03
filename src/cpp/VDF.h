@@ -384,11 +384,11 @@ public:
 
                if (t < pl_t0)
                {
-                   est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
+                   est_volume_per_hour_per_lane[t_interval] = min(static_cast<float_t>(lane_based_ultimate_hourly_capacity), est_volume_per_hour_per_lane[t_interval]);
                }
                else if (t > pl_t3)
                {
-                   est_volume_per_hour_per_lane[t_interval] = min(lane_based_ultimate_hourly_capacity, est_volume_per_hour_per_lane[t_interval]);
+                   est_volume_per_hour_per_lane[t_interval] = min(static_cast<float_t>(lane_based_ultimate_hourly_capacity), est_volume_per_hour_per_lane[t_interval]);
                }
                else
                {
@@ -403,8 +403,8 @@ public:
            // apply final travel time range constraints 
 
            
-           if (avg_travel_time > max(15, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound 
-               avg_travel_time = max(15, time_period_in_min * 1.5);
+           if (avg_travel_time > max(15.0, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound 
+               avg_travel_time = max(15.0, time_period_in_min * 1.5);
 
            double vf_mph = vf / 1.609;
            double vq = vf_mph / max(0.00001, avg_travel_time / FFTT) / 1.609;
