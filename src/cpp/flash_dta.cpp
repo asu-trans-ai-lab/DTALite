@@ -96,7 +96,7 @@ bool write_default_scenario_index_file_if_not_exist()
 
 	// Write the data to the file.
 	for (const auto& item : data) {
-		outFile << std::get<0>(item) << ","
+		outFile << std::get<0>(item) << "0,"
 			<< std::get<1>(item) << ","
 			<< std::get<2>(item) << ","
 			<< std::get<3>(item) << ","
@@ -137,7 +137,7 @@ int write_default_demand_period_file_if_not_exist() {
 
 	// Write the data to the file.
 	for (const auto& item : data) {
-		outFile << std::get<0>(item) << ","
+		outFile << std::get<0>(item) << "0,"
 			<< std::get<1>(item) << ","
 			<< std::get<2>(item) << ","
 			<< std::get<3>(item) << ","
@@ -184,7 +184,7 @@ void write_default_mode_type_file_if_not_exist() {
 
 	// Write the data to the file.
 	for (const auto& item : data) {
-		outFile << std::get<0>(item) << ","
+		outFile << std::get<0>(item) << "0,"
 			<< std::get<1>(item) << ","
 			<< std::get<2>(item) << ","
 			<< std::get<3>(item) << ","
@@ -325,7 +325,7 @@ void write_default_link_type_file_if_not_exist() {
 		"emissions_ev_nox,emissions_truck_co2,emissions_truck_nox,emissions_bus_co2,emissions_bus_nox,emissions_hov_co2,emissions_hov_nox\n";
 
 	for (const auto& item : data) {
-		outFile << item.first_column << ","
+		outFile << item.first_column << "0,"
 			<< item.link_type << ","
 			<< item.link_type_name << ","
 			<< item.name_description << ","
@@ -411,7 +411,7 @@ void write_default_demand_file_list_if_not_exist() {
 		"scale_factor,departure_time_profile_no,comment\n";
 
 	for (const auto& item : data) {
-		outFile << item.first_column << ","
+		outFile << item.first_column << "0,"
 			<< item.file_sequence_no << ","
 			<< item.scenario_index_vector << ","
 			<< item.file_name << ","

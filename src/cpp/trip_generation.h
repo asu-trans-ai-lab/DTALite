@@ -402,7 +402,7 @@ void g_grid_zone_generation(Assignment& assignment)
 				double x_coord_right = x_coord_left + assignment.m_GridResolution;
 				double y_coord_top = y_coord_bottom + assignment.m_GridResolution;
 
-				fprintf(g_pFileZone, ",");
+				fprintf(g_pFileZone, "0,");
 				fprintf(g_pFileZone, "%ld,", assignment.cell_id_mapping.size() + 1);
 				// generate access nodes
 				std::vector <int> access_node_vector;
@@ -708,7 +708,7 @@ bool g_TAZ_2_GMNS_zone_generation(Assignment& assignment)
 		}
 
 
-		fprintf(g_pFileZone, ",%d,", l_TAZ_vector[taz].zone_org_id);
+		fprintf(g_pFileZone, "0,%d,", l_TAZ_vector[taz].zone_org_id);
 
 		for (int n = 0; n < access_node_seq_vector.size(); n++)
 		{

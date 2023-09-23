@@ -1402,7 +1402,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 										if (assignment.g_ModeTypeVector[at].eco_so_flag == 1)  // eo so users; 
 										{
 											 // without considering the relative difference
-										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference ;
+										it->second.path_gradient_cost_relative_difference = it->second.path_gradient_cost_difference/ max(0.0001, largest_gradient_cost);
 										}
 
 										total_OD_gap += (it->second.path_gradient_cost_difference * it->second.path_volume);

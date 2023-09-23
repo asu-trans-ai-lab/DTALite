@@ -235,7 +235,7 @@ void g_outputZonalHierarchyMapping(Assignment& assignment)
 
 		int analysis_district_id = assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[g_zone_vector[orig].zone_seq_no];
 
-		fprintf(g_pFileZone, ",%d,%f,%f,%d,%d,%f,%d,%d\n",
+		fprintf(g_pFileZone, "0,%d,%f,%f,%d,%d,%f,%d,%d\n",
 			g_zone_vector[orig].zone_id, g_zone_vector[orig].cell_x, g_zone_vector[orig].cell_y,
 			g_zone_vector[orig].sindex,
 			analysis_district_id,
@@ -263,7 +263,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 			for (int at = 0; at < mode_type_size; ++at)
 			{
 				int scenario_no = assignment.g_active_DTAscenario_map[it_s->first];
-				assignment.summary_system_file << "," << it_s->first << "," << assignment.g_DTA_scenario_vector[scenario_no].scenario_name.c_str() << ",";
+				assignment.summary_system_file << "0," << it_s->first << "," << assignment.g_DTA_scenario_vector[scenario_no].scenario_name.c_str() << ",";
 				assignment.summary_system_file << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ",";
 
 				assignment.summary_system_file << assignment.g_ModeTypeVector[at].mode_type.c_str() << ",";
@@ -537,7 +537,7 @@ void g_output_district_performance_result(Assignment& assignment)
 			for (int at = 0; at < mode_type_size; ++at)
 			{
 
-				assignment.summary_system_file << "," << it_s->first << "," << assignment.g_DTA_scenario_vector[scenario_no].scenario_name.c_str() << ",";
+				assignment.summary_system_file << "0," << it_s->first << "," << assignment.g_DTA_scenario_vector[scenario_no].scenario_name.c_str() << ",";
 				assignment.summary_system_file << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ",";
 
 				assignment.summary_system_file << assignment.g_ModeTypeVector[at].mode_type.c_str() << ",";
@@ -1108,7 +1108,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 								// keep this record
 								it->second.route_seq_id= count;
-								fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d->%d,%d,%s,%s,",
+								fprintf(g_pFilePathMOE, "0,%d,%d,%d,%d,%d,%d->%d,%d,%s,%s,",
 									count,
 									g_zone_vector[orig].zone_id,
 									g_zone_vector[dest].zone_id,
@@ -1822,7 +1822,7 @@ void g_output_choice_set_result(Assignment& assignment)
 	{
 		for (int alt_no = 0; alt_no < it->second.choice_alt_vector.size(); alt_no++)  // for each alternative, 2nd loop
 		{
-			fprintf(g_pFilePathMOE, ",");  //multi_dim_choice_id,mode_tag,demand_period_tag,spatial_tag,travel_purpose_tag,data_tag,
+			fprintf(g_pFilePathMOE, "0,");  //multi_dim_choice_id,mode_tag,demand_period_tag,spatial_tag,travel_purpose_tag,data_tag,
 			fprintf(g_pFilePathMOE, "%s,%s,%s,%s,%s,%s,", it->first.c_str(),
 				it->second.mode_tag.c_str(), it->second.demand_period_tag.c_str(), it->second.spatial_tag.c_str(), it->second.travel_purpose_tag.c_str(), it->second.data_tag.c_str());
 
@@ -3990,7 +3990,7 @@ void g_output_agent_csv(Assignment& assignment)
 
 
 										// some bugs for output link performances before
-										fprintf(g_pFilePathMOE, ",%d,%d,%d,%d->%d,%d,%d,%d,%d,%d,%d,%s,",
+										fprintf(g_pFilePathMOE, "0,%d,%d,%d,%d->%d,%d,%d,%d,%d,%d,%d,%s,",
 											pAgentSimu->agent_id,
 											g_zone_vector[orig].zone_id,
 											g_zone_vector[dest].zone_id,
@@ -4252,7 +4252,7 @@ void g_output_trajectory_csv(Assignment& assignment)
 										//    break;
 
 										// some bugs for output link performances before
-										fprintf(g_pFilePathMOE, ",%d,%d,%d,%d,%d,%d,%d,%d,%d,%s,",
+										fprintf(g_pFilePathMOE, "0,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s,",
 											pAgentSimu->agent_id,
 											g_zone_vector[orig].zone_id,
 											g_zone_vector[dest].zone_id,
