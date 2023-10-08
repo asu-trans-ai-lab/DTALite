@@ -38,8 +38,8 @@ using std::fmin;
 extern  std::ofstream  g_DTA_log_file;
 void g_program_stop()
 {
-    dtalog.output() << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << '\n';
-    g_DTA_log_file << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << '\n';
+    dtalog.output() << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << std::endl;
+    g_DTA_log_file << "Oops! DTALite encountered an issue and cannot proceed. We appreciate your understanding and would like to assist you in resolving any errors related to input files. Please double-check the input files mentioned in the logs for any potential errors or inconsistencies. If you need further assistance, please don't hesitate to reach out to us. We're here to help!" << std::endl;
 
     exit(1);
 }
