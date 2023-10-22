@@ -1,3 +1,0 @@
-od_seq_id,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,mode_type,demand_period,connectivity_flag,s_x_coord,s_y_coord,t_x_coord,t_y_coord,volume_s0,avg_tt_s0,avg_distance_km_s0,avg_cost_s0,
-1,1,2,0,1,1,2,auto,am,0,0.000000,-0.100000,40.300000,0.100000,1.00,2.00,2.00,0.00,
-1,2,1,1,0,2,1,auto,am,0,40.300000,0.100000,0.000000,-0.100000,1.00,0.00,0.00,0.00,

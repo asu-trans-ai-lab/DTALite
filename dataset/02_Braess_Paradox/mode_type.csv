@@ -1,4 +1,0 @@
-first_column,mode_type,mode_type_index,name,vot,multimodal_dedicated_assignment_flag,person_occupancy,headway_in_sec,DTM_real_time_info_type,comments,,,,,,,,,,,,,
-,auto,0,passenger car,10,1,1,1.5,0,hist info,,,,,,,,,,,,,
-,,,,,,,,,,,,,,bike,3,bike,10,1,1,5,0,https://en.wikipedia.org/wiki/Passenger_car_equivalent
-,,,,,,,,,,,,,,walk,4,pedestrian,10,1,1,3,0,

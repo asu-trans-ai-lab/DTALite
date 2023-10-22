@@ -1,6 +1,0 @@
-name,link_id,from_node_id,to_node_id,facility_type,dir_flag,length_in_km,length,lanes_s0,lanes_s1,capacity,free_speed,link_type,link_type_s0,link_type_s1,cost,VDF_alpha,VDF_beta
-(null),1003,1,3,Freeway,1,0.01,10,1,1,100,60,1,1,2,0,100,1
-(null),3002,3,2,Freeway,1,45,45000,3,3,5700,60,1,1,2,0,0,1
-(null),1004,1,4,Freeway,1,45,45000,3,3,5700,60,1,1,2,0,0,1
-(null),4002,4,2,Freeway,1,0.01,10,1,1,100,60,1,1,2,0,100,1
-(null),4002,3,4,Freeway,1,0.01,10,0,3,100,60,1,1,2,0,0,0

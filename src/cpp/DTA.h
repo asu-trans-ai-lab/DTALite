@@ -10,9 +10,9 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-constexpr auto MAX_SCENARIOS = 20;
-constexpr auto MAX_MODETYPES = 10; //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
-constexpr auto MAX_TIMEPERIODS = 6; // time period set to 6: AM, MD, PM, LPM, SAT_MD
+constexpr auto MAX_SCENARIOS = 4;  //20
+constexpr auto MAX_MODETYPES = 3; //10 //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_TIMEPERIODS = 3; //6 // time period set to 6: AM, MD, PM, LPM, SAT_MD
 
 constexpr auto MAX_ORIGIN_DISTRICTS = 30; //origin based agreegration grids
 
