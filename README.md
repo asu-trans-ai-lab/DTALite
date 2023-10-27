@@ -10,7 +10,7 @@ study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
 
 Remarks:
 
-1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides Python APIs to the portable DTALite across Windows,
+1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides Python APIs to the portable DTALite running across Windows,
     Linux, and macOS.
 
 2. Please download latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
