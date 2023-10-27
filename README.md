@@ -1,38 +1,36 @@
 # DTALite
 
-This site mains the source code and Windows-based release for DTALite+NeXTA
+This site maintains the source code and the Windows-based release for DTALite+NeXTA
 package. DTALite is an open-source AMS library for efficiently macroscopic and
 mesoscopic traffic assignment based on [General Modeling Network
 Specification](https://github.com/zephyr-data-specs/GMNS) (GMNS) format. NeXTA
 as a visualization tool for transportation Analysis, Modeling, and Simulation
-(AMS), developed through the support of a FHWA
-[study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
+(AMS), developed through the support of a [FHWA
+study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
 
 Remarks:
 
-1.  For the Python version of DTALite and Path4GMNS package portable on Windows,
-    Linux and MacOS, please go to <https://github.com/jdlph/Path4GMNS>.
+1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides Python APIs to the portable DTALite across Windows,
+    Linux, and macOS.
 
-2.  Please download latest DTALite-NeXTA
-    [package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
-    which follows calendar versioning. Here are the user guides for
-    [NeXTA](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-    and
-    [NeXTA+QGIS](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-    using GMNS data format. We have prepared a number of self-learning
-    [documents](https://github.com/asu-trans-ai-lab/DTALite/tree/main/self_learning)
-    too.
+2. Please download latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
+   which follows calendar versioning.
 
-## Step 1: White Paper and Application:
+3. Here are the user guides for [NeXTA](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   and [NeXTA+QGIS](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   using GMNS data format. We have prepared a number of [self-learning documents](https://github.com/asu-trans-ai-lab/DTALite/tree/main/self_learning)
+   too.
 
-Zhou, Xuesong, and Jeffrey Taylor. "[DTALite: A queue-based mesoscopic traffic
+## Step 1: White Paper and Application
+
+Zhou, Xuesong, and Jeffrey Taylor. [DTALite: A queue-based mesoscopic traffic
 simulator for fast model evaluation and
-calibration.](https://www.tandfonline.com/doi/full/10.1080/23311916.2014.961345)"
+calibration.](https://www.tandfonline.com/doi/full/10.1080/23311916.2014.961345)
 Cogent Engineering 1.1 (2014): 961345.
 
-Marshall, Norman L. "[Forecasting the impossible: The status quo of estimating
+Marshall, Norman L. [Forecasting the impossible: The status quo of estimating
 traffic flows with static traffic assignment and the future of dynamic traffic
-assignment.](https://www.sciencedirect.com/science/article/pii/S2210539517301232)"
+assignment.](https://www.sciencedirect.com/science/article/pii/S2210539517301232)
 Research in Transportation Business & Management 29 (2018): 85-92.
 
 ## Step 2: Youtube Teaching Videos on Use of DTALite/NEXTA Packages
@@ -50,11 +48,7 @@ like to offer a collaborative learning experience through 500 lines of python
 codes and real-life data sets. This is part of our mini-lessons through teaching
 dialog.
 
-C++ source codes
-
-Python source code
-
-## References:
+## References
 
 **1. Parallel computing algorithms**: Qu, Y., & Zhou, X. (2017). Large-scale
 dynamic transportation network simulation: A space-time-event parallel computing
@@ -98,8 +92,6 @@ Transportation. Research and Analysis Group.
 >   nexta
 
 ![](media/3d51a8c44607ef5d2ce200dc9ff8cee6.png)
-
->   nexta
 
 >   DTALite/NeXTA applications in the United States
 
