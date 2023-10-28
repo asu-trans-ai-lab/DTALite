@@ -1,6 +1,6 @@
 # DTALite
 
-This site maintains the source code and the Windows-based release for DTALite+NeXTA
+This repository maintains the source code and the Windows-based release for DTALite+NeXTA
 package. DTALite is an open-source AMS library for efficiently macroscopic and
 mesoscopic traffic assignment based on [General Modeling Network
 Specification](https://github.com/zephyr-data-specs/GMNS) (GMNS) format. NeXTA
@@ -10,15 +10,13 @@ study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
 
 Remarks:
 
-1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides Python APIs to the portable DTALite running across Windows,
-    Linux, and macOS.
-
-2. Please download latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
-   which follows calendar versioning.
-
-3. Here are the user guides for [NeXTA](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-   and [NeXTA+QGIS](https://github.com/asu-trans-ai-lab/DTALite/blob/main/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-   using GMNS data format. We have prepared a number of [self-learning documents](https://github.com/asu-trans-ai-lab/DTALite/tree/main/self_learning)
+1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides an Python API to the portable DTALite running across Windows,
+    Linux, and macOS (including both x86_64 and arm64 architectures).
+2. Please download the latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
+   which follows the calendar versioning scheme.
+3. Here are the user guides for [NeXTA](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   and [NeXTA+QGIS](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   using GMNS data format. We have prepared a number of [self-learning documents](docs/self_learning)
    too.
 
 ## Step 1: White Paper and Application
@@ -89,11 +87,11 @@ Transportation. Research and Analysis Group.
 
 >  NeXTA
 
-![](media/69b2706fcca1b04fc52d1cbf45fade38.png)
+![](docs/media/69b2706fcca1b04fc52d1cbf45fade38.png)
 
 
 ![](media/3d51a8c44607ef5d2ce200dc9ff8cee6.png)
 
 >  Applications of DTALite/NeXTA in the United States
 
-![](media/d2a334644e5a5655c61ea2a2991011e7.png)
+![](docs/media/d2a334644e5a5655c61ea2a2991011e7.png)
