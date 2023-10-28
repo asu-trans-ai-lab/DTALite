@@ -87,14 +87,13 @@ System, Maryland State Highway Administration
 impact assessment. (2014) FHWA/NC/2012-36. North Carolina. Dept. of
 Transportation. Research and Analysis Group.
 
+>  NeXTA
+
 ![](media/69b2706fcca1b04fc52d1cbf45fade38.png)
 
->   nexta
 
 ![](media/3d51a8c44607ef5d2ce200dc9ff8cee6.png)
 
->   DTALite/NeXTA applications in the United States
+>  Applications of DTALite/NeXTA in the United States
 
 ![](media/d2a334644e5a5655c61ea2a2991011e7.png)
-
->   maps
