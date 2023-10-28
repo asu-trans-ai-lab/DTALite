@@ -14,8 +14,8 @@ Remarks:
     Linux, and macOS (including both x86_64 and arm64 architectures).
 2. Please download the latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
    which follows the calendar versioning scheme.
-3. Here are the user guides for [NeXTA](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-   and [NeXTA+QGIS](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+3. Here are the user guides for [NeXTA](user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   and [NeXTA+QGIS](user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
    using GMNS data format. We have prepared a number of [self-learning documents](docs/self_learning)
    too.
 
@@ -85,13 +85,14 @@ System, Maryland State Highway Administration
 impact assessment. (2014) FHWA/NC/2012-36. North Carolina. Dept. of
 Transportation. Research and Analysis Group.
 
->  NeXTA
+> NeXTA
 
 ![](docs/media/69b2706fcca1b04fc52d1cbf45fade38.png)
 
+> QGIS
 
 ![](media/3d51a8c44607ef5d2ce200dc9ff8cee6.png)
 
->  Applications of DTALite/NeXTA in the United States
+> Applications of DTALite/NeXTA in the United States
 
 ![](docs/media/d2a334644e5a5655c61ea2a2991011e7.png)
