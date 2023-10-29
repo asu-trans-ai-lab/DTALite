@@ -1,72 +1,57 @@
-Working with GMNS Files in QGIS and NeXTA
+# Working with GMNS Files in QGIS and NeXTA
 
 ![](media/6a54c6a857cb42e0666d272d321d8cd3.png)
 
 Version 0.5, 11/01/2020
 
-Prepared by Dr. Xuesong (Simon) Zhou’ research group at Arizona State University
+Prepared by Dr. Xuesong (Simon) Zhou’s research group at Arizona State University
 
 Contact: xzhou74\@asu.edu
 
 Table of Contents
 
-[Part I: Basic Understanding of GMNS and visualization	2](#_Toc55123622)
+[Part I: Basic Understanding of GMNS and visualization](#Part-I:-Basic-Understanding-of-GMNS-and-visualization)
 
->   [1. Introduction of GMNS, AMS, QGIS and NeXTA	2](#_Toc55123623)
+>   [1. Introduction of GMNS, AMS, QGIS and NeXTA](#1.-Introduction-of-GMNS,-AMS,-QGIS-and-NeXTA)
+> 
+>   [2. Import GMNS file with geometry field in QGIS](#2.-Import-GMNS-file-with-geometry-field-in-QGIS)
+> 
+>   [3. Load XYZ Tiles in QGIS with background maps](#3.-Load-XYZ-Tiles-in-QGIS-with-background-maps)
+> 
+>   [4. Visualize output file link_performance.csv in QGIS](#4.-Visualize-output-file-link_performance.csv-in-QGIS)
+> 
+>   [5. View/edit GMNS network in NeXTA](#5-viewedit-gmns-network-in-nexta)
+> 
+>   [6. Load GMNS network with background image in NeXTA through the help of QGIS](#6-load-gmns-network-with-background-image-in-nexta-through-the-help-of-qgis)
 
->   [2. Import GMNS file with geometry field in QGIS	3](#_Toc55123624)
+[Part II: Advanced Topics: Create GMNS Networks](#part-ii-advanced-topics-create-gmns-networks)
 
->   [3. Load XYZ Tiles in QGIS with background maps	4](#_Toc55123625)
+>   [7. Create GMNS Network in NeXTA](#7-create-a-gmns-network-in-nexta-without-background-image)
+> 
+>   [8. Create a Network in NeXTA from the background map](#8-create-a-network-in-nexta-from-the-background-map-image)
+> 
+>   [9. Create network through QuickOSM QGIS Plugin](#9-create-network-through-quickosm-qgis-plugin)
+> 
+>   [10. Create GMNS network from Openstreet Maps (OSM) file](#10-create-gmns-network-from-openstreet-maps-osm-file)
+> 
+>   [11. Create multi-resolution GMNS network through open-sourceOcean](#11-create-multi-resolution-gmns-network-through-open-source-ocean-tool)
 
->   [4. Visualize output file link_performance.csv in QGIS	5](#_Toc55123626)
+[Data Set](https://github.com/xzhou99/traffic-engineering-and-analysis/tree/master/undergraduate_student_project/data_sets_GMNS0.9/07_West_Jordan_Utah)
 
->   [5. View/edit GMNS network in NeXTA	8](#_Toc55123627)
+Software: QGIS and NeXTA
 
->   [6. Load GMNS network with background image in NeXTA through the help of
->   QGIS	14](#_Toc55123628)
-
-[Part II: Advanced Topics: Create GMNS Networks	18](#_Toc55123629)
-
->   [7. Create GMNS Network in NeXTA	18](#_Toc55123630)
-
->   [8. Create a Network in NeXTA from the background map
->   image	25](#_Toc55123631)
-
->   [9. Create network through QuickOSM QGIS Plugin	35](#_Toc55123632)
-
->   [10. Create GMNS network from Openstreet Maps (OSM) file	40](#_Toc55123633)
-
->   [11. Create multi-resolution GMNS network through open-source
->   Ocean	40](#_Toc55123634)
-
-Data set
-
-<https://github.com/xzhou99/traffic-engineering-and-analysis/tree/master/undergraduate_student_project/data_sets_GMNS0.9/07_West_Jordan_Utah>
-
-Software:
-
-QGIS, NeXTA
-
-Audiences:
-
-GIS users, city planners and transportation planners
+Audiences: GIS users, city planners, and transportation planners
 
 Learning Objectives:
-
 1.  Understand how to view/edit network attributes in NeXTA
-
 2.  Understand the user interface of NEXTA
-
 3.  Understand node and link files in GMNS format
-
 4.  Use QGIS to visualize GMNS network
 
-# Part I: Basic Understanding of GMNS and visualization 
+## Part I: Basic Understanding of GMNS and Visualization 
 
-## 1. Introduction of GMNS, AMS, QGIS and NeXTA
-
-What is GMNS?
-
+### 1. Introduction of GMNS, AMS, QGIS and NeXTA
+#### What is GMNS?
 General Travel Network Format Specification is a product of Zephyr Foundation,
 which aims to advance the field through flexible and efficient support,
 education, guidance, encouragement, and incubation.
@@ -74,10 +59,8 @@ education, guidance, encouragement, and incubation.
 Further Details in
 <https://zephyrtransport.org/projects/2-network-standard-and-tools/>
 
-What is AMS?
-
-As stated in FHWA website,
-<https://cms7.fhwa.dot.gov/research/operations/analysis-modeling-simulation/analysis-modeling-simulation-overview>,
+#### What is AMS?
+As stated on the [FHWA website](https://cms7.fhwa.dot.gov/research/operations/analysis-modeling-simulation/analysis-modeling-simulation-overview),
 FHWA and its State and local agency partners have relied on analysis, modeling,
 and simulation (AMS) to support investment decisions for the transportation
 system. As the transportation system environment grows in complexity, increasing
@@ -86,8 +69,7 @@ solutions to a wide range of issues. These solutions include leveraging emerging
 technologies, data sources, and alternative (non-traditional) strategies. AMS
 tools will continue to play a critical role in evaluating these solutions.
 
-What is QGIS?
-
+#### What is QGIS?
 QGIS is a free and open-source cross-platform desktop geographic information
 system (GIS) application that supports viewing, editing, and analysis of
 geospatial data.
@@ -105,38 +87,33 @@ Multiple formats of raster images are supported, and the software can
 
 **Source:** <https://en.wikipedia.org/wiki/QGIS>
 
-What is NEXTA?
-
+#### What is NEXTA?
 NeXTA: Network explorer for Traffic Analysis
 
 In general, the software suite of NeXTA aims to:
 
-(1) Provide an open-source code base to enable transportation researchers and
+1. Provide an open-source code base to enable transportation researchers and
 software developers to expand its range of capabilities to various traffic
 management application.
-
-(2) Present results to other users by visualizing **time-varying traffic flow
+2. Present results to other users by visualizing **time-varying traffic flow
 dynamics** and traveler route choice behavior in an integrated environment.
-
-(3) Provide a free, educational tool for students to understand the complex
+3. Provide a free, educational tool for students to understand the complex
 decision-making process in **transportation planning and optimization**
 processes
-
-(4) By managing GMNS data sets in both QGIS and NeXTA platforms, users can
+4. By managing GMNS data sets in both QGIS and NeXTA platforms, users can
 visualize the background GIS map for a GMNS network, in a broader spatial
 context, while NeXTA can provide time-dependent link performance visualization,
 path-level and agent-level analysis, and time-dependent agent trajectory
 visualization.
 
-The full user guide of NeXTA can be found at
-https://github.com/xzhou99/NeXTA-GMNS.
+The full user guide of NeXTA can be found [here](https://github.com/xzhou99/NeXTA-GMNS).
 
 This document describes the process of obtaining [node.csv, link.csv, etc]
 GMNS-compatible files for use in QGIS from an OSM network and how to display
 GMNS file including node.csv, link.csv, timing.csv, agent.csv and
 link_performance.csv in QGIS.
 
-## 2. Import GMNS file with geometry field in QGIS
+### 2. Import GMNS file with geometry field in QGIS
 
 Open GMNS node.csv and link.csv in Excel to verify the existence of the geometry
 field.
@@ -152,7 +129,7 @@ The imported West Jordon network is shown as follows.
 
 ![](media/6a9a985bdcd586189fe49cdb0d7ca35b.png)
 
-## 3. Load XYZ Tiles in QGIS with background maps
+### 3. Load XYZ Tiles in QGIS with background maps
 
 Find XYZ Tiles and double-click OpenStreetMap on Browser panel. Please move the
 background layer to the bottom to show the GMNS network.
@@ -164,7 +141,7 @@ Reference:
 
 ![](media/a91eb5417dbf0d19408d851652edef9f.png)
 
-## 4. Visualize output file link_performance.csv in QGIS 
+### 4. Visualize output file link_performance.csv in QGIS 
 
 The 'geometry' field can be obtained from link.csv file. Then open this file in
 the same way as above. (LayerAdd LayerAdd Delimited Text Layer)
@@ -173,11 +150,11 @@ the same way as above. (LayerAdd LayerAdd Delimited Text Layer)
 
 Then you can show the width of links by field VOC with different color according
 level of VOC in link_performance layer. Right click on link_performance layer
-and click on propertiescontrol feature symbology
+and click on propertiescontrol feature symbology.
 
 ![](media/ae326791b6f2bea0148e3c7853a63d99.png)
 
-. Select GraduatedValue: VOCMethodSizeClasses: 6Classify and set the value of
+Select GraduatedValue: VOCMethodSizeClasses: 6Classify and set the value of
 the VOC level.
 
 ![](media/76db664897b54bab6789c591b77f5985.png)
@@ -192,7 +169,7 @@ Then you can display traffic assignment result with following picture.
 
 ![](media/dbacff02995f468ad926646ac0cf731e.png)
 
-## 5. View/edit GMNS network in NeXTA 
+### 5. View/edit GMNS network in NeXTA 
 
 Step 1: Download and Open NeXTA, Open the Tempe ASU Network
 
@@ -301,7 +278,7 @@ the path.
 
 ![](media/050b92a2325bc9fa322cbcde67935ba9.jpeg)
 
-## 6. Load GMNS network with background image in NeXTA through the help of QGIS
+### 6. Load GMNS network with background image in NeXTA through the help of QGIS
 
 Open base map in QGIS
 
@@ -339,18 +316,14 @@ map.
 
 # Part II: Advanced Topics: Create GMNS Networks 
 
-## 7. Create a GMNS Network in NeXTA without background image
+### 7. Create a GMNS Network in NeXTA without background image
 
 Learning objectives:
 
 1. How to create a network by yourself.
-
 2. How to adjust network elements size.
-
 3. How to edit and view the attributes of Network.
-
 4. How to create a network from the background map image.
-
 5. How to verify the network connectivity.
 
 Step 1: Open NeXTA
@@ -495,7 +468,7 @@ Step 8.1: Click the “save”
 toggle button and to save the files of “node.csv” and “link.csv” to the local
 project folder.
 
-## 8. Create a Network in NeXTA from the background map image
+### 8. Create a Network in NeXTA from the background map image
 
 Step 1: Create a new project folder with 3 files: image.bmp, and node.csv
 
@@ -616,7 +589,7 @@ Step 8.1: Click the “save”
 toggle button and to save the files of “node.csv” and “link.csv” to the local
 project folder.
 
-## 9. Create network through QuickOSM QGIS Plugin
+### 9. Create network through QuickOSM QGIS Plugin
 
 For this example, we will use the West Jordan network in Utah, United States.
 Click on menu PluginsManage and install plugins to install QuickOSM plugin. Then
@@ -667,6 +640,6 @@ expression and export to link.csv.
 
 ![](media/381aac6221f90c6ec381f3c1a435eac2.png)
 
-## 10. Create GMNS network from Openstreet Maps (OSM) file
+### 10. Create GMNS network from Openstreet Maps (OSM) file
 
-## 11. Create multi-resolution GMNS network through open-source Ocean Tool
+### 11. Create multi-resolution GMNS network through open-source Ocean Tool

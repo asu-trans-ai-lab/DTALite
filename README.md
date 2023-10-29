@@ -11,11 +11,11 @@ study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm).
 Remarks:
 
 1. [Path4GMNS](https://github.com/jdlph/Path4GMNS) provides an Python API to the portable DTALite running across Windows,
-    Linux, and macOS (including both x86_64 and arm64 architectures).
-2. Please download the latest [DTALite-NeXTA package](https://github.com/asu-trans-ai-lab/DTALite/tree/main/release),
+   Linux, and macOS (including both x86_64 and arm64 architectures).
+2. Please download the latest [DTALite-NeXTA package](release/),
    which follows the calendar versioning scheme.
-3. Here are the user guides for [NeXTA](user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-   and [NeXTA+QGIS](user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+3. Here are the user guides for [NeXTA](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
+   and [NeXTA+QGIS](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
    using GMNS data format. We have prepared a number of [self-learning documents](docs/self_learning)
    too.
 
@@ -89,7 +89,7 @@ Transportation. Research and Analysis Group.
 
 ![](docs/media/69b2706fcca1b04fc52d1cbf45fade38.png)
 
-> QGIS
+> NeXTA
 
 ![](media/3d51a8c44607ef5d2ce200dc9ff8cee6.png)
 
