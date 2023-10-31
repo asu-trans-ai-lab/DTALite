@@ -19,7 +19,7 @@ study](https://www.fhwa.dot.gov/publications/research/operations/13036/004.cfm) 
 
 ### White Paper and Application
 
-Zhou, X, & Jeffrey Taylor. (2014). [DTALite: A queue-based mesoscopic traffic
+Zhou, X., & Taylor, J. (2014). [DTALite: A queue-based mesoscopic traffic
 simulator for fast model evaluation and
 calibration.](https://www.tandfonline.com/doi/full/10.1080/23311916.2014.961345)
 Cogent Engineering 1.1, 961345.
