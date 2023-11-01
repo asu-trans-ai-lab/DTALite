@@ -166,26 +166,24 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="assignment.h" />
-    <ClInclude Include="DTA.h" />
-    <ClInclude Include="DTA_geometry.h" />
-    <ClInclude Include="input.h" />
-    <ClInclude Include="ODME.h" />
-    <ClInclude Include="output.h" />
-    <ClInclude Include="routing.h" />
-    <ClInclude Include="scenario_API.h" />
-    <ClInclude Include="STS_Routing.h" />
-    <ClInclude Include="trip_generation.h" />
-    <ClInclude Include="utils.h" />
-    <ClInclude Include="VDF.h" />
+    <ClInclude Include="src\assignment.h" />
+    <ClInclude Include="src\DTA.h" />
+    <ClInclude Include="src\DTA_geometry.h" />
+    <ClInclude Include="src\input.h" />
+    <ClInclude Include="src\ODME.h" />
+    <ClInclude Include="src\output.h" />
+    <ClInclude Include="src\routing.h" />
+    <ClInclude Include="src\scenario_API.h" />
+    <ClInclude Include="src\trip_generation.h" />
+    <ClInclude Include="src\utils.h" />
+    <ClInclude Include="src\VDF.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DTA_geometry.cpp" />
-    <ClCompile Include="flash_dta.cpp" />
-    <ClCompile Include="main_api.cpp" />
-    <ClCompile Include="simulation.cpp" />
-    <ClCompile Include="trace2od.cpp" />
-    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="src\DTA_geometry.cpp" />
+    <ClCompile Include="src\flash_dta.cpp" />
+    <ClCompile Include="src\main_api.cpp" />
+    <ClCompile Include="src\simulation.cpp" />
+    <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -34,7 +34,7 @@ Research in Transportation Business & Management 29, 85-92.
 [NeXTA/DTALite Workshop Webinar](https://www.youtube.com/channel/UCUHlqojCQ4f7VvqroUhbaFA) by Jeff
 Taylor
 
-### [Mini-Lesson on the Algorithmic Details](https://youtu.be/rorZAhNNOf0)
+### [Mini-Lesson](https://youtu.be/rorZAhNNOf0) on the Algorithmic Details
 
 What is the best way to learn dynamic traffic simulation and network assignment 
 for a beginner? Do you want to integrate a powerful traffic simulator in your deep
