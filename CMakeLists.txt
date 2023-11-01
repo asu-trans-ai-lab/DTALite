@@ -35,13 +35,13 @@ set(CMAKE_BUILD_TYPE  "Release")
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
 if(BUILD_EXE)
-    add_executable(DTALite utils.cpp flash_dta.cpp main_api.cpp simulation.cpp trace2od.cpp DTA_geometry.cpp)
+    add_executable(${PROJECT_NAME} src/utils.cpp src/flash_dta.cpp src/main_api.cpp src/simulation.cpp src/DTA_geometry.cpp)
 else()
-    add_library(DTALite SHARED utils.cpp flash_dta.cpp main_api.cpp simulation.cpp trace2od.cpp DTA_geometry.cpp)
+    add_library(${PROJECT_NAME} SHARED src/utils.cpp src/flash_dta.cpp src/main_api.cpp src/simulation.cpp src/DTA_geometry.cpp)
 endif()
 
 # using OpenMP
 find_package(OpenMP REQUIRED)
-target_link_libraries(DTALite PRIVATE OpenMP::OpenMP_CXX)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
 
-target_include_directories(DTALite PUBLIC "${PROJECT_BINARY_DIR}")
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
