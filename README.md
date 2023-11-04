@@ -14,10 +14,9 @@ This repository maintains the source code and the Windows-based release for DTAL
 ## Getting Started
 
 - [DTALite+NeXTA package](release/)
-- See [Path4GMNS](https://github.com/jdlph/Path4GMNS) for the Python implementation of DTALite along with the Python APIs to the portable DTALite running across Windows (x86_64), Linux (x86_64), and macOS (x86_64 and Apple Silicon).
 - [Self-learning documents](docs/self_learning)
 - [User guide for NeXTA+QGIS using GMNS data format](docs/user_guide/1_QGIS_NEXTA_visualization_4_GMNS.md)
-
+- See [Path4GMNS](https://github.com/jdlph/Path4GMNS) for the Python implementation of DTALite along with the Python APIs to the portable DTALite running across Windows (x86_64), Linux (x86_64), and macOS (x86_64 and Apple Silicon).
 
 ## Additional References
 

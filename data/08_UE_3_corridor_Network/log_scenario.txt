@@ -1,3 +1,0 @@
-dtm_type,demand_period,from_node,to_node,geometry,values
-reading record 1
-am7,1,4,"LINESTRING (0.000000 -0.100000,19.700000 -9.700000,)"
