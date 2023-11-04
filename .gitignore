@@ -7,19 +7,10 @@
 debug/
 # untrack vs code configure folder
 *.vscode/
-# untrack object files during compiling 
-*.o
-# untrack output files in test folder
-test/link_performance.csv
-test/agent.csv
-test/solution.csv
-# untrack output files in test_dll folder
-test_dll/link_performance.csv
-test_dll/agent.csv
-test_dll/solution.csv
-test_dll/log.txt
-test_dll/log.csv
 # untrack build folder for building shared libraries
 build/
+# untrack object files during compiling 
+*.o
+# untrack log files
+**log*
 .DS_Store
-dataset_v1/01_two_corridor/DTALite_0702_2023.exe
