@@ -148,21 +148,21 @@ CDTAGeometry::CDTAGeometry(string s)
 	}
 }
 
-CDTAGeometry::~CDTAGeometry(void)
+CDTAGeometry::~CDTAGeometry()
 {
 }
 
-CDTAGeometry::GeometryType CDTAGeometry::GetGeometryType(void)
+CDTAGeometry::GeometryType CDTAGeometry::GetGeometryType()
 {
 	return m_Type;
 }
 
-int CDTAGeometry::GetNumberOfCoordinates(void)
+int CDTAGeometry::GetNumberOfCoordinates()
 {
 	return m_NumOfCoordinates;
 }
 
-std::vector<CCoordinate> CDTAGeometry::GetCoordinateList(void)
+std::vector<CCoordinate> CDTAGeometry::GetCoordinateList()
 {
 	return v_Coordinates;
 }

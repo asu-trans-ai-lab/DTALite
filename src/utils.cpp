@@ -595,7 +595,7 @@ void InitWELLRNG512a(unsigned int* init) {
         STATE[j] = init[j];
 }
 
-double WELLRNG512a(void) {
+double WELLRNG512a() {
     z0 = VRm1;
     z1 = MAT0NEG(-16, V0) ^ MAT0NEG(-15, VM1);
     z2 = MAT0POS(11, VM2);
