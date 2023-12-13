@@ -1,12 +1,8 @@
 #ifndef GUARD_DTA_H
 #define GUARD_DTA_H
-#define BUILD_EXE //self-use
 
 #include <algorithm>
 #include <iomanip>
-
-// Peiheng, 02/21/22, a temporary fix (bad practice)
-using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
@@ -41,7 +37,7 @@ constexpr auto number_of_simu_intervals_in_min = 240; // 60/0.25 number_of_secon
 //constexpr auto number_of_simu_intervals_in_min = 1200; // 60/0.25 number_of_seconds_per_interval
 
 
-/* number_of_seconds_per_interval should satisify the ratio of 60/number_of_seconds_per_interval is an integer*/
+/* number_of_seconds_per_interval should satisfy the ratio of 60/number_of_seconds_per_interval is an integer*/
 
 // Linear congruential generator
 constexpr auto LCG_a = 17364;
@@ -190,7 +186,7 @@ public:
             {
 
                 double slot_fraction = cumulative_departure_time_ratio[s] - cumulative_departure_time_ratio[s-1];
-                double floating_point = max(0.0, (r - cumulative_departure_time_ratio[s - 1]) / max(0.00001, slot_fraction));
+                double floating_point = std::max(0.0, (r - cumulative_departure_time_ratio[s - 1]) / std::max(0.00001, slot_fraction));
 
                 double time_in_min = (s- starting_time_slot_no + floating_point )* MIN_PER_TIMESLOT;
                 if (idebug)
@@ -300,12 +296,12 @@ public:
         float count = data_by_demand_period_mode_type[tau][at].count;
         if (count >= 1)
         {
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_agent_distance_km / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_agent_distance_mile / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_agent_travel_time / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_travel_delay = data_by_demand_period_mode_type[tau][at].total_agent_delay / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_co2 = data_by_demand_period_mode_type[tau][at].total_agent_co2 / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
-            data_by_demand_period_mode_type[tau][at].avg_nox = data_by_demand_period_mode_type[tau][at].total_agent_nox / max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_km = data_by_demand_period_mode_type[tau][at].total_agent_distance_km / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_distance_mile = data_by_demand_period_mode_type[tau][at].total_agent_distance_mile / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_time = data_by_demand_period_mode_type[tau][at].total_agent_travel_time / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_travel_delay = data_by_demand_period_mode_type[tau][at].total_agent_delay / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_co2 = data_by_demand_period_mode_type[tau][at].total_agent_co2 / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
+            data_by_demand_period_mode_type[tau][at].avg_nox = data_by_demand_period_mode_type[tau][at].total_agent_nox / std::max(0.001, data_by_demand_period_mode_type[tau][at].total_od_volume);
         }
     }
 
@@ -925,7 +921,7 @@ public:
         {
             total_demand_volume[i] = 0; 
         }
-        g_column_pool = Allocate4DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_mode_types), number_of_time_periods);
+        g_column_pool = Allocate4DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, std::max(1, number_of_mode_types), number_of_time_periods);
 
         for (int i = 0; i < number_of_zones; ++i)
         {
@@ -1281,7 +1277,7 @@ public:
         if (assignment.g_ModeTypeVector[mode_type_no].eco_so_flag == 1)  // eo so users; 
         {
         
-        double speed_mph = this->link_distance_VDF / 1.6 / (max(0.001, link_avg_travel_time_per_period[tau][mode_type_no] / 60));
+        double speed_mph = this->link_distance_VDF / 1.6 / (std::max(0.001, link_avg_travel_time_per_period[tau][mode_type_no] / 60));
         
         generalized_cost = link_avg_travel_time_per_period[tau][mode_type_no];
 
@@ -1347,7 +1343,7 @@ public:
             }
         }
 
-        return total_speed_value / max(1, total_speed_count);
+        return total_speed_value / std::max(1, total_speed_count);
     }
 
 
@@ -1370,7 +1366,7 @@ public:
             }
         }
 
-        return total_speed_value / max(1, total_speed_count);
+        return total_speed_value / std::max(1, total_speed_count);
     }
 
     float get_est_hourly_volume(int time_in_min)
@@ -1392,7 +1388,7 @@ public:
             }
         }
 
-        return total_volume_value / max(1, total_volume_count);
+        return total_volume_value / std::max(1, total_volume_count);
     }
 
 
@@ -1471,14 +1467,14 @@ public:
         v_critical = lane_capacity / k_critical;
         s3_m = 2 * log(2) / log(free_speed_value / v_critical);
 
-        double speed_ratio = free_speed_value / max(1.0f, speed);
+        double speed_ratio = free_speed_value / std::max(1.0f, speed);
         if (speed_ratio <= 1.00001)
             speed_ratio = 1.00001;
 
         /*   float volume = 0;*/
         double ratio_difference = pow(speed_ratio, s3_m / 2) - 1;
 
-        double ratio_difference_final = max(ratio_difference, 0.00000001);
+        double ratio_difference_final = std::max(ratio_difference, 0.00000001);
 
         double volume = speed * k_critical * pow(ratio_difference_final, 1 / s3_m);
 
@@ -1808,7 +1804,7 @@ public:
 
     double get_avg_speed()
     {
-        return total_PMT / max(0.001, total_PHT);  //miles per hour
+        return total_PMT / std::max(0.001, total_PHT);  //miles per hour
     }
     double total_PMT;
     double total_PHT;
