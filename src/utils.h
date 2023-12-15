@@ -1,8 +1,8 @@
 /* Portions Copyright 2021 Xuesong Zhou and Peiheng Li
  *
  * If you help write or modify the code, please also list your names here.
- * The reason of having Copyright info here is to ensure all the modified version, as a whole, under
- * the GPL and further prevent a violation of the GPL.
+ * The reason of having Copyright info here is to ensure all the modified version, as a whole, under the GPL
+ * and further prevent a violation of the GPL.
  *
  * More about "How to use GNU licenses for your own software"
  * http://www.gnu.org/licenses/gpl-howto.html
@@ -10,9 +10,7 @@
 
 #ifndef GUARD_UTILS_H
 #define GUARD_UTILS_H
-
-#define BUILD_EXE  // self-use
-
+#define BUILD_EXE //self-use
 // if you are using cmake, please #include <build_config.h>
 #ifndef _WIN32
 #include <build_config.h>
@@ -21,17 +19,17 @@ using __int64 = long long;
 
 #include "teestream.h"
 
+#include <vector>
+#include <map>
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <sstream>
 #include <string>
-#include <vector>
 
 constexpr auto _PI = 3.1415926;
-extern std::ofstream g_DTA_log_file;
+// utilities functions
 
-struct DTAGDPoint  // geometry data
+struct DTAGDPoint //geometry data
 {
     double x;
     double y;
@@ -39,20 +37,16 @@ struct DTAGDPoint  // geometry data
 
 void g_program_stop();
 void g_program_exit();
-void g_find_convex_hull(std::vector<DTAGDPoint> points, std::vector<DTAGDPoint>& points_in_polygon);
+extern  std::ofstream  g_DTA_log_file;
+bool g_get_line_polygon_intersection(
+    double Ax, double Ay,
+    double Bx, double By,
+    std::vector<DTAGDPoint> subarea_shape_points);
 
-bool g_get_line_polygon_intersection(double Ax,
-                                     double Ay,
-                                     double Bx,
-                                     double By,
-                                     std::vector<DTAGDPoint> subarea_shape_points);
-
+void g_find_convex_hull(std::vector<DTAGDPoint> points, std::vector<DTAGDPoint> &points_in_polygon);
 int g_test_point_in_polygon(DTAGDPoint Pt, std::vector<DTAGDPoint> V);
 
-double g_calculate_p2p_distance_in_meter_from_latitude_longitude(double p1_x,
-                                                                 double p1_y,
-                                                                 double p2_x,
-                                                                 double p2_y);
+double g_calculate_p2p_distance_in_meter_from_latitude_longitude(double p1_x, double p1_y, double p2_x, double p2_y);
 
 void fopen_ss(FILE** file, const char* fileName, const char* mode);
 float g_read_float(FILE* f);
@@ -71,7 +65,7 @@ bool g_read_a_line(FILE* f);
 // it creates another global variable (i.e. dtalog right after class DTALog)
 // shared by all translation units, which is really bad. This is a common issue
 // across the current implementation. It will be addressed properly in the refactoring.
-class DTALog {
+class DTALog{
     std::ofstream logfile;
     teestream ts;
 
@@ -81,48 +75,41 @@ class DTALog {
     int path;
     int dta;
     int ue;
-
 public:
-    DTALog()
-        : logfile{"log_main.txt"},
-          ts{std::cout, logfile},
-          db{0},
-          sig{0},
-          odme{0},
-          path{0},
-          dta{0},
-          ue{0}
+
+    DTALog() : logfile{ "log_main.txt" }, ts{ std::cout, logfile }, db{ 0 }, sig{ 0 }, odme{ 0 }, path{ 0 }, dta{ 0 }, ue{ 0 }
     {
     }
 
     ~DTALog() = default;
 
 #ifdef BUILD_EXE
-    teestream& output() { return ts; }
+    teestream& output() {return ts;}
 #else
-    std::ofstream& output() { return logfile; }
+    std::ofstream& output() {return logfile;}
 #endif
 
-    int& debug_level() { return db; }
-    int debug_level() const { return db; }
+    int& debug_level() {return db;}
+    int debug_level() const {return db;}
 
-    int& log_sig() { return sig; }
-    int log_sig() const { return sig; }
+    int& log_sig() {return sig;}
+    int log_sig() const {return sig;}
 
-    int& log_odme() { return odme; }
-    int log_odme() const { return odme; }
+    int& log_odme() {return odme;}
+    int log_odme() const {return odme;}
 
-    int& log_path() { return path; }
-    int log_path() const { return path; }
+    int& log_path() {return path;}
+    int log_path() const {return path;}
 
-    int& log_dta() { return dta; }
-    int log_dta() const { return dta; }
+    int& log_dta() {return dta;}
+    int log_dta() const {return dta;}
 
-    int& log_ue() { return ue; }
-    int log_ue() const { return ue; }
+    int& log_ue() {return ue;}
+    int log_ue() const {return ue;}
 };
 
 static DTALog dtalog;
+
 
 template <typename T>
 T* Allocate1DDynamicArray(int nRows)
@@ -134,6 +121,7 @@ T* Allocate1DDynamicArray(int nRows)
     if (dynamicVector == NULL)
     {
         exit(1);
+
     }
     return dynamicVector;
 }
@@ -151,7 +139,7 @@ T** Allocate2DDynamicArray(int nRows, int nCols)
 {
     T** dynamicArray;
 
-    dynamicArray = new (std::nothrow) T*[nRows];
+    dynamicArray = new (std::nothrow) T * [nRows];
 
     if (!dynamicArray)
     {
@@ -198,11 +186,10 @@ void Deallocate2DDynamicArray(T** dArray, int nRows)
 
     delete[] dArray;
 }
-
 template <typename T>
 T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
 {
-    T*** dynamicArray = new (std::nothrow) T**[nX];
+    T*** dynamicArray = new (std::nothrow) T * *[nX];
 
     if (!dynamicArray)
     {
@@ -215,11 +202,11 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
     {
         if (x % 1000 == 0)
         {
-            // dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
-            // g_DTA_log_file << "[DATA INFO] allocating 3D memory for " << x << '\n';
+            //dtalog.output() << "[DATA INFO] allocating 3D memory for " << x << '\n';
+            //g_DTA_log_file << "[DATA INFO] allocating 3D memory for " << x << '\n';
         }
 
-        dynamicArray[x] = new (std::nothrow) T*[nY];
+        dynamicArray[x] = new (std::nothrow) T * [nY];
 
         if (!dynamicArray[x])
         {
@@ -268,7 +255,7 @@ void Deallocate3DDynamicArray(T*** dArray, int nX, int nY)
 template <typename T>
 T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
 {
-    T**** dynamicArray = new (std::nothrow) T***[nX];
+    T**** dynamicArray = new (std::nothrow) T * **[nX];
 
     if (!dynamicArray)
     {
@@ -288,21 +275,19 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
     {
         if (m % 1000 == 0)
         {
-            dtalog.output() << "[DATA INFO] Allocating 4D memory for zone index (start from 0) "
-                            << m << " with the following dimensions: "
-                            << "nM = " << nM << ", "
-                            << "nX = " << nX << ", "
-                            << "nY = " << nY << ", "
-                            << "nZ = " << nZ << '\n';
-            g_DTA_log_file << "[DATA INFO] Allocating 4D memory for zone index (start from 0) " << m
-                           << " with the following dimensions: "
-                           << "nM = " << nM << ", "
-                           << "nX = " << nX << ", "
-                           << "nY = " << nY << ", "
-                           << "nZ = " << nZ << '\n';
+            dtalog.output() << "[DATA INFO] Allocating 4D memory for zone index (start from 0) " << m << " with the following dimensions: "
+                << "nM = " << nM << ", "
+                << "nX = " << nX << ", "
+                << "nY = " << nY << ", "
+                << "nZ = " << nZ << '\n';
+            g_DTA_log_file << "[DATA INFO] Allocating 4D memory for zone index (start from 0) " << m << " with the following dimensions: "
+                << "nM = " << nM << ", "
+                << "nX = " << nX << ", "
+                << "nY = " << nY << ", "
+                << "nZ = " << nZ << '\n';
         }
 
-        dynamicArray[m] = new (std::nothrow) T**[nX];
+        dynamicArray[m] = new (std::nothrow) T * *[nX];
 
         if (!dynamicArray[m])
         {
@@ -313,7 +298,7 @@ T**** Allocate4DDynamicArray(int nM, int nX, int nY, int nZ)
 
         for (int x = 0; x < nX; ++x)
         {
-            dynamicArray[m][x] = new (std::nothrow) T*[nY];
+            dynamicArray[m][x] = new (std::nothrow) T * [nY];
 
             if (!dynamicArray[m][x])
             {
@@ -360,11 +345,14 @@ void Deallocate4DDynamicArray(T**** dArray, int nM, int nX, int nY)
     delete[] dArray;
 }
 
-struct CCoordinate {
-    double X, Y, Z;
-};
 
-class CDTACSVParser {
+
+typedef struct
+{
+    double X, Y, Z;
+}CCoordinate;
+
+class CDTACSVParser{
 public:
     char Delimiter;
     bool IsFirstLineHeader;
@@ -383,12 +371,7 @@ public:
     std::vector<std::string> Headers;
     std::map<std::string, int> FieldsIndices;
 
-    CDTACSVParser()
-        : Delimiter{','},
-          IsFirstLineHeader{true},
-          m_bSkipFirstLine{false},
-          m_bDataHubSingleCSVFile{false},
-          m_bLastSectionRead{false}
+    CDTACSVParser() : Delimiter{ ',' }, IsFirstLineHeader{ true }, m_bSkipFirstLine{ false }, m_bDataHubSingleCSVFile{ false }, m_bLastSectionRead{ false }
     {
     }
 
@@ -399,8 +382,14 @@ public:
     }
 
     // inline member functions
-    std::vector<std::string> GetHeaderVector() { return Headers; }
-    void CloseCSVFile() { inFile.close(); }
+    std::vector<std::string> GetHeaderVector()
+    {
+        return Headers;
+    }
+    void CloseCSVFile()
+    {
+        inFile.close();
+    }
 
     void ConvertLineStringValueToIntegers();
     bool OpenCSVFile(std::string fileName, bool b_required);
@@ -408,69 +397,46 @@ public:
     bool ReadSectionHeader(std::string s);
     bool ReadRecord_Section();
     std::vector<std::string> ParseLine(std::string line);
-    bool GetValueByFieldName(std::string field_name,
-                             std::string& value,
-                             bool required_field = true);
-    template <class T>
-    bool GetValueByFieldName(std::string field_name,
-                             T& value,
-                             bool required_field = true,
-                             bool NonnegativeFlag = true);
-    template <class T>
-    bool GetValueByKeyName(std::string field_name,
-                           T& value,
-                           bool required_field = true,
-                           bool NonnegativeFlag = true);
+    bool GetValueByFieldName(std::string field_name, std::string& value, bool required_field = true);
+    template <class T> bool GetValueByFieldName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
+    template <class T> bool GetValueByKeyName(std::string field_name, T& value, bool required_field = true, bool NonnegativeFlag = true);
     bool CheckingSettingFormat()
     {
         ReadRecord();
-        std::string field_name = "key";
+        std::string  field_name = "key";
 
         if (FieldsIndices.find("key") == FieldsIndices.end())
         {
-            dtalog.output() << "[CRITICAL ERROR] The 'key' column in the file '"
-                            << mFileName.c_str()
-                            << "' cannot be found. Please ensure the settings file adheres to the "
-                            << "'section;key;value' format.\n";
-            g_DTA_log_file << "[CRITICAL ERROR] The 'key' column in the file '" << mFileName.c_str()
-                           << "' cannot be found. Please ensure the settings file adheres to the "
-                           << "'section;key;value' format.\n";
+            dtalog.output() << "[CRITICAL ERROR] The 'key' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            g_DTA_log_file << "[CRITICAL ERROR] The 'key' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
             return false;
         }
 
         if (FieldsIndices.find("value") == FieldsIndices.end())
         {
-            dtalog.output() << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName
-                            << "' cannot be found. Please ensure the settings file adheres to the "
-                            << "'section;key;value' format.\n";
-            g_DTA_log_file << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName
-                           << "' cannot be found. Please ensure the settings file adheres to the "
-                           << "'section;key;value' format.\n";
+            dtalog.output() << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
+            g_DTA_log_file << "[CRITICAL ERROR] The 'value' column in the file '" << mFileName.c_str() << "' cannot be found. Please ensure the settings file adheres to the 'section;key;value' format." << '\n';
             return false;
         }
         else
+        {
             return true;
-
+        }
         return false;
     }
 };
 
-// Peiheng, 03/22/21, to avoid implicit instantiations in flash_dta.cpp and main_api.cpp for this
-// template function only all the other non-inline functions are implemented in utils.cpp
+// Peiheng, 03/22/21, to avoid implicit instantiations in flash_dta.cpp and main_api.cpp for this template function only
+// all the other non-inline functions are implemented in utils.cpp
 template <class T>
-bool CDTACSVParser::GetValueByFieldName(std::string field_name,
-                                        T& value,
-                                        bool required_field,
-                                        bool NonnegativeFlag)
+bool CDTACSVParser::GetValueByFieldName(std::string field_name, T& value, bool required_field, bool NonnegativeFlag)
 {
     if (FieldsIndices.find(field_name) == FieldsIndices.end())
     {
         if (required_field)
         {
-            dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName.c_str()
-                            << " does not exist. Please check the file.\n";
-            g_DTA_log_file << "[ERROR] Field " << field_name << " in file " << mFileName.c_str()
-                           << " does not exist. Please check the file.\n";
+            dtalog.output() << "[ERROR] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
+            g_DTA_log_file << "[ERROR] Field " << field_name << " in file " << mFileName.c_str() << " does not exist. Please check the file." << '\n';
             g_program_stop();
         }
         return false;
@@ -478,15 +444,22 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name,
     else
     {
         if (LineFieldsValue.size() == 0)
+        {
             return false;
+        }
 
-        if (FieldsIndices[field_name] >= LineFieldsValue.size())
+        int size = (int)(LineFieldsValue.size());
+        if (FieldsIndices[field_name] >= size)
+        {
             return false;
+        }
 
         std::string str_value = LineFieldsValue[FieldsIndices[field_name]];
 
         if (str_value.length() <= 0)
+        {
             return false;
+        }
 
         std::istringstream ss(str_value);
 
@@ -498,14 +471,14 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name,
             return false;
         }
 
-        // if (required_field)
+        //if (required_field)
         //{
-        //     if(NonnegativeFlag)
-        //     {
-        //         if (converted_value < 0)
-        //             converted_value = 0;
-        //     }
-        // }
+        //    if(NonnegativeFlag)
+        //    {
+        //        if (converted_value < 0)
+        //            converted_value = 0;
+        //    }
+        //}
 
         value = converted_value;
         return true;
@@ -513,30 +486,27 @@ bool CDTACSVParser::GetValueByFieldName(std::string field_name,
 }
 
 template <class T>
-bool CDTACSVParser::GetValueByKeyName(std::string key_name,
-                                      T& value,
-                                      bool required_field,
-                                      bool NonnegativeFlag)
+bool CDTACSVParser::GetValueByKeyName(std::string key_name, T& value, bool required_field, bool NonnegativeFlag)
 {
     if (inFile.is_open())
         inFile.close();
 
-    OpenCSVFile(mFileName, false);
+    OpenCSVFile(mFileName,false);
     ReadRecord();
-
-    do
-    {
-        std::string key_name_record = "key";
-        GetValueByFieldName("key", key_name_record);
-
-        if (key_name_record == key_name)
+ 
+        do
         {
-            GetValueByFieldName("value", value);
-            return true;
-        }
-    } while (ReadRecord());
+            std::string  key_name_record = "key";
+            GetValueByFieldName("key", key_name_record);
 
+            if (key_name_record == key_name)
+            {
+                GetValueByFieldName("value", value);
+                return true;
+            }
+        } while (ReadRecord());
     return false;
 }
+
 
 #endif
