@@ -29,9 +29,6 @@ double network_assignment(int assignment_mode,
                           double UE_convergence_percentage,
                           int max_num_significant_zones_in_subarea,
                           int max_num_significant_zones_outside_subarea);
-
-int trace2od();
-
 #else
 #ifdef _WIN32
 #define DTALIBRARY_API __declspec(dllexport)
