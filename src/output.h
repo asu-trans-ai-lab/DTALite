@@ -3342,7 +3342,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 	{
 
 		// Option 2: BPR-X function
-		fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,meso_link_id,from_cell_code,lanes,length,free_speed_kmph,free_speed_mph,FFTT,time_period,inflow_volume,outflow_volume,CA,CD,density,queue_length_in_process,queue_ratio,discharge_cap,TD_free_flow_travel_time,waiting_time_in_sec,speed_kmph,speed_mph,geometry,");
+		fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,meso_link_id,from_cell_code,lanes,length,free_speed_kmph,free_speed_mph,FFTT,time_period,inflow_volume,volume,CA,CD,density,queue,queue_ratio,discharge_cap,TD_free_flow_travel_time,waiting_time_in_sec,speed,geometry,");
 		fprintf(g_pFileLinkMOE, "notes\n");
 
 		int sampling_time_interval = assignment.td_link_performance_sampling_interval_in_min; // min by min
@@ -3429,7 +3429,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 							continue; //skip
 					}
 
-					fprintf(g_pFileLinkMOE, "%s,%s,%s,%d,%d,%d,%s,%d,%.3f,%.3f,%.3f,%.3f,%s_%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,\"%s\",",
+					fprintf(g_pFileLinkMOE, "%s,%s,%s,%d,%d,%d,%s,%.1f,%.3f,%.3f,%.3f,%.3f,%s_%s,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,\"%s\",",
 						g_link_vector[i].link_id.c_str(),
 						g_link_vector[i].tmc_corridor_name.c_str(),
 						g_link_vector[i].link_type_name.c_str(),
@@ -3439,7 +3439,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 						g_link_vector[i].meso_link_id,
 						g_node_vector[g_link_vector[i].from_node_seq_no].cell_str.c_str(),
 						g_link_vector[i].number_of_lanes_si[0],
-						g_link_vector[i].link_distance_VDF,
+						g_link_vector[i].length_in_meter,
 						g_link_vector[i].free_speed,
 						g_link_vector[i].free_speed / 1.609,
 						g_link_vector[i].free_flow_travel_time_in_min,
