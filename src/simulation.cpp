@@ -485,7 +485,7 @@ void Assignment::STTrafficSimulation()
 									p_agent->p_RTNetwork = assignment.g_rt_network_pool[dest][at][tau];
 								}
 								p_agent->PCE_unit_size = 1; //  max(1, (int)(assignment.g_ModeTypeVector[at].PCE + 0.5));  // convert a possible floating point pce to an integer value for simulation
-								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].DSR));
+								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].desired_speed_ratio));
 								p_agent->time_headway = (int)(assignment.g_ModeTypeVector[at].time_headway_in_sec / number_of_seconds_per_interval + 0.5);
 								p_agent->agent_id = g_agent_simu_vector.size();
 								p_agent->mode_type_no = assignment.g_ModeTypeVector[at].mode_type_no;

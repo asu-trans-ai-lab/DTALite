@@ -59,7 +59,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		g_link_vector[i].setup_dynamic_number_of_lanes(assignment.active_scenario_index);
 	}
 
-	CDTACSVParser parser;
+
 
 	int capacity_count = 0;
 	int dtm_dynamic_lane_use_count = 0;
@@ -69,58 +69,45 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 	int record_no = 0;
 
-	FILE* g_pFileModel_LC = fopen("log_scenario.txt", "w");
-	if (g_pFileModel_LC == NULL)
-		return;
-
-	fprintf(g_pFileModel_LC, "dtm_type,demand_period,from_node,to_node,geometry,values\n");
 
 	assignment.active_dms_count = 0;
 	assignment.active_lane_closure_count = 0;
+	try {
+		YAML::Node config = YAML::LoadFile("settings.yml");
 
-	bool bFoundFlag = false;
+		if (!config["dynamic_traffic_management_data"]) {
+			std::cerr << "The key 'dynamic_traffic_management_data' is missing in the YAML file." << std::endl;
+			return;
+		}
 
-	if (parser.OpenCSVFile("dynamic_traffic_management.csv", false))
-	{
-		fprintf(g_pFileModel_LC, "reading record %d\n", record_no+1);
-		record_no = record_no+1;
+		for (const auto& dtm_entry : config["dynamic_traffic_management_data"]) {
+			int activate_flag = dtm_entry["activate"].as<int>();
+			if (activate_flag == 0) continue; // Skip if not activated
 
-		while (parser.ReadRecord())
-		{
+			int dtm_id = dtm_entry["dtm_id"].as<int>(0);
+			std::string dtm_type = dtm_entry["dtm_type"].as<std::string>("lane_closure");
+			int from_node_id = dtm_entry["from_node_id"].as<int>(1);
+			int to_node_id = dtm_entry["to_node_id"].as<int>(2);
+			double final_lanes = dtm_entry["final_lanes"].as<double>(1);
+			std::string demand_period = dtm_entry["demand_period"].as<std::string>("AM");
+			std::string mode_type = dtm_entry["mode_type"].as<std::string>("auto");
+			std::string scenario_index_vector_str = dtm_entry["scenario_index_vector"].as<std::string>("0");
 
-			int acitcivate_flag = 0;
+			// Perform the necessary operations with the data
+			// For example, you can check if the nodes exist and continue the logic as per your program's needs
 
-			parser.GetValueByFieldName("activate", acitcivate_flag);
+			// Logging the read data for demonstration purposes
+			std::cout << "DTM ID: " << dtm_id << ", DTM Type: " << dtm_type
+				<< ", From Node ID: " << from_node_id << ", To Node ID: " << to_node_id
+				<< ", Final Lanes: " << final_lanes << ", Demand Period: " << demand_period
+				<< ", Mode Type: " << mode_type << ", Scenario Index Vector: " << scenario_index_vector_str
+				<< std::endl;
+			
 
 
-			if (acitcivate_flag == 0)  // continue to skip this record
+			if (activate_flag == 0)  // continue to skip this record
 				continue;
 
-			int DTM_id = 0;
-			if (!parser.GetValueByFieldName("dtm_id", DTM_id))
-			{
-				dtalog.output() << "[ERROR] Field dtm_id in file dynamic_traffic_management.csv does not have a valid value." << '\n';
-				g_DTA_log_file << "[ERROR] Field dtm_id in file dynamic_traffic_management.csv does not have a valid value." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] field dtm_id %d in file dynamic_traffic_management.csv does not have a valid value\n");
-				return;
-			}
-			int from_node_id = 0;
-			if (!parser.GetValueByFieldName("from_node_id", from_node_id))
-			{
-				dtalog.output() << "[ERROR] from_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
-				g_DTA_log_file << "[ERROR] from_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file dynamic_traffic_management.csv is not defined\n", from_node_id);
-				return;
-			}
-
-			int to_node_id = 0;
-			if (!parser.GetValueByFieldName("to_node_id", to_node_id))
-			{
-				dtalog.output() << "[ERROR] to_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
-				g_DTA_log_file << "[ERROR] to_node_id in file dynamic_traffic_management.csv is not defined." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file dynamic_traffic_management.csv is not defined\n", to_node_id);
-				return;
-			}
 
 
 			if (from_node_id == 0 && to_node_id == 0)
@@ -132,14 +119,12 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			{
 				dtalog.output() << "[ERROR] from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				g_DTA_log_file << "[ERROR] from_node_id " << from_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] from_node_id %d in file scenario.csv is not defined in node.csv\n", from_node_id);
 				continue;
 			}
 			if (assignment.g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 			{
 				dtalog.output() << "[ERROR] to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
 				g_DTA_log_file << "[ERROR] to_node_id " << to_node_id << " in file scenario.csv is not defined in node.csv." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] to_node_id %d in file scenario.csv is not defined in node.csv\n", to_node_id);
 				//has not been defined
 				continue;
 			}
@@ -158,48 +143,35 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file dynamic_traffic_management.csv is not defined in link.csv." << '\n';
-				g_DTA_log_file << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in file dynamic_traffic_management.csv is not defined in link.csv." << '\n';
-				fprintf(g_pFileModel_LC, "[ERROR] link %d-> %d in file scenario.csv is not defined in link.csv\n", from_node_id, to_node_id);
+				dtalog.output() << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in section dynamic_traffic_management is not defined in link.csv." << '\n';
+				g_DTA_log_file << "[ERROR] Link " << from_node_id << "->" << to_node_id << " in section dynamic_traffic_management is not defined in link.csv." << '\n';
 				continue;
 			}
 
 			vector<float> global_minute_vector;
-			string demand_period;
-			parser.GetValueByFieldName("demand_period", demand_period);
+
 			int tau = 0;
 			if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
 			{
 				tau = assignment.demand_period_to_seqno_mapping[demand_period];
 			}
 
-			fprintf(g_pFileModel_LC, "%s,%d,%d,", demand_period.c_str(), from_node_id, to_node_id);
-			fprintf(g_pFileModel_LC, "\"LINESTRING (");
-			fprintf(g_pFileModel_LC, "%f %f,", g_node_vector[internal_from_node_seq_no].x, g_node_vector[internal_from_node_seq_no].y);
-			fprintf(g_pFileModel_LC, "%f %f,", g_node_vector[internal_to_node_seq_no].x, g_node_vector[internal_to_node_seq_no].y);
-			fprintf(g_pFileModel_LC, ")\"");
-
-			string str_mode_type;
-			parser.GetValueByFieldName("mode_type", str_mode_type); 
 
 
 			int mode_type_no = 0;
-			if (str_mode_type.size() > 0 && assignment.mode_type_2_seqno_mapping.find(str_mode_type) != assignment.mode_type_2_seqno_mapping.end())
+			if (mode_type.size() > 0 && assignment.mode_type_2_seqno_mapping.find(mode_type) != assignment.mode_type_2_seqno_mapping.end())
 			{
-				mode_type_no = assignment.mode_type_2_seqno_mapping[str_mode_type];
+				mode_type_no = assignment.mode_type_2_seqno_mapping[mode_type];
 
 			}
 			else
 			{
-				dtalog.output() << "[ERROR] Please ensure that the mode type '" << str_mode_type << "' specified in dynamic_traffic_management.csv for record number " << DTM_id << " is present in the mode_type.csv file." << '\n';
-				g_DTA_log_file << "[ERROR] Please ensure that the mode type '" << str_mode_type << "' specified in dynamic_traffic_management.csv for record number " << DTM_id << " is present in the mode_type.csv file." << '\n';
+				dtalog.output() << "[ERROR] Please ensure that the mode type '" << mode_type << "' specified in section dynamic_traffic_management for record number " << dtm_id << " is present in the section mode_type." << '\n';
+				g_DTA_log_file << "[ERROR] Please ensure that the mode type '" << mode_type << "' specified in section dynamic_traffic_management for record number " << dtm_id << " is present in the section mode_type." << '\n';
 			}
 
 
-			string DTM_type, scenario_index_vector_str;
-			parser.GetValueByFieldName("dtm_type", DTM_type);
-			
-			parser.GetValueByFieldName("scenario_index_vector", scenario_index_vector_str);
+		
 			std::vector<int> scenario_index_vector;
 
 			g_ParserIntSequence(scenario_index_vector_str, scenario_index_vector);
@@ -209,9 +181,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = 0;  // apply the change
 			g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code.clear();
 
-
-
-
+			bool bFoundFlag = false; 
 
 			for (int scenario_index_i = 0; scenario_index_i < scenario_index_vector.size(); scenario_index_i++)
 			{ 
@@ -227,34 +197,29 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 			if (bFoundFlag == false)  // this active scenario index 
 				continue; 
-			if (DTM_type == "dynamic_lane_use")
+			if (dtm_type == "dynamic_lane_use")
 			{
 				// capacity in the space time arcs
-				float final_lanes = 0;
-				parser.GetValueByFieldName("final_lanes", final_lanes);
 				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no][scenario_no] = final_lanes;  // apply the change
-				fprintf(g_pFileModel_LC, "dynamic lane use,final_number_of_lanes=%f,", final_lanes);
 				dtm_dynamic_lane_use_count++;
 			}
 
-			if (DTM_type == "dynamic_toll")
+			if (dtm_type == "dynamic_toll")
 			{
 				// capacity in the space time arcs
 				float toll_amount = 0;
-				parser.GetValueByFieldName("toll_amount", toll_amount);
+				//parser.GetValueByFieldName("toll_amount", toll_amount);
 				
 				g_link_vector[link_seq_no].VDF_period[tau].toll[mode_type_no][assignment.active_scenario_index] = toll_amount;  // apply the change
 
-				fprintf(g_pFileModel_LC, "dynamic_toll,toll_amount=%f,", toll_amount);
 				dtm_dynamic_lane_use_count++;
 			}	
 
-			else if (DTM_type == "lane_closure")
+			else if (dtm_type == "lane_closure")
 			{
 				// capacity in the space time arcs
-				float final_lanes = 0;
-				parser.GetValueByFieldName("final_lanes", final_lanes);
+	
 			//	mode_type_no = 0; //this lane_closure is only for driving mode, this should be commented out 
 				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
 				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
@@ -266,16 +231,15 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				
 
 				if (assignment.g_ModeTypeVector[mode_type_no].real_time_information_type == 0) {
-					dtalog.output() << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
-					g_DTA_log_file << "[ERROR] Lane closure record " << DTM_id << " in the file dynamic_traffic_management.csv is being checked. Please ensure that the mode type = " << str_mode_type << " specified in mode_type.csv has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
+					dtalog.output() << "[ERROR] Lane closure record " << dtm_type << " in the section dynamic_traffic_management is being checked. Please ensure that the mode type = " << mode_type << " specified in section mode_type has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
+					g_DTA_log_file << "[ERROR] Lane closure record " << dtm_type << " in the section dynamic_traffic_management is being checked. Please ensure that the mode type = " << mode_type << " specified in section mode_type has DTM_real_time_info_type = 1 to enable real-time information modeling." << '\n';
 					continue;
 				}
 
 
 
-				fprintf(g_pFileModel_LC, "lane closure,final_number_of_lanes=%f,", final_lanes);
-			}
-			else if (DTM_type == "dms")
+		}
+			else if (dtm_type == "dms")
 			{
 				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = 2;
 				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "dms";
@@ -306,10 +270,10 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			}
 			else
 			{
-				dtalog.output() << "[ERROR] DTALite does not support DTM_type = " << DTM_type.c_str() << " in dynamic_traffic_management.csv " << '\n';
-				g_DTA_log_file << "[ERROR] DTALite does not support DTM_type = " << DTM_type.c_str() << " in dynamic_traffic_management.csv " << '\n';
-				dtalog.output() << "[INFO] DTALite only support DTM_type = lane_closure or dms in dynamic_traffic_management.csv " << '\n';
-				g_DTA_log_file << "[INFO] DTALite only support DTM_type = lane_closure or dms in dynamic_traffic_management.csv " << '\n';
+				dtalog.output() << "[ERROR] DTALite does not support dtm_type = " << dtm_type.c_str() << " in section dynamic_traffic_management " << '\n';
+				g_DTA_log_file << "[ERROR] DTALite does not support dtm_type = " << dtm_type.c_str() << " in section dynamic_traffic_management " << '\n';
+				dtalog.output() << "[INFO] DTALite only support dtm_type = lane_closure or dms in section dynamic_traffic_management " << '\n';
+				g_DTA_log_file << "[INFO] DTALite only support dtm_type = lane_closure or dms in section dynamic_traffic_management " << '\n';
 				continue;
 			}
 
@@ -429,51 +393,50 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			//		g_program_stop();
 			//	}
 			//}
-			fprintf(g_pFileModel_LC, "\n");
 
 		}
 
 
-	}
+
 	// allocate
 
 	if(dtm_dynamic_lane_use_count == 0){
-		dtalog.output() << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
-		g_DTA_log_file << "No dynamic lane use scenarios found in dynamic_traffic_management.csv." << '\n';
+		dtalog.output() << "No dynamic lane use scenarios found in section dynamic_traffic_management." << '\n';
+		g_DTA_log_file << "No dynamic lane use scenarios found in section dynamic_traffic_management." << '\n';
 	}
 	else {
-		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
-		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+		dtalog.output() << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in section dynamic_traffic_management  " << '\n';
+		g_DTA_log_file << "[STATUS INFO] loading " << dtm_dynamic_lane_use_count << " dynamic lane use scenarios in section dynamic_traffic_management  " << '\n';
 	}
 
 
 	if (dtm_lane_closure_count == 0)
 	{
-		dtalog.output() << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
-		g_DTA_log_file << "No lane closure scenarios found in dynamic_traffic_management.csv." << '\n';
+		dtalog.output() << "No lane closure scenarios found in section dynamic_traffic_management." << '\n';
+		g_DTA_log_file << "No lane closure scenarios found in section dynamic_traffic_management." << '\n';
 	}
 	else{
-		dtalog.output() << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
-		g_DTA_log_file << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in dynamic_traffic_management.csv  " << '\n';
+		dtalog.output() << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in section dynamic_traffic_management  " << '\n';
+		g_DTA_log_file << "[STATUS INFO] loading " << dtm_lane_closure_count << " dynamic lane use scenarios in section dynamic_traffic_management  " << '\n';
 
 	}
 
 	if (dtm_lane_closure_count  > 0  && assignment.g_number_of_real_time_mode_types ==0)
 	{
-		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
-		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'mode_type.csv'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv." << '\n';
+		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'section mode_type'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in section mode_type." << '\n';
+		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 1 is defined in 'section mode_type'. If a lane closure scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in section mode_type." << '\n';
 		return;
 	}
 
 
-	if (bFoundFlag && dtm_lane_closure_count == 0 && assignment.total_real_time_demand_volume > 0.1) {
-		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the dynamic_traffic_management.csv file." << '\n';
-		g_DTA_log_file << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the dynamic_traffic_management.csv file." << '\n';
+	if (dtm_lane_closure_count == 0 && assignment.total_real_time_demand_volume > 0.1) {
+		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
+		g_DTA_log_file << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
 
 		for (int i = 0; i < assignment.g_ModeTypeVector.size(); i++) {
 			if (assignment.g_ModeTypeVector[i].real_time_information_type != 0) {
-				dtalog.output() << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the mode_type.csv file." << '\n';
-				g_DTA_log_file << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the mode_type.csv file." << '\n';
+				dtalog.output() << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the section mode_type." << '\n';
+				g_DTA_log_file << "[INFO] The real-time information mode '" << assignment.g_ModeTypeVector[i].mode_type.c_str() << "' is defined in the section mode_type." << '\n';
 			}
 		}
 
@@ -481,18 +444,18 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	}
 
 
-	//dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
-	//g_DTA_log_file << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios dynamic_traffic_management.csv " << '\n';
+	//dtalog.output() << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios section dynamic_traffic_management " << '\n';
+	//g_DTA_log_file << "[STATUS INFO] loading " << dtm_dms_count << " dms scenarios section dynamic_traffic_management " << '\n';
 	if (dtm_dms_count > 0 && assignment.g_number_of_DMS_mode_types == 0)
 	{
-		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
-		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'mode_type.csv'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in mode_type.csv.." << '\n';
+		dtalog.output() << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'section mode_type'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in section mode_type.." << '\n';
+		g_DTA_log_file << "[ERROR] No mode type with 'DTM_real_time_info_type' = 2  is defined in 'section mode_type'. If a DMS scenario is activated, a corresponding real-time information user class (i.e., mode type) must be defined in section mode_type.." << '\n';
 		return;
 	}
 	//if (dtm_dms_count > 0 && dtm_lane_closure_count ==0 )
 	//{
-	//	dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
-	//	g_DTA_log_file << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in dynamic_traffic_management.csv.." << '\n';
+	//	dtalog.output() << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in section dynamic_traffic_management.." << '\n';
+	//	g_DTA_log_file << "[ERROR] If a DMS scenario is activated, a corresponding lane closure must be defined in section dynamic_traffic_management.." << '\n';
 	//	return;
 	//}
 
@@ -501,16 +464,25 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	//{
 	//	g_assign_RT_computing_tasks_to_memory_blocks(assignment);
 	//}
-	fclose(g_pFileModel_LC);
-	parser.CloseCSVFile();
+	}
+	catch (const YAML::Exception& e) {
+		std::cerr << "Error loading or parsing YAML file: " << e.what() << std::endl;
+		return;
+	}
+	return;
+	bool bFoundFlag = false;
+
+
+	record_no = record_no + 1;
+
 
 	// we now know the number of links
 
 	assignment.summary_file << ",read dynamic traffic managementscenario" << '\n';
-	//assignment.summary_file << ", # of records in dynamic_traffic_management.csv=," << dtm_lane_closure_count + incident_count + dtm_dms_count << "," << '\n';
-	assignment.summary_file << ", # of lane closure records in dynamic_traffic_management.csv=," << dtm_lane_closure_count << "," << '\n';
-	//assignment.summary_file << ", # of incident records in dynamic_traffic_management.csv=," << incident_count << "," << '\n';
-	assignment.summary_file << ", # of dms records in dynamic_traffic_management.csv=," << dtm_dms_count << "," << '\n';
+	//assignment.summary_file << ", # of records in section dynamic_traffic_management=," << dtm_lane_closure_count + incident_count + dtm_dms_count << "," << '\n';
+	assignment.summary_file << ", # of lane closure records in section dynamic_traffic_management=," << dtm_lane_closure_count << "," << '\n';
+	//assignment.summary_file << ", # of incident records in section dynamic_traffic_management=," << incident_count << "," << '\n';
+	assignment.summary_file << ", # of dms records in section dynamic_traffic_management=," << dtm_dms_count << "," << '\n';
 
 	//if (capacity_count > 0 || sa_capacity_count > 0)
 	//{
@@ -520,106 +492,106 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 }
 
 
-void g_load_demand_side_scenario_file(Assignment& assignment)
-{
-	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
-
-	CDTACSVParser parser;
-
-	int demand_scenario_count = 0;
-
-
-	if (parser.OpenCSVFile("demand_side_scenario.csv", false))
-	{
-		while (parser.ReadRecord())
-		{
-
-			int o_district_id = 0;
-			parser.GetValueByFieldName("o_district_id", o_district_id);
-
-			int d_district_id = 0;
-			parser.GetValueByFieldName("d_district_id", d_district_id);
-
-			if (o_district_id == 0 && d_district_id == 0)
-			{
-				continue;
-			}
-
-			string demand_period;
-
-			parser.GetValueByFieldName("demand_period", demand_period);
-			int tau = 0;
-			if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
-			{
-				tau = assignment.demand_period_to_seqno_mapping[demand_period];
-			}
-			else
-			{
-				dtalog.output() <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
-				g_DTA_log_file <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
-				continue;
-			}
-
-			double scale_factor = 1;
-
-			parser.GetValueByFieldName("scale_factor", scale_factor, false);
-
-			string DTM_type;
-			parser.GetValueByFieldName("DTM_type", DTM_type);
-			// o_distrct_id_factor_map,
-			// d_district_id_factor_map,
-			// od_district_id_factor_map
-
-			if (DTM_type == "o_based")
-			{
-				assignment.o_district_id_factor_map[o_district_id] = scale_factor;
-
-			}else if (DTM_type == "d_based")
-			{
-				assignment.d_district_id_factor_map[d_district_id] = scale_factor;
-			}else if (DTM_type == "od_based")
-			{
-				int od_district_key = o_district_id * 1000 + d_district_id;
-
-				assignment.od_district_id_factor_map[od_district_key] = scale_factor;
-			}else if (DTM_type == "sa_o_based")
-			{
-				assignment.SA_o_district_id_factor_map[o_district_id] = scale_factor;
-
-			}
-			else if (DTM_type == "sa_d_based")
-			{
-				assignment.SA_d_district_id_factor_map[d_district_id] = scale_factor;
-			}
-			else if (DTM_type == "sa_od_based")
-			{
-				int od_district_key = o_district_id * 1000 + d_district_id;
-
-				assignment.SA_od_district_id_factor_map[od_district_key] = scale_factor;
-			}
-			else
-			{
-				dtalog.output() << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
-				g_DTA_log_file << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
-				dtalog.output() << DTM_type.c_str() << "is not supported." << '\n';
-				g_DTA_log_file << DTM_type.c_str() << "is not supported." << '\n';
-				continue;
-			}
-
-			demand_scenario_count++;
-
-			dtalog.output() << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
-			g_DTA_log_file << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
-
-		}
-	}
-	parser.CloseCSVFile();
-
-	// we now know the number of links
-	assignment.summary_file << ", # of demand side records in demand_side_scenario.csv=," << demand_scenario_count << "," << '\n';
-
-}
+//void g_load_demand_side_scenario_file(Assignment& assignment)
+//{
+//	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
+//	g_DTA_log_file << "[PROCESS INFO] Step 2.0: Reading demand side scenario data..." << '\n';
+//
+//	CDTACSVParser parser;
+//
+//	int demand_scenario_count = 0;
+//
+//
+//	if (parser.OpenCSVFile("demand_side_scenario.csv", false))
+//	{
+//		while (parser.ReadRecord())
+//		{
+//
+//			int o_district_id = 0;
+//			parser.GetValueByFieldName("o_district_id", o_district_id);
+//
+//			int d_district_id = 0;
+//			parser.GetValueByFieldName("d_district_id", d_district_id);
+//
+//			if (o_district_id == 0 && d_district_id == 0)
+//			{
+//				continue;
+//			}
+//
+//			string demand_period;
+//
+//			parser.GetValueByFieldName("demand_period", demand_period);
+//			int tau = 0;
+//			if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
+//			{
+//				tau = assignment.demand_period_to_seqno_mapping[demand_period];
+//			}
+//			else
+//			{
+//				dtalog.output() <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
+//				g_DTA_log_file <<"[ERROR] demand_period" << "is not defined in settings.csv." << '\n';
+//				continue;
+//			}
+//
+//			double scale_factor = 1;
+//
+//			parser.GetValueByFieldName("scale_factor", scale_factor, false);
+//
+//			string DTM_type;
+//			parser.GetValueByFieldName("DTM_type", DTM_type);
+//			// o_distrct_id_factor_map,
+//			// d_district_id_factor_map,
+//			// od_district_id_factor_map
+//
+//			if (DTM_type == "o_based")
+//			{
+//				assignment.o_district_id_factor_map[o_district_id] = scale_factor;
+//
+//			}else if (DTM_type == "d_based")
+//			{
+//				assignment.d_district_id_factor_map[d_district_id] = scale_factor;
+//			}else if (DTM_type == "od_based")
+//			{
+//				int od_district_key = o_district_id * 1000 + d_district_id;
+//
+//				assignment.od_district_id_factor_map[od_district_key] = scale_factor;
+//			}else if (DTM_type == "sa_o_based")
+//			{
+//				assignment.SA_o_district_id_factor_map[o_district_id] = scale_factor;
+//
+//			}
+//			else if (DTM_type == "sa_d_based")
+//			{
+//				assignment.SA_d_district_id_factor_map[d_district_id] = scale_factor;
+//			}
+//			else if (DTM_type == "sa_od_based")
+//			{
+//				int od_district_key = o_district_id * 1000 + d_district_id;
+//
+//				assignment.SA_od_district_id_factor_map[od_district_key] = scale_factor;
+//			}
+//			else
+//			{
+//				dtalog.output() << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
+//				g_DTA_log_file << "[ERROR] scenario type in demand_side_scenario.csv supports only o_based, d_based, od_based, SA_o_based, SA_d_based, SA_od_based." << '\n';
+//				dtalog.output() << DTM_type.c_str() << "is not supported." << '\n';
+//				g_DTA_log_file << DTM_type.c_str() << "is not supported." << '\n';
+//				continue;
+//			}
+//
+//			demand_scenario_count++;
+//
+//			dtalog.output() << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
+//			g_DTA_log_file << "[STATUS INFO] reading " << demand_scenario_count << " demand side scenario(s).. " << '\n';
+//
+//		}
+//	}
+//	parser.CloseCSVFile();
+//
+//	// we now know the number of links
+//	assignment.summary_file << ", # of demand side records in demand_side_scenario.csv=," << demand_scenario_count << "," << '\n';
+//
+//}
 
 
 //char lr_price_field_name[50];

@@ -10,8 +10,8 @@ using std::max;
 
 constexpr auto MAX_LABEL_COST = 1.0e+15;
 constexpr auto _INFO_ZONE_ID = 100000;
-constexpr auto MAX_SCENARIOS = 4;  //20
-constexpr auto MAX_MODETYPES = 3; //10 //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
+constexpr auto MAX_SCENARIOS = 10;  //10
+constexpr auto MAX_MODETYPES = 10; //10 //because of the od demand store format,the MAX_demandtype must >=g_DEMANDTYPES.size()+1;
 constexpr auto MAX_TIMEPERIODS = 6; //6 // time period set to 6: AM, MD, PM, LPM, SAT_MD
 
 constexpr auto MAX_ORIGIN_DISTRICTS = 30; //origin based agreegration grids
@@ -315,12 +315,12 @@ public:
 class Cmode_type {
 public:
     Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information_type{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
-        OCC{ 1 }, DSR{ 1 }, number_of_allowed_links{ 0 }, mode_specific_assignment_flag{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }
+        OCC{ 1 }, desired_speed_ratio{ 1 }, number_of_allowed_links{ 0 }, multimodal_dedicated_assignment_flag{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }
     {
     }
 
-    int mode_specific_assignment_flag;
-
+    int multimodal_dedicated_assignment_flag;
+    
     int mode_type_no;
     // dollar per hour
     float value_of_time;
@@ -328,7 +328,7 @@ public:
     int eco_so_flow_switch_bound;
     // link type, product consumption equivalent used, for travel time calculation
     double OCC;
-    double DSR;
+    double desired_speed_ratio;
 
     float time_headway_in_sec;
     int real_time_information_type;
@@ -361,7 +361,7 @@ public:
 
             for (int at2 = 0; at2 < g_number_of_active_mode_types; at2++)
             {
-                meu_matrix[at][at2] = 1;
+                meu_matrix[at][at2] = 0;  //default is zero
             }
 
             for (int value_index = 0; value_index < 4; value_index++)

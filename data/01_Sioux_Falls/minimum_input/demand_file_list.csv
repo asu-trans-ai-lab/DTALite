@@ -1,2 +1,4 @@
 first_column,file_sequence_no,scenario_index_vector,file_name,demand_period,mode_type,format_type,scale_factor,departure_time_profile_no,comment
 0,1,0,demand.csv,am,auto,column,1,1,
+0,1,0,demand.csv,md,auto,column,0.8,1,
+0,1,0,demand.csv,pm,auto,column,1.5,1,

@@ -1,0 +1,99 @@
+[PROCESS INFO] Step 0: reading section scenarios
+[STATUS INFO] scenario_index=0,scenario_name=,25nb
+[PROCESS INFO] Step 1.1: Reading section demand_period ...
+,demand_period= 1, am,time_period=0700-0800
+[PROCESS INFO] Step 1.2: Reading section mode_type...
+mode_type =, auto, real time info flag = 0
+mode_type =, walk, real time info flag = 0
+mode_type =, bike, real time info flag = 0
+mode_type =, bus, real time info flag = 0
+mode_type =, truck, real time info flag = 0
+mode_type =, cav, real time info flag = 1
+mode_type =, ev, real time info flag = 0
+mode_type =, hov, real time info flag = 0
+link_type =, 1, link_type_name = motorway
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 2, link_type_name = trunk
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 3, link_type_name = primary
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 4, link_type_name = residential
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 5, link_type_name = secondary
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 6, link_type_name = tertiary
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 7, link_type_name = unclassified
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 9, link_type_name = collector
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 10, link_type_name = connector
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,free_speed=60
+,mode_type= truck,cap= 2000,free_speed=60
+,mode_type= cav,cap= 2000,free_speed=60
+,mode_type= ev,cap= 2000,free_speed=60
+,mode_type= hov,cap= 2000,free_speed=60
+link_type =, 100, link_type_name = shared_use
+,mode_type= auto,cap= 1999,free_speed=60
+,mode_type= walk,cap= 1999,free_speed=60
+,mode_type= bike,cap= 1999,free_speed=60
+,mode_type= bus,cap= 1999,fre

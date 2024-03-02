@@ -608,7 +608,7 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 			else // Non-main modes (e.g., active transportation, public transportation)
 			{
 				// If the current mode type requires a specific assignment, bike, walk
-				if (assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag  ==1)
+				if (assignment.g_ModeTypeVector[mode_type_index].multimodal_dedicated_assignment_flag  ==1)
 				{
 					// Fetch the link type for the active scenario
 					int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
@@ -665,7 +665,9 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				if (mode_type_index == mode_type_index_secondary)
 					MEU_conversion_value = 1.0;
 
-				if (this->from_node_id == 1 && this->to_node_id == 3 && volume_per_mode_type_per_period[tau][mode_type_index_secondary] >0)
+					
+
+				if (this->from_node_id == 218 && this->to_node_id == 235 && volume_per_mode_type_per_period[tau][mode_type_index_secondary] >0)
 				{
 					int idebug = 1;
 				}
@@ -678,7 +680,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			double mode_peak_load_factor = 1;
 
 			// Handling primary mode or non-major modes such as HOV or truck, they need to be mapped to the major auto mode for traffic assignment
-			if (mode_type_index == 0 || assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag == 0)
+			if (mode_type_index == 0 || assignment.g_ModeTypeVector[mode_type_index].multimodal_dedicated_assignment_flag == 0)
 			{
 				// The base mode type index
 				int primary_mode_index = 0;
@@ -769,7 +771,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			// Set link volume for the VDF period
 			VDF_period[tau].link_volume = link_volume_to_be_assigned;
 
-			if (assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag == 0)
+			if (assignment.g_ModeTypeVector[mode_type_index].multimodal_dedicated_assignment_flag == 0)
 			{
 				// The condition checks if the mode specific assignment flag for the given mode type index (could be truck, hov, real time in, CAV, EV mode) is zero.
 				// If it is zero, we assume that the mode type does not have its own specific values and we need to use default values from the base mode type, which is 'auto' in this case.
@@ -817,7 +819,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //				double mode_FFFTT = 0;
 //				double mode_peak_load_factor = 1;
 //
-//				if (mode_type_index == 0 || assignment.g_ModeTypeVector[mode_type_index].mode_specific_assignment_flag == 0)  // primary mode or non-major mode such as HOV or truck they need to be mapped to the major auto mode to perform traffic assignment
+//				if (mode_type_index == 0 || assignment.g_ModeTypeVector[mode_type_index].multimodal_dedicated_assignment_flag == 0)  // primary mode or non-major mode such as HOV or truck they need to be mapped to the major auto mode to perform traffic assignment
 //				{
 //					int at_base = 0;  // so the base is the mode index  = 0
 //					mode_FFFTT = VDF_period[tau].FFTT_at[at_base];  // free flow travel time 
@@ -1054,26 +1056,44 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 	assignment.active_scenario_index = 0;
 
-	assignment.summary_file << "[PROCESS INFO] Step 0: reading scenario_index_list.csv" << '\n';
-	dtalog.output() << "[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 0.1: reading scenario_index_list.csv" << '\n';
+	assignment.summary_file << "[PROCESS INFO] Step 0: reading section scenarios" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 0.1: reading section scenarios" << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 0.1: reading section scenarios" << '\n';
 
-	CDTACSVParser parser_scenario_index_file_list;
-	if (parser_scenario_index_file_list.OpenCSVFile("scenario_index_list.csv", false))
+
+	struct Scenario {
+		int scenario_index;
+		int year;
+		std::string scenario_name;
+		std::string scenario_description;
+		int activate;
+	};
+	YAML::Node config = YAML::LoadFile("settings.yml");
+
+	// Create a vector to hold all the scenario configurations
+	std::vector<Scenario> scenarios;
+
+	// Check if 'scenarios' is a sequence and iterate over it
+	if (config["scenarios"].IsSequence()) 
 	{
+		for (const YAML::Node& node : config["scenarios"]) {
+			Scenario scenario;
+			scenario.scenario_index = node["scenario_index"].as<int>(0);
+			scenario.year = node["year"].as<int>(2025);
+			scenario.scenario_name = node["scenario_name"].as<std::string>("25nb");
+			scenario.activate = node["activate"].as<int>(1);
 
-		while (parser_scenario_index_file_list.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
-		{
+			scenarios.push_back(scenario);
+	
 			DTAScenario element;
 
-			int activate = 0;
-			parser_scenario_index_file_list.GetValueByFieldName("activate", activate);
+			int activate = scenario.activate;
 			if(activate ==1)
 			{
+				element.scenario_index = scenario.scenario_index;
+				element.scenario_name = scenario.scenario_name;
 
-			parser_scenario_index_file_list.GetValueByFieldName("scenario_index", element.scenario_index);
-			parser_scenario_index_file_list.GetValueByFieldName("scenario_name", element.scenario_name);
-
+	
 			assignment.g_active_DTAscenario_map[element.scenario_index] = assignment.g_DTA_scenario_vector.size();
 
 			assignment.g_DTA_scenario_vector.push_back(element);
@@ -1106,8 +1126,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	}
 	else
 	{
-		dtalog.output() << "[ERROR] File scenario_index_list.csv does not exist!" << '\n';
-		g_DTA_log_file << "[ERROR] File scenario_index_list.csv does not exist!" << '\n';
+		dtalog.output() << "[ERROR] Section scenarios does not exist!" << '\n';
+		g_DTA_log_file << "[ERROR] Section scenarios does not exist!" << '\n';
 		g_program_stop();
 	}
 
@@ -1467,8 +1487,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			update_link_travel_time_and_cost(column_generation_iterations, total_distance);
 
 
-			dtalog.output() << "[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided." << '\n';
-			g_DTA_log_file << "[PROCESS INFO] Step 6: OD demand matrix estimation if file sensor_data.csv is provided." << '\n';
+			dtalog.output() << "[PROCESS INFO] Step 6: OD demand matrix estimation if section sensor_data is provided in settings.yml." << '\n';
+			g_DTA_log_file << "[PROCESS INFO] Step 6: OD demand matrix estimation if section sensor_data is provided in settings.yml." << '\n';
 
 			if (assignment.g_number_of_ODME_iterations >= 1)
 			{
@@ -1509,9 +1529,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		// stage II sensitivity analysis stage
 
 
-		assignment.summary_file << "[PROCESS INFO] Step 7: perform sensitivity analysis if dynamic_traffic_management.csv is provided for dtm_type = lane_closure or dms. " << '\n';
-		dtalog.output() << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. " << '\n';
-		g_DTA_log_file << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if dynamic_traffic_management.csv is provided with dtm_type set to either 'lane_closure'. " << '\n';
+		assignment.summary_file << "[PROCESS INFO] Step 7: perform sensitivity analysis if section dynamic_traffic_management is provided for dtm_type = lane_closure or dms. " << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if sectiondynamic_traffic_management is provided with dtm_type set to either 'lane_closure'. " << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 7: Performing Sensitivity Analysis. Proceeds only if section dynamic_traffic_management is provided with dtm_type set to either 'lane_closure'. " << '\n';
 		
 		g_reset_link_district_performance_per_scenario(assignment);
 		g_record_link_district_performance_per_scenario(assignment, 0);
@@ -1651,10 +1671,10 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 		g_classification_in_column_pool(assignment);
 
-		dtalog.output() << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . " << '\n';
-		g_DTA_log_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv . " << '\n';
+		dtalog.output() << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml . " << '\n';
+		g_DTA_log_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml . " << '\n';
 
-		assignment.summary_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.csv. " << '\n';
+		assignment.summary_file << "[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml. " << '\n';
 
 		if (simulation_iterations >= 1)
 		{

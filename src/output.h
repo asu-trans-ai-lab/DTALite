@@ -1451,7 +1451,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		fprintf(g_pFileLinkMOE, "preload_volume,mode_type_volume,travel_time,speed_kmph,speed_mph,speed_ratio,VOC,DOC,lane_capacity,link_capacity,queue,total_simu_waiting_time_in_min,avg_simu_waiting_time_in_min,plf,lanes,D_per_hour_per_lane,QVDF_cd,QVDF_n,P,severe_congestion_duration_in_h,vf,v_congestion_cutoff,QVDF_cp,QVDF_s,QVDF_v,vt2,VMT,VHT,PMT,PHT,PDT_vf,PDT_vc,geometry,");
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-			fprintf(g_pFileLinkMOE, "person_vol_%s,", assignment.g_ModeTypeVector[at].mode_type.c_str());
+			fprintf(g_pFileLinkMOE, "moving_agent_vol_%s,", assignment.g_ModeTypeVector[at].mode_type.c_str());
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			fprintf(g_pFileLinkMOE, "MEU_vol_%s,", assignment.g_ModeTypeVector[at].mode_type.c_str());
@@ -1468,7 +1468,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 		//for (int og = 0; og < assignment.g_number_of_analysis_districts; ++og)
 		//	for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 		//	{
-		//		fprintf(g_pFileLinkMOE, "person_vol_district_%d_%s,", og, assignment.g_ModeTypeVector[at].mode_type.c_str());
+		//		fprintf(g_pFileLinkMOE, "moving_agent_vol_district_%d_%s,", og, assignment.g_ModeTypeVector[at].mode_type.c_str());
 
 		//	}
 

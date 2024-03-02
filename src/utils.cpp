@@ -8,6 +8,11 @@
  * http://www.gnu.org/licenses/gpl-howto.html
  */
 
+#ifdef _WIN32
+#define YAML_CPP_STATIC_DEFINE
+#endif
+#include <yaml-cpp/yaml.h>
+
 #include "teestream.h"
 #include "utils.h"
 
