@@ -125,7 +125,6 @@ bool g_read_subarea_CSV_file(Assignment& assignment)
 
 void g_read_departure_time_profile(Assignment& assignment)
 {
-	CDTACSVParser parser;
 
 	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading section departure_time_profile" << '\n';
 	g_DTA_log_file << "[PROCESS INFO] Step 2.0: Reading section departure_time_profile" << '\n';
@@ -152,7 +151,7 @@ void g_read_departure_time_profile(Assignment& assignment)
 
 				vector<float> global_minute_vector;
 
-				time_period = node["time_period"].as<std::string>("0700_0800");
+				time_period = node["time_period"].as<std::string>("0700-0800");
 
 				//input_string includes the start and end time of a time period with hhmm format
 				global_minute_vector = g_time_parser(time_period); //global_minute_vector incldue the starting and ending time
@@ -162,6 +161,9 @@ void g_read_departure_time_profile(Assignment& assignment)
 					dep_time.starting_time_slot_no = global_minute_vector[0] / MIN_PER_TIMESLOT;  // read the data
 					dep_time.ending_time_slot_no = global_minute_vector[1] / MIN_PER_TIMESLOT;    // read the data from settings.csv
 
+				}
+				else
+				{
 				}
 
 				char time_interval_field_name[20];
@@ -178,10 +180,8 @@ void g_read_departure_time_profile(Assignment& assignment)
 
 					sprintf(time_interval_field_name, "T%02d%02d", hour, minute);
 
-					if (parser.GetValueByFieldName(time_interval_field_name, value, false) == true)
-					{
-						dep_time.departure_time_ratio[s] = value;
-					}
+					dep_time.departure_time_ratio[s]  = node[time_interval_field_name].as<float>(1);
+
 
 					if (s == dep_time.starting_time_slot_no || s == dep_time.ending_time_slot_no)
 					{
@@ -484,7 +484,7 @@ void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 			{
 				dtalog.output() << "[ERROR] Demand period = " << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ", mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has a total demand of " << assignment.total_demand[at][tau] << ", but this mode type is not allowed on any link in the network." << '\n';
 				g_DTA_log_file << "[ERROR] Demand period = " << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ", mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has a total demand of " << assignment.total_demand[at][tau] << ", but this mode type is not allowed on any link in the network." << '\n';
-				dtalog.output() << "Please check the section link_type file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
+ 				dtalog.output() << "Please check the section link_type file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
 				g_DTA_log_file << "Please check the section link_type file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
 
 				g_program_stop();
@@ -1331,8 +1331,8 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 						mode_type_no = assignment.mode_type_2_seqno_mapping[mode_type];
 					else
 					{
-						dtalog.output() << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files sectionis not defined in the section mode_type yet." << '\n';
-						g_DTA_log_file << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files sectionis not defined in the section mode_type yet." << '\n';
+						dtalog.output() << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files section is not defined in the section mode_type yet." << '\n';
+						g_DTA_log_file << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files section is not defined in the section mode_type yet." << '\n';
 						mode_type = "auto";
 					}
 
@@ -2456,11 +2456,12 @@ int g_detect_if_zones_defined_in_node_csv(Assignment& assignment)
 void g_read_link_qvdf_data(Assignment& assignment)
 {
 	CDTACSVParser parser;
-
+	int record = 0;
 	if (parser.OpenCSVFile("link_qvdf.csv", true))
 	{
 		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 		{
+			record++;
 			string data_type;
 			parser.GetValueByFieldName("data_type", data_type);
 
@@ -2557,9 +2558,12 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					}
 				}
 			}
+		
+
 		}
 		parser.CloseCSVFile();
 	}
+	dtalog.output() << "[ERROR] The critical input GMNS file 'node.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
 
 }
 
@@ -2701,11 +2705,16 @@ void g_read_input_data(Assignment& assignment)
 		{
 
 			CDemand_Period demand_period;
-
+			std::string str; 
 
 				demand_period.demand_period_id = demand_period_node["demand_period_id"].as<unsigned short>(1);
-				demand_period.demand_period = demand_period_node["demand_period"].as<std::string>("am");
-				demand_period.time_period = demand_period_node["time_period"].as<std::string>("0000");
+				str = demand_period_node["demand_period"].as<std::string>("am");
+
+				std::transform(str.begin(), str.end(), str.begin(),
+					[](unsigned char c) { return std::tolower(c); });
+				demand_period.demand_period = str; 
+
+				demand_period.time_period = demand_period_node["time_period"].as<std::string>("0700-0800");
 
 				vector<float> global_minute_vector;
 
@@ -2723,9 +2732,9 @@ void g_read_input_data(Assignment& assignment)
 				//g_fout << global_minute_vector[1] << '\n';
 
 
-				string peak_time_str = demand_period_node["peak_time"].as<std::string>("0000");
+			//	string peak_time_str = demand_period_node["peak_time"].as<std::string>("0000");
 
-				demand_period.t2_peak_in_hour = g_timestamp_parser(peak_time_str) / 60.0;
+			//	demand_period.t2_peak_in_hour = g_timestamp_parser(peak_time_str) / 60.0;
 
 
 			}
@@ -2753,7 +2762,8 @@ void g_read_input_data(Assignment& assignment)
 			}
 
 			assignment.summary_file << ",demand_period= " << demand_period.demand_period_id <<
-				", " << demand_period.demand_period.c_str() << ",time_period=" << demand_period.time_period.c_str() << '\n';
+				", " << demand_period.demand_period.c_str() << ",time_period=" << demand_period.time_period.c_str() << ", "
+				<< global_minute_vector[0] << "-> " << global_minute_vector[1] << '\n';
 
 		}
 	}
@@ -2816,7 +2826,7 @@ void g_read_input_data(Assignment& assignment)
 			auto mode_type_index = mode_node["mode_type_index"].as<unsigned short>(1);
 
 			int activate_flag = 1;
-			auto activate = mode_node["activate"].as<unsigned short>(0);
+			 activate_flag = mode_node["activate"].as<unsigned short>(0);
 			//if (!parser_mode_type.GetValueByFieldName("mode_type", mode_type.mode_type))
 			//	break;
 
@@ -2839,7 +2849,7 @@ void g_read_input_data(Assignment& assignment)
 			mode_type.display_code = mode_node["display_code"].as<int>(1);
 			mode_type.real_time_information_type = mode_node["DTM_real_time_info_type"].as<float>(0);
 
-			//assignment.mode_type_2_seqno_mapping[mode_type.mode_type] = assignment.g_ModeTypeVector.size();
+			assignment.mode_type_2_seqno_mapping[mode_type.mode_type] = assignment.g_ModeTypeVector.size();
 
 			assignment.g_ModeTypeVector.push_back(mode_type);
 			assignment.summary_file << "mode_type =, " << mode_type.mode_type.c_str() << ", real time info flag = " << mode_type.real_time_information_type << '\n';
@@ -3106,7 +3116,7 @@ void g_read_input_data(Assignment& assignment)
 
 
 	// Check if 'scenarios' is a sequence and iterate over it
-	if (settings["link_types"].IsSequence()) 
+	if (settings["link_types"].IsSequence())
 	{
 
 		// create a special link type as virtual connector
@@ -3136,24 +3146,31 @@ void g_read_input_data(Assignment& assignment)
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 				char CSV_field_name[50];
-				sprintf(CSV_field_name, "allowed_uses_p%d", tau + 1);
-				element.allow_uses_period[tau] = node[CSV_field_name].as<std::string>("");
-				{
+				sprintf(CSV_field_name, "allowed_uses_p%d", assignment.g_DemandPeriodVector[tau].demand_period_id);
+				try {
+					element.allow_uses_period[tau] = node[CSV_field_name].as<std::string>("");
+				}
+				catch (const YAML::ParserException& e) {
+					allowed_use_log_count++;
 					if (line_no == 0 && allowed_use_log_count < 2) {
 						allowed_use_log_count++;
 						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. All modes will be allowed for link type:" << element.link_type_name << ". Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
 						g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. All modes will be allowed for link type:" << element.link_type_name << ". Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
 
 					}
-
 				}
-				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-				{
-					sprintf(CSV_field_name, "peak_load_factor_p%d_%s", tau + 1, assignment.g_ModeTypeVector[at].mode_type.c_str());
 
-					element.peak_load_factor_period_at[tau][at] = node[CSV_field_name].as<float>(1);
- 
-					
+
+				sprintf(CSV_field_name, "peak_load_factor_p%d", assignment.g_DemandPeriodVector[tau].demand_period_id);
+
+				try {
+					float peak_load_factor = node[CSV_field_name].as<float>(1);
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+					{
+						element.peak_load_factor_period_at[tau][at] = peak_load_factor;
+					}
+				}
+				catch (const YAML::ParserException& e) {
 					{
 						if (line_no == 0 && peak_load_factor_log_count < 2) {
 							peak_load_factor_log_count++;
@@ -3163,272 +3180,256 @@ void g_read_input_data(Assignment& assignment)
 						}
 
 					}
-				}
-			}
-			//=----
 
-			char CSV_field_name[50];
-			int at_base = 0;
-			double lanes_mode_type = -1; // default
-			sprintf(CSV_field_name, "lanes_%s", assignment.g_ModeTypeVector[at_base].mode_type.c_str());
-			lanes_mode_type = node[CSV_field_name].as<float>(1);
-			{
-
-				dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' is found in section link_type. ";
-				g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' is found in section link_type. ";
-				dtalog.output() << " To ensure data consistency, we advise users to specify the number of lanes for the main base mode " << assignment.g_ModeTypeVector[at_base].mode_type.c_str() << " in both the 'lanes' and 'lanes_s0' fields in the master 'link.csv' file. To avoid confusion, please remove this field from the section link_type." << '\n';
-				g_DTA_log_file << " To ensure data consistency, we advise users to specify the number of lanes for the main base mode " << assignment.g_ModeTypeVector[at_base].mode_type.c_str() << " in both the 'lanes' and 'lanes_s0' fields in the master 'link.csv' file. To avoid confusion, please remove this field from the section link_type." << '\n';
-
-			}
-
-
-
-			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-			{
-				char CSV_field_name[50];
-
-				if (assignment.g_ModeTypeVector[at].multimodal_dedicated_assignment_flag == 1)
-				{
-					double capacity_at = 1999; // default
-					sprintf(CSV_field_name, "capacity_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-					capacity_at = node[CSV_field_name].as<float>(2000);
-
-					{
-						if(line_no == 0){
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default capacity of 2000 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default capacity of 2000 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							
-						}
-						capacity_at = 1999;
-					} 
-
-
-					if (capacity_at > 0.1)  // log
-					{
-						element.capacity_at[at] = capacity_at;
-					}
-				}
-				//----
-				if (at >= 1)
-				{
-				
-				element.free_speed_at[at] = element.free_speed_at[0];
 
 				}
-
-				if (assignment.g_ModeTypeVector[at].multimodal_dedicated_assignment_flag == 1)  // base mode
+				//=----
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 				{
+					char CSV_field_name[50];
 
-					double free_speed_at = -1; // default
-
-					sprintf(CSV_field_name, "free_speed_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-					free_speed_at = node[CSV_field_name].as<float>(60);
+					if (assignment.g_ModeTypeVector[at].multimodal_dedicated_assignment_flag == 1 && at >= 1)  // ony for bike and walk, auto with at = 0
 					{
-						if (line_no == 0) {
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default free speed 60 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default free speed 60 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						}
-						free_speed_at = 60;
-					}
+						double capacity_at = 1999; // default
+						sprintf(CSV_field_name, "capacity_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+						capacity_at = node[CSV_field_name].as<float>(2000);
 
+						{
+							if (line_no == 0) {
+								dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default capacity of 2000 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+								g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default capacity of 2000 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
 
-					if (free_speed_at > 0.1)  // log
-					{
-						element.free_speed_at[at] = free_speed_at;
-					}
-
-
-					if (assignment.g_speed_unit_flag == 1)  // mph;
-						free_speed_at = free_speed_at / 1.609; // convert from mile per hour to km per hour
-
-
-					double lanes_mode_type = -1; // default
-
-					sprintf(CSV_field_name, "lanes_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-					lanes_mode_type = node[CSV_field_name].as<float>(1);
-
-					{
-						if (line_no == 0) {
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default number of lanes 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default number of lanes 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						}
-						lanes_mode_type = 0;
-					}
-
-					element.lanes_mode_type[at] = lanes_mode_type;
-				
-
-				//				element.lanes_mode_type[at] = lanes_mode_type;
-
-				for (int at2 = 0; at2 < assignment.g_ModeTypeVector.size(); at2++)
-				{
-					double meu_value = 0.0;
-
-					if (at2 != at)  // let us use the MEU as 0 for simplicity 
-						meu_value = 0.0;
-
-					if (at2 == at)
-					{
-						element.meu_matrix[at][at2] = 1.0;
-						continue; 
-					}
-
-					sprintf(CSV_field_name, "meu_%s_%s", assignment.g_ModeTypeVector[at].mode_type.c_str(), assignment.g_ModeTypeVector[at2].mode_type.c_str());
-					meu_value = node[CSV_field_name].as<float>(0);
-					{
-						if (line_no == 0 && meu_log_count < 3) {
-							meu_log_count++;
-
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The MEU = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The MEU = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-
+							}
+							capacity_at = 1999;
 						}
 
+
+						if (capacity_at > 0.1)  // log
+						{
+							element.capacity_at[at] = capacity_at;
+						}
+					}
+					//----
+					if (at >= 1)
+					{
+
+						element.free_speed_at[at] = element.free_speed_at[0];
+
+					}
+
+					if (assignment.g_ModeTypeVector[at].multimodal_dedicated_assignment_flag == 1 && at >= 1)  // base mode
+					{
+
+						double free_speed_at = -1; // default
+
+						sprintf(CSV_field_name, "free_speed_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+						free_speed_at = node[CSV_field_name].as<float>(60);
+						{
+							if (line_no == 0) {
+								dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default free speed 60 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+								g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default free speed 60 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+							}
+							free_speed_at = 60;
+						}
+
+
+						if (free_speed_at > 0.1)  // log
+						{
+							element.free_speed_at[at] = free_speed_at;
+						}
+
+
+						if (assignment.g_speed_unit_flag == 1)  // mph;
+							free_speed_at = free_speed_at / 1.609; // convert from mile per hour to km per hour
+
+
+						double lanes_mode_type = -1; // default
+
+						sprintf(CSV_field_name, "lanes_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+						lanes_mode_type = node[CSV_field_name].as<float>(1);
+
+						{
+							if (line_no == 0) {
+								dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default number of lanes 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+								g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default number of lanes 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+							}
+							lanes_mode_type = 0;
+						}
+
+						element.lanes_mode_type[at] = lanes_mode_type;
+
+
+						//				element.lanes_mode_type[at] = lanes_mode_type;
+
+						for (int at2 = 0; at2 < assignment.g_ModeTypeVector.size(); at2++)
+						{
+							double meu_value = 0.0;
+
+							if (at2 != at)  // let us use the MEU as 0 for simplicity 
+								meu_value = 0.0;
+
+							if (at2 == at)
+							{
+								element.meu_matrix[at][at2] = 1.0;
+								continue;
+							}
+
+							sprintf(CSV_field_name, "meu_%s_%s", assignment.g_ModeTypeVector[at].mode_type.c_str(), assignment.g_ModeTypeVector[at2].mode_type.c_str());
+							meu_value = node[CSV_field_name].as<float>(0);
+							{
+								if (line_no == 0 && meu_log_count < 3) {
+									meu_log_count++;
+
+									dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The MEU = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+									g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The MEU = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+
+								}
+
+							}
+						}
+						// end of 
 					}
 				}
-				// end of 
-				}
-			}
 
 
 
-			string traffic_flow_code_str;
-			element.type_code = node["type_code"].as<std::string>("a");
-		
-
-			string vdf_type_str;
-
-			element.vdf_type = bpr_vdf;
-			vdf_type_str = node["type_code"].as<std::string>("bpr");
+				string traffic_flow_code_str;
+				element.type_code = node["type_code"].as<std::string>("a");
 
 
-			if (vdf_type_str == "bpr")
+				string vdf_type_str;
+
 				element.vdf_type = bpr_vdf;
-			if (vdf_type_str == "qvdf")
-				element.vdf_type = q_vdf;
+				vdf_type_str = node["type_code"].as<std::string>("bpr");
 
 
-			element.traffic_flow_code = spatial_queue;
-
-			traffic_flow_code_str = node["traffic_flow_model"].as<std::string>("spatial_queue");
-			element.k_jam = node["k_jam_km"].as<float>(200);
-
-			// by default bpr
+				if (vdf_type_str == "bpr")
+					element.vdf_type = bpr_vdf;
+				if (vdf_type_str == "qvdf")
+					element.vdf_type = q_vdf;
 
 
-			if (traffic_flow_code_str == "point_queue")
-				element.traffic_flow_code = point_queue;
-
-			if (traffic_flow_code_str == "spatial_queue")
 				element.traffic_flow_code = spatial_queue;
 
-			if (traffic_flow_code_str == "kw")
-				element.traffic_flow_code = kinemative_wave;
+				traffic_flow_code_str = node["traffic_flow_model"].as<std::string>("spatial_queue");
+				element.k_jam = node["k_jam_km"].as<float>(200);
 
-			//				dtalog.output() << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
-			//				g_DTA_log_file << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
-
-			assignment.summary_file << "link_type =, " << element.link_type << ", link_type_name = " << element.link_type_name.c_str() << '\n';
-
-			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-			{
-				assignment.summary_file << ",mode_type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
-					",cap= " << element.capacity_at[at] << ",free_speed=" << element.free_speed_at[at] << '\n';
-				//",lanes = " << element.lanes_mode_type[at] << '\n';
-			}
+				// by default bpr
 
 
-			// Loop over all mode types (e.g. auto, bike, bus, etc.)
-			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-			{
-				// Generate the field name in the CSV file for CO2 emissions for this mode type
-				char CSV_field_name[50];
-				sprintf(CSV_field_name, "emissions_%s_co2", assignment.g_ModeTypeVector[at].mode_type.c_str());
+				if (traffic_flow_code_str == "point_queue")
+					element.traffic_flow_code = point_queue;
 
-				string emissions_co2_str;
+				if (traffic_flow_code_str == "spatial_queue")
+					element.traffic_flow_code = spatial_queue;
 
-				// Check if the field could not be found in the CSV file
+				if (traffic_flow_code_str == "kw")
+					element.traffic_flow_code = kinemative_wave;
 
-				emissions_co2_str = node[CSV_field_name].as<std::string>("");
+				//				dtalog.output() << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
+				//				g_DTA_log_file << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
 
-				
+				assignment.summary_file << "link_type =, " << element.link_type << ", link_type_name = " << element.link_type_name.c_str() << '\n';
+
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 				{
-					// If the field cannot be found, output a warning and use a default value of 0.0
-					if (line_no == 0 && emission_log_count < 4) {
-						emission_log_count++;
-						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+					assignment.summary_file << ",mode_type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
+						",cap= " << element.capacity_at[at] << ",free_speed=" << element.free_speed_at[at] << '\n';
+					//",lanes = " << element.lanes_mode_type[at] << '\n';
+				}
+
+
+				// Loop over all mode types (e.g. auto, bike, bus, etc.)
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+				{
+					// Generate the field name in the CSV file for CO2 emissions for this mode type
+					char CSV_field_name[50];
+					sprintf(CSV_field_name, "emissions_%s_co2", assignment.g_ModeTypeVector[at].mode_type.c_str());
+
+					string emissions_co2_str;
+
+					// Check if the field could not be found in the CSV file
+
+
+					try {
+						emissions_co2_str = node[CSV_field_name].as<std::string>("");
+
+					}
+					catch (const YAML::ParserException& e) {
+					
+						// If the field cannot be found, output a warning and use a default value of 0.0
+						if (line_no == 0 && emission_log_count < 4) {
+							emission_log_count++;
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+						}
+					}
+
+					// Convert the string containing CO2 emissions coefficients into a vector of doubles
+					std::vector<double> emissions_co2_coeff_vector;
+					g_ParserDoubleSequence(emissions_co2_str, emissions_co2_coeff_vector);
+
+					// Store up to the first 4 emissions coefficients in the element's matrix
+					for (int i = 0; i < min(static_cast<size_t>(4), emissions_co2_coeff_vector.size()); i++)
+					{
+						element.emissions_co2_matrix[at][i] = emissions_co2_coeff_vector[i];
+					}
+
+					// Repeat the same process for NOx emissions:
+					sprintf(CSV_field_name, "emissions_%s_nox", assignment.g_ModeTypeVector[at].mode_type.c_str());
+
+					string emissions_nox_str;
+
+					try {
+						emissions_nox_str = node[CSV_field_name].as<std::string>("");
+					}
+					catch (const YAML::ParserException& e) 	{
+						if (line_no == 0 && emission_log_count < 4) {
+							emission_log_count++;
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+						}
+					}
+
+					std::vector<double> emissions_nox_coeff_vector;
+					g_ParserDoubleSequence(emissions_nox_str, emissions_nox_coeff_vector);
+
+					for (int i = 0; i < min(static_cast<size_t>(4), emissions_nox_coeff_vector.size()); i++)
+					{
+						element.emissions_nox_matrix[at][i] = emissions_nox_coeff_vector[i];
 					}
 				}
 
-				// Convert the string containing CO2 emissions coefficients into a vector of doubles
-				std::vector<double> emissions_co2_coeff_vector;
-				g_ParserDoubleSequence(emissions_co2_str, emissions_co2_coeff_vector);
 
-				// Store up to the first 4 emissions coefficients in the element's matrix
-				for (int i = 0; i < min(static_cast<size_t>(4), emissions_co2_coeff_vector.size()); i++)
-				{
-					element.emissions_co2_matrix[at][i] = emissions_co2_coeff_vector[i];
-				}
 
-				// Repeat the same process for NOx emissions:
-				sprintf(CSV_field_name, "emissions_%s_nox", assignment.g_ModeTypeVector[at].mode_type.c_str());
+				if (assignment.g_first_link_type < 0)
+					assignment.g_first_link_type = element.link_type;
 
-				string emissions_nox_str;
-				emissions_nox_str = node[CSV_field_name].as<std::string>("");
-
-				{
-					if (line_no == 0 && emission_log_count < 4) {
-						emission_log_count++; 
-						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-					}
-				}
-
-				std::vector<double> emissions_nox_coeff_vector;
-				g_ParserDoubleSequence(emissions_nox_str, emissions_nox_coeff_vector);
-
-				for (int i = 0; i < min(static_cast<size_t>(4), emissions_nox_coeff_vector.size()); i++)
-				{
-					element.emissions_nox_matrix[at][i] = emissions_nox_coeff_vector[i];
-				}
+				assignment.g_LinkTypeMap[element.link_type] = element;
+				line_no++;
 			}
 
-
-			
-			if (assignment.g_first_link_type < 0)
-				assignment.g_first_link_type = element.link_type;
-
-			assignment.g_LinkTypeMap[element.link_type] = element;
-			line_no++;
-		}
-
-		if (overlapping_link_type_vector.size() > 0)
-		{
-			dtalog.output() << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
-			g_DTA_log_file << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
-
-			for (int i = 0; i < overlapping_link_type_vector.size(); i++)
+			if (overlapping_link_type_vector.size() > 0)
 			{
-				dtalog.output() << overlapping_link_type_vector[i] << ", "; 
-				g_DTA_log_file << overlapping_link_type_vector[i] << ", "; 
+				dtalog.output() << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
+				g_DTA_log_file << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
+
+				for (int i = 0; i < overlapping_link_type_vector.size(); i++)
+				{
+					dtalog.output() << overlapping_link_type_vector[i] << ", ";
+					g_DTA_log_file << overlapping_link_type_vector[i] << ", ";
+				}
+
+
 			}
 
-			
+
+
+
+
 		}
 
-
-		
-
-
 	}
-	else
-	{
-		dtalog.output() << "[WARNING] the section link types should be a sequential list.";
-		dtalog.output() << "[WARNING] the section link types should be a sequential list.";
-
-	}
-	
 
 
 
@@ -4913,8 +4914,8 @@ void g_read_input_data(Assignment& assignment)
 			}
 		}
 	}
-	//if (assignment.assignment_mode != 11)   // not tmc mode
-	//	g_read_link_qvdf_data(assignment);
+	
+	g_read_link_qvdf_data(assignment);
 
 
 }

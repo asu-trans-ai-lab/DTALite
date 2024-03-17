@@ -67,6 +67,11 @@ public:
                 toll[at][si] = 0;
             }
 
+            for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+            {
+            allowed_uses[si] = "";
+            }
+
             free_speed_at[at] = 0;
             capacity_at[at] = 0;
             FFTT_at[at] = 0;

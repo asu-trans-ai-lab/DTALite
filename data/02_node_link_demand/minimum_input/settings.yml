@@ -1,11 +1,11 @@
 assignment:
-  number_of_iterations: 100
+  number_of_iterations: 20
   route_output: 1
   simulation_output: 0
   UE_convergence_percentage: 0.1
 
 cpu:
-  number_of_memory_blocks: 4
+  number_of_memory_blocks: 1
 
 unit:
   length_unit: km
@@ -94,7 +94,7 @@ scenarios:
     activate: 0
 demand_periods:
   - period: AM
-    time_period: 0700-0800
+    time_period: 0700_0800
 demand_files:
 - file_sequence_no: 1
   scenario_index_vector: 0

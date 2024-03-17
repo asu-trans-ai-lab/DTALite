@@ -1490,7 +1490,7 @@ public:
 
     bool AllowModeType(std::string mode_type, int tau, int active_si)
     {
-        if (VDF_period[tau].allowed_uses[active_si].size() == 0 || VDF_period[tau].allowed_uses[active_si] == "all")  // if the allowed_uses is empty then all types are allowed.
+        if (VDF_period[tau].allowed_uses[active_si].size() == 0 || VDF_period[tau].allowed_uses[active_si].empty() || VDF_period[tau].allowed_uses[active_si] == "null" || VDF_period[tau].allowed_uses[active_si] == "all")  // if the allowed_uses is empty then all types are allowed.
             return true;
         else
         {

@@ -604,7 +604,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 	}
 
 	fprintf(g_pFilePathMOE, "first_column,route_seq_id,o_zone_id,d_zone_id,o_super_zone_index,d_super_zone_index,od_pair_key,information_type,mode_type,demand_period,volume,");
-	fprintf(g_pFilePathMOE, "distance_km,distance_mile,travel_time,FFTT,co2,nox,UE_OD_based_relative_gap_compared_to_least_time_path_travel_time,UE_path_based_gap,preload_volume_from_route_input_file,ODME_volume_before,ODME_volume_after,ODME_volume_diff,SIMU_volume,SIMU_travel_time,");
+	fprintf(g_pFilePathMOE, "distance_km,distance_mile,travel_time,FFTT,co2,nox,OD_based_UE_relative_gap_compared_to_least_time_path_travel_time,path_based_UE_gap,path_based_relative_UE_gap,preload_volume_from_route_input_file,ODME_volume_before,ODME_volume_after,ODME_volume_diff,SIMU_volume,SIMU_travel_time,");
 
 	fprintf(g_pFilePathMOE, "toll,number_of_nodes,node_sequence,link_id_sequence,");
 	//, ODME_#_of_sensor_links,
@@ -1120,7 +1120,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 									assignment.g_ModeTypeVector[at].mode_type.c_str(),
 									assignment.g_DemandPeriodVector[tau].demand_period.c_str());
 
-								fprintf(g_pFilePathMOE, "%.4f,%.4f,%.4f,%.4f,%.4f,%f,%f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%.4f,%.4f,%d,",
+								fprintf(g_pFilePathMOE, "%.4f,%.4f,%.4f,%.4f,%.4f,%f,%f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%.4f,%.4f,%d,",
 									volume,
 									path_distance_km,
 									path_distance_ml,
@@ -1129,6 +1129,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 									path_co2,
 									path_nox,
 									p_column_pool->OD_based_UE_relative_gap,
+									it->second.path_gradient_cost_difference,
 									it->second.path_gradient_cost_relative_difference,
 									it->second.path_preload_volume,
 									volume_before_ODME,

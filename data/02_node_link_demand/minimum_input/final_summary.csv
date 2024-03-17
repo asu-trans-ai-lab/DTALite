@@ -1,7 +1,7 @@
 [PROCESS INFO] Step 0: reading section scenarios
 [STATUS INFO] scenario_index=0,scenario_name=,25nb
 [PROCESS INFO] Step 1.1: Reading section demand_period ...
-,demand_period= 1, am,time_period=0700-0800
+,demand_period= 1, am,time_period=0700_0800, 420-> 480
 [PROCESS INFO] Step 1.2: Reading section mode_type...
 mode_type =, auto, real time info flag = 0
 mode_type =, walk, real time info flag = 0
@@ -146,7 +146,7 @@ link_type =, 300, link_type_name = walkonly
 ,,-1,,,,1,motorway,,,2,trunk,,,3,primary,,,4,residential,,,5,secondary,,,6,tertiary,,,7,unclassified,,,9,collector,,,10,connector,,,100,shared_use,,,200,bikeonly,,,300,walkonly,[PROCESS INFO] Step 2.1: read demand, defined in demand_files section.
 [STATUS INFO] reading demand file for scenario index = 0
 ,summary by multi-modal and demand types,demand_period,mode_type,total demmand volume in scenario 0, # of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
-,,am,auto,7000,4,60,96.5604,50,14000,3500,12500,
+,,am,auto,8000,4,60,96.5604,50,14000,3500,12500,
 ,,am,walk,0,0,0,0,0,0,0,0,
 ,,am,bike,0,0,0,0,0,0,0,0,
 ,,am,bus,0,0,0,0,0,0,0,0,
@@ -161,135 +161,57 @@ FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly 
 0,0,0,0,0
 1,0,0,0,0
 2,0,0,0,0
-3,0,0,0,7000
+3,0,0,0,8000
 FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume
-,,1,1,2,3,3,auto,am,7000
+,,1,1,2,3,3,auto,am,8000
 [PROCESS INFO]Step 4: Column Generation for Traffic Assignment
-,Total number of column generation iterations =, 100
-,Total number of column generation iterations =, 100
+,Total number of column generation iterations =, 20
+,Total number of column generation iterations =, 20
 [DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,7000,0,0
-1,0,7000,30,50
-2,0,7000,30,0
-3,0,7000,30,0
-4,0,7000,30,0
-5,0,7000,30,0
-6,0,7000,30,1.74386e-06
-7,0,7000,30,0
-8,0,7000,30,0
-9,0,7000,30,0
-10,0,7000,30,0
-11,0,7000,30,0
-12,0,7000,30,4.35965e-06
-13,0,7000,29.9886,0
-14,0,7000,30,0.497637
-15,0,7000,30,5.23158e-06
-16,0,7000,30,0
-17,0,7000,30,1.74386e-06
-18,0,7000,30,0
-19,0,7000,30,4.35965e-06
-20,0,7000,30,0
-21,0,7000,30,2.61579e-06
-22,0,7000,30,5.23158e-06
-23,0,7000,30,5.23158e-06
-24,0,7000,30,5.23158e-06
-25,0,7000,30,0
-26,0,7000,29.9886,0
-27,0,7000,30,0.497637
-28,0,7000,30,0
-29,0,7000,30,3.48772e-06
-30,0,7000,30,0
-31,0,7000,30,0
-32,0,7000,30,0
-33,0,7000,30,5.23158e-06
-34,0,7000,30,1.74386e-06
-35,0,7000,30,0
-36,0,7000,30,4.35965e-06
-37,0,7000,30,2.61579e-06
-38,0,7000,30,3.48772e-06
-39,0,7000,29.9886,0
-40,0,7000,30,0.497637
-41,0,7000,30,8.71931e-07
-42,0,7000,30,2.61579e-06
-43,0,7000,30,2.61579e-06
-44,0,7000,30,0
-45,0,7000,30,8.71931e-07
-46,0,7000,30,5.23158e-06
-47,0,7000,30,8.71931e-07
-48,0,7000,30,4.35965e-06
-49,0,7000,30,0
-50,0,7000,30,0
-51,0,7000,30,8.71931e-07
-52,0,7000,29.9886,0
-53,0,7000,30,0.497637
-54,0,7000,30,2.61579e-06
-55,0,7000,30,0
-56,0,7000,30,0
-57,0.001,7000,30,0
-58,0,7000,30,8.71931e-07
-59,0,7000,30,1.74386e-06
-60,0,7000,30,4.35965e-06
-61,0,7000,30,0
-62,0,7000,30,0
-63,0,7000,30,0
-64,0,7000,30,0
-65,0,7000,29.9886,0
-66,0,7000,30,0.497636
-67,0,7000,30,0
-68,0,7000,30,1.74386e-06
-69,0,7000,30,0
-70,0,7000,30,0
-71,0,7000,30,0
-72,0,7000,30,0
-73,0,7000,30,2.61579e-06
-74,0,7000,30,2.61579e-06
-75,0,7000,30,0
-76,0,7000,30,3.48772e-06
-77,0,7000,30,0
-78,0,7000,29.9886,0
-79,0,7000,30,0.497641
-80,0,7000,30,0
-81,0,7000,30,4.35965e-06
-82,0,7000,30,0
-83,0,7000,30,1.74386e-06
-84,0,7000,30,0
-85,0,7000,30,0
-86,0,7000,30,0
-87,0,7000,30,1.74386e-06
-88,0,7000,30,0
-89,0,7000,30,4.35965e-06
-90,0,7000,30,1.74386e-06
-91,0,7000,29.9886,0
-92,0,7000,30,0.497636
-93,0,7000,30,2.61579e-06
-94,0,7000,30,8.71931e-07
-95,0,7000,30,8.71931e-07
-96,0,7000,30,0
-97,0,7000,30,3.48772e-06
-98,0,7000,30,0
-99,0,7000,30,0
+0,0,8000,0,0
+1,0,8000,68,240
+2,0,8000,33.6111,12.037
+3,0,8000,30.5908,33.0033
+4,0,8000,34.1128,15.7094
+5,0,8000,30.0626,0
+6,0,8000,30.5908,16.666
+7,0,8000,32.2153,9.27284
+8,0,8000,30.0151,0
+9,0,8000,30.5908,11.9548
+10,0,8000,31.6203,7.25485
+11,0,8000,32.8369,4.16202
+12,0.001,8000,30.5908,0
+13,0,8000,31.3382,6.29804
+14,0,8000,32.2153,3.8314
+15,0,8000,30.5908,0
+16,0,8000,31.1755,5.74603
+17,0,8000,31.8541,3.68023
+18,0,8000,30.5908,0
+19,0,8000,31.0702,5.38871
 [PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,40
 column updating
-[DATA INFO] column updating: iteration = 0, avg travel time = 30(min), optimization obj = 0, Relative_gap = 0 %
+[DATA INFO] column updating: iteration = 0, avg travel time = 31.6203(min), optimization obj = 764.16, Relative_gap = 0.150667 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 31.818(min), optimization obj = 757.011, Relative_gap = 0.148595 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 31.7613(min), optimization obj = 39.2104, Relative_gap = 0.00771562 %
 [PROCESS INFO] Step 7: perform sensitivity analysis if section dynamic_traffic_management is provided for dtm_type = lane_closure or dms. 
 Sensitivity analysis stage
 ,Iteration,Avg Travel Time(min)
-0,30,
+0,31.7591,
 column updating
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml. 
 [PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,127035,VKT=,204400
-,VHT=,3500
-,network vehicle speed (MPH) =,36.2958,,network vehicle speed (KPH) =,58.4
-,PMT=,127035,PKT=,204400
-,PHT=,3500
-,network person speed (MPH) =,36.2958,,network person speed (KPH) =,58.4
-,simple avg link volume=,3500
-,simple avg link speed=,50
-,simple avg link speed ratio=,0.833333
+,VMT=,114181,VKT=,183717
+,VHT=,4234.55
+,network vehicle speed (MPH) =,26.9641,,network vehicle speed (KPH) =,43.3852
+,PMT=,114181,PKT=,183717
+,PHT=,4234.55
+,network person speed (MPH) =,26.9641,,network person speed (KPH) =,43.3852
+,simple avg link volume=,4000
+,simple avg link speed=,47.2314
+,simple avg link speed ratio=,0.78719
      Check OD connectivity and accessibility in od_performance_summary.csv
 , # of connected OD pairs =, 0
 , # of OD/mode_type/demand_type columns without paths =, 1

@@ -737,7 +737,10 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 			else
 			{
 
-
+			if (mode_type_index == 0 && this->from_node_id == 1 && this->to_node_id == 3 && link_volume_to_be_assigned >= 1)
+				{
+					int idebug = 1;
+				}
 
 			// Calculate travel time based on QVDF
 			link_avg_travel_time_per_period[tau][mode_type_index] = VDF_period[tau].calculate_travel_time_based_on_QVDF(
@@ -752,11 +755,11 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 
 			}
 
-			if (mode_type_index == 0 && this->from_node_id == 1 && this->to_node_id == 3 && link_volume_to_be_assigned >= 1 && VDF_period[tau].DOC_mode[0] <0.0001)
+
+			if (mode_type_index == 0 && this->from_node_id == 1 && this->to_node_id == 3 && link_volume_to_be_assigned >= 1)
 			{
 				int idebug = 1;
 			}
-
 			// Add additional penalty if exists
 			if (fabs(penalty_si_at[tau][mode_type_index][scenario_no]) > 0.0001)
 			{
@@ -1081,7 +1084,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			scenario.scenario_index = node["scenario_index"].as<int>(0);
 			scenario.year = node["year"].as<int>(2025);
 			scenario.scenario_name = node["scenario_name"].as<std::string>("25nb");
-			scenario.activate = node["activate"].as<int>(1);
+			scenario.activate = node["activate"].as<int>(0);
 
 			scenarios.push_back(scenario);
 	

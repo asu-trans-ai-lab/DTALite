@@ -48,7 +48,7 @@ using std::ofstream;
 using std::istringstream;
 
 struct SensorData {
-	int sensor_id;
+	std::string sensor_id;
 	int from_node_id;
 	int to_node_id;
 	std::string demand_period;
@@ -65,19 +65,17 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 	{
 
 		try {
-			YAML::Node config = YAML::LoadFile("sensor_data.yaml");
+			YAML::Node config = YAML::LoadFile("settings.yml");
 
 			const YAML::Node& sensor_data_list = config["sensor_data"];
-			if (sensor_data_list.IsSequence()) {
-				for (const YAML::Node& sensor_data : sensor_data_list) {
-					SensorData data;
-					data.sensor_id = sensor_data["sensor_id"].as<int>(1);
-					data.from_node_id = sensor_data["from_node_id"].as<int>(1);
-					data.to_node_id = sensor_data["to_node_id"].as<int>(2);
-					data.demand_period = sensor_data["demand_period"].as<std::string>("AM");
-					data.count = sensor_data["count"].as<float>(-1);
-					data.scenario_index = sensor_data["scenario_index"].as<int>(0);
-					data.activate = sensor_data["activate"].as<bool>();
+			for (const YAML::Node& sensor_data : sensor_data_list) {
+				SensorData data;
+				data.sensor_id = sensor_data["sensor_id"].as<std::string>("1"); // Default to 1 if missing
+				data.from_node_id = sensor_data["from_node_id"].as<int>(1); // Default to 1 if missing
+				data.to_node_id = sensor_data["to_node_id"].as<int>(2); // Default to 2 if missing
+				data.demand_period = sensor_data["demand_period"].as<std::string>("AM"); // Default to "AM" if missing
+				data.count = sensor_data["count"].as<float>(-1.0f); // Default to -1 if missing
+				data.scenario_index = sensor_data["scenario_index"].as<int>(0); // Default to 0 if missing
 
 					if (data.activate == 0)
 						continue;
@@ -162,7 +160,6 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 				}
 
-				}
 			}
 		catch (const YAML::Exception& e) {
 			std::cerr << "Error loading or parsing YAML file: " << e.what() << std::endl;

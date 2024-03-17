@@ -125,7 +125,7 @@ vector<float> g_time_parser(string str)
             buf_sss[buffer_j++] = ch;
         }
 
-        if (ch == '_' || i == char_length) //start a new time string
+        if (ch == '-' || ch == '_' || i == char_length) //start a new time string
         {
             if (buffer_i == 4) //"HHMM"
             {
