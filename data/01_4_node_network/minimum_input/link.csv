@@ -1,0 +1,5 @@
+from_node_id,to_node_id,length,lanes,free_speed,capacity,link_type,VDF_alpha,VDF_beta
+1,4,15,1,60,3000,2,0.15,4
+4,2,15,1,60,3000,2,0.15,4
+1,3,10,1,60,4000,1,0.15,4
+3,2,10,1,60,4000,1,0.15,4

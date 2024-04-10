@@ -2493,6 +2493,20 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					sprintf(CSV_field_name, "QVDF_s%d", demand_period_id);
 					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_s, VDF_required_field_flag, false);
 					g_vdf_type_map[vdf_code].record_qvdf_data(this_link.VDF_period[tau], tau);
+
+					for (int i = 0; i < g_link_vector.size(); i++)
+					{
+						if (g_link_vector[i].vdf_code == vdf_code || (g_link_vector[i].vdf_code.size() ==0 && vdf_code  == "all"))
+						{
+							g_link_vector[i].VDF_period[tau].Q_alpha = this_link.VDF_period[tau].Q_alpha;
+							g_link_vector[i].VDF_period[tau].Q_beta = this_link.VDF_period[tau].Q_beta;
+							g_link_vector[i].VDF_period[tau].Q_cd = this_link.VDF_period[tau].Q_cd;
+							g_link_vector[i].VDF_period[tau].Q_cp = this_link.VDF_period[tau].Q_cp;
+							g_link_vector[i].VDF_period[tau].Q_n = this_link.VDF_period[tau].Q_n;
+							g_link_vector[i].VDF_period[tau].Q_s = this_link.VDF_period[tau].Q_s;
+
+						}
+					}
 				}
 
 			}
@@ -2534,7 +2548,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					if (g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.find(internal_to_node_seq_no) != g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.end())
 					{
 						int link_seq_no = g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[internal_to_node_seq_no];
-						if (link_seq_no >= 0 && g_link_vector[link_seq_no].vdf_type == q_vdf  /*QVDF*/)  // data exist
+						if (link_seq_no >= 0)  // data exist
 						{
 							CLink* p_link = &(g_link_vector[link_seq_no]);
 							char CSV_field_name[50];
@@ -2563,7 +2577,9 @@ void g_read_link_qvdf_data(Assignment& assignment)
 		}
 		parser.CloseCSVFile();
 	}
-	dtalog.output() << "[ERROR] The critical input GMNS file 'node.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
+
+	dtalog.output() << "[INFO] There are " << g_vdf_type_map.size() << " records in file link_qvdf.csv" << '\n';
+	g_DTA_log_file << "[INFO] There are " << g_vdf_type_map.size() << " records in file link_qvdf.csv" << '\n';
 
 }
 
@@ -2843,7 +2859,7 @@ void g_read_input_data(Assignment& assignment)
 
 			mode_type.multimodal_dedicated_assignment_flag = mode_node["multimodal_dedicated_assignment_flag"].as<int>(1);
 			mode_type.value_of_time = mode_node["vot"].as<float>(20);
-			mode_type.OCC = mode_node["person_occupancy"].as<int>(1);
+			mode_type.person_occupancy = mode_node["person_occupancy"].as<float>(1.0);
 			mode_type.desired_speed_ratio = mode_node["desired_speed_ratio"].as<float>(1.0);
 			mode_type.time_headway_in_sec = mode_node["time_headway_in_sec"].as<float>(1);
 			mode_type.display_code = mode_node["display_code"].as<int>(1);
@@ -3161,28 +3177,6 @@ void g_read_input_data(Assignment& assignment)
 				}
 
 
-				sprintf(CSV_field_name, "peak_load_factor_p%d", assignment.g_DemandPeriodVector[tau].demand_period_id);
-
-				try {
-					float peak_load_factor = node[CSV_field_name].as<float>(1);
-					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-					{
-						element.peak_load_factor_period_at[tau][at] = peak_load_factor;
-					}
-				}
-				catch (const YAML::ParserException& e) {
-					{
-						if (line_no == 0 && peak_load_factor_log_count < 2) {
-							peak_load_factor_log_count++;
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default peak load factor 1.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default peak load factor 1.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-
-						}
-
-					}
-
-
-				}
 				//=----
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 				{
@@ -3300,7 +3294,6 @@ void g_read_input_data(Assignment& assignment)
 				string vdf_type_str;
 
 				element.vdf_type = bpr_vdf;
-				vdf_type_str = node["type_code"].as<std::string>("bpr");
 
 
 				if (vdf_type_str == "bpr")

@@ -49,7 +49,7 @@ constexpr auto LCG_c = 0;
 constexpr auto LCG_M = 65521;  // it should be 2^32, but we use a small 16-bit number to save memory
 
 enum e_traffic_flow_model { point_queue = 0, spatial_queue, kinemative_wave };
-enum e_VDF_type { q_vdf = 0, bpr_vdf };
+enum e_VDF_type { bpr_vdf=0, q_vdf};
 enum e_assignment_mode { lue = 0, path_based_assignment= 1, simulation_dta=2};
 
 // FILE* g_pFileOutputLog = nullptr;
@@ -315,7 +315,7 @@ public:
 class Cmode_type {
 public:
     Cmode_type() : mode_type_no{ 1 }, value_of_time{ 100 }, time_headway_in_sec{ 1 }, real_time_information_type{ 0 }, access_speed{ 2 }, access_distance_lb{ 0.0001 }, access_distance_ub{ 4 }, acecss_link_k{ 4 },
-        OCC{ 1 }, desired_speed_ratio{ 1 }, number_of_allowed_links{ 0 }, multimodal_dedicated_assignment_flag{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }
+        person_occupancy{ 1 }, desired_speed_ratio{ 1 }, number_of_allowed_links{ 0 }, multimodal_dedicated_assignment_flag{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }
     {
     }
 
@@ -327,7 +327,7 @@ public:
     int eco_so_flag;
     int eco_so_flow_switch_bound;
     // link type, product consumption equivalent used, for travel time calculation
-    double OCC;
+    double person_occupancy;
     double desired_speed_ratio;
 
     float time_headway_in_sec;
@@ -372,15 +372,6 @@ public:
             
         }
 
-
-        for (int tau = 0; tau < g_number_of_active_demand_perioids; tau++)
-        {
-            for (int at = 0; at < g_number_of_active_mode_types; at++)
-            {
-              peak_load_factor_period_at[tau][at] = 1;
-            }
-        }
-
     }
 
     int link_type;
@@ -396,7 +387,6 @@ public:
     double capacity_at[MAX_MODETYPES];
     double FFTT_at[MAX_MODETYPES];
     std::string allow_uses_period[MAX_TIMEPERIODS];
-    double peak_load_factor_period_at[MAX_TIMEPERIODS][MAX_MODETYPES];
     double meu_matrix[MAX_MODETYPES][MAX_MODETYPES];
 
     double emissions_co2_matrix[MAX_MODETYPES][4];
@@ -1158,7 +1148,7 @@ public:
         free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 },
         timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
         cell_type{ -1 }, saturation_flow_rate{ 1800 }, dynamic_link_event_start_time_in_min{ 99999 }, b_automated_generated_flag{ false }, time_to_be_released{ -1 },
-        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, k_critical{ 45 }, vdf_type{ q_vdf },
+        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, k_critical{ 45 }, vdf_type{ bpr_vdf },
         tmc_corridor_id{ -1 }, from_node_id{ -1 }, to_node_id{ -1 }, kjam{ 300 }, link_distance_km{ 0 }, link_distance_mile{ 0 }, meso_link_id{ -1 }, total_simulated_delay_in_min{ 0 },
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
         layer_no{ 0 }, AB_flag{ 1 }, BA_link_no{ -1 }, cost{ 0 }, win_count{ 0 }, lose_count{ 0 }
@@ -1213,7 +1203,7 @@ public:
         for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
         {
             total_volume_for_all_mode_types_per_period[tau] = 0;
-            total_agent_volume_for_all_mode_types_per_period[tau] = 0;
+            total_person_volume_for_all_mode_types_per_period[tau] = 0;
             queue_link_distance_VDF_perslot[tau] = 0;
             //cost_perhour[tau] = 0;
             for (int at = 0; at < g_number_of_active_mode_types; ++at)
@@ -1561,7 +1551,7 @@ public:
     int subarea_id;
 
     double total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
-    double total_agent_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
+    double total_person_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
 
     double RT_flow_volume;
     double background_total_volume_for_all_mode_types_per_period[MAX_TIMEPERIODS];
@@ -1671,19 +1661,6 @@ public:
         VDF_period_sum[tau].vdf_data_count++;
     }
 
-    void computer_avg_parameter(int tau)
-    {
-        float count = VDF_period_sum[tau].vdf_data_count;
-        if(count>=1)
-        {
-        VDF_period_sum[tau].Q_alpha /= count;
-        VDF_period_sum[tau].Q_beta /= count;
-        VDF_period_sum[tau].Q_cp /= count;
-        VDF_period_sum[tau].Q_n /= count;
-        VDF_period_sum[tau].Q_s /= count;
-        VDF_period_sum[tau].Q_cd /= count;
-        }
-    }
 
     std::string vdf_code;
     CPeriod_VDF VDF_period_sum[MAX_TIMEPERIODS];

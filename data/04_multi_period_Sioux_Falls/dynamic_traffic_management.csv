@@ -1,2 +1,0 @@
-dtm_id,dtm_type,from_node_id,to_node_id,final_lanes,demand_period,mode_type,scenario_index_vector,activate
-1,lane_closure,1,3,0.5,am,info,0,0

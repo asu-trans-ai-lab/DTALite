@@ -290,7 +290,7 @@ int main()
 	g_DTA_log_file << "    signal_timing  which contains information about signal timings at intersections, coded in link.csv." << '\n';
 	g_DTA_log_file << "    mode_type: Defines attributes of each type of agent, including value of time (vot in dollars per hour) and passenger car equivalent (pce)." << '\n';
 	g_DTA_log_file << "    link_type: Defines types of links in the network." << '\n';
-	g_DTA_log_file << "    link_vdf.csv: Contains analytical volume demand function parameters." << '\n';
+	g_DTA_log_file << "    link_qvdf.csv: Contains analytical volume demand function parameters." << '\n';
 	g_DTA_log_file << "  Scenarios settings:" << '\n';
 	g_DTA_log_file << "    scenario_index_list: Defines scenario name, scenario description and activate state." << '\n';
 	g_DTA_log_file << "    subarea: extracts the subarea polygon information using NeXTA tool." << '\n';
@@ -339,6 +339,13 @@ int main()
 
 		int number_of_column_updating_iterations = settings["assignment"]["number_of_column_updating_iterations"].as<int>(20);
 
+		assignment_mode = 0;
+
+		int route_output = 1;
+
+		route_output = settings["assignment"]["route_output"].as<int>(0);
+		if (route_output == 1)
+			assignment_mode = 1;
 
 		if (column_updating_iterations < 1)
 			column_updating_iterations = 1;
@@ -369,7 +376,7 @@ int main()
 		// the main difference of these two methods are different output in link_performance.csv
 		// for basic uses set assignment mode to 'ue'
 		// for more detailed link performances (one minute) set 'dta'1
-		assignment_mode = 1;
+
 
 		if (CheckSensorFileExist(settings) == true)
 		{
@@ -392,11 +399,7 @@ int main()
 		}
 
 
-		int route_output = 1;
 
-
-
-		route_output = settings["assignment"]["route_output"].as<int>(0);
 
 
 

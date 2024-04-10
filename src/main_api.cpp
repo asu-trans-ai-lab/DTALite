@@ -351,7 +351,7 @@ void g_reset_link_volume_in_master_program_without_columns(int number_of_links, 
 					// after link volumn "tally", self-deducting the path volume by 1/(k+1) (i.e. keep k/(k+1) ratio of previous flow)
 					// so that the following shortes path will be receiving 1/(k+1) flow
 					g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] * ratio;
-					g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[tau] * ratio;
+					g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] * ratio;
 
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 					{
@@ -555,7 +555,7 @@ void g_reset_link_volume_for_all_processors()
 				for (int i = 0; i < number_of_links; ++i)
 				{
 					pNetwork->m_link_mode_type_volume_array[i] = 0;
-					pNetwork->m_link_agent_volume_array[i] = 0;
+					pNetwork->m_link_person_volume_array[i] = 0;
 
 
 				}
@@ -576,7 +576,7 @@ void g_fetch_link_volume_for_all_processors()
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
 			g_link_vector[i].total_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_mode_type_volume_array[i];
-			g_link_vector[i].total_agent_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_agent_volume_array[i];
+			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_person_volume_array[i];
 
 			g_link_vector[i].volume_per_mode_type_per_period[pNetwork->m_tau][pNetwork->m_mode_type_no] += pNetwork->m_link_mode_type_volume_array[i];
 
@@ -634,6 +634,13 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 
 void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int VDF_type_no)
 {
+
+	if(g_vdf_type_map.size() >=1)  // if we have loaded link_qvdf.csv 
+		vdf_type = q_vdf;
+	else
+		vdf_type = bpr_vdf;
+
+
 	// Resetting real time (RT) waiting time at the beginning of each simulation iteration
 	RT_waiting_time = 0;
 
@@ -677,7 +684,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 
 			double mode_hourly_capacity = 0;
 			double mode_FFTT = 0;  // free-flow travel time
-			double mode_peak_load_factor = 1;
+			double peak_load_factor = 1;
 
 			// Handling primary mode or non-major modes such as HOV or truck, they need to be mapped to the major auto mode for traffic assignment
 			if (mode_type_index == 0 || assignment.g_ModeTypeVector[mode_type_index].multimodal_dedicated_assignment_flag == 0)
@@ -690,8 +697,6 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				else
 					mode_FFTT = link_distance_VDF/ max(0.0001, free_speed_si[assignment.active_scenario_index]) * 60.0;
 
-				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type_index].peak_load_factor_period_at[tau][primary_mode_index];  // peak load factor 
-
 				// Adding preloaded volume to the converted MEU volume for this period and mode type
 				link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][primary_mode_index] + VDF_period[tau].preload;
 
@@ -703,7 +708,6 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				// For active and public transportation modes, they have their own specific speed limit and capacity 
 
 				mode_FFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[mode_type_index] * 60.0;
-				mode_peak_load_factor = assignment.g_LinkTypeMap[link_type_index].peak_load_factor_period_at[tau][mode_type_index];
 
 				// Fetching the converted MEU volume for this period and mode type
 				link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][mode_type_index];
@@ -748,7 +752,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				mode_FFTT,
 				link_volume_to_be_assigned,
 				mode_hourly_capacity,
-				mode_peak_load_factor,
+				peak_load_factor,
 				this->model_speed,
 				this->est_volume_per_hour_per_lane,
 				link_type, tau, this->link_avg_co2_emit_per_mode, this->link_avg_nox_emit_per_mode);
@@ -826,7 +830,6 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //				{
 //					int at_base = 0;  // so the base is the mode index  = 0
 //					mode_FFFTT = VDF_period[tau].FFTT_at[at_base];  // free flow travel time 
-//					mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][at_base];  // peak load factor 
 //					link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][at_base] + VDF_period[tau].preload; // converted link volume 
 //					mode_hourly_capacity = VDF_period[tau].lane_based_ultimate_hourly_capacity;  // featch the lane based ultimate hourly capacity 
 //				}
@@ -834,7 +837,6 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 //				{ // otherwisem, it this for active transportation and public transportation assignment, they have their own mode specific dedicated speed limit and capacity 
 //
 //					mode_FFFTT = link_distance_VDF / assignment.g_LinkTypeMap[link_type_si[assignment.active_scenario_index]].free_speed_at[mode_type_index] * 60.0; // 60.0 for 60 min per hour
-//					mode_peak_load_factor = assignment.g_LinkTypeMap[link_type].peak_load_factor_period_at[tau][mode_type_index];
 //					link_volume_to_be_assigned = converted_MEU_volume_per_period_per_at[tau][mode_type_index]; // its own agent type
 //					mode_hourly_capacity = assignment.g_LinkTypeMap[link_type].capacity_at[mode_type_index];
 //				}
@@ -1247,12 +1249,12 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			<< assignment.total_demand_volume[assignment.active_scenario_index]
 			<< ".\n--------------------------\n";
 
-		if (assignment.total_demand_volume[assignment.active_scenario_index] < 0.1)
-		{
-			dtalog.output() << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
-			g_DTA_log_file << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
-			continue; 
-		}
+		//if (assignment.total_demand_volume[assignment.active_scenario_index] < 0.1)
+		//{
+		//	dtalog.output() << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
+		//	g_DTA_log_file << "[WARNING] total demand for the current scenario is zero. Skiping the assignment process. " << '\n'; 
+		//	continue; 
+		//}
 		g_load_dynamic_traffic_management_file(assignment);
 
 		//if (read_route_information_to_replace_column_generation_and_ODME() == 0)
@@ -1728,7 +1730,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	//g_output_assignment_result(assignment, 1);
 	//}
 
-	g_output_choice_set_result(assignment);
+	//g_output_choice_set_result(assignment);
 
 	if (assignment.assignment_mode == simulation_dta)
 	{
@@ -1754,7 +1756,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	}
 
 	//    g_output_dynamic_queue_profile();
-		//
+
 
 	end_t = clock();
 	total_t = (end_t - start_t);

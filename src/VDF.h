@@ -79,7 +79,6 @@ public:
             lanes_mode_type[at] = 0;
 
 
-            occ[at] = 1;
             RT_allowed_use[at] = true;
             SA_allowed_use[at] = true;
 
@@ -164,6 +163,9 @@ public:
         // QVDF
             double dc_transition_ratio = 1;
 
+            if (vdf_type == q_vdf) //QVDF form
+                peak_load_factor = Q_peak_load_factor; 
+
              // step 1: calculate lane_based D based on plf and nlanes from link volume V over the analysis period  take nonnegative values
             lane_based_D = max(0.0, volume) / time_period_in_hour/ max(0.000001, nlanes)/ peak_load_factor;
             // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity,
@@ -225,7 +227,10 @@ public:
             avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
             avg_travel_time = FFTT * (1+ alpha * pow(DOC, beta)); // Mark: FFTT should be vctt
 
-
+            if (DOC > 1.5)
+            {
+                int iii = 1; 
+            }
 
             if (vdf_type == q_vdf) //QVDF form
             {
@@ -543,7 +548,6 @@ public:
     int dynamic_traffic_management_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
     double toll[MAX_MODETYPES][MAX_SCENARIOS];
-    double occ[MAX_MODETYPES];
 
     double free_speed_at[MAX_MODETYPES];
     double capacity_at[MAX_MODETYPES];
