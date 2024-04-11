@@ -350,7 +350,7 @@ public:
 class CLinkType
 {
 public:
-    CLinkType() : link_type{ 1 }, number_of_links{ 0 }, traffic_flow_code{ spatial_queue }, k_jam{ 300 }, vdf_type{ q_vdf }
+    CLinkType() : link_type{ 1 }, number_of_links{ 0 }, traffic_flow_code{ spatial_queue }, k_jam{ 300 }
     {
         for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
@@ -379,7 +379,7 @@ public:
     float k_jam;
     std::string link_type_name;
     std::string type_code;
-    e_VDF_type vdf_type;
+
     e_traffic_flow_model traffic_flow_code;
 
     double free_speed_at[MAX_MODETYPES];

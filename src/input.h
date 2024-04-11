@@ -3291,16 +3291,6 @@ void g_read_input_data(Assignment& assignment)
 				element.type_code = node["type_code"].as<std::string>("a");
 
 
-				string vdf_type_str;
-
-				element.vdf_type = bpr_vdf;
-
-
-				if (vdf_type_str == "bpr")
-					element.vdf_type = bpr_vdf;
-				if (vdf_type_str == "qvdf")
-					element.vdf_type = q_vdf;
-
 
 				element.traffic_flow_code = spatial_queue;
 
@@ -4314,7 +4304,6 @@ void g_read_input_data(Assignment& assignment)
 				if (link.traffic_flow_code == 3)
 					link.BWTT_in_simulation_interval = link.link_distance_VDF / bwtt_speed * 3600 / number_of_seconds_per_interval;
 
-				link.vdf_type = assignment.g_LinkTypeMap[link.link_type_si[0]].vdf_type;
 				link.kjam = assignment.g_LinkTypeMap[link.link_type_si[0]].k_jam;
 				char CSV_field_name[50];
 
@@ -4367,7 +4356,6 @@ void g_read_input_data(Assignment& assignment)
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 				{
 					//setup default values
-					link.VDF_period[tau].vdf_type = assignment.g_LinkTypeMap[link.link_type_si[0]].vdf_type;
 					link.VDF_period[tau].lane_based_ultimate_hourly_capacity = lane_capacity;
 					link.VDF_period[tau].nlanes = link.number_of_lanes_si[0];
 
