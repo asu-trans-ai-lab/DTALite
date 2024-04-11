@@ -4716,9 +4716,24 @@ void g_OutputModelFiles(int mode)
 
 		if (g_pFileModelLink != NULL)
 		{
-			fprintf(g_pFileModelLink, "link_id,link_no,layer_no,from_node_id,to_node_id,from_gate_flag,to_gate_flag,link_type,link_type_name,link_type_code,lanes,link_distance_VDF,free_speed,cutoff_speed,fftt,capacity,allow_uses,");
-			fprintf(g_pFileModelLink, "BPR_plf,BPR_alpha,BPR_beta,QVDF_plf1,QVDF_alpha1,QVDF_beta1,QVDF_cd1,QVDF_n1,QVDF_s1,");
-			fprintf(g_pFileModelLink, "geometry\n");
+			fprintf(g_pFileModelLink, "link_id,link_no,layer_no,from_node_id,to_node_id,from_gate_flag,to_gate_flag,link_type,link_type_name,link_type_code,lanes,link_distance_VDF,free_speed,cutoff_speed,fftt,capacity,");
+			fprintf(g_pFileModelLink, "BPR_alpha,BPR_beta,");
+			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
+			{
+			fprintf(g_pFileModelLink, "demand_period_internal_%d,allow_uses_%s,QVDF_plf_%s,QVDF_alpha_%s,QVDF_beta_%s,QVDF_cd_%s,QVDF_n_%s,QVDF_s_%s,", 
+				tau,
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(), 
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+				assignment.g_DemandPeriodVector[tau].demand_period.c_str()
+				);
+			}
+
+;
+				fprintf(g_pFileModelLink, "geometry,\n");
 
 			//VDF_fftt1,VDF_cap1,VDF_alpha1,VDF_beta1
 			for (int i = 0; i < g_link_vector.size(); i++)
@@ -4728,7 +4743,7 @@ void g_OutputModelFiles(int mode)
 				//	continue;
 				//}
 
-				fprintf(g_pFileModelLink, "%s,%d,%d,%d,%d,%d,%d,%d,%s,%s,%f,%f,%f,%f,%f,%f,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,",
+				fprintf(g_pFileModelLink, "%s,%d,%d,%d,%d,%d,%d,%d,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,",
 					g_link_vector[i].link_id.c_str(),
 					g_link_vector[i].link_seq_no,
 					g_link_vector[i].layer_no,
@@ -4738,25 +4753,34 @@ void g_OutputModelFiles(int mode)
 					g_node_vector[g_link_vector[i].to_node_seq_no].MRM_gate_flag,
 					g_link_vector[i].link_type_si[0],
 					g_link_vector[i].link_type_name.c_str(),
-					g_link_vector[i].link_type_name.c_str(),
+					g_link_vector[i].link_type_code.c_str(),
 					g_link_vector[i].number_of_lanes_si[0],
 					g_link_vector[i].link_distance_VDF,
 					g_link_vector[i].free_speed,
 					g_link_vector[i].v_congestion_cutoff,
 					g_link_vector[i].free_flow_travel_time_in_min,
 					g_link_vector[i].lane_capacity,
-					g_link_vector[i].VDF_period[0].allowed_uses[0].c_str(),
-					g_link_vector[i].VDF_period[0].Q_peak_load_factor,
+
 					g_link_vector[i].VDF_period[0].alpha,
-					g_link_vector[i].VDF_period[0].beta,
-					g_link_vector[i].VDF_period[0].Q_peak_load_factor,
-					g_link_vector[i].VDF_period[0].Q_alpha,
-					g_link_vector[i].VDF_period[0].Q_beta,
-					g_link_vector[i].VDF_period[0].Q_cd,
-					g_link_vector[i].VDF_period[0].Q_n,
-					g_link_vector[i].VDF_period[0].Q_s
+					g_link_vector[i].VDF_period[0].beta
+	
 				);
 
+
+
+				for(int tau =0 ;tau < assignment.g_DemandPeriodVector.size(); tau ++)
+				{ 
+					fprintf(g_pFileModelLink, "%s,%s,%f,%f,%f,%f,%f,%f,",
+						assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+						g_link_vector[i].VDF_period[tau].allowed_uses[0].c_str(),
+						g_link_vector[i].VDF_period[tau].Q_peak_load_factor,
+						g_link_vector[i].VDF_period[tau].Q_alpha,
+						g_link_vector[i].VDF_period[tau].Q_beta,
+						g_link_vector[i].VDF_period[tau].Q_cd,
+						g_link_vector[i].VDF_period[tau].Q_n,
+						g_link_vector[i].VDF_period[tau].Q_s
+					);
+				}
 				if (g_link_vector[i].geometry.size() > 0)
 				{
 					fprintf(g_pFileModelLink, "\"%s\",", g_link_vector[i].geometry.c_str());
@@ -4770,6 +4794,8 @@ void g_OutputModelFiles(int mode)
 
 					fprintf(g_pFileModelLink, ")\"");
 				}
+		
+	
 
 				fprintf(g_pFileModelLink, "\n");
 

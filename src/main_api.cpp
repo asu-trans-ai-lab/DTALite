@@ -635,10 +635,7 @@ void CLink::setup_dynamic_number_of_lanes(int scenario_index)
 void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int VDF_type_no)
 {
 
-	if(g_vdf_type_map.size() >=1)  // if we have loaded link_qvdf.csv 
-		vdf_type = q_vdf;
-	else
-		vdf_type = bpr_vdf;
+
 
 
 	// Resetting real time (RT) waiting time at the beginning of each simulation iteration
@@ -646,6 +643,11 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 
 	// Fetching the link type for the active scenario
 	int link_type_index = link_type_si[assignment.active_scenario_index];
+
+	if (g_vdf_type_map.size() >= 1 && this->link_type_si[assignment.active_scenario_index] >= 0)  // if we have loaded link_qvdf.csv and no a connector 
+		vdf_type = q_vdf;
+	else
+		vdf_type = bpr_vdf;
 
 	// Looping over all demand periods
 	for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)

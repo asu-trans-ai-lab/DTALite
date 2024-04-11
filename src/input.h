@@ -2478,8 +2478,8 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					this_link.allocate_memory();
 					char CSV_field_name[50];
 					bool VDF_required_field_flag = true;
-					//					sprintf(CSV_field_name, "QVDF_plf%d", demand_period_id);
-					//					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].peak_load_factor, VDF_required_field_flag, false);
+					sprintf(CSV_field_name, "QVDF_plf%d", demand_period_id);
+					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_peak_load_factor, VDF_required_field_flag, false);
 					sprintf(CSV_field_name, "QVDF_alpha%d", demand_period_id);
 					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_alpha, VDF_required_field_flag, false);
 					sprintf(CSV_field_name, "QVDF_beta%d", demand_period_id);
@@ -2498,6 +2498,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					{
 						if (g_link_vector[i].vdf_code == vdf_code || (g_link_vector[i].vdf_code.size() ==0 && vdf_code  == "all"))
 						{
+							g_link_vector[i].VDF_period[tau].Q_peak_load_factor = this_link.VDF_period[tau].Q_peak_load_factor;
 							g_link_vector[i].VDF_period[tau].Q_alpha = this_link.VDF_period[tau].Q_alpha;
 							g_link_vector[i].VDF_period[tau].Q_beta = this_link.VDF_period[tau].Q_beta;
 							g_link_vector[i].VDF_period[tau].Q_cd = this_link.VDF_period[tau].Q_cd;

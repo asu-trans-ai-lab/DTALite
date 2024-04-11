@@ -1,0 +1,2 @@
+first_column,district_seq_id,scenario_name,demand_period,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry
+0,0,2025,pm,auto,24000,934507,580800,8.64e+06,38.9378,24.2,360,1;2;,"POLYGON ((0 -0.1,40.3 0.1,))"
