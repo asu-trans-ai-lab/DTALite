@@ -1,8 +1,7 @@
 [PROCESS INFO] Step 0: reading section scenarios
 [STATUS INFO] scenario_index=0,scenario_name=,2025
-[STATUS INFO] scenario_index=1,scenario_name=,2040
 [PROCESS INFO] Step 1.1: Reading section demand_period ...
-,demand_period= 3, pm,time_period=1500_1700, 900-> 1020
+,demand_period= 1, am,time_period=0700_0800, 420-> 480
 [PROCESS INFO] Step 1.2: Reading section mode_type...
 mode_type =, auto, real time info flag = 0
 link_type =, 1, link_type_name = motorway
@@ -25,10 +24,8 @@ link_type =, 2, link_type_name = motorway
 ,,2,motorway,2,96.54,155.366,48.27,6000,3000,24135,
 ,,-1,,,,1,motorway,,,2,motorway,[PROCESS INFO] Step 2.1: read demand, defined in demand_files section.
 [STATUS INFO] reading demand file for scenario index = 0
-[STATUS INFO] reading demand file for scenario index = 0
-[STATUS INFO] reading demand file for scenario index = 0
 ,summary by multi-modal and demand types,demand_period,mode_type,total demmand volume in scenario 0, # of links,avg_free_speed_mph,avg_free_speed_kmph,total_length_in_km,total_capacity,avg_lane_capacity,avg_length_in_meter,
-,,pm,auto,33604.2,4,96.54,155.366,80.45,14000,3500,20112.5,
+,,am,auto,8000,4,96.54,155.366,80.45,14000,3500,20112.5,
 ,from_flag,to_flag,volume
 ,from_flag,to_flag,volume
 FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly related external but not in cutoff, 2= cut-off external, 3= inside
@@ -36,264 +33,92 @@ FOCUSING internal step 1: Focus-subarea Approach,0=not related, 1=significantly 
 0,0,0,0,0
 1,0,0,0,0
 2,0,0,0,0
-3,0,0,0,24003
+3,0,0,0,8000
 FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume
-,,1,1,2,3,3,auto,pm,24000
-,,2,2,1,3,3,auto,pm,3
+,,1,1,2,3,3,auto,am,8000
 [PROCESS INFO]Step 4: Column Generation for Traffic Assignment
-,Total number of column generation iterations =, 100
-,Total number of column generation iterations =, 100
+,Total number of column generation iterations =, 50
+,Total number of column generation iterations =, 50
 [DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,24003,0,0
-1,0,24003,359.955,1700
-2,0,24003,279.489,831.747
-3,0,24003,303.44,52.4649
-4,0,24003,279.489,46.7819
-5,0,24003,359.955,80.8609
-6,0,24003,279.489,0
-7,0,24003,350.365,76.0421
-8,0,24003,336.922,0
-9,0,24003,329.531,10.3827
-10,0,24003,359.955,17.9442
-11,0,24003,317.933,0
-12,0,24003,359.955,27.2311
-13,0,24003,310.609,0
-14,0,24003,350.365,30.5808
-15,0,24003,359.955,4.89066
-16,0,24003,338.239,0
-17,0,24003,359.955,12.0138
-18,0,24003,329.531,0
-19,0,24003,359.955,17.9442
-20,0,24003,322.999,0
-21,0,24003,350.365,19.6754
-22,0,24003,359.955,4.89066
-23,0,24003,341.817,0
-24,0,24003,359.955,9.78793
-25,0,24003,335.033,0
-26,0,24003,358.369,13.6052
-27,0,24003,359.955,0.769605
-28,0,24003,350.365,0
-29,0,24003,359.955,4.89066
-30,0,24003,343.765,0
-31,0,24003,359.955,8.62187
-32,0,24003,338.239,0
-33,0,24003,356.636,10.9808
-34,0,24003,359.955,1.62776
-35,0,24003,350.365,0
-36,0,24003,359.955,4.89066
-37,0,24003,344.99,0
-38,0,24003,359.955,7.90425
-39,0,24003,340.337,0
-40,0,24003,355.519,9.3307
-41,0,24003,359.955,2.19012
-42,0,24003,350.365,0
-43,0,24003,359.955,4.89066
-44,0,24003,345.831,0
-45,0,24003,359.652,7.32785
-46,0,24003,359.955,0.145681
-47,0,24003,354.74,0
-48,0,24003,359.955,2.58714
-49,0,24003,350.365,0
-50,0,24003,359.955,4.89066
-51,0,24003,346.445,0
-52,0,24003,358.369,6.59534
-53,0,24003,359.955,0.769605
-54,0,24003,354.166,0
-55,0,24003,359.955,2.88238
-56,0,24003,350.365,0
-57,0,24003,359.955,4.89067
-58,0.001,24003,346.912,0
-59,0,24003,357.397,6.04267
-60,0,24003,359.955,1.24853
-61,0,24003,353.725,0
-62,0,24003,359.955,3.11056
-63,0,24003,350.365,0
-64,0,24003,359.955,4.89066
-65,0,24003,347.28,0
-66,0,24003,356.636,5.61089
-67,0,24003,359.955,1.62776
-68,0,24003,353.375,0
-69,0,24003,359.955,3.29218
-70,0,24003,350.365,0
-71,0,24003,359.181,4.6652
-72,0.001,24003,359.955,0.373632
-73,0,24003,356.023,0
-74,0,24003,359.955,1.93544
-75,0,24003,353.092,0
-76,0,24003,359.955,3.44017
-77,0,24003,350.365,0
-78,0,24003,358.369,4.42851
-79,0,24003,359.955,0.769601
-80,0,24003,355.519,0
-81,0,24003,359.955,2.19012
-82,0,24003,352.857,0
-83,0,24003,359.955,3.56307
-84,0,24003,350.365,0
-85,0,24003,357.694,4.23172
-86,0,24003,359.955,1.10177
-87,0,24003,355.098,0
-88,0,24003,359.955,2.40438
-89,0,24003,352.659,0
-90,0,24003,359.652,3.57963
-91,0,24003,359.955,0.145681
-92,0,24003,357.123,0
-93,0,24003,359.955,1.38438
-94,0,24003,354.74,0
-95,0,24003,359.955,2.58714
-96,0,24003,352.491,0
-97,0,24003,358.963,3.46954
-98,0,24003,359.955,0.479606
-99,0,24003,356.636,0
+0,0,8000,0,0
+1,0,8000,180,260
+2,0,8000,80.6641,17.5677
+3,0,8000,70.6413,0
+4,0,8000,80.6641,0
+5,0,8000,61.8042,0
+6,0,8000,70.6413,0
+7,0,8000,62.8695,0
+8,0,8000,63.3217,0
+9,0,8000,64.8441,0
+10,0,8000,61.8042,0
+11,0,8000,64.7323,0
+12,0,8000,62.0488,0
+13,0,8000,62.4769,0
+14,0,8000,62.8695,0
+15,0,8000,61.8042,0
+16,0,8000,63.3217,0
+17,0,8000,61.8692,0
+18,0,8000,62.2054,0
+19,0,8000,62.2872,0
+20,0,8000,61.8042,0
+21,0,8000,62.7607,0
+22,0,8000,61.8094,0
+23,0,8000,62.0806,0
+24,0,8000,63.3217,0
+25,0,8000,61.8042,0
+26,0,8000,62.4769,0
+27,0,8000,61.7854,0
+28,0,8000,62.0113,0
+29,0,8000,62.9031,0
+30,0,8000,61.8042,0
+31,0,8000,62.3114,0
+32,0,8000,61.7751,0
+33,0,8000,61.9681,0
+34,0,8000,62.6466,0
+35,0,8000,61.8042,0
+36,0,8000,62.2054,0
+37,0,8000,61.7706,0
+38,0,8000,61.939,0
+39,0,8000,62.4769,0
+40,0,8000,61.8042,0
+41,0,8000,62.1329,0
+42,0,8000,62.7607,0
+43,0,8000,61.9182,0
+44,0,8000,62.358,0
+45,0,8000,61.8042,0
+46,0,8000,62.0806,0
+47,0,8000,62.5979,0
+48,0,8000,61.9027,0
+49,0,8000,62.2712,0
 [PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
 ,# of flow updating iterations=,40
 column updating
-[DATA INFO] column updating: iteration = 0, avg travel time = 360(min), optimization obj = 0, Relative_gap = 0 %
+[DATA INFO] column updating: iteration = 0, avg travel time = 61.8042(min), optimization obj = 22008.3, Relative_gap = 2.1715 %
+[DATA INFO] column updating: iteration = 1, avg travel time = 67.4243(min), optimization obj = 129924, Relative_gap = 11.5647 %
+[DATA INFO] column updating: iteration = 2, avg travel time = 67.1441(min), optimization obj = 171040, Relative_gap = 15.2636 %
+[DATA INFO] column updating: iteration = 3, avg travel time = 71.3384(min), optimization obj = 188313, Relative_gap = 16.0426 %
+[DATA INFO] column updating: iteration = 4, avg travel time = 61.9906(min), optimization obj = 56030.5, Relative_gap = 5.55276 %
+[DATA INFO] column updating: iteration = 5, avg travel time = 63.198(min), optimization obj = 39503.1, Relative_gap = 3.87615 %
+[DATA INFO] column updating: iteration = 6, avg travel time = 61.9934(min), optimization obj = 8285.91, Relative_gap = 0.833241 %
+[DATA INFO] column updating: iteration = 7, avg travel time = 62.2496(min), optimization obj = 2932.56, Relative_gap = 0.29428 %
+[DATA INFO] column updating: iteration = 8, avg travel time = 62.1891(min), optimization obj = 197.047, Relative_gap = 0.0198022 %
+[DATA INFO] column updating: iteration = 9, avg travel time = 62.1947(min), optimization obj = 0.0133806, Relative_gap = 1.34463e-06 %
 [PROCESS INFO] Step 7: perform sensitivity analysis if section dynamic_traffic_management is provided for dtm_type = lane_closure or dms. 
-Sensitivity analysis stage
-,Iteration,Avg Travel Time(min)
-0,359.955,
-column updating
 [PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml. 
 [PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
 Output Link Performance:
 ,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,580800,VKT=,934507
-,VHT=,144000
-,network vehicle speed (MPH) =,4.03333,,network vehicle speed (KPH) =,6.48963
-,PMT=,638880,PKT=,1.02796e+06
-,PHT=,158400
-,network person speed (MPH) =,4.03333,,network person speed (KPH) =,6.48963
-,simple avg link volume=,12000
-,simple avg link speed=,6.70417
-,simple avg link speed ratio=,0.0694444
-[DATA INFO] Iteration, CPU running time (sec), # of agents, Avg Travel Time(min),  Avg UE gap %
-0,0,9601.2,0,0
-1,0,9601.2,87.9608,339.859
-2,0,9601.2,38.1955,27.3342
-3,0,9601.2,34.341,34.9281
-4,0,9601.2,38.8271,14.3326
-5,0,9601.2,34.2509,8.34711
-6,0,9601.2,34.341,14.3665
-7,0,9601.2,36.3213,6.95384
-8,0,9601.2,33.9007,3.50415
-9,0,9601.2,34.341,9.59336
-10,0,9601.2,35.5648,4.72621
-11,0,9601.2,33.8972,1.64958
-12,0,9601.2,34.341,7.33926
-13,0,9601.2,35.215,3.69628
-14,0,9601.2,33.9374,0.691839
-15,0,9601.2,34.341,6.03052
-16,0,9601.2,35.0169,3.11284
-17,0,9601.2,33.9795,0.112239
-18,0,9601.2,34.341,5.1763
-19,0,9601.2,34.8904,2.74038
-20,0,9601.2,34.0165,0
-21,0,9601.2,34.341,4.57508
-22,0,9601.2,34.803,2.48318
-23,0,9601.2,34.0478,0
-24,0,9601.2,34.341,4.12904
-25,0,9601.2,34.7393,2.29541
-26,0,9601.2,34.0741,0
-27,0,9601.2,34.341,3.78501
-28,0,9601.2,34.6908,2.15255
-29,0,9601.2,34.0964,0
-30,0,9601.2,34.341,3.51158
-31,0,9601.2,34.6527,2.04033
-32,0,9601.2,34.1154,0
-33,0,9601.2,34.341,3.28908
-34,0,9601.2,34.622,1.94994
-35,0,9601.2,34.1318,0
-36,0,9601.2,34.341,3.10447
-37,0,9601.2,34.5967,1.8756
-38,0,9601.2,34.146,0
-39,0,9601.2,34.341,2.94885
-40,0,9601.2,34.5756,1.81342
-41,0,9601.2,34.843,0.824011
-42,0,9601.2,34.341,0.478359
-43,0,9601.2,34.5577,1.76065
-44,0,9601.2,34.803,0.832595
-45,0,9601.2,34.341,0.305829
-46,0,9601.2,34.5423,1.71532
-47,0,9601.2,34.7688,0.84143
-48,0,9601.2,34.341,0.154337
-49,0,9601.2,34.5289,1.67598
-50,0,9601.2,34.7393,0.85027
-51,0,9601.2,34.341,0.0202572
-52,0,9601.2,34.5172,1.64149
-53,0,9601.2,34.7135,0.858936
-54,0,9601.2,34.341,0
-55,0,9601.2,34.5069,1.61104
-56,0,9601.2,34.6908,0.867341
-57,0,9601.2,34.341,0
-58,0,9601.2,34.4977,1.58395
-59,0,9601.2,34.6706,0.875429
-60,0,9601.2,34.341,0
-61,0,9601.2,34.4894,1.55969
-62,0,9601.2,34.6527,0.883164
-63,0,9601.2,34.341,0
-64,0,9601.2,34.482,1.53785
-65,0,9601.2,34.6365,0.890553
-66,0,9601.2,34.341,0
-67,0,9601.2,34.4753,1.51808
-68,0,9601.2,34.622,0.897597
-69,0,9601.2,34.341,0
-70,0,9601.2,34.4692,1.50009
-71,0,9601.2,34.6087,0.904297
-72,0,9601.2,34.341,0
-73,0,9601.2,34.4636,1.48367
-74,0,9601.2,34.5967,0.91066
-75,0,9601.2,34.341,0
-76,0,9601.2,34.4585,1.46861
-77,0,9601.2,34.5857,0.916716
-78,0,9601.2,34.7217,0.403623
-79,0,9601.2,34.4538,0.267399
-80,0,9601.2,34.5756,0.92247
-81,0,9601.2,34.7056,0.426281
-82,0,9601.2,34.4495,0.179169
-83,0,9601.2,34.5663,0.927943
-84,0,9601.2,34.6908,0.447578
-85,0,9601.2,34.4454,0.0970876
-86,0,9601.2,34.5577,0.933149
-87,0,9601.2,34.6771,0.467642
-88,0,9601.2,34.4417,0.0205342
-89,0,9601.2,34.5497,0.938119
-90,0,9601.2,34.6644,0.486563
-91,0,9601.2,34.4382,0
-92,0,9601.2,34.5423,0.942833
-93,0,9601.2,34.6527,0.50445
-94,0,9601.2,34.435,0
-95,0,9601.2,34.5354,0.947332
-96,0,9601.2,34.6417,0.521374
-97,0,9601.2,34.4319,0
-98,0,9601.2,34.5289,0.951631
-99,0,9601.2,34.6315,0.537397
-[PROCESS INFO] Step 5: column pool-based flow updating for traffic assignment 
-,# of flow updating iterations=,40
-column updating
-[DATA INFO] column updating: iteration = 0, avg travel time = 34.4334(min), optimization obj = 2237.39, Relative_gap = 0.336732 %
-[DATA INFO] column updating: iteration = 1, avg travel time = 34.7476(min), optimization obj = 3989.72, Relative_gap = 0.596303 %
-[DATA INFO] column updating: iteration = 2, avg travel time = 34.558(min), optimization obj = 457.054, Relative_gap = 0.0688477 %
-[DATA INFO] column updating: iteration = 3, avg travel time = 34.5906(min), optimization obj = 27.5776, Relative_gap = 0.00415229 %
-[PROCESS INFO] Step 7: perform sensitivity analysis if section dynamic_traffic_management is provided for dtm_type = lane_closure or dms. 
-Sensitivity analysis stage
-,Iteration,Avg Travel Time(min)
-0,34.5878,
-column updating
-[PROCESS INFO] Step 8: Executing Traffic Simulation. Proceeds only if simulation_output is set to 1 in settings.yml. 
-[PROCESS INFO] Step 9: Collecting statistics, Generating Zonal Hierarchy Mapping (e.g., Zone to Super-Zone and Zone to District Mapping) 
-Output Link Performance:
-,ref_link_vol_count=,0,MAPE=,0%
-,VMT=,223162,VKT=,359068
-,VHT=,5534.74
-,network vehicle speed (MPH) =,40.3203,,network vehicle speed (KPH) =,64.8753
-,PMT=,245479,PKT=,394975
-,PHT=,6088.22
-,network person speed (MPH) =,40.3203,,network person speed (KPH) =,64.8753
-,simple avg link volume=,4800
-,simple avg link speed=,69.7689
-,simple avg link speed ratio=,0.722695
+,VMT=,191127,VKT=,307523
+,VHT=,8292.63
+,network vehicle speed (MPH) =,23.0478,,network vehicle speed (KPH) =,37.0838
+,PMT=,191127,PKT=,307523
+,PHT=,8292.63
+,network person speed (MPH) =,23.0478,,network person speed (KPH) =,37.0838
+,simple avg link volume=,4000
+,simple avg link speed=,38.8055
+,simple avg link speed ratio=,0.401963
      Check OD connectivity and accessibility in od_performance_summary.csv
 , # of connected OD pairs =, 0
-, # of OD/mode_type/demand_type columns without paths =, 2
+, # of OD/mode_type/demand_type columns without paths =, 1
 Output Link Performance Summary
 Output 2 Way Link Performance Summary

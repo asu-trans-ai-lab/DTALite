@@ -4718,6 +4718,19 @@ void g_OutputModelFiles(int mode)
 		{
 			fprintf(g_pFileModelLink, "link_id,link_no,layer_no,from_node_id,to_node_id,from_gate_flag,to_gate_flag,link_type,link_type_name,link_type_code,lanes,link_distance_VDF,free_speed,cutoff_speed,fftt,capacity,");
 			fprintf(g_pFileModelLink, "BPR_alpha,BPR_beta,");
+
+			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
+			{
+				fprintf(g_pFileModelLink, "VDF_preload_%s,restricted_turn_nodes_%s,",
+					assignment.g_DemandPeriodVector[tau].demand_period.c_str(),
+					assignment.g_DemandPeriodVector[tau].demand_period.c_str());
+
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+				{
+					fprintf(g_pFileModelLink, "VDF_toll_%s_%s,", assignment.g_DemandPeriodVector[tau].demand_period.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+				}
+			}
+
 			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
 			{
 			fprintf(g_pFileModelLink, "demand_period_internal_%d,allow_uses_%s,QVDF_plf_%s,QVDF_alpha_%s,QVDF_beta_%s,QVDF_cd_%s,QVDF_n_%s,QVDF_s_%s,", 
@@ -4760,13 +4773,19 @@ void g_OutputModelFiles(int mode)
 					g_link_vector[i].v_congestion_cutoff,
 					g_link_vector[i].free_flow_travel_time_in_min,
 					g_link_vector[i].lane_capacity,
-
 					g_link_vector[i].VDF_period[0].alpha,
 					g_link_vector[i].VDF_period[0].beta
 	
 				);
 
-
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
+				{
+					fprintf(g_pFileModelLink, "%f,%s,", g_link_vector[i].VDF_period[tau].preload, g_link_vector[i].VDF_period[tau].restricted_turn_nodes_str.c_str());
+					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+					{
+						fprintf(g_pFileModelLink, "%f,", g_link_vector[i].VDF_period[tau].toll[at][0]);
+					}
+				}
 
 				for(int tau =0 ;tau < assignment.g_DemandPeriodVector.size(); tau ++)
 				{ 

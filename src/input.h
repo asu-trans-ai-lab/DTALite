@@ -409,7 +409,7 @@ int g_load_demand_from_route_file_in_settings()
 void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 {
 	// Set the column widths and precision for formatting
-	const int fieldWidth = 15;
+	const int fieldWidth = 12;
 	dtalog.output() << "[PROCESS INFO]"; 
 	g_DTA_log_file << "[PROCESS INFO]"; 
 	dtalog.output() << '\n';
@@ -427,8 +427,8 @@ void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 	g_DTA_log_file << std::setw(fieldWidth) << "speed_mph";
 	dtalog.output() << std::setw(fieldWidth) << "speed_kmph";
 	g_DTA_log_file << std::setw(fieldWidth) << "speed_kmph";
-	dtalog.output() << std::setw(fieldWidth) << "length km";
-	g_DTA_log_file << std::setw(fieldWidth) << "length km";
+	dtalog.output() << std::setw(fieldWidth) << "length_km";
+	g_DTA_log_file << std::setw(fieldWidth) << "length_km";
 	dtalog.output() << std::setw(fieldWidth) << "avg_lane_cap";
 	g_DTA_log_file << std::setw(fieldWidth) << "avg_lane_cap";
 	dtalog.output() << std::setw(fieldWidth) << "avg_length_m";
@@ -2457,6 +2457,26 @@ void g_read_link_qvdf_data(Assignment& assignment)
 {
 	CDTACSVParser parser;
 	int record = 0;
+
+	std::map<std::string, int > vdf_type_map;
+
+	if (parser.OpenCSVFile("link_qvdf.csv", true))
+	{
+		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
+		{
+			record++;
+			string data_type;
+			parser.GetValueByFieldName("data_type", data_type);
+
+			if (data_type == "vdf_code")
+			{
+				string vdf_code;
+				parser.GetValueByFieldName("vdf_code", vdf_code); 
+				vdf_type_map[vdf_code] = 1;
+			}
+		}
+		parser.CloseCSVFile();
+	}
 	if (parser.OpenCSVFile("link_qvdf.csv", true))
 	{
 		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
@@ -2496,7 +2516,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 
 					for (int i = 0; i < g_link_vector.size(); i++)
 					{
-						if (g_link_vector[i].vdf_code == vdf_code || (g_link_vector[i].vdf_code.size() ==0 && vdf_code  == "all"))
+						if (g_link_vector[i].vdf_code == vdf_code || (vdf_type_map.find(g_link_vector[i].vdf_code)== vdf_type_map.end()  && vdf_code == "all"))
 						{
 							g_link_vector[i].VDF_period[tau].Q_peak_load_factor = this_link.VDF_period[tau].Q_peak_load_factor;
 							g_link_vector[i].VDF_period[tau].Q_alpha = this_link.VDF_period[tau].Q_alpha;
@@ -4439,17 +4459,17 @@ void g_read_input_data(Assignment& assignment)
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
 
-						//sprintf(CSV_field_name, "VDF_toll%s%d", assignment.g_ModeTypeVector[at].mode_type.c_str(), tau);
-						//parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].toll[at], false, false);
+						sprintf(CSV_field_name, "VDF_toll_%s_p%d", assignment.g_ModeTypeVector[at].mode_type.c_str(), tau);
+						parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].toll[at][0], false, false);
 
-						//if (link.VDF_period[tau].toll[at] > 0.001 && toll_message_count < 10)
-						//{
-						//	dtalog.output() << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at] << " for agent type "
-						//	g_DTA_log_file << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at] << " for agent type "
-						//		<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << at << '\n';
-						//	toll_message_count++;
-						//}
-						//sprintf(CSV_field_name, "VDF_penalty%d", at);
+						if (link.VDF_period[tau].toll[at][0] > 0.001 && toll_message_count < 10)
+						{
+							dtalog.output() << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at][0] << " for agent type " << '\n';
+							g_DTA_log_file << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at][0] << " for agent type " << 
+								assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << at << '\n';
+							toll_message_count++;
+						}
+						//sprintf(CSV_field_name, "VDF_penalty_p%d", at);
 						/*					parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].penalty, false, false);*/
 
 					}
@@ -4783,7 +4803,7 @@ void g_read_input_data(Assignment& assignment)
 
 	{
 	
-		const int fieldWidth = 12;
+		const int fieldWidth = 10;
 
 		dtalog.output() << "[PROCESS INFO] ";
 		g_DTA_log_file << "[PROCESS INFO] ";
@@ -4801,10 +4821,10 @@ void g_read_input_data(Assignment& assignment)
 		g_DTA_log_file << std::setw(fieldWidth) << "total_len_km,";
 		dtalog.output() << std::setw(fieldWidth) << "total_cap,";
 		g_DTA_log_file << std::setw(fieldWidth) << "total_cap,";
-		dtalog.output() << std::setw(fieldWidth) << "avg_lane,";
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_lane,";
-		dtalog.output() << std::setw(fieldWidth) << "avg_len," << '\n';
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_len," << '\n';
+		dtalog.output() << std::setw(fieldWidth) << "avg_lane_cap,";
+		g_DTA_log_file << std::setw(fieldWidth) << "avg_lane_cap,";
+		dtalog.output() << std::setw(fieldWidth) << "avg_len_meter," << '\n';
+		g_DTA_log_file << std::setw(fieldWidth) << "avg_len_meter," << '\n';
 
 		std::map<int, CLinkType>::iterator it_link_type;
 		int count_zone_demand = 0;

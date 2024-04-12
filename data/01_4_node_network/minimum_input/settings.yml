@@ -1,5 +1,5 @@
 assignment:
-  number_of_iterations: 100
+  number_of_iterations: 50
   route_output: 1
   simulation_output: 0
   UE_convergence_percentage: 0.01
@@ -14,7 +14,7 @@ mode_types:
   name: auto
   vot: 10
   multimodal_dedicated_assignment_flag: 1
-  person_occupancy: 1.1
+  person_occupancy: 1.0
   headway_in_sec: 1.5
   DTM_real_time_info_type: 0
   activate: 1
@@ -89,14 +89,11 @@ scenarios:
 - scenario_index: 1
   year: 2040
   scenario_name: '2040'
-  activate: 1
+  activate: 0
 demand_periods:
 - demand_period: am
   demand_period_id: 1
   time_period: '0700_0800'
-- demand_period: md
-  demand_period_id: 2
-  time_period: '1100_1200'
 demand_files:
 - file_sequence_no: 1
   scenario_index_vector: 0
@@ -106,22 +103,6 @@ demand_files:
   format_type: column
   scale_factor: 1
   departure_time_profile_no: 1
-- file_sequence_no: 2
-  scenario_index_vector: 0
-  file_name: demand.csv
-  demand_period: md
-  mode_type: auto
-  format_type: column
-  scale_factor: 2
-  departure_time_profile_no: 1
-- file_sequence_no: 3
-  scenario_index_vector: 1
-  file_name: demand.csv
-  demand_period: md
-  mode_type: auto
-  format_type: column
-  scale_factor: 1.2
-  departure_time_profile_no: 1  
 demand_files_for_subarea:
 - activate: 0
   subarea_geometry: POLYGON ((-180 -90, 180 -90, 180 90, -180 90, -180 -90))

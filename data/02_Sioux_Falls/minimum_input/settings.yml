@@ -2,7 +2,7 @@ assignment:
   number_of_iterations: 20
   route_output: 1
   simulation_output: 0
-  UE_convergence_percentage: 0.1
+  UE_convergence_percentage: 0.001
 
 cpu:
   number_of_memory_blocks: 1

@@ -269,6 +269,14 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 							total_network_travel_time += g_link_vector[i].link_avg_travel_time_per_period[tau][at_k] * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
 
 							total_distance += g_link_vector[i].length_in_meter * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
+
+				//			g_DTA_log_file << "final link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+    //<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+    //<< ": with volume = " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] <<
+				//				" per_mode volume = " << g_link_vector[i].volume_per_mode_type_per_period[tau][at_k] << 
+				//				" travel time = " << g_link_vector[i].link_avg_travel_time_per_period[tau][at_k] <<
+				//				" total_network_travel_time = " << total_network_travel_time << '\n';
+
 						}
 					}
 			}
@@ -1926,7 +1934,7 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 
 void g_column_regeneration(Assignment& assignment, bool real_time_info_flag = true);
 
-void g_reset_link_volume_in_master_program_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume);
+void g_reset_link_volume_in_master_program_with_MSA_reduction_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume);
 void g_reset_link_volume_for_all_processors();
 void g_fetch_link_volume_for_all_processors();
 

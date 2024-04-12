@@ -132,8 +132,8 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 	clock_t start_t, end_t, iteration_t;
 	start_t = clock();
 	
-	dtalog.output() << "[PROCESS INFO] Step 5: Column Re-Generation for Traffic Assignment..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 5: Column Re-Generation for Traffic Assignment..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 7.3: Column Re-Generation for Traffic Assignment..." << '\n';
+	g_DTA_log_file << "[PROCESS INFO] Step 7.3: Column Re-Generation for Traffic Assignment..." << '\n';
 	dtalog.output() << "[DATA INFO] Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations_for_dtm << '\n';
 	g_DTA_log_file << "[DATA INFO] Total Column Re-Generation iteration: " << assignment.g_number_of_sensitivity_analysis_iterations_for_dtm << '\n';
 	// stage II: column re-generation at the sensitivity analysis stage
@@ -322,7 +322,7 @@ void g_column_regeneration(Assignment& assignment, bool real_time_info_flag)  //
 }
 
 
-void g_reset_link_volume_in_master_program_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume)
+void g_reset_link_volume_in_master_program_with_MSA_reduction_without_columns(int number_of_links, int iteration_index, bool b_self_reducing_path_volume)
 {
 	int number_of_demand_periods = assignment.g_number_of_demand_periods;
 
@@ -579,6 +579,12 @@ void g_fetch_link_volume_for_all_processors()
 			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[pNetwork->m_tau] += pNetwork->m_link_person_volume_array[i];
 
 			g_link_vector[i].volume_per_mode_type_per_period[pNetwork->m_tau][pNetwork->m_mode_type_no] += pNetwork->m_link_mode_type_volume_array[i];
+
+
+
+	//g_DTA_log_file << "final link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
+	//    << "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
+	//    << ": with volume = " << g_link_vector[i].total_volume_for_all_mode_types_per_period[pNetwork->m_tau] << '\n';
 
 		}
 	}
@@ -1313,8 +1319,9 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				if (assignment.assignment_mode == lue)
 				{
 					//fw link based UE
-					g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), iteration_number, true);
+					g_reset_link_volume_in_master_program_with_MSA_reduction_without_columns(g_link_vector.size(), iteration_number, true);
 					g_reset_link_volume_for_all_processors();
+					total_least_system_travel_time = 0;
 				}
 				else
 				{
@@ -1323,7 +1330,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 					total_least_system_travel_time = g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), iteration_number, true, false);
 				}
 
-				// update link travel time 
+				// update link travel time for the first iteration
+				if(iteration_number == 0)
 				total_system_wide_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
 
 
@@ -1400,7 +1408,10 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 							start_t_cp = clock();
 							double total_origin_least_travel_time = pNetwork->backtrace_shortest_path_tree(assignment, iteration_number, o_node_index, false);
-
+#pragma omp critical
+							{
+								total_least_system_travel_time += total_origin_least_travel_time;
+							}
 							end_t = clock();
 							cumulative_cp += end_t - start_t_cp;
 						}
@@ -1412,8 +1423,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				if (assignment.assignment_mode == lue)
 					g_fetch_link_volume_for_all_processors();
 
-
-
+				//re updating the travel time 
+				total_system_wide_travel_time = update_link_travel_time_and_cost(iteration_number, total_travel_distance);
 
 				// g_fout << "LC with CPU time " << cumulative_lc / 1000.0 << " s; " << '\n';
 				// g_fout << "column generation with CPU time " << cumulative_cp / 1000.0 << " s; " << '\n';
@@ -1455,7 +1466,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				assignment.summary_file << iteration_number << "," << CPU_Running_Time << "," << assignment.total_demand_volume[assignment.active_scenario_index] << "," << Avg_Travel_Time << "," << relative_gap * 100 << '\n';
 			}
 
-			if (assignment.active_scenario_index == 0)
+			if (sii == 0)
 			{
 				g_OutputModelFiles(1);
 				g_OutputModelFiles(2);
@@ -1487,7 +1498,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 				g_reset_and_update_link_volume_based_on_columns(g_link_vector.size(), column_generation_iterations, false, false);
 			}
 			else
-				g_reset_link_volume_in_master_program_without_columns(g_link_vector.size(), column_generation_iterations, false);
+				g_reset_link_volume_in_master_program_with_MSA_reduction_without_columns(g_link_vector.size(), column_generation_iterations, false);
 
 			// initialization at the first iteration of shortest path
 			double total_distance = 0;
@@ -1543,7 +1554,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 		g_reset_link_district_performance_per_scenario(assignment);
 		g_record_link_district_performance_per_scenario(assignment, 0);
 
-		if (assignment.g_number_of_sensitivity_analysis_iterations_for_dtm >= 0)  // for real-time information, where historical path flows are kept the same
+		if (assignment.g_number_of_sensitivity_analysis_iterations_for_dtm > 0)  // for real-time information, where historical path flows are kept the same
 		{
 
 
@@ -1633,9 +1644,13 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 			//end of scenario
 
+
+
 			double total_system_travel_time = 0;
 			double total_travel_distance = 0;
 
+			if(sensitivity_analysis_iterations>=1)
+			{
 			// initialization at beginning of shortest path
 			total_system_travel_time = update_link_travel_time_and_cost(0, total_travel_distance);
 			
@@ -1674,6 +1689,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			dtalog.output() << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';
 			g_DTA_log_file << "[PROCESS INFO] Step 7.6: record route volume after applying dynamic traffic_management scenarios" << '\n';
 			g_update_sa_volume_in_column_pool(assignment, 1);  // SA after
+			}
 		}// SA change
 
 		g_classification_in_column_pool(assignment);

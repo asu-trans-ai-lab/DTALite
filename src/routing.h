@@ -838,19 +838,19 @@ public:
 									m_link_person_volume_array[current_link_seq_no] += volume * person_occupancy;
 
 
-									//dtalog.output() << "node = " << g_node_vector[i].node_id
-									//    << "zone id= " << g_node_vector[i].zone_id << ","
-									//    << "l_link_size= " << l_link_size << ","
-									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//    << ": add volume " << volume << '\n';
+/*									dtalog.output() << "node = " << g_node_vector[i].node_id
+									    << "zone id= " << g_node_vector[i].zone_id << ","
+									    << "l_link_size= " << l_link_size << ","
+									    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									    << ": add volume " << volume << '\n';
 
-									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
-									//	<< "zone id= " << g_node_vector[i].zone_id << ","
-									//	<< "l_link_size= " << l_link_size << ","
-									//	<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									//	<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//	<< ": add volume " << volume << '\n';
+									g_DTA_log_file << "node = " << g_node_vector[i].node_id
+										<< "zone id= " << g_node_vector[i].zone_id << ","
+										<< "l_link_size= " << l_link_size << ","
+										<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+										<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+										<< ": add volume " << volume << '\n'*/;
 										
 									//	if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
