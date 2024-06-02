@@ -1,5 +1,0 @@
-link_seq_id,link_id,link_type,from_node_id,to_node_id,geometry,distance_km,distance_mile,fftt,meso_link_id,tmc,tmc_corridor_name,tmc_corridor_id,tmc_road_order,tmc_road_sequence,subarea_id,lanes_s0,link_type_s0,Vam_2025_auto,VAB_am_2025_auto,VBA_am_2025_auto,MEUVABam2025auto,capABam2025auto,PENABam2025auto,DOCABam2025auto,TTABam_2025_auto,MEUVBAam2025auto,capBAam2025auto,PENBAam2025auto,DOCBAam2025auto,TTBAam_2025_auto,
-1,,motorway,1,4,"LINESTRING (0 -0.1, 19.7 -9.7)",24.135000,15.000000,15.000000,-1,,network_wide,-1,0,-1,-1,1.0,motorway,3112.7,3112.7,,3112.7,3000.0,0.0,1.4394,31.097,,,,,
-2,,motorway,4,2,"LINESTRING (19.7 -9.7, 40.3 0.1)",24.135000,15.000000,15.000000,-1,,network_wide,-1,0,-1,-1,1.0,motorway,3112.7,3112.7,,3112.7,3000.0,0.0,1.4394,31.097,,,,,
-3,,motorway,1,3,"LINESTRING (0 -0.1, 19.8 14.8)",16.090000,10.000000,10.000000,-1,,network_wide,-1,0,-1,-1,1.0,motorway,4887.3,4887.3,,4887.3,4000.0,0.0,1.6951,31.097,,,,,
-4,,motorway,3,2,"LINESTRING (19.8 14.8, 40.3 0.1)",16.090000,10.000000,10.000000,-1,,network_wide,-1,0,-1,-1,1.0,motorway,4887.3,4887.3,,4887.3,4000.0,0.0,1.6951,31.097,,,,,

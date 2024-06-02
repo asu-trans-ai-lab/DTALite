@@ -52,11 +52,10 @@ void write_default_setting_file_if_not_exist()
 			{"assignment", "route_output", "1"},
 			{"assignment", "simulation_output", "0"},
 			{"assignment", "UE_convergence_percentage", "0.1"},
-			{"cpu", "number_of_memory_blocks", "4"},
+			{"cpu", "number_of_cpu_processors", "4"},
 			{"unit", "length_unit", "meter"},
 			{"unit", "speed_unit", "kmph"},
-			{"subarea", "max_num_significant_zones_in_subarea","50000"},
-			{"subarea", "max_num_significant_zones_outside_subarea","50000"}
+			{"assignment", "odme_activate","1"},
 		};
 
 	// Open the file for output.
@@ -124,26 +123,6 @@ struct LinkTypeData {
 };
 
 
-bool CheckSensorFileExist(YAML::Node config)
-{
-			// Access the "sensor_data" section
-		const YAML::Node& sensor_data_node = config["sensor_data"];
-
-		// Check if "sensor_data" is a sequence
-		if (sensor_data_node.IsSequence()) 
-		{
-				// Iterate over the sequence and read each entry
-			for (const auto& data : sensor_data_node) 
-			{
-					int activate = data["activate"].as<int>(0);
-					if (activate == 1)
-						return true; 
-
-			}
-	
-		}
-	return false;
-}
 
 #include <fstream>
 #include <vector>
@@ -201,7 +180,7 @@ int main()
 	int column_updating_iterations = 40;
 	int ODME_iterations = 0;
 	int sensitivity_analysis_iterations = 0;
-	int number_of_memory_blocks = 4;
+	int number_of_cpu_processors = 4;
 	float info_updating_freq_in_min = 5;
 	int simulation_output = 0;
 	int max_num_significant_zones_in_subarea = 50000;
@@ -223,23 +202,23 @@ int main()
 	dtalog.output() << " Overview of files and process\n";
 	dtalog.output() << "1. Input Files:\n";
 	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv)\n";
-	dtalog.output() << "   |--- Demand Layer (demand.csv, departure_time_profile, demand_file_list, subarea)\n";
-	dtalog.output() << "   |--- Configuration Files (settings.yml, scenario_index_list)\n";
+	dtalog.output() << "   |--- Demand Layer (demand.csv, mode_type, departure_time_profile, subarea)\n";
 	dtalog.output() << "   |--- Supply Layer (link_type)\n";
+	dtalog.output() << "   |--- Configuration Files (settings.yml, scenario)\n";
 
 	dtalog.output() << "\n2. Traffic Assignment and Simulation Process:\n";
-	dtalog.output() << "   |--- Demand estimation based on sensor data\n";
 	dtalog.output() << "   |--- Traffic assignment based on network and demand data\n";
+	dtalog.output() << "   |--- OD demand matrix estimation based on sensor data\n";
 	dtalog.output() << "   |--- Simulation of traffic based on assignment results and scenario configurations\n";
 	dtalog.output() << "   |--- Performance evaluation based on simulation results and performance criteria\n";
 
 	dtalog.output() << "\n3. Output Files:\n";
-	dtalog.output() << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
-	dtalog.output() << "   |--- Route assignment (route_assignment_s.csv)\n";
+	dtalog.output() << "   |--- Link performance (link_performance.csv, link_performance_summary.csv)\n";
+	dtalog.output() << "   |--- Route assignment (route_assignment.csv)\n";
 	dtalog.output() << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)\n";
-	dtalog.output() << "   |--- Trajectory performance (agent_s.csv, trajectory.csv)\n";
-	dtalog.output() << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
-	dtalog.output() << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)\n";
+	dtalog.output() << "   |--- Trajectory performance (agent.csv, trajectory.csv)\n";
+	dtalog.output() << "   |--- System performance (system_performance_summary.csv)\n";
+	dtalog.output() << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zone_mapping.csv)\n";
 	dtalog.output() << "--------------------------" << '\n';
 	dtalog.output() << "Please provide feedback or report any issues you encounter on our GitHub site: "
 		<< "https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem." << '\n';
@@ -248,23 +227,24 @@ int main()
 	g_DTA_log_file << " Overview of files and process\n";
 	g_DTA_log_file << "1. Input Files:\n";
 	g_DTA_log_file << "   |--- Physical Layer (node.csv, link.csv)\n";
-	g_DTA_log_file << "   |--- Demand Layer (demand, demand_file_list,  subarea)\n";
-	g_DTA_log_file << "   |--- Configuration Files (settings.yml, scenario_index_list)\n";
+	g_DTA_log_file << "   |--- Demand Layer (demand.csv, mode_type, departure_time_profile, subarea)\n";
 	g_DTA_log_file << "   |--- Supply Layer (link_type)\n";
+	g_DTA_log_file << "   |--- Configuration Files (settings.yml, scenario)\n";
+
 
 	g_DTA_log_file << "\n2. Traffic Assignment and Simulation Process:\n";
-	g_DTA_log_file << "   |--- Demand estimation based on sensor data\n";
 	g_DTA_log_file << "   |--- Traffic assignment based on network and demand data\n";
+	g_DTA_log_file << "   |--- OD demand Demand estimation based on sensor data\n";
 	g_DTA_log_file << "   |--- Simulation of traffic based on assignment results and scenario configurations\n";
 	g_DTA_log_file << "   |--- Performance evaluation based on simulation results and performance criteria\n";
 
 	g_DTA_log_file << "\n3. Output Files:\n";
-	g_DTA_log_file << "   |--- Link performance (link_performance_s.csv, link_performance_summary.csv)\n";
-	g_DTA_log_file << "   |--- Route assignment (route_assignment_s.csv)\n";
+	g_DTA_log_file << "   |--- Link performance (link_performance.csv, link_performance_summary.csv)\n";
+	g_DTA_log_file << "   |--- Route assignment (route_assignment.csv)\n";
 	g_DTA_log_file << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance_s.csv)\n";
-	g_DTA_log_file << "   |--- Trajectory performance (agent_s.csv, trajectory.csv)\n";
+	g_DTA_log_file << "   |--- Trajectory performance (agent.csv, trajectory.csv)\n";
 	g_DTA_log_file << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
-	g_DTA_log_file << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zonal_hierarchy_mapping.csv)\n";
+	g_DTA_log_file << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zone_mapping.csv)\n";
 	g_DTA_log_file << "--------------------------" << '\n';
 	g_DTA_log_file << "Please provide feedback or report any issues you encounter on our GitHub site: "
 		<< "https://github.com/asu-trans-ai-lab/DTALite/issues. Your input helps us enhance the software, address any concerns, and contribute to the open-source transportation ecosystem." << '\n';
@@ -304,7 +284,7 @@ int main()
 	g_DTA_log_file << "  link_performance_summary.csv: Shows the summary of the performance of each link." << '\n';
 	g_DTA_log_file << "  system_performance_summary.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
 	g_DTA_log_file << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
-	g_DTA_log_file << "  zonal_hierarchy_mapping.csv: Shows the subarea internal zones and impacted zones." << '\n';
+	g_DTA_log_file << "  internal_zone_mapping.csv: Shows the subarea internal zones and impacted zones." << '\n';
 	g_DTA_log_file << "--------------------------" << '\n';
 	write_default_setting_file_if_not_exist();
 
@@ -362,9 +342,9 @@ int main()
 		g_DTA_log_file << "[DATA INFO] simulation_output = " << simulation_output << " in settings.yml." << '\n';
 
 		// Accessing nested elements
-		number_of_memory_blocks = settings["cpu"]["number_of_memory_blocks"].as<int>(4);
-		dtalog.output() << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.yml." << '\n';
-		g_DTA_log_file << "[DATA INFO] number_of_memory_blocks = " << number_of_memory_blocks << " in settings.yml." << '\n';
+		number_of_cpu_processors = settings["cpu"]["number_of_cpu_processors"].as<int>(4);
+		dtalog.output() << "[DATA INFO] number_of_cpu_processors = " << number_of_cpu_processors << " in settings.yml." << '\n';
+		g_DTA_log_file << "[DATA INFO] number_of_cpu_processors = " << number_of_cpu_processors << " in settings.yml." << '\n';
 
 
 		column_generation_iterations = number_of_iterations; // update
@@ -377,9 +357,12 @@ int main()
 		// for basic uses set assignment mode to 'ue'
 		// for more detailed link performances (one minute) set 'dta'1
 
+		int odme_activate = settings["assignment"]["odme_activate"].as<int>(0);
 
-		if (CheckSensorFileExist(settings) == true)
+		if (odme_activate==1)
 		{
+			route_output = 1;
+			assignment_mode = 1;
 			column_updating_iterations = 5;
 			ODME_iterations = 50;
 		}
@@ -399,23 +382,6 @@ int main()
 		}
 
 
-
-
-
-
-		// the start interation of generating signals, if there is no signals set this number larger than the itertion number
-		max_num_significant_zones_in_subarea = settings["subarea"]["max_num_significant_zones_in_subarea"].as<int>(50000);
-
-
-			dtalog.output() << "[DATA INFO] max_num_significant_zones_in_subarea = " << max_num_significant_zones_in_subarea << " in settings.yml." << '\n';
-			g_DTA_log_file << "[DATA INFO] max_num_significant_zones_in_subarea = " << max_num_significant_zones_in_subarea << " in settings.yml." << '\n';
-
-
-			max_num_significant_zones_outside_subarea = settings["subarea"]["max_num_significant_zones_outside_subarea"].as<int>(50000);
-
-
-			dtalog.output() << "[DATA INFO] max_num_significant_zones_outside_subarea = " << max_num_significant_zones_outside_subarea << " in settings.yml." << '\n';
-			g_DTA_log_file << "[DATA INFO] max_num_significant_zones_outside_subarea = " << max_num_significant_zones_outside_subarea << " in settings.yml." << '\n';
 
 
 
@@ -477,7 +443,7 @@ int main()
 	// scenario
 	//
 	// obtain initial flow values
-	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_memory_blocks, length_unit_flag, speed_unit_flag, UE_convergence_percentage, max_num_significant_zones_in_subarea, max_num_significant_zones_outside_subarea);
+	network_assignment(assignment_mode, column_generation_iterations, column_updating_iterations, ODME_iterations, sensitivity_analysis_iterations, simulation_output, number_of_cpu_processors, length_unit_flag, speed_unit_flag, UE_convergence_percentage, max_num_significant_zones_in_subarea, max_num_significant_zones_outside_subarea);
 
 	if (g_DTA_log_file.is_open())
 		g_DTA_log_file.close(); 

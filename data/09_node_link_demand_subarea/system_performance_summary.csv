@@ -1,2 +1,0 @@
-first_column,scenario_index,scenario_name,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,total_co2_kg,total_nox_kg,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,avg_co2_kg,avg_nox_kg,
-,0,25nb,am,auto,7000,4,278936,173360,391765,1.27601e+07,3162.86,39.848,24.7657,55.9665,1822.88,0.451837,

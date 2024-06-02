@@ -1,4 +1,4 @@
-link_id,name,from_node_id,to_node_id,facility_type,link_type,dir_flag,length,lanes,free_speed,capacity,ref_volume_p1,geometry
+link_id,name,from_node_id,to_node_id,facility_type,link_type,dir_flag,length,lanes,free_speed,capacity,ref_volume,geometry
 1,,1,547,Highway,1,1,0.86267,1,60,49500,4989.13,"LINESTRING (-87.675575 42.011629, -87.663667 42.020633)"
 2,,2,548,Highway,1,1,0.86267,1,60,49500,6719.41,"LINESTRING (-87.699386 42.003527, -87.687483 42.012530)"
 3,,3,549,Highway,1,1,0.86267,1,60,49500,10095.53,"LINESTRING (-87.664855 41.977415, -87.652950 41.986419)"

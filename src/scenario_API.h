@@ -56,7 +56,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	// we setup the initial number of lanes per demand period, per mode and for each scenario, then we will load the dynamic_traffic_management file to overwrite the # of lanes for dynamic lane use in some special cases
 	for (int i = 0; i < g_link_vector.size(); ++i)
 	{
-		g_link_vector[i].setup_dynamic_number_of_lanes(assignment.active_scenario_index);
+		g_link_vector[i].setup_dynamic_number_of_lanes();
 	}
 
 
@@ -181,27 +181,12 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = 0;  // apply the change
 			g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code.clear();
 
-			bool bFoundFlag = false; 
 
-			for (int scenario_index_i = 0; scenario_index_i < scenario_index_vector.size(); scenario_index_i++)
-			{ 
-				if (scenario_index_vector[scenario_index_i] == assignment.active_scenario_index)
-				{
-					int scenaro_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
-
-					assignment.g_DTA_scenario_vector[scenaro_no].dtm_flag = 1;
-					bFoundFlag = true;
-				}
-				
-			}
-
-			if (bFoundFlag == false)  // this active scenario index 
-				continue; 
 			if (dtm_type == "dynamic_lane_use")
 			{
 				// capacity in the space time arcs
-				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
-				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no][scenario_no] = final_lanes;  // apply the change
+				
+				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no] = final_lanes;  // apply the change
 				dtm_dynamic_lane_use_count++;
 			}
 
@@ -211,7 +196,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				float toll_amount = 0;
 				//parser.GetValueByFieldName("toll_amount", toll_amount);
 				
-				g_link_vector[link_seq_no].VDF_period[tau].toll[mode_type_no][assignment.active_scenario_index] = toll_amount;  // apply the change
+				g_link_vector[link_seq_no].VDF_period[tau].toll[mode_type_no] = toll_amount;  // apply the change
 
 				dtm_dynamic_lane_use_count++;
 			}	
@@ -221,7 +206,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				// capacity in the space time arcs
 	
 			//	mode_type_no = 0; //this lane_closure is only for driving mode, this should be commented out 
-				int scenario_no = assignment.g_active_DTAscenario_map[assignment.active_scenario_index];
+				
 				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
 				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = -1;
 				g_link_vector[link_seq_no].link_specifical_flag_str = "lane_closure";
@@ -430,8 +415,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 
 	if (dtm_lane_closure_count == 0 && assignment.total_real_time_demand_volume > 0.1) {
-		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
-		g_DTA_log_file << "[ERROR] There is positive demand volume specified for real-time information users, for scenario index = " << assignment.active_scenario_index <<  " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
+		dtalog.output() << "[ERROR] There is positive demand volume specified for real-time information users," << " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
+		g_DTA_log_file << "[ERROR] There is positive demand volume specified for real-time information users, " <<  " but no lane closure scenarios are activated in the section dynamic_traffic_management file." << '\n';
 
 		for (int i = 0; i < assignment.g_ModeTypeVector.size(); i++) {
 			if (assignment.g_ModeTypeVector[i].real_time_information_type != 0) {

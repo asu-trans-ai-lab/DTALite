@@ -1,3 +1,0 @@
-link_id,from_node_id,to_node_id,link_type,dir_flag,length,lanes,free_speed,capacity
-3,1,4,3,1,15000,1,60,3000
-4,4,2,3,1,15000,1,60,3000
