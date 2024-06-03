@@ -25,6 +25,16 @@ add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 # default name for Windows
 set(YAML_CPP_LIB_NAME yaml-cpp)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
+        set(YAML_CPP_LIB_NAME yaml-cpp_mac-arm)
+    elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        set(YAML_CPP_LIB_NAME yaml-cpp_mac-x86)
+    endif()
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(YAML_CPP_LIB_NAME yaml-cpp_linux)
+endif()
+
 # enable OpenMP
 if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -fpic")

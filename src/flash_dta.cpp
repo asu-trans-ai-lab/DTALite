@@ -12,7 +12,6 @@
 #include "pch.h"
 #endif
 
-
 #ifdef _WIN32
 #define YAML_CPP_STATIC_DEFINE
 #endif
@@ -148,67 +147,6 @@ void write_default_setting_file_if_not_exist()
     return;
 }
 
-
-
-struct LinkTypeData {
-	std::string first_column;
-	std::string link_type;
-	std::string link_type_name;
-	std::string name_description;
-	std::string type_code;
-	std::string traffic_flow_model;
-	std::string allowed_uses_p1;
-	std::string allowed_uses_p2;
-	std::string allowed_uses_p3;
-	std::string peak_load_factor_p1_auto;
-	std::string peak_load_factor_p1_bike;
-	std::string peak_load_factor_p1_walk;
-	std::string free_speed_auto;
-	std::string free_speed_bike;
-	std::string free_speed_walk;
-	std::string capacity_auto;
-	std::string capacity_bike;
-	std::string capacity_walk;
-	std::string lanes_bike;
-	std::string lanes_walk;
-	std::string k_jam_km;
-	std::string meu_auto_bike;
-	std::string meu_auto_walk;
-	std::string meu_bike_walk;
-	std::string meu_bike_auto;
-	std::string meu_walk_bike;
-	std::string meu_walk_auto;
-	std::string emissions_auto_co2;
-	std::string emissions_auto_nox;
-	std::string emissions_bike_co2;
-	std::string emissions_bike_nox;
-	std::string emissions_walk_co2;
-	std::string emissions_walk_nox;
-	std::string emissions_ev_co2;
-	std::string emissions_ev_nox;
-	std::string emissions_truck_co2;
-	std::string emissions_truck_nox;
-	std::string emissions_bus_co2;
-	std::string emissions_bus_nox;
-	std::string emissions_hov_co2;
-	std::string emissions_hov_nox;
-};
-
-
-
-#include <fstream>
-#include <vector>
-
-struct DepartureTimeProfileData {
-	std::string first_column;
-	std::string departure_time_profile_no;
-	std::string time_period; // Add time_period
-	std::vector<double> time_points;
-};
-
-
-
-
 bool CheckSupplySideScenarioFileExist(YAML::Node config)
 {
 
@@ -229,10 +167,7 @@ bool CheckSupplySideScenarioFileExist(YAML::Node config)
 
 		}
 		return false;
-
-
 }
-
 
 int main()
 {
@@ -479,9 +414,6 @@ int main()
 					length_unit_flag = 0;
 				}
 			}
-
-			
-			
 
 			std::string speed_unit_str = settings["unit"]["speed_unit"].as<std::string>("kmph");
 

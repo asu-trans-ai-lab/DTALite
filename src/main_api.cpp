@@ -971,10 +971,10 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	if(g_TAP_log_flag)
 	{
 
-	fopen_s(&logfile, "TAP_log2.csv", "w");  // Open the log file for writing.
+	fopen_ss(&logfile, "TAP_log2.csv", "w");  // Open the log file for writing.
 	fprintf(logfile, "iteration_no,link_id,from_node_id,to_node_id,volume,fftt,travel_time,delay\n");
 
-	fopen_s(&log_assignment_file, "assignment_logfile2.csv", "w");  // Open the log file for writing.
+	fopen_ss(&log_assignment_file, "assignment_logfile2.csv", "w");  // Open the log file for writing.
 	fprintf(log_assignment_file, "iteration_no,link_id,from_node_id,to_node_id,volume,fftt,travel_time,delay\n");
 	}
 
