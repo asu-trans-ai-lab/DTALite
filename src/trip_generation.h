@@ -58,15 +58,12 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 	link.link_seq_no = assignment.g_number_of_links;
 	link.to_node_seq_no = internal_to_node_seq_no;
 
-	for (int si = 0; si < MAX_SCENARIOS; si++)
-	{
-		link.link_type_si[si] = -1;  // access_link
-	}
+
+	link.link_type = -1;  // access_link
 
 	//only for outgoing connectors
 	link.zone_seq_no_for_outgoing_connector = zone_seq_no;
 
-	link.link_type_code = "access_link";
 	//BPR
 	link.traffic_flow_code = 0;
 

@@ -47,129 +47,40 @@ using std::ifstream;
 using std::ofstream;
 using std::istringstream;
 
+struct SensorData {
+	std::string sensor_id;
+	int from_node_id;
+	int to_node_id;
+	std::string demand_period;
+	float count;
+	int scenario_index;
+	bool activate;
+};
+
 // updates for OD re-generations
 void Assignment::Demand_ODME(int OD_updating_iterations)
 {
 	int sensor_count = 0;
 	if (OD_updating_iterations >= 1)
 	{
-		// step 1: read sensor_data.csv
-		CDTACSVParser parser_measurement;
-
-		if (parser_measurement.OpenCSVFile("sensor_data.csv", true))
-		{
-			while (parser_measurement.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
+		for (int i = 0; i < g_link_vector.size(); i++)
+			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
 			{
-
-					int from_node_id;
-					if (!parser_measurement.GetValueByFieldName("from_node_id", from_node_id))
-						continue;
-
-					int to_node_id;
-					if (!parser_measurement.GetValueByFieldName("to_node_id", to_node_id))
-						continue;
-
+				if(g_link_vector[i].VDF_period[tau].ref_link_volume >=1)
+				{ 
+					if (g_subarea_shape_points.size() >= 3 && g_link_vector[i].subarea_id <= 0)
+						continue; // skip the link outside the subarea
 					
-					int scenario_index = 0;
-					parser_measurement.GetValueByFieldName("scenario_index", scenario_index);
 
-					if (g_scenario_summary_map.find(scenario_index) == g_scenario_summary_map.end())
-					{
-						dtalog.output() << "[ERROR] scenario_index =  " << scenario_index << " in file sensor_data.csv is not defined in scenario_index_list.csv." << '\n';
-						g_DTA_log_file << "[ERROR] scenario_index =  " << scenario_index << " in file sensor_data.csv is not defined in scenario_index_list.csv." << '\n';
-						//has not been defined
-						continue;
-
-					}
-
-					int activate_flag = 0; 
-					parser_measurement.GetValueByFieldName("activate", activate_flag);
-
-					if (activate_flag == 0)
-						continue; 
-
-					// add the to node id into the outbound (adjacent) node list
-					if (g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
-					{
-						dtalog.output() << "[ERROR] from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
-						g_DTA_log_file << "[ERROR] from_node_id " << from_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
-						//has not been defined
-						continue;
-					}
-					if (g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
-					{
-						dtalog.output() << "[ERROR] to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
-						g_DTA_log_file << "[ERROR] to_node_id " << to_node_id << " in file sensor_data.csv is not defined in node.csv." << '\n';
-						//has not been defined
-						continue;
-					}
-
-					float count = -1;
-
-					//demand_period
-					//mode_type 
-					string demand_period_str;
-					parser_measurement.GetValueByFieldName("demand_period", demand_period_str);
-					int tau = 0;
-
-					if (assignment.demand_period_to_seqno_mapping.find(demand_period_str) != assignment.demand_period_to_seqno_mapping.end())
-						tau = assignment.demand_period_to_seqno_mapping[demand_period_str];
-
-					{
-						int upper_bound_flag = 0;
-						{
-							int demand_period_id = assignment.g_DemandPeriodVector[tau].demand_period_id;
-
-							if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
-								continue;
-							parser_measurement.GetValueByFieldName("count", count, true);
-							parser_measurement.GetValueByFieldName("upper_bound_flag", upper_bound_flag,false,false);
-
-						}
-						// map external node number to internal node seq no.
-						int internal_from_node_seq_no = assignment.g_node_id_to_seq_no_map[from_node_id];
-						int internal_to_node_seq_no = assignment.g_node_id_to_seq_no_map[to_node_id];
-
-						if (g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.find(internal_to_node_seq_no) != g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.end())
-						{
-							int link_seq_no = g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[internal_to_node_seq_no];
-							if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[scenario_index] >= 1)  // data exist
-							{
-								if (upper_bound_flag == 0)
-								{  // over write only if the new data are acutal counts,
-
-									g_link_vector[link_seq_no].VDF_period[tau].obs_count[scenario_index] = count;
-									g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag[scenario_index] = upper_bound_flag;
-									sensor_count++;
-								}
-								else  // if the new data are upper bound, skip it and keep the actual counts
-								{
-									// do nothing
-								}
-
-
-							}
-							else
-							{
-								g_link_vector[link_seq_no].VDF_period[tau].obs_count[scenario_index] = count;
-								g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag[scenario_index] = upper_bound_flag;
-									sensor_count++;
-							}
-						}
-						else
-						{
-							dtalog.output() << "[WARNING] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
-							g_DTA_log_file << "[WARNING] Link " << from_node_id << "->" << to_node_id << " in file sensor_data.csv is not defined in link.csv." << '\n';
-							continue;
-						}
-					}
-
-		
+					g_link_vector[i].VDF_period[tau].obs_count = g_link_vector[i].VDF_period[tau].ref_link_volume;
+					g_link_vector[i].VDF_period[tau].upper_bound_flag = 0;
+					sensor_count++;
+				}
 
 			}
+										
 
-			parser_measurement.CloseCSVFile();
-		}
+	}
 
 		assignment.summary_file << "ODME stage: # of sensors =," << sensor_count << '\n';
 		dtalog.output() << "ODME stage: # of sensors =," << sensor_count << '\n';
@@ -288,7 +199,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau, assginment period
 						{
 							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-							if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
+							if (p_column_pool->od_volume > 0)
 							{
 								column_pool_counts++;
 
@@ -318,12 +229,12 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a along the path
 										{
 											link_seq_no = it->second.path_link_vector[nl];
-											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at][assignment.active_scenario_index];
+											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 											double link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 											path_travel_time += link_travel_time;
 
-											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)  // added with mustafa 12/24/2022, verified
+											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // added with mustafa 12/24/2022, verified
 											{
 												it->second.measurement_flag = 1;  // this path column has measurement
 												it->second.path_sensor_link_vector.push_back(link_seq_no);
@@ -377,18 +288,18 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									{
 										// step 3.3 link flow gradient
 										link_seq_no = it->second.path_sensor_link_vector[nl];
-										if (g_link_vector[link_seq_no].VDF_period[tau].obs_count[assignment.active_scenario_index] >= 1)
+										if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)
 										{
-											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag[0] == 0)
+											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 0)
 											{
-												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev[assignment.active_scenario_index];
-												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev[assignment.active_scenario_index];
+												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
+												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
 											}
 
-											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag[0] == 1 && g_link_vector[link_seq_no].VDF_period[tau].est_count_dev[assignment.active_scenario_index] > 0)
+											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 1 && g_link_vector[link_seq_no].VDF_period[tau].est_count_dev > 0)
 											{// we only consider the over capaity value here to penalize the path flow
-												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev[assignment.active_scenario_index];
-												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev[assignment.active_scenario_index];
+												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
+												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
 											}
 											p_column_pool->m_passing_sensor_flag += 1;
 											it->second.measurement_flag = 1;
@@ -507,7 +418,5 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau]
 	}
 
-
-}
 
 

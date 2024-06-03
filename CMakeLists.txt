@@ -5,6 +5,9 @@ project ("DTALite")
 option(BUILD_EXE "BUILD Executable or not" ON)
 
 configure_file(build_config.h.in build_config.h)
+# Set the MSVC runtime library based on your needs
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+
 
 if(BUILD_EXE)
     message("Building executable on ${CMAKE_SYSTEM_NAME}")
@@ -16,6 +19,11 @@ endif()
 # C++11 is necessary as teestream.h requires C++11 to be complied
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+include_directories(include)
+add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
+# default name for Windows
+set(YAML_CPP_LIB_NAME yaml-cpp)
 
 # enable OpenMP
 if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
@@ -41,7 +49,10 @@ else()
 endif()
 
 # using OpenMP
+
+find_library(YAML_CPP ${YAML_CPP_LIB_NAME} PATHS lib)
+
 find_package(OpenMP REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
-
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${YAML_CPP})
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")

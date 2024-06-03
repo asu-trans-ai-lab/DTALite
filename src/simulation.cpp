@@ -99,7 +99,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 	for (int i = 0; i < g_number_of_links; ++i)
 	{
 		float cap_count = 0;
-		float discharge_rate_per_sec = g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index] / 3600.0;
+		float discharge_rate_per_sec = g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes / 3600.0;
 		float discharge_rate_after_loading = 20 * discharge_rate_per_sec;  ///to collect travel time statistics * 10 times of capacity to discharge all flow */ at the end of simulation time interval
 
 		if (i == 24)
@@ -126,7 +126,7 @@ void Assignment::AllocateLinkMemory4Simulation()
 			m_LinkOutFlowCapacity[i][t] = discharge_rate_after_loading;
 
 			if (g_link_vector[i].cell_type >= 0)  // DTA micro cell based simulation
-				m_LinkOutFlowCapacity[i][t] = 1 * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
+				m_LinkOutFlowCapacity[i][t] = 1 * g_link_vector[i].number_of_lanes;
 			else
 			{
 				residual = OutFlowRate - (int)(OutFlowRate);
@@ -217,10 +217,10 @@ void Assignment::AllocateLinkMemory4Simulation()
 				for (int t = cycle_no * cycle_length + start_green_time; t <= cycle_no * cycle_length + end_green_time; t += 1)
 				{
 					// activate capacity for this time duration
-					m_LinkOutFlowCapacity[l][t] = g_link_vector[l].saturation_flow_rate * g_link_vector[l].number_of_lanes_si[assignment.active_scenario_index] / 3600.0;
+					m_LinkOutFlowCapacity[l][t] = g_link_vector[l].saturation_flow_rate * g_link_vector[l].number_of_lanes / 3600.0;
 
 					if (t % 2 == 0)
-						m_LinkOutFlowCapacity[l][t] = 1 * g_link_vector[l].number_of_lanes_si[assignment.active_scenario_index];
+						m_LinkOutFlowCapacity[l][t] = 1 * g_link_vector[l].number_of_lanes;
 					if (t % 2 == 1)
 						m_LinkOutFlowCapacity[l][t] = 0;
 
@@ -321,7 +321,7 @@ void Assignment::STTrafficSimulation()
 			{
 				for (int tau = 0; tau < demand_period_size; ++tau)
 				{
-					if (p_link->AllowModeType(g_ModeTypeVector[at].mode_type, tau, active_scenario_index) == false)
+					if (p_link->AllowModeType(g_ModeTypeVector[at].mode_type, tau) == false)
 					{
 						p_link->VDF_period[tau].RT_allowed_use[at] = false;  // follow the general rule of allow_uses, such HOV, special lanes
 					}
@@ -383,7 +383,7 @@ void Assignment::STTrafficSimulation()
 
 
 
-					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
+					if (p_column_pool->od_volume > 0)
 					{
 
 						// scan through the map with different node sum for different continuous paths
@@ -476,7 +476,7 @@ void Assignment::STTrafficSimulation()
 									p_agent->p_RTNetwork = assignment.g_rt_network_pool[dest][at][tau];
 								}
 								p_agent->PCE_unit_size = 1; //  max(1, (int)(assignment.g_ModeTypeVector[at].PCE + 0.5));  // convert a possible floating point pce to an integer value for simulation
-								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].DSR));
+								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].desired_speed_ratio));
 								p_agent->time_headway = (int)(assignment.g_ModeTypeVector[at].time_headway_in_sec / number_of_seconds_per_interval + 0.5);
 								p_agent->agent_id = g_agent_simu_vector.size();
 								p_agent->mode_type_no = assignment.g_ModeTypeVector[at].mode_type_no;
@@ -639,7 +639,7 @@ void Assignment::STTrafficSimulation()
 			{
 				CLink* p_link = &(g_link_vector[i]);
 				p_link->RT_waiting_time = 0;
-				if (p_link->link_type_si[0] >= 0)  // do not need to be the cap reduced link
+				if (p_link->link_type >= 0)  // do not need to be the cap reduced link
 				{
 
 					double total_waiting_time_in_min = 0;
@@ -1058,7 +1058,7 @@ void Assignment::STTrafficSimulation()
 						for (int link_s = 0; link_s < p_agent->path_link_seq_no_vector.size(); link_s++)
 						{
 							int link_seq_no = p_agent->path_link_seq_no_vector[link_s];
-							//path_toll += g_link_vector[link_seq_no].VDF_period[p_agent->tau].toll[at][assignment.active_scenario_index];
+							//path_toll += g_link_vector[link_seq_no].VDF_period[p_agent->tau].toll[at];
 							p_agent->path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 						}
 

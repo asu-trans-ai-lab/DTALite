@@ -1,2 +1,0 @@
-sensor_id,from_node_id,to_node_id,demand_period,count,scenario_index,activate
-1,1,4,am,1000,0,1

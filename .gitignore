@@ -14,3 +14,4 @@ build/
 # untrack log files
 **log*
 .DS_Store
+/data/01_node_link_only/minimum_input

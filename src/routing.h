@@ -94,8 +94,8 @@ public:
 		if (m_link_mode_type_volume_array)  //8
 			delete[] m_link_mode_type_volume_array;
 
-		if (m_link_agent_volume_array)  //8
-			delete[] m_link_agent_volume_array;
+		if (m_link_person_volume_array)  //8
+			delete[] m_link_person_volume_array;
 
 		if (m_link_genalized_cost_array) //9
 			delete[] m_link_genalized_cost_array;
@@ -158,7 +158,7 @@ public:
 	int* m_link_predecessor;
 
 	double* m_link_mode_type_volume_array;  // for VDF computing based on PCE
-	double* m_link_agent_volume_array;  // person delay counting based on agent type
+	double* m_link_person_volume_array;  // person delay counting based on agent type
 
 	double* m_link_genalized_cost_array;
 	int* m_link_outgoing_connector_zone_seq_no_array;
@@ -186,7 +186,7 @@ public:
 		m_node_label_cost = new double[number_of_nodes];  //7
 
 		m_link_mode_type_volume_array = new double[number_of_links];  //8
-		m_link_agent_volume_array = new double[number_of_links];  //8
+		m_link_person_volume_array = new double[number_of_links];  //8
 
 		m_link_genalized_cost_array = new double[number_of_links];  //9
 
@@ -211,9 +211,9 @@ public:
 
 			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
-				p_link->VDF_period[m_tau].toll[mode_type_no][assignment.active_scenario_index] / m_value_of_time * 60;
+				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
-			if (p_link->link_type_si[assignment.active_scenario_index] < 0)  // connectors
+			if (p_link->link_type < 0)  // connectors
 				m_link_genalized_cost_array[i] = 0.0; 
 			if (m_link_genalized_cost_array[i]  < -0.1)
 			{
@@ -258,7 +258,7 @@ public:
 
 			m_link_genalized_cost_array[i] = p_link->link_avg_travel_time_per_period[m_tau][mode_type_no] + p_link->VDF_period[m_tau].penalty +
 				p_link->VDF_period[m_tau].LR_price[mode_type_no] +
-				p_link->VDF_period[m_tau].toll[mode_type_no][assignment.active_scenario_index] / m_value_of_time * 60;
+				p_link->VDF_period[m_tau].toll[mode_type_no] / m_value_of_time * 60;
 
 			if (p_link->link_id == "7742")
 			{
@@ -310,14 +310,14 @@ public:
 				// only predefined allowed agent type can be considered
 
 				// only predefined allowed agent type can be considered
-				//if (m_mode_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes_si[assignment.active_scenario_index] == 0)  // main mode of auto
+				//if (m_mode_type_no == 0 && g_link_vector[link_seq_no].number_of_lanes == 0)  // main mode of auto
 				//	continue;
 
-				//int current_link_type = g_link_vector[link_seq_no].link_type_si[assignment.active_scenario_index];
+				//int current_link_type = g_link_vector[link_seq_no].link_type;
 				//if (m_mode_type_no > 0 && p_assignment->g_LinkTypeMap[current_link_type].lanes_mode_type[m_mode_type_no]==0)  // other modes
 				//	continue;
 
-				if (g_link_vector[link_seq_no].AllowModeType(p_assignment->g_ModeTypeVector[m_mode_type_no].mode_type, m_tau, assignment.active_scenario_index))
+				if (g_link_vector[link_seq_no].AllowModeType(p_assignment->g_ModeTypeVector[m_mode_type_no].mode_type, m_tau))
 				{
 					m_outgoing_link_seq_no_vector[outgoing_link_size] = link_seq_no;
 					m_to_node_seq_no_vector[outgoing_link_size] = g_node_vector[i].m_to_node_seq_no_vector[j];
@@ -395,7 +395,7 @@ public:
 				}
 
 
-				p_assignment->b_forward_star_structure_log = true;
+				p_assignment->b_forward_star_structure_log = false;
 		}
 		
 
@@ -547,7 +547,7 @@ public:
 					continue;
 
 
-				ODvolume = pColumnVector->od_volume[assignment.active_scenario_index];
+				ODvolume = pColumnVector->od_volume;
 				volume = 0;
 				// this is contributed path volume from OD flow (O, D, k, per time period
 
@@ -596,7 +596,9 @@ public:
 								{
 									// this is critical for parallel computing as we can write the volume to data
 									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
-									m_link_agent_volume_array[current_link_seq_no] += volume;
+
+
+									m_link_person_volume_array[current_link_seq_no] += volume ;
 
 									//dtalog.output() << "node = " << g_node_vector[i].node_id
 									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
@@ -705,9 +707,9 @@ public:
 		//	g_fout << "backtracing for zone " << m_origin_zone_seq_no << '\n';
 		//}
 
-
 		int departure_time = m_tau;
 		int mode_type = m_mode_type_no;
+		double person_occupancy = assignment.g_ModeTypeVector[mode_type].person_occupancy;
 
 		if (g_node_vector[origin_node].m_outgoing_link_seq_no_vector.size() == 0)
 			return 0;
@@ -782,7 +784,7 @@ public:
 				if (pColumnVector->subarea_passing_flag == false) // not passing through subarea
 					continue;
 
-				ODvolume = pColumnVector->od_volume[assignment.active_scenario_index];
+				ODvolume = pColumnVector->od_volume;
 				volume = ODvolume * k_path_prob;
 				// this is contributed path volume from OD flow (O, D, k, per time period
 
@@ -818,6 +820,27 @@ public:
 						// this is valid node
 						if (current_node_seq_no >= 0 && current_node_seq_no < number_of_nodes)
 						{
+
+							if(g_TAP_log_flag)
+							{
+								//tt:% f, FFTT : % f, delay : % f, distance : % f
+								// Link: %d, from: %d, to: %d, 
+
+								fprintf(log_assignment_file, "Iteration: %d, Origin: %d, Destination: %d, Route Flow: %f,\n",
+									iteration_number_outterloop,
+									from_zone_sindex,
+									to_zone_sindex,
+									volume
+									//current_link_seq_no,
+									//g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id,
+									//g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									//total_travel_time, 
+									//total_FFTT, 
+									//total_travel_time - total_FFTT, 
+									//total_distance
+								);
+							}
+
 							current_link_seq_no = m_link_predecessor[current_node_seq_no];
 							node_sum += current_node_seq_no + current_link_seq_no;
 
@@ -832,22 +855,22 @@ public:
 								{
 									// this is critical for parallel computing as we can write the volume to data
 									m_link_mode_type_volume_array[current_link_seq_no] += volume;  // for this network object volume from OD demand table
-									m_link_agent_volume_array[current_link_seq_no] += volume;
+									m_link_person_volume_array[current_link_seq_no] += volume * person_occupancy;
 
 
-									//dtalog.output() << "node = " << g_node_vector[i].node_id
-									//    << "zone id= " << g_node_vector[i].zone_id << ","
-									//    << "l_link_size= " << l_link_size << ","
-									//    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									//    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//    << ": add volume " << volume << '\n';
+/*									dtalog.output() << "node = " << g_node_vector[i].node_id
+									    << "zone id= " << g_node_vector[i].zone_id << ","
+									    << "l_link_size= " << l_link_size << ","
+									    << "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+									    << "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+									    << ": add volume " << volume << '\n';
 
-									//g_DTA_log_file << "node = " << g_node_vector[i].node_id
-									//	<< "zone id= " << g_node_vector[i].zone_id << ","
-									//	<< "l_link_size= " << l_link_size << ","
-									//	<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
-									//	<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
-									//	<< ": add volume " << volume << '\n';
+									g_DTA_log_file << "node = " << g_node_vector[i].node_id
+										<< "zone id= " << g_node_vector[i].zone_id << ","
+										<< "l_link_size= " << l_link_size << ","
+										<< "link " << g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id
+										<< "->" << g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
+										<< ": add volume " << volume << '\n'*/;
 										
 									//	if (m_link_mode_type_volume_array[current_link_seq_no] > 7001)
 									//{
@@ -931,6 +954,7 @@ public:
 				}
 			}
 		}
+
 		return total_origin_least_cost;
 	}
 
