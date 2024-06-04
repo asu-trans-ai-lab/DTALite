@@ -1,13 +1,8 @@
 cmake_minimum_required (VERSION 3.8)
-
 project ("DTALite")
 
 option(BUILD_EXE "BUILD Executable or not" ON)
-
 configure_file(build_config.h.in build_config.h)
-# Set the MSVC runtime library based on your needs
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
-
 
 if(BUILD_EXE)
     message("Building executable on ${CMAKE_SYSTEM_NAME}")
@@ -20,8 +15,12 @@ endif()
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include_directories(include)
+# Set the MSVC runtime library based on your needs
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
+
+include_directories(include)
+
 # default name for Windows
 set(YAML_CPP_LIB_NAME yaml-cpp)
 
@@ -31,19 +30,15 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
         set(YAML_CPP_LIB_NAME yaml-cpp_mac-x86)
     endif()
+
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+        set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -fpic")
+    else()
+        set(CMAKE_CXX_FLAGS "-fopenmp -fpic")
+    endif()
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set(YAML_CPP_LIB_NAME yaml-cpp_linux)
-endif()
-
-# enable OpenMP
-if (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    set(CMAKE_CXX_FLAGS "-Xpreprocessor -fopenmp -fpic")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "-fopenmp -fpic")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # do nothing as MSVC does not support -fopenmp -fpic
-else()
-    message("Please set OpenMP flag compatible with your compiler")
 endif()
 
 # note CMAKE_BUILD_TYPE WILL BE INGNORED for IDE generators, like Visual Studio and Xcode
@@ -52,13 +47,11 @@ endif()
 set(CMAKE_BUILD_TYPE  "Release")
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin)
 
-if(BUILD_EXE)
+if (BUILD_EXE)
     add_executable(${PROJECT_NAME} src/utils.cpp src/flash_dta.cpp src/main_api.cpp src/simulation.cpp src/DTA_geometry.cpp)
 else()
     add_library(${PROJECT_NAME} SHARED src/utils.cpp src/flash_dta.cpp src/main_api.cpp src/simulation.cpp src/DTA_geometry.cpp)
 endif()
-
-# using OpenMP
 
 find_library(YAML_CPP ${YAML_CPP_LIB_NAME} PATHS lib)
 
