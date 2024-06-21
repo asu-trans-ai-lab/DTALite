@@ -23,6 +23,7 @@ include_directories(include)
 
 # default name for Windows
 set(YAML_CPP_LIB_NAME yaml-cpp)
+set(YAML_CPP_LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     if(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64")
@@ -53,9 +54,10 @@ else()
     add_library(${PROJECT_NAME} SHARED src/utils.cpp src/flash_dta.cpp src/main_api.cpp src/simulation.cpp src/DTA_geometry.cpp)
 endif()
 
-find_library(YAML_CPP ${YAML_CPP_LIB_NAME} PATHS lib)
-
+find_library(YAML_CPP NAMES ${YAML_CPP_LIB_NAME} PATHS ${YAML_CPP_LIB_DIR} NO_SYSTEM_ENVIRONMENT_PATH)
 find_package(OpenMP REQUIRED)
+
 target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${YAML_CPP})
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
+target_link_libraries(${PROJECT_NAME} PRIVATE ${YAML_CPP})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
