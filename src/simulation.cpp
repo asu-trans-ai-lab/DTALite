@@ -8,15 +8,6 @@
  * http://www.gnu.org/licenses/gpl-howto.html
  */
 
- // Peiheng, 02/03/21, remove them later after adopting better casting
-#pragma warning(disable : 4305 4267 4018)
-// stop warning: "conversion from 'int' to 'float', possible loss of data"
-#pragma warning(disable: 4244)
-
-#ifdef _WIN32
-#include "pch.h"
-#endif
-
 #include "config.h"
 #include "utils.h"
 #include "DTA.h"
