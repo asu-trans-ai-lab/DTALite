@@ -948,24 +948,26 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								}
 								fprintf(g_pFilePathMOE, ",");
 
-								if (it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta >= 2)
-								{
-									fprintf(g_pFilePathMOE, "\"LINESTRING (");
-									for (int ni = 0 + virtual_first_link_delta; ni < it->second.m_node_size - virtual_last_link_delta; ++ni)
-									{
-										fprintf(g_pFilePathMOE, "%f %f", g_node_vector[it->second.path_node_vector[ni]].x,
-											g_node_vector[it->second.path_node_vector[ni]].y);
 
-										if (ni != it->second.m_node_size - virtual_last_link_delta - 1)
-											fprintf(g_pFilePathMOE, ", ");
-									}
-
-									fprintf(g_pFilePathMOE, ")\"");
-								}
-
-								fprintf(g_pFilePathMOE, ",");
 								if (assignment.g_number_of_nodes < 5000 || (assignment.g_number_of_nodes >= 5000 && it->second.path_volume >= 5))  // critcal path volume
 								{
+
+									if (it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta >= 2)
+									{
+										fprintf(g_pFilePathMOE, "\"LINESTRING (");
+										for (int ni = 0 + virtual_first_link_delta; ni < it->second.m_node_size - virtual_last_link_delta; ++ni)
+										{
+											fprintf(g_pFilePathMOE, "%f %f", g_node_vector[it->second.path_node_vector[ni]].x,
+												g_node_vector[it->second.path_node_vector[ni]].y);
+
+											if (ni != it->second.m_node_size - virtual_last_link_delta - 1)
+												fprintf(g_pFilePathMOE, ", ");
+										}
+
+										fprintf(g_pFilePathMOE, ")\"");
+									}
+
+									fprintf(g_pFilePathMOE, ",");
 									//fprintf(g_pFilePathMOE, ",");
 									// link type name sequenece
 									//for (int nl = 0 + virtual_first_link_delta; nl < it->second.m_link_size - virtual_last_link_delta; ++nl)
@@ -1003,7 +1005,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								}
 								else
 								{
-									fprintf(g_pFilePathMOE, ",,,");
+									fprintf(g_pFilePathMOE, ",,,,");
 								}
 
 								if (global_od_impact_flag_across_all_mode_types)
@@ -1136,7 +1138,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 								// }
 
-								// fprintf(g_pFilePathMOE, "\n");
+								fprintf(g_pFilePathMOE, "\n");
 								count++;
 							}
 
@@ -2700,21 +2702,21 @@ void g_output_accessibility_result(Assignment& assignment)
 
 	{
 
-		fprintf(g_pFileODMOE, "volume");
+		fprintf(g_pFileODMOE, "volume,");
 	}
 
 	{
 
-		fprintf(g_pFileODMOE, "avg_tt");
+		fprintf(g_pFileODMOE, "avg_tt,");
 	}
 
 	{
 
-		fprintf(g_pFileODMOE, "avg_distance_km");
+		fprintf(g_pFileODMOE, "avg_distance_km,");
 	}
 	{
 
-		fprintf(g_pFileODMOE, "avg_cost");
+		fprintf(g_pFileODMOE, "avg_cost,");
 	}
 
 
