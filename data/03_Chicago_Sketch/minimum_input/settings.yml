@@ -3,10 +3,12 @@ assignment:
   route_output: 1
   simulation_output: 0
   number_of_cpu_processors: 4
-  length_unit: mile
-  speed_unit: mph
+
   UE_convergence_percentage: 0.001
   odme_activate: 0
+unit:
+  length_unit: mile
+  speed_unit: mph
 mode_types:
   - mode_type: auto
     vot: 10
