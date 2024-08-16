@@ -1,0 +1,4 @@
+first_column,demand_period,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,total_travel_delay_min,total_co2_kg,total_nox_kg,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,avg_travel_delay_in_min,avg_speed_kmph,avg_speed_mph,avg_co2_kg,avg_nox_kg,
+0,am,auto,1.13749e+06,55760,2.085e+07,1.29583e+07,1.41456e+07,1.18728e+06,0,0,18.3297,11.392,12.4358,1.04377,88.4371,54.964,0,0,
+0,am,hov,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,am,truck,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
