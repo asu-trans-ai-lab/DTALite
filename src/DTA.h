@@ -1,6 +1,5 @@
 #ifndef GUARD_DTA_H
 #define GUARD_DTA_H
-#define BUILD_EXE //self-use
 
 #include <algorithm>
 #include <iomanip>
