@@ -1453,20 +1453,20 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 
 				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
-					g_link_vector[i].VDF_period[tau].Q_cp,
-					g_link_vector[i].VDF_period[tau].Q_s,
-					g_link_vector[i].VDF_period[tau].avg_queue_speed/1.609,
-					g_link_vector[i].VDF_period[tau].avg_queue_speed,
-					g_link_vector[i].VDF_period[tau].vt2/1.609,
-					g_link_vector[i].VDF_period[tau].vt2,
-					VMT,
-					VMT*1.609,
-					VHT,
-					PMT,
-					PMT,
-					PMT * 1.609,
-					PDT_vf,
-					PDT_vc);
+						g_link_vector[i].VDF_period[tau].Q_cp,
+						g_link_vector[i].VDF_period[tau].Q_s,
+						g_link_vector[i].VDF_period[tau].avg_queue_speed/1.609,
+						g_link_vector[i].VDF_period[tau].avg_queue_speed,
+						g_link_vector[i].VDF_period[tau].vt2/1.609,
+						g_link_vector[i].VDF_period[tau].vt2,
+						VMT,
+						VMT * 1.609,
+						VHT,
+						PMT,
+						PMT * 1.609,
+						PHT,
+						PDT_vf,
+						PDT_vc);
 
 				fprintf(g_pFileLinkMOE, "\"%s\",",
 					g_link_vector[i].geometry.c_str());

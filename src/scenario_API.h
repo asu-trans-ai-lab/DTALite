@@ -76,7 +76,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		YAML::Node config = YAML::LoadFile("settings.yml");
 
 		if (!config["dynamic_traffic_management_data"]) {
-			std::cerr << "The key 'dynamic_traffic_management_data' is missing in the YAML file." << std::endl;
+			std::cerr << "The key 'dynamic_traffic_management_data' is missing in the YAML file.\n";
 			return;
 		}
 
@@ -463,7 +463,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 	// we now know the number of links
 
-	assignment.summary_file << ",read dynamic traffic managementscenario" << '\n';
+	assignment.summary_file << ",read dynamic traffic management scenario" << '\n';
 	//assignment.summary_file << ", # of records in section dynamic_traffic_management=," << dtm_lane_closure_count + incident_count + dtm_dms_count << "," << '\n';
 	assignment.summary_file << ", # of lane closure records in section dynamic_traffic_management=," << dtm_lane_closure_count << "," << '\n';
 	//assignment.summary_file << ", # of incident records in section dynamic_traffic_management=," << incident_count << "," << '\n';

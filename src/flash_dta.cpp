@@ -111,41 +111,6 @@ struct LinkTypeData {
     string emissions_hov_nox;
 };
 
-void write_default_setting_file_if_not_exist()
-{
-	std::string filename = "settings.yml";
-
-    // Check if the file exists
-    ifstream inFile(filename);
-    if (inFile.good())
-        return;
-
-	// Define the data to write to the file.
-	std::vector<std::tuple<std::string, std::string, std::string>> data = {
-		{"assignment", "number_of_iterations", "20"},
-		{"assignment", "route_output", "1"},
-		{"assignment", "simulation_output", "0"},
-		{"assignment", "UE_convergence_percentage", "0.1"},
-		{"cpu", "number_of_cpu_processors", "4"},
-		{"unit", "length_unit", "meter"},
-		{"unit", "speed_unit", "kmph"},
-		{"assignment", "odme_activate","1"},
-	};
-
-	// Open the file for output.
-	std::ofstream outFile("settings.yml");
-
-    // Write the header to the file.
-    outFile << "section,key,value\n";
-    // Write the data to the file.
-    for (const auto& item : data)
-        outFile << get<0>(item) << ',' << get<1>(item) << ',' << get<2>(item) << '\n';
-
-    // Close the file.
-    outFile.close();
-    return;
-}
-
 bool CheckSupplySideScenarioFileExist(YAML::Node config)
 {
 	// Access the "sensor_data" section
@@ -290,7 +255,6 @@ int main()
 	g_DTA_log_file << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
 	g_DTA_log_file << "  internal_zone_mapping.csv: Shows the subarea internal zones and impacted zones." << '\n';
 	g_DTA_log_file << "--------------------------" << '\n';
-	write_default_setting_file_if_not_exist();
 
 	bool bCorrectSettingFormat = false;
 
@@ -322,7 +286,7 @@ int main()
 	dtalog.output() << "[DATA INFO] UE_convergence_percentage = " << UE_convergence_percentage << " (%) in settings.yml." << '\n';
 	g_DTA_log_file << "[DATA INFO] UE_convergence_percentage = " << UE_convergence_percentage << " (%) in settings.yml." << '\n';
 
-	int number_of_column_updating_iterations = settings["assignment"]["number_of_column_updating_iterations"].as<int>(20);
+	column_updating_iterations = settings["assignment"]["number_of_column_updating_iterations"].as<int>(20);
 
 	assignment_mode = 0;
 
@@ -332,8 +296,8 @@ int main()
 	if (route_output == 1)
 		assignment_mode = 1;
 
-	if (column_updating_iterations < 1)
-		column_updating_iterations = 1;
+	if (column_updating_iterations < 0)
+		column_updating_iterations = 0;
 
 	dtalog.output() << "[DATA INFO] number_of_column_updating_iterations = " << column_updating_iterations << " in settings.yml." << '\n';
 	g_DTA_log_file << "[DATA INFO] number_of_column_updating_iterations = " << column_updating_iterations << "  in settings.yml." << '\n';
