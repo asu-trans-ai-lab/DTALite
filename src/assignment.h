@@ -1093,7 +1093,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 	return gap;
 }
-double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, bool b_sensitivity_analysis_flag)
+double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, int column_updating_iterations, bool b_sensitivity_analysis_flag)
 {
 	double total_system_cost_gap = 0;
 	float total_relative_gap = 0;
@@ -1436,7 +1436,11 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 									}
 									else
 									{  // column updating step size
-										step_size = 1.0 / (inner_iteration_number + 2) ;
+
+										if (column_updating_iterations < 10)
+											step_size = 0.05;
+										else
+											step_size = 1.0 / (inner_iteration_number + 2) ; // MSA 
 									}
 
 
@@ -1890,7 +1894,7 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
-		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
+		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, column_updating_iterations, dynamic_traffic_management_flag);
 
 		if(relative_percentative_gap < UE_convergence_percentage )
 		{

@@ -1219,7 +1219,8 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 
 			//}
 
-			for (iteration_number = 0; iteration_number < max(1, assignment.g_number_of_column_generation_iterations); iteration_number++)
+			 // max(1, assignment.g_number_of_column_generation_iterations);
+			for (iteration_number = 0; iteration_number < assignment.g_number_of_column_generation_iterations; iteration_number++)
 			{
 				end_t = clock();
 				iteration_t = end_t - start_t;
@@ -1426,9 +1427,11 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 			}
 
 							//report travel time to TAP_log2.csv
+			if (g_TAP_log_flag)
+			{ 
 				for (int i = 0; i < g_link_vector.size(); ++i)
 				{
-					if(g_link_vector[i].link_type>=0 && g_TAP_log_flag)  // no a connector
+					if(g_link_vector[i].link_type>=0 )  // no a connector
 					{
 						int tau = 0;
 					int mode_type_index = 0;
@@ -1446,7 +1449,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 					}
 
 				}
-
+			}
 				g_OutputModelFiles(1);
 				g_OutputModelFiles(2);
 			//	g_OutputModelFiles(10);

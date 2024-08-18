@@ -160,6 +160,7 @@ int main()
     int signal_updating_output = 0;
     // generate link performance and agent file
     int assignment_mode = 1;
+	int full_route_file = 1;
     bool flag_default = false;
     int default_volume = 1;
     int length_unit_flag = 0;  // 0: meter, 1: mile,
@@ -293,8 +294,17 @@ int main()
 	int route_output = 1;
 
 	route_output = settings["assignment"]["route_output"].as<int>(0);
-	if (route_output == 1)
+	if (route_output >= 1)
+	{
 		assignment_mode = 1;
+
+		if (route_output == 1)
+			full_route_file = 1; 
+		if (route_output == 2)  // if this is 2, we only output complete route data in compact route file. 
+			full_route_file = 0;
+
+	}
+
 
 	if (column_updating_iterations < 0)
 		column_updating_iterations = 0;

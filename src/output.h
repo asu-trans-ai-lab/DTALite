@@ -376,6 +376,10 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 	FILE* g_pFilePathMOE = nullptr;
 	fopen_ss(&g_pFilePathMOE, route_assignment_file_name, "w");
+
+	FILE* g_pFileCompactPath = nullptr;
+	fopen_ss(&g_pFileCompactPath, "compact_route.csv", "w");
+
 	dtalog.output() << "[STATUS INFO] writing route_assignment.csv" << '\n';
 	g_DTA_log_file << "[STATUS INFO] writing route_assignment.csv" << '\n';
 
@@ -385,6 +389,8 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 		g_DTA_log_file << "[ERROR] File " << route_assignment_file_name << " cannot be opened." << '\n';
 		return;
 	}
+
+	fprintf(g_pFileCompactPath, "route_seq_id,o_zone_id,d_zone_id,mode_type_id,demand_period_id,volume,travel_time,node_sequence\n");
 
 	fprintf(g_pFilePathMOE, "first_column,route_seq_id,o_zone_id,d_zone_id,o_super_zone_index,d_super_zone_index,od_pair_key,information_type,mode_type,demand_period,volume,");
 	fprintf(g_pFilePathMOE, "distance_km,distance_mile,travel_time,FFTT,co2,nox,OD_based_UE_relative_gap_compared_to_least_time_path_travel_time,path_based_UE_gap,path_based_relative_UE_gap,preload_volume_from_route_input_file,ODME_volume_before,ODME_volume_after,ODME_volume_diff,SIMU_volume,SIMU_travel_time,");
@@ -463,6 +469,8 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 	float path_FF_travel_time = 0;
 	float time_stamp = 0;
 
+	bool global_path_speicial_link_flag = false; 
+
 	std::map<int, CColumnPath>::iterator it, it_begin, it_end;
 
 	if (assignment.major_path_volume_threshold > 0.00001)  // performing screening of path flow pattern
@@ -478,6 +486,9 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 			//	// used in travel time calculation
 			//	g_link_vector[i].background_total_volume_for_all_mode_types_per_period[tau] = 0;
 			//}
+
+			if (g_link_vector[i].link_specifical_flag_str.size() > 0)
+				global_path_speicial_link_flag = true; // if there are link special flag on paths. 
 
 			if (g_node_vector[g_link_vector[i].from_node_seq_no].subarea_id >= 1 && g_node_vector[g_link_vector[i].to_node_seq_no].node_id >= 1)
 			{
@@ -744,10 +755,18 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								continue;
 							}
 
+							bool local_path_speicial_link_flag = false; 
+
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 
 								int link_seq_no = it->second.path_link_vector[nl];
+								if (g_link_vector[link_seq_no].link_specifical_flag_str.size() > 0)
+								{
+									local_path_speicial_link_flag = true; // mark if this path has speical link flags or not. 
+
+								}
+
 								if (g_link_vector[link_seq_no].link_type >= 0)
 								{
 									path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
@@ -878,7 +897,21 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 								// keep this record
 								it->second.route_seq_id= count;
-								fprintf(g_pFilePathMOE, "0,%d,%d,%d,%d,%d,%d->%d,%d,%s,%s,",
+
+								if (global_path_speicial_link_flag && local_path_speicial_link_flag == false)
+									continue; // skip the path output if there are speical link flags on path set, but this path does not have a speical link flag
+									
+								fprintf(g_pFileCompactPath, "%d,%d,%d,%d,%d,%.4f,%.4f,",
+									count,
+									g_zone_vector[orig].zone_id,
+									g_zone_vector[dest].zone_id,
+									at,
+									tau,
+									volume,
+									path_travel_time);
+								
+
+									fprintf(g_pFilePathMOE, "0,%d,%d,%d,%d,%d,%d->%d,%d,%s,%s,",
 									count,
 									g_zone_vector[orig].zone_id,
 									g_zone_vector[dest].zone_id,
@@ -932,11 +965,10 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								for (int ni = 0 + virtual_first_link_delta; ni < it->second.m_node_size - virtual_last_link_delta; ++ni)
 								{
 									fprintf(g_pFilePathMOE, "%d;", g_node_vector[it->second.path_node_vector[ni]].node_id);
-									//if (g_node_vector[it->second.path_node_vector[ni]].node_id == 87)
-									//{
-									//	int debug_i = 1;
-									//}
+									fprintf(g_pFileCompactPath, "%d;", g_node_vector[it->second.path_node_vector[ni]].node_id);
 								}
+
+
 
 								fprintf(g_pFilePathMOE, ",");
 								int link_seq_no;
@@ -952,6 +984,10 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								if (assignment.g_number_of_nodes < 5000 || (assignment.g_number_of_nodes >= 5000 && it->second.path_volume >= 5))  // critcal path volume
 								{
 
+									// we only output the geometry feature if global_path_speicial_link_flag is true
+									if (global_path_speicial_link_flag)
+									{ 
+
 									if (it->second.m_node_size - virtual_first_link_delta - virtual_last_link_delta >= 2)
 									{
 										fprintf(g_pFilePathMOE, "\"LINESTRING (");
@@ -965,6 +1001,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 										}
 
 										fprintf(g_pFilePathMOE, ")\"");
+									}
 									}
 
 									fprintf(g_pFilePathMOE, ",");
@@ -1139,6 +1176,8 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								// }
 
 								fprintf(g_pFilePathMOE, "\n");
+
+								fprintf(g_pFileCompactPath, "\n");
 								count++;
 							}
 
@@ -1153,12 +1192,12 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 		}
 	}
 	fclose(g_pFilePathMOE);
+	fclose(g_pFileCompactPath);
 }
 
 void g_output_assignment_result(Assignment& assignment, int subarea_id)
 {
 	g_record_link_district_performance_per_scenario(assignment, 1);
-	g_output_route_assignment_results(assignment, 1);
 
 	int b_debug_detail_flag = 0;
 	FILE* g_pFileLinkMOE = nullptr;
@@ -1560,6 +1599,8 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 	assignment.summary_file << ",simple avg link speed=," << total_link_speed / max(1, MOE_count) << '\n';
 	assignment.summary_file << ",simple avg link speed ratio=," << total_link_speed_ratio / max(1, MOE_count) << '\n';
 
+	// output the route assignment after link performance 
+	g_output_route_assignment_results(assignment, 1);
 
 
 	if (subarea_id == 1)

@@ -637,6 +637,7 @@ public:
     {
 
             od_volume = 0;
+            od_volume_from_route_file = 0;
             avg_travel_time = 0;
             avg_distance = 0;
             avg_distance = 0;
@@ -660,6 +661,8 @@ public:
     float avg_distance;
     // od volume
     double od_volume;
+    double od_volume_from_route_file;
+
     double least_travel_time; 
 
     double OD_based_UE_relative_gap;
@@ -681,6 +684,33 @@ public:
     // first key is the sum of node id;. e.g. node 1, 3, 2, sum of those node ids is 6, 1, 4, 2 then node sum is 7.
     // Peiheng, 02/02/21, potential memory leak, fix it
     std::map <int, CColumnPath> path_node_sequence_map;
+    std::map<int, CColumnPath>::iterator it, it_begin, it_end;
+
+    int ModifyColumnPoolAfterLoadingRouteFile()
+    {
+        double ratio = od_volume / max(0.00001, od_volume_from_route_file);
+        
+        if(fabs(ratio - 1.0f)>0.001)
+        {
+        ColumnPoolDemandModification(ratio);
+        return 1; 
+        }
+
+        return 0;
+    }
+
+    void ColumnPoolDemandModification(double ratio)
+    {
+        it_begin = path_node_sequence_map.begin();
+        it_end = path_node_sequence_map.end();
+
+        for (it = it_begin; it != it_end; ++it)
+        {
+            it->second.path_volume *= ratio;
+        }
+
+    
+    }
     int OD_impact_flag;  // 0: no passing network design locations; //1: all paths passing through network deign locations: //2: there are alternative detours w.r.t. network design location
 
 
