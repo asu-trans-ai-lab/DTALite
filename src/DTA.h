@@ -46,7 +46,6 @@ constexpr auto LCG_c = 0;
 constexpr auto LCG_M = 65521;  // it should be 2^32, but we use a small 16-bit number to save memory
 
 enum e_traffic_flow_model { point_queue = 0, spatial_queue, kinemative_wave };
-enum e_VDF_type { bpr_vdf=0, q_vdf};
 enum e_assignment_mode { lue = 0, path_based_assignment= 1, simulation_dta=2};
 
 // FILE* g_pFileOutputLog = nullptr;
@@ -1107,12 +1106,12 @@ public:
         free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 },
         timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
         cell_type{ -1 }, saturation_flow_rate{ 1800 }, dynamic_link_event_start_time_in_min{ 99999 }, b_automated_generated_flag{ false }, time_to_be_released{ -1 },
-        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, vdf_type{ bpr_vdf },
+        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, 
         tmc_corridor_id{ -1 }, from_node_id{ -1 }, to_node_id{ -1 }, kjam{ 300 }, link_distance_km{ 0 }, link_distance_mile{ 0 }, meso_link_id{ -1 }, total_simulated_delay_in_min{ 0 },
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
          AB_flag{ 1 }, BA_link_no{ -1 }, cost{ 0 }, win_count{ 0 }, lose_count{ 0 },
-        vdf_data_count{ 0 }, peak_load_factor{ 1.0 }, Q_peak_load_factor{ 1.0 }, Q_cd{ 1.0 }, Q_n{ 1.0 }, Q_cp{ 0.28125 /*0.15*15/8*/ }, Q_s{ 4 }, vf{ 100 }, v_VDF_congestion_cutoff{ 45 }, vt2{ -1 },
-        alpha{ 0.15 }, beta{ 4 }, Q_alpha{ 0.15 }, Q_beta{ 4 }, rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, lane_closure_final_lanes{ 0 },
+        vdf_data_count{ 0 }, peak_load_factor{ 1.0 }, Q_cd{ 1.0 }, Q_n{ 1.0 }, Q_cp{ 0.28125 /*0.15*15/8*/ }, Q_s{ 4 }, vf{ 100 }, v_VDF_congestion_cutoff{ 45 }, vt2{ -1 },
+        alpha{ 0.15 }, beta{ 4 },  rho{ 1 }, preload{ 0 }, penalty{ 0 }, RT_route_regeneration_penalty{ 0 }, lane_closure_final_lanes{ 0 },
         starting_time_in_hour{ 0 }, ending_time_in_hour{ 0 },
         volume_before_odme{ 0 }, volume_after_odme{ 0 },
 
@@ -1203,7 +1202,7 @@ public:
 
     }
 
-    double calculate_travel_time_based_on_QVDF(int at, double FFTT, double volume, double mode_hourly_capacity, double peak_load_factor,
+    double calculate_travel_time_based_on_QVDF(int at, double fftt, double volume, double mode_hourly_capacity, double peak_load_factor,
 
         float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay],
         CLinkType link_type/*, double link_avg_co2_emit_per_mode[MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_MODETYPES]*/
@@ -1240,12 +1239,12 @@ public:
         if (volume > 1)
             int iii_debug = 1;
 
-        //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
-        // we could have a period based FFTT, so we need to convert FFTT to vfree
+        //step 3.1 fetch vf and v_congestion_cutoff based on fftt, VCTT (to be compartible with transit data, such as waiting time )
+        // we could have a period based fftt, so we need to convert fftt to vfree
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
         //step 3.2 calculate speed from VDF based on D/C ratio
-        avg_queue_speed = v_VDF_congestion_cutoff / (1.0 + Q_alpha * pow(DOC, Q_beta));
+        avg_queue_speed = v_VDF_congestion_cutoff / (1.0 + alpha * pow(DOC, beta));
         // step 3.3 taking the minimum of BPR- v and Q VDF v based on log sum function
 
        // let us use link_length_in_km = 1 for the following calculation
@@ -1258,10 +1257,10 @@ public:
         if (DOC < dc_transition_ratio)  // free flow regime
         {
 
-            double vf_alpha = (1.0 + Q_alpha) * vf / max(0.0001, v_VDF_congestion_cutoff) - 1.0;
-            // fixed to pass through vcutoff point vf/ (1+vf_alpha) = vc / (1+ qvdf_alpha) ->
-            // 1+vf_alpha = vf/vc *(1+qvdf_alpha)
-            // vf_qlpha =  vf/vc *(1+qvdf_alpha) - 1
+            double vf_alpha = (1.0 + alpha) * vf / max(0.0001, v_VDF_congestion_cutoff) - 1.0;
+            // fixed to pass through vcutoff point vf/ (1+vf_alpha) = vc / (1+ VDF_alpha) ->
+            // 1+vf_alpha = vf/vc *(1+VDF_alpha)
+            // vf_qlpha =  vf/vc *(1+VDF_alpha) - 1
             // revised BPR DC
             double vf_beta = beta; // to be calibrated
             double vf_avg_speed = vf / (1.0 + vf_alpha * pow(DOC, vf_beta));
@@ -1277,19 +1276,19 @@ public:
              // uncongested states D <C
              // congested states D > C, leading to P > 1
 
-        //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
-        // we could have a period based FFTT, so we need to convert FFTT to vfree
+        //step 3.1 fetch vf and v_congestion_cutoff based on fftt, VCTT (to be compartible with transit data, such as waiting time )
+        // we could have a period based fftt, so we need to convert fftt to vfree
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
         //step 3.2 calculate speed from VDF based on D/C ratio
         avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
-        //avg_travel_time = FFTT * (1+ alpha * pow(DOC, beta)); // Mark: FFTT should be vctt
+        //avg_travel_time = fftt * (1+ alpha * pow(DOC, beta)); // Mark: fftt should be vctt
 
 
-        avg_travel_time = FFTT * vf / max(0.1, avg_queue_speed); // 
+        avg_travel_time = fftt * vf / max(0.1, avg_queue_speed); // 
 
 
-        avg_waiting_time = avg_travel_time - FFTT;
+        avg_waiting_time = avg_travel_time - fftt;
         //step 4.4 compute vt2
     //            vt2 = avg_queue_speed * 8.0 / 15.0;  // 8/15 is a strong assumption
 
@@ -1425,13 +1424,13 @@ public:
             avg_travel_time = max(15.0, time_period_in_min * 1.5);
 
         double vf_mph = vf / 1.609;
-        double vq = vf_mph / max(0.00001, avg_travel_time / FFTT) / 1.609;
+        double vq = vf_mph / max(0.00001, avg_travel_time / fftt) / 1.609;
 
         // vf_minus_vq: difference between vf and vq
         double vf_minus_vq = vf_mph - vq;
 
-        // waiting_time_w: waiting time, computed as the difference between average travel time and Free-Flow Travel Time (FFTT)
-        double waiting_time_w = avg_travel_time - FFTT;
+        // waiting_time_w: waiting time, computed as the difference between average travel time and Free-Flow Travel Time (fftt)
+        double waiting_time_w = avg_travel_time - fftt;
 
         // set speed v to be equal to vq
         double v = vq;
@@ -1447,8 +1446,8 @@ public:
             ratio = (lambda_emission * vf_mph - vq) / (vf_mph - vq);
         }
 
-        // compute the emission rate as the product of the coefficient and the sum of FFTT and waiting time, adjusted for speed changes
-        double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT / 60.0 + waiting_time_w / 60.0 * ratio);
+        // compute the emission rate as the product of the coefficient and the sum of fftt and waiting time, adjusted for speed changes
+        double emission_rate = link_type.emissions_co2_matrix[at][0] * (fftt / 60.0 + waiting_time_w / 60.0 * ratio);
 
         if (emission_rate < -1)
         {
@@ -1469,7 +1468,7 @@ public:
             ratio = (lambda_emission * vf_mph - vq) / (vf_mph - vq);
         }
 
-        emission_rate = link_type.emissions_nox_matrix[at][0] * (FFTT / 60.0 + waiting_time_w / 60.0 * ratio);
+        emission_rate = link_type.emissions_nox_matrix[at][0] * (fftt / 60.0 + waiting_time_w / 60.0 * ratio);
 
         // store the computed total NOx emissions for the mode type in the link_avg_nox_emit_per_mode matrix
         link_avg_nox_emit_per_mode[at] = emission_rate / 1000.0;  // convert to kg;
@@ -1486,7 +1485,7 @@ public:
         //    double waiting_time_w  = 
         //    double vf_minus_vq = vf-v;
 
-        //    double emission_rate = link_type.emissions_co2_matrix[at][0] * (FFTT, + );
+        //    double emission_rate = link_type.emissions_co2_matrix[at][0] * (fftt, + );
 
 
 
@@ -1496,7 +1495,7 @@ public:
         return avg_travel_time;
     }
 
-    double calculate_travel_time_based_on_BPR(int at, double FFTT, double volume, double mode_hourly_capacity, double peak_load_factor,
+    double calculate_travel_time_based_on_BPR(int at, double fftt, double volume, double mode_hourly_capacity, double peak_load_factor,
 
         float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay],
         CLinkType link_type/*, double link_avg_co2_emit_per_mode[MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_MODETYPES]*/
@@ -1533,13 +1532,13 @@ public:
             // uncongested states D <C
             // congested states D > C, leading to P > 1
         link_DOC = DOC;
-        //step 3.1 fetch vf and v_congestion_cutoff based on FFTT, VCTT (to be compartible with transit data, such as waiting time )
-        // we could have a period based FFTT, so we need to convert FFTT to vfree
+        //step 3.1 fetch vf and v_congestion_cutoff based on fftt, VCTT (to be compartible with transit data, such as waiting time )
+        // we could have a period based fftt, so we need to convert fftt to vfree
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
         //step 3.2 calculate speed from VDF based on D/C ratio
         avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
-        avg_travel_time = FFTT * (1 + alpha * pow(DOC, beta)); // Mark: FFTT should be vctt
+        avg_travel_time = fftt * (1 + alpha * pow(DOC, beta)); // Mark: fftt should be vctt
 
 
 
@@ -1548,7 +1547,7 @@ public:
         //    float s_bar = 1.0 / 60.0 * red_time * red_time / (2 * cycle_length); // 60.0 is used to convert sec to min
         //    double lambda = lane_based_D;
         //    float uniform_delay = s_bar / max(1 - lambda / saturation_flow_rate, 0.1);
-        //    avg_travel_time = uniform_delay + FFTT;
+        //    avg_travel_time = uniform_delay + fftt;
         //}
 
         if (DOC > 0.0001 && avg_travel_time > 10)
@@ -1557,7 +1556,7 @@ public:
             idebug = 1;
         }
 
-        avg_waiting_time = avg_travel_time - FFTT;
+        avg_waiting_time = avg_travel_time - fftt;
         return avg_travel_time;
     }
     std::map<int, float> turn_link_count_map;
@@ -1574,9 +1573,6 @@ public:
     double ref_link_volume;
     //    double BPR_period_capacity_at[MAX_MODETYPES];
     double peak_load_factor;
-    double Q_peak_load_factor;
-    double Q_alpha;
-    double Q_beta;
     double Q_cd;
     double Q_cp;
     double Q_n;
@@ -1651,7 +1647,7 @@ public:
 
     double number_of_lanes;
 
-    // double FFTT;
+    // double fftt;
     double P;
     double Severe_Congestion_P;
     double L;
@@ -1725,7 +1721,7 @@ public:
 
 
 
-    void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int vdf_type);
+    void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode);
 
 
 
@@ -1982,7 +1978,7 @@ public:
     std::string tmc_corridor_name;
     std::string link_type_name;
 
-    e_VDF_type    vdf_type;
+
     float kjam;
 
 
@@ -2065,7 +2061,7 @@ public:
 //public:
 //    CVDF_Type() {}
 //
-//    void record_qvdf_data(CPeriod_VDF element)
+//    void record_VDF_data(CPeriod_VDF element)
 //    {
 //        if (tau >= MAX_TIMEPERIODS)
 //            return;

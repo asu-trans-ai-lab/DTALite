@@ -819,7 +819,7 @@ public:
 
 							if(g_TAP_log_flag)
 							{
-								//tt:% f, FFTT : % f, delay : % f, distance : % f
+								//tt:% f, fftt : % f, delay : % f, distance : % f
 								// Link: %d, from: %d, to: %d, 
 
 								fprintf(log_assignment_file, "Iteration: %d, Origin: %d, Destination: %d, Route Flow: %f,\n",
@@ -831,8 +831,8 @@ public:
 									//g_node_vector[g_link_vector[current_link_seq_no].from_node_seq_no].node_id,
 									//g_node_vector[g_link_vector[current_link_seq_no].to_node_seq_no].node_id
 									//total_travel_time, 
-									//total_FFTT, 
-									//total_travel_time - total_FFTT, 
+									//total_fftt, 
+									//total_travel_time - total_fftt, 
 									//total_distance
 								);
 							}

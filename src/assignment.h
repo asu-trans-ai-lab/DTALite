@@ -205,7 +205,7 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 	for (int i = 0; i < g_link_vector.size(); ++i)
 	{
 		// step 1: travel time based on VDF
-		g_link_vector[i].calculate_dynamic_VDFunction(inner_iteration_number, false, g_link_vector[i].vdf_type);
+		g_link_vector[i].calculate_dynamic_VDFunction(inner_iteration_number, false);
 
 
 
@@ -450,7 +450,7 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
 
 		{
 
@@ -703,7 +703,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
 		{
 
 
@@ -956,7 +956,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
 		{
 
 

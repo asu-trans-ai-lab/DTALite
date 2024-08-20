@@ -240,7 +240,7 @@ void g_OutputSummaryFiles(Assignment& assignment)
 {
 
 
-	assignment.summary_system_file.open("system_performance_summary.csv", std::fstream::out);
+	assignment.summary_system_file.open("system_performance.csv", std::fstream::out);
 
 	assignment.summary_system_file << "first_column,mode_type,od_volume,number_of_routes,total_distance_km,total_distance_mile,total_travel_time_min,total_travel_delay_min,total_co2_kg,total_nox_kg,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,avg_travel_delay_in_min,avg_speed_kmph,avg_speed_mph,avg_co2_kg,avg_nox_kg," << '\n';
 	int mode_type_size = assignment.g_ModeTypeVector.size();
@@ -300,7 +300,7 @@ void g_output_district_performance_result(Assignment& assignment)
 
 
 	assignment.summary_system_file.open(district_performance_file_name, std::fstream::out);
-	assignment.summary_system_file << "first_column,district_seq_id,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry" << '\n';
+	assignment.summary_system_file << "first_column,district_id,mode_type,od_volume,total_distance_km,total_distance_mile,total_travel_time_min,avg_distance_km,avg_distance_mile,avg_travel_time_in_min,zone_vector,geometry" << '\n';
 
 	int mode_type_size = assignment.g_ModeTypeVector.size();
 	std::map<int, CSystem_Summary>::iterator it_s;
@@ -377,14 +377,14 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 	fprintf(g_pFileCompactPath, "route_seq_id,o_zone_id,d_zone_id,mode_type_id,volume,travel_time,node_sequence\n");
 
 	fprintf(g_pFilePathMOE, "first_column,route_seq_id,o_zone_id,d_zone_id,o_super_zone_index,d_super_zone_index,od_pair_key,information_type,mode_type,volume,");
-	fprintf(g_pFilePathMOE, "distance_km,distance_mile,travel_time,FFTT,co2,nox,OD_based_UE_relative_gap_compared_to_least_time_path_travel_time,path_based_UE_gap,path_based_relative_UE_gap,preload_volume_from_route_input_file,ODME_volume_before,ODME_volume_after,ODME_volume_diff,SIMU_volume,SIMU_travel_time,");
+	fprintf(g_pFilePathMOE, "distance_km,distance_mile,travel_time,fftt,co2,nox,OD_based_UE_relative_gap_compared_to_least_time_path_travel_time,path_based_UE_gap,path_based_relative_UE_gap,preload_volume_from_route_input_file,ODME_volume_before,ODME_volume_after,ODME_volume_diff,SIMU_volume,SIMU_travel_time,");
 
 	fprintf(g_pFilePathMOE, "toll,number_of_nodes,node_sequence,link_id_sequence,");
 	//, ODME_#_of_sensor_links,
 	// subarea_flag,
 	fprintf(g_pFilePathMOE, "geometry,");
 
-	fprintf(g_pFilePathMOE, "link_special_flag_sequence,sequential_link_delay,sequential_link_FFTT,");
+	fprintf(g_pFilePathMOE, "link_special_flag_sequence,sequential_link_delay,sequential_link_fftt,");
 
 	//// stage 1: column updating
 	//for (int iteration_number = 0; iteration_number < min(20, assignment.g_number_of_column_updating_iterations); iteration_number++)
@@ -438,7 +438,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 
 	float path_toll = 0;
 	double path_distance = 0;
-	double path_FFTT = 0;
+	double path_fftt = 0;
 	double path_distance_km = 0;
 	double path_distance_ml = 0;
 	double path_travel_time = 0;
@@ -689,7 +689,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 							}
 
 							path_toll = 0;
-							path_FFTT = 0;
+							path_fftt = 0;
 							path_distance = 0;
 							path_distance_km = 0;
 							path_distance_ml = 0;
@@ -742,7 +742,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 								if (g_link_vector[link_seq_no].link_type >= 0)
 								{
 									path_toll += g_link_vector[link_seq_no].toll[at];
-									path_FFTT += g_link_vector[link_seq_no].free_flow_travel_time_in_min;
+									path_fftt += g_link_vector[link_seq_no].free_flow_travel_time_in_min;
 									path_distance += g_link_vector[link_seq_no].link_distance_VDF;
 									path_distance_km += g_link_vector[link_seq_no].link_distance_km;
 									path_distance_ml += g_link_vector[link_seq_no].link_distance_mile;
@@ -898,7 +898,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 									path_distance_km,
 									path_distance_ml,
 									path_travel_time,
-									path_FFTT,
+									path_fftt,
 									path_co2,
 									path_nox,
 									p_column_pool->OD_based_UE_relative_gap,
@@ -1002,7 +1002,7 @@ void g_output_route_assignment_results(Assignment& assignment, int subarea_id)
 									}
 									fprintf(g_pFilePathMOE, ",");
 
-									// link FFTT sequenece
+									// link fftt sequenece
 									for (int nl = 0 + virtual_first_link_delta; nl < it->second.m_link_size - virtual_last_link_delta; ++nl)
 									{
 										link_seq_no = it->second.path_link_vector[nl];
@@ -1090,9 +1090,9 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 	float total_ref_volume_dev_abs_percentage = 0;
 
 
-		fprintf(g_pFileLinkMOE, "link_seq_id,link_id,vdf_type,from_node_id,to_node_id,lanes,distance_km,distance_mile,fftt,meso_link_id,meso_link_incoming_volume,tmc,tmc_corridor_name,tmc_corridor_id,tmc_road_order,tmc_road_sequence,subarea_id,link_type,link_type_code,vdf_code,vehicle_volume,person_volume,ref_volume,ref_diff,restricted_turn_nodes,auto_turn_volume,ODME_volume_before,ODME_volume_after,ODME_volume_diff,ODME_obs_count,ODME_upperbound_capacity_type,ODME_obs_count_dev,");
+		fprintf(g_pFileLinkMOE, "link_seq_id,link_id,from_node_id,to_node_id,lanes,distance_km,distance_mile,fftt,meso_link_id,meso_link_incoming_volume,tmc,tmc_corridor_name,tmc_corridor_id,tmc_road_order,tmc_road_sequence,subarea_id,link_type,link_type_code,vdf_code,vehicle_volume,person_volume,ref_volume,ref_diff,restricted_turn_nodes,auto_turn_volume,ODME_volume_before,ODME_volume_after,ODME_volume_diff,ODME_obs_count,ODME_upperbound_capacity_type,ODME_obs_count_dev,");
 
-		fprintf(g_pFileLinkMOE, "preload_volume,travel_time,speed_kmph,speed_mph,speed_ratio,DOC,lane_capacity,link_capacity,queue,total_simu_waiting_time_in_min,avg_simu_waiting_time_in_min,plf,lanes,D_per_lane,mu_per_lane,QVDF_cd,QVDF_n,P,severe_congestion_duration_in_h,vf_mph,v_congestion_cutoff_mph,vf_kmph,v_congestion_cutoff_kmph,QVDF_cp,QVDF_s,QVDF_v_mph,QVDF_v_kmph,vt2_mph,vt2_kmph,VMT,VKMT,VHT,PMT,PKMT,PHT,PDT_vf,PDT_vc,geometry,");
+		fprintf(g_pFileLinkMOE, "preload_volume,travel_time,speed_kmph,speed_mph,speed_ratio,DOC,lane_capacity,link_capacity,queue,total_simu_waiting_time_in_min,avg_simu_waiting_time_in_min,plf,lanes,D_per_lane,mu_per_lane,VDF_cd,VDF_n,P,severe_congestion_duration_in_h,vf_mph,v_congestion_cutoff_mph,vf_kmph,v_congestion_cutoff_kmph,VDF_cp,VDF_s,VDF_v_mph,VDF_v_kmph,vt2_mph,vt2_kmph,VMT,VKMT,VHT,PMT,PKMT,PHT,PDT_vf,PDT_vc,geometry,");
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			fprintf(g_pFileLinkMOE, "vehicle_vol_%s,", assignment.g_ModeTypeVector[at].mode_type.c_str());
@@ -1135,16 +1135,6 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				continue;
 			}
 
-			string vdf_type_str;
-
-			if (g_link_vector[i].vdf_type == bpr_vdf)
-			{
-				vdf_type_str = "bpr";
-			}
-			else
-			{
-				vdf_type_str = "qvdf";
-			}
 
 			float total_vehicle_volume = 0;
 			int scenario_code_count = 0;
@@ -1197,12 +1187,12 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 				MOE_count++;
 
-				fprintf(g_pFileLinkMOE, "%d,%s,%s,%d,%d,%f,%f,%f,%f,%d,%d,",
+				fprintf(g_pFileLinkMOE, "%d,%s,%d,%d,%f,%f,%f,%f,%d,%d,",
 
 					//end with obs_volume_diff
 					physical_link_count,
 					g_link_vector[i].link_id.c_str(),
-					vdf_type_str.c_str(),
+
 					g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
 					g_node_vector[g_link_vector[i].to_node_seq_no].node_id,
 					g_link_vector[i].number_of_lanes,
@@ -1289,7 +1279,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
 
 					max(0.0, g_link_vector[i].total_simulated_delay_in_min) / max(1.0f, vehicle_volume),
-					g_link_vector[i].Q_peak_load_factor,
+					g_link_vector[i].peak_load_factor,
 					g_link_vector[i].number_of_lanes,
 					g_link_vector[i].lane_based_D,
 					g_link_vector[i].Q_mu,
@@ -1337,7 +1327,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					fprintf(g_pFileLinkMOE, "%.3f,", speed);
 				}
 
-				fprintf(g_pFileLinkMOE, "period-based\n");
+				fprintf(g_pFileLinkMOE, "\n");
 
 		}
 		fclose(g_pFileLinkMOE);
@@ -1371,218 +1361,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 }
 
 
-void g_output_assignment_summary_result(Assignment& assignment, int subarea_id)
-{
 
-	int b_debug_detail_flag = 0;
-	FILE* g_pFileLinkMOE = nullptr;
-
-	double total_VMT = 0;
-	double total_VHT = 0;
-	double total_PMT = 0;
-	double total_PHT = 0;
-	double total_link_volume = 0;
-	double total_link_speed = 0;
-	double total_link_speed_ratio = 0;
-	int MOE_count = 0;
-
-	if (subarea_id == 0)
-	{
-		assignment.summary_file << "Output Link Performance Summary" << '\n';
-
-		dtalog.output() << "[STATUS INFO] writing link_performances_summary.csv.." << '\n';
-		g_DTA_log_file << "[STATUS INFO] writing link_performances_summary.csv.." << '\n';
-		fopen_ss(&g_pFileLinkMOE, "link_performance_summary.csv", "w");
-		if (!g_pFileLinkMOE)
-		{
-			dtalog.output() << "[ERROR] File link_performance_summary.csv cannot be opened." << '\n';
-			g_DTA_log_file << "[ERROR] File link_performance_summary.csv cannot be opened." << '\n';
-			return;
-		}
-
-
-	}
-	else
-	{
-		assignment.summary_file << "Output subarea Link Performance:" << '\n';
-
-		dtalog.output() << "[STATUS INFO] writing subarea_link_performance.csv.." << '\n';
-		g_DTA_log_file << "[STATUS INFO] writing subarea_link_performance.csv.." << '\n';
-		fopen_ss(&g_pFileLinkMOE, "subarea_link_performance.csv", "w");
-		if (!g_pFileLinkMOE)
-		{
-			dtalog.output() << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
-			g_DTA_log_file << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
-			return;
-		}
-	}
-
-	if (g_pFileLinkMOE != NULL)
-	{
-
-		int ref_volume_count = 0;
-		float total_ref_volume_dev_abs_percentage = 0;
-
-
-		fprintf(g_pFileLinkMOE, "link_seq_id,link_id,base_s0_link_type,from_node_id,to_node_id,geometry,distance_km,distance_mile,fftt,free_speed_base_mode,link_specific_speed_diff,capacity_base_mode,link_specific_capacity_diff,meso_link_id,tmc,tmc_corridor_name,tmc_corridor_id,tmc_road_order,tmc_road_sequence,subarea_id,");
-
-
-
-
-		fprintf(g_pFileLinkMOE, "lanes");
-
-		fprintf(g_pFileLinkMOE, "link_type");
-
-		fprintf(g_pFileLinkMOE, "free_speed");
-
-		fprintf(g_pFileLinkMOE, "capacity");
-
-
-
-		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-		{
-
-			fprintf(g_pFileLinkMOE, "lanes,");
-		}
-
-
-
-		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-		{
-			fprintf(g_pFileLinkMOE, "VOL_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-
-		}
-
-
-		fprintf(g_pFileLinkMOE, "\n");
-		//		fprintf(g_pFileLinkMOE, "obs_count,upper_bound_type,dev,");
-				// header
-
-				//Initialization for all nodes
-		for (int i = 0; i < g_link_vector.size(); ++i)
-		{
-			// virtual connectors
-			if (g_link_vector[i].link_type == -1)
-				continue;
-
-			string vdf_type_str;
-
-
-			float total_vehicle_volume = 0;
-			int scenario_code_count = 0;
-			total_vehicle_volume += g_link_vector[i].volume_before_dtm;
-			total_vehicle_volume += g_link_vector[i].total_volume_for_all_mode_types + g_link_vector[i].preload;
-			scenario_code_count += g_link_vector[i].dtm_scenario_code.size();
-
-			//if (scenario_code_count == 0 && total_vehicle_volume < 0.001 && g_link_vector.size() > 20000)
-			//	continue;
-
-
-
-
-			float speed = g_link_vector[i].free_speed;  // default speed
-
-
-			fprintf(g_pFileLinkMOE, "%d,%s,%s,%d,%d,",
-				i + 1,
-				//end with obs_volume_diff
-				g_link_vector[i].link_id.c_str(),
-				assignment.g_LinkTypeMap[g_link_vector[i].link_type].link_type_name.c_str(),
-				g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
-				g_node_vector[g_link_vector[i].to_node_seq_no].node_id);
-
-			if (g_link_vector[i].geometry.size() > 1)
-			{
-				fprintf(g_pFileLinkMOE, "\"%s\",",
-					g_link_vector[i].geometry.c_str());
-			}
-			else
-			{
-
-				fprintf(g_pFileLinkMOE, "\"LINESTRING (");
-				fprintf(g_pFileLinkMOE, "%f %f,", g_node_vector[g_link_vector[i].from_node_seq_no].x, g_node_vector[g_link_vector[i].from_node_seq_no].y);
-
-				fprintf(g_pFileLinkMOE, "%f %f", g_node_vector[g_link_vector[i].to_node_seq_no].x, g_node_vector[g_link_vector[i].to_node_seq_no].y);
-
-				fprintf(g_pFileLinkMOE, ")\",");
-			}
-
-			int at_base = 0;
-			int tau_base = 0;
-			fprintf(g_pFileLinkMOE, "%f,%f,%f,%f,0,0,0,0,",
-
-				g_link_vector[i].link_distance_km,
-				g_link_vector[i].link_distance_mile,
-				g_link_vector[i].free_flow_travel_time_in_min,
-
-
-
-				g_link_vector[i].meso_link_id);
-
-			fprintf(g_pFileLinkMOE, "%s,%s,%d,%d,%d,%d,",
-				g_link_vector[i].tmc_code.c_str(),
-				g_link_vector[i].tmc_corridor_name.c_str(),
-				g_link_vector[i].tmc_corridor_id,
-				g_link_vector[i].tmc_road_order,
-				g_link_vector[i].tmc_road_sequence,
-				g_link_vector[i].subarea_id);
-
-
-			{
-
-				fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].number_of_lanes);
-
-			}
-
-
-			{
-
-				fprintf(g_pFileLinkMOE, "%s,", assignment.g_LinkTypeMap[g_link_vector[i].link_type].link_type_name.c_str());
-			}
-
-
-
-			{
-
-				fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].free_speed);
-
-			}
-
-
-
-			{
-
-				fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].capacity);
-
-			}
-
-
-			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-			{
-
-				float total_recorded_volume = 0;
-
-
-
-				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
-				{
-
-					total_recorded_volume += g_link_vector[i].recorded_volume_per_at[at];
-					fprintf(g_pFileLinkMOE, "%.1f,", g_link_vector[i].recorded_volume_per_at[at]);  // pk format
-
-				}
-
-
-		
-				fprintf(g_pFileLinkMOE, "\n");
-			}
-
-
-			fclose(g_pFileLinkMOE);
-		}
-
-	}
-}
 //void g_output_2_way_assignment_summary_result(Assignment& assignment, int subarea_id)
 //{
 //
@@ -1812,29 +1591,29 @@ void g_output_accessibility_result(Assignment& assignment)
 {
 	if (assignment.assignment_mode == lue)
 	{
-		dtalog.output() << "[WARNING] link based user equilibrum mode: no od_performance_summary.csv output.." << '\n';
-		g_DTA_log_file << "[WARNING] link based user equilibrum mode: no od_performance_summary.csv output.." << '\n';
+		dtalog.output() << "[WARNING] link based user equilibrum mode: no od_performance.csv output.." << '\n';
+		g_DTA_log_file << "[WARNING] link based user equilibrum mode: no od_performance.csv output.." << '\n';
 		return;
 	}
 
 	FILE* g_pFileODMOE = nullptr;
-	fopen_ss(&g_pFileODMOE, "od_performance_summary.csv", "w");
+	fopen_ss(&g_pFileODMOE, "od_performance.csv", "w");
 
-	dtalog.output() << "[STATUS INFO] writing od_performance_summary.csv.." << '\n';
-	g_DTA_log_file << "[STATUS INFO] writing od_performance_summary.csv.." << '\n';
+	dtalog.output() << "[STATUS INFO] writing od_performance.csv.." << '\n';
+	g_DTA_log_file << "[STATUS INFO] writing od_performance.csv.." << '\n';
 
 	double path_time_vector[MAX_LINK_SIZE_IN_A_PATH];
 
-	fopen_ss(&g_pFileODMOE, "od_performance_summary.csv", "w");
+	fopen_ss(&g_pFileODMOE, "od_performance.csv", "w");
 
 	if (!g_pFileODMOE)
 	{
-		dtalog.output() << "[ERROR] File od_performance_summary.csv cannot be opened." << '\n';
-		g_DTA_log_file << "[ERROR] File od_performance_summary.csv cannot be opened." << '\n';
+		dtalog.output() << "[ERROR] File od_performance.csv cannot be opened." << '\n';
+		g_DTA_log_file << "[ERROR] File od_performance.csv cannot be opened." << '\n';
 		return;
 	}
 
-	fprintf(g_pFileODMOE, "od_seq_id,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,mode_type,connectivity_flag,s_x_coord,s_y_coord,t_x_coord,t_y_coord,");
+	fprintf(g_pFileODMOE, "od_seq_id,o_zone_id,d_zone_id,o_sindex,d_sindex,o_district_id,d_district_id,mode_type,s_x_coord,s_y_coord,t_x_coord,t_y_coord,");
 
 	{
 
@@ -2059,7 +1838,7 @@ void g_output_accessibility_result(Assignment& assignment)
 								assignment.g_zone_seq_no_to_analysis_distrct_id_mapping[dest]
 
 							);
-							fprintf(g_pFileODMOE, "%s,0,",
+							fprintf(g_pFileODMOE, "%s,",
 								assignment.g_ModeTypeVector[at].mode_type.c_str());
 
 
@@ -2096,7 +1875,7 @@ void g_output_accessibility_result(Assignment& assignment)
 
 	if (column_pool_ready_flag)
 	{
-		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance_summary.csv" << '\n';
+		assignment.summary_file << "     Check OD connectivity and accessibility in od_performance.csv" << '\n';
 		assignment.summary_file << ", # of connected OD pairs =, " << l_origin_destination_map.size() << '\n';
 		assignment.summary_file << ", # of OD/mode_type/demand_type columns without paths =, " << l_origin_destination_disconnected_map.size() << '\n';
 //		dtalog.output() << ", # of connected OD pairs = " << l_origin_destination_map.size() << '\n';  // to be checked, Xuesong, 2023
@@ -2219,7 +1998,7 @@ void g_output_TD_link_performance(Assignment& assignment, int output_mode = 1)
 	{
 
 		// Option 2: BPR-X function
-		fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,meso_link_id,from_cell_code,lanes,length,free_speed_kmph,free_speed_mph,FFTT,inflow_volume,volume,CA,CD,density,queue,queue_ratio,discharge_cap,TD_free_flow_travel_time,waiting_time_in_sec,speed,geometry,");
+		fprintf(g_pFileLinkMOE, "link_id,tmc_corridor_name,link_type_name,from_node_id,to_node_id,meso_link_id,from_cell_code,lanes,length,free_speed_kmph,free_speed_mph,fftt,inflow_volume,volume,CA,CD,density,queue,queue_ratio,discharge_cap,TD_free_flow_travel_time,waiting_time_in_sec,speed,geometry,");
 		fprintf(g_pFileLinkMOE, "notes\n");
 
 		int sampling_time_interval = assignment.td_link_performance_sampling_interval_in_min; // min by min
@@ -3782,7 +3561,6 @@ void g_OutputModelFiles(int mode)
 		{
 			fprintf(g_pFileModelLink, "link_id,link_no,layer_no,from_node_id,to_node_id,from_gate_flag,to_gate_flag,link_type,link_type_name,link_type_code,lanes,");
 			fprintf(g_pFileModelLink, "link_distance_mile,link_distance_km,free_speed_mph,free_speed_kmph,cutoff_speed_mph,cutoff_speed_kmph,fftt_min,capacity, ");
-			fprintf(g_pFileModelLink, "VDF_alpha,VDF_beta,VDF_plf,");
 
 			fprintf(g_pFileModelLink, "allowed_uses,VDF_preload,restricted_turn_nodes,");
 
@@ -3792,7 +3570,7 @@ void g_OutputModelFiles(int mode)
 				}
 
 
-				fprintf(g_pFileModelLink, "demand_period_internal,QVDF_plf,QVDF_alpha,QVDF_beta,QVDF_cd,QVDF_n,QVDF_s,");
+				fprintf(g_pFileModelLink, "demand_period_internal,VDF_plf,VDF_alpha,VDF_beta,VDF_cp,VDF_cd,VDF_n,VDF_s,");
 				fprintf(g_pFileModelLink, "geometry,\n");
 
 			//VDF_fftt1,VDF_cap1,VDF_alpha1,VDF_beta1
@@ -3810,7 +3588,7 @@ void g_OutputModelFiles(int mode)
 				{
 					link_type_code = assignment.g_LinkTypeMap[g_link_vector[i].link_type].type_code;
 				}
-				fprintf(g_pFileModelLink, "%s,%d,%d,0,%d,%d,%d,%d,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,",
+				fprintf(g_pFileModelLink, "%s,%d,%d,0,%d,%d,%d,%d,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,",
 					g_link_vector[i].link_id.c_str(),
 					g_link_vector[i].link_seq_no,
 					g_node_vector[g_link_vector[i].from_node_seq_no].node_id,
@@ -3828,11 +3606,7 @@ void g_OutputModelFiles(int mode)
 					g_link_vector[i].v_congestion_cutoff / 1.609,//mph
 					g_link_vector[i].v_congestion_cutoff,
 					g_link_vector[i].free_flow_travel_time_in_min,
-					g_link_vector[i].lane_capacity,
-					g_link_vector[i].alpha,
-					g_link_vector[i].beta,
-					g_link_vector[i].peak_load_factor
-
+					g_link_vector[i].lane_capacity
 				);
 
 
@@ -3844,13 +3618,14 @@ void g_OutputModelFiles(int mode)
 					}
 
 
-					fprintf(g_pFileModelLink, ",%f,%f,%f,%f,%f,%f,",
+					fprintf(g_pFileModelLink, ",%f,%f,%f,%f,%f,%f,%f,",
 
 
-						g_link_vector[i].Q_peak_load_factor,
-						g_link_vector[i].Q_alpha,
-						g_link_vector[i].Q_beta,
+						g_link_vector[i].peak_load_factor,
+						g_link_vector[i].alpha,
+						g_link_vector[i].beta,
 						g_link_vector[i].Q_cd,
+						g_link_vector[i].Q_cp,
 						g_link_vector[i].Q_n,
 						g_link_vector[i].Q_s
 					);
@@ -3924,7 +3699,7 @@ void g_OutputModelFiles(int mode)
 							g_link_vector[i].free_flow_travel_time_in_min,
 							g_link_vector[i].lane_capacity,
 							g_link_vector[i].allowed_uses.c_str()
-							//g_link_vector[i].FFTT,
+							//g_link_vector[i].fftt,
 						   //g_link_vector[i].period_capacity,
 						   //g_link_vector[i].alpha,
 						   //g_link_vector[i].beta,

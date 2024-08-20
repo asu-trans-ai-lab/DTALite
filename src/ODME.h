@@ -52,8 +52,7 @@ struct SensorData {
 	int from_node_id;
 	int to_node_id;
 	float count;
-	int scenario_index;
-	bool activate;
+
 };
 
 // updates for OD re-generations

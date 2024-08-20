@@ -156,7 +156,7 @@ int main()
 	dtalog.output() << "   |--- Physical Layer (node.csv, link.csv)\n";
 	dtalog.output() << "   |--- Demand Layer (demand.csv, mode_type, departure_time_profile, subarea)\n";
 	dtalog.output() << "   |--- Supply Layer (link_type)\n";
-	dtalog.output() << "   |--- Configuration Files (settings.yml, scenario)\n";
+	dtalog.output() << "   |--- Configuration Files (settings.yml)\n";
 
 	dtalog.output() << "\n2. Traffic Assignment and Simulation Process:\n";
 	dtalog.output() << "   |--- Traffic assignment based on network and demand data\n";
@@ -167,9 +167,9 @@ int main()
 	dtalog.output() << "\n3. Output Files:\n";
 	dtalog.output() << "   |--- Link performance (link_performance.csv, link_performance_summary.csv)\n";
 	dtalog.output() << "   |--- Route assignment (route_assignment.csv)\n";
-	dtalog.output() << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance.csv)\n";
+	dtalog.output() << "   |--- OD pair and district performance (od_performance.csv, district_performance.csv)\n";
 	dtalog.output() << "   |--- Trajectory performance (agent.csv, trajectory.csv)\n";
-	dtalog.output() << "   |--- System performance (system_performance_summary.csv)\n";
+	dtalog.output() << "   |--- System performance (system_performance.csv)\n";
 	dtalog.output() << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zone_mapping.csv)\n";
 	dtalog.output() << "--------------------------" << '\n';
 	dtalog.output() << "Please provide feedback or report any issues you encounter on our GitHub site: "
@@ -182,7 +182,7 @@ int main()
 	g_DTA_log_file << "   |--- Physical Layer (node.csv, link.csv)\n";
 	g_DTA_log_file << "   |--- Demand Layer (demand.csv, mode_type, departure_time_profile, subarea)\n";
 	g_DTA_log_file << "   |--- Supply Layer (link_type)\n";
-	g_DTA_log_file << "   |--- Configuration Files (settings.yml, scenario)\n";
+	g_DTA_log_file << "   |--- Configuration Files (settings.yml)\n";
 
 
 	g_DTA_log_file << "\n2. Traffic Assignment and Simulation Process:\n";
@@ -194,9 +194,9 @@ int main()
 	g_DTA_log_file << "\n3. Output Files:\n";
 	g_DTA_log_file << "   |--- Link performance (link_performance.csv, link_performance_summary.csv)\n";
 	g_DTA_log_file << "   |--- Route assignment (route_assignment.csv)\n";
-	g_DTA_log_file << "   |--- OD pair and district performance (od_performance_summary.csv, district_performance.csv)\n";
+	g_DTA_log_file << "   |--- OD pair and district performance (od_performance.csv, district_performance.csv)\n";
 	g_DTA_log_file << "   |--- Trajectory performance (agent.csv, trajectory.csv)\n";
-	g_DTA_log_file << "   |--- System performance (system_performance_summary.csv, final_summary.csv)\n";
+	g_DTA_log_file << "   |--- System performance (system_performance.csv)\n";
 	g_DTA_log_file << "   |--- Logs and subarea mapping summary(log_main.txt, log_label_correcting, zone_mapping.csv)\n";
 	g_DTA_log_file << "--------------------------" << '\n';
 	g_DTA_log_file << "Please provide feedback or report any issues you encounter on our GitHub site: "
@@ -216,28 +216,20 @@ int main()
 	g_DTA_log_file << "    demand_period : Defines demand period, which could be extracted by demand_file_list.csv." << '\n';
 	g_DTA_log_file << "    departure_time_profile: Defines departure time in the agent-based simulation." << '\n';
 	g_DTA_log_file << "    demand_file_list: Defines demand type, period, and format type." << '\n';
-	g_DTA_log_file << "    sensor_data : Contains observed link volume for OD demand estimation." << '\n';
-	//g_DTA_log_file << "    choice_set.csv: Contains choice set data for agent-based modeling." << '\n';
-	//g_DTA_log_file << "    activity_travel_pattern.csv: (Optional) Defines activity and travel patterns of agents in the simulation." << '\n';
+	g_DTA_log_file << "    sensor_data: ref_volume in link.csv that contains observed link volume for OD demand estimation." << '\n';
 	g_DTA_log_file << "  Supply layer:" << '\n';
 	g_DTA_log_file << "    dynamic_traffic_management: Defines different dynamic traffic management scenarios." << '\n';
 	g_DTA_log_file << "    signal_timing  which contains information about signal timings at intersections, coded in link.csv." << '\n';
 	g_DTA_log_file << "    mode_type: Defines attributes of each type of agent, including value of time (vot in dollars per hour) and passenger car equivalent (pce)." << '\n';
 	g_DTA_log_file << "    link_type: Defines types of links in the network." << '\n';
-	g_DTA_log_file << "    link_qvdf.csv: Contains analytical volume demand function parameters." << '\n';
-	g_DTA_log_file << "  Scenarios settings:" << '\n';
-	g_DTA_log_file << "    scenario_index_list: Defines scenario name, scenario description and activate state." << '\n';
 	g_DTA_log_file << "    subarea: extracts the subarea polygon information using NeXTA tool." << '\n';
 	g_DTA_log_file << "--------------------------" << '\n';
 
 	g_DTA_log_file << "Output Files:" << '\n';
-	g_DTA_log_file << "  link_performance_s(scenario_index)_(scenario_name).csv: Shows the performance of each link under different scenarios, including the travel time, volume, and resource balance." << '\n';
-	g_DTA_log_file << "  route_assignment_s(scenario_index)_(scenario_name).csv: Shows the results of the assignment under different scenarios, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence." << '\n';
-	//g_DTA_log_file << "  choice_set_output_(scenario_index)_(scenario_name).csv: Shows the results of activity travel and mode choice." << '\n';
-	g_DTA_log_file << "  od_performance_summary.csv: Shows the performance of the OD pairs, including the o_zone_id, d_zone_id and volume." << '\n';
-	g_DTA_log_file << "  link_performance_summary.csv: Shows the summary of the performance of each link." << '\n';
-	g_DTA_log_file << "  system_performance_summary.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
-	g_DTA_log_file << "  final_summary.csv: Shows a comprehensive summary of the output." << '\n';
+	g_DTA_log_file << "  link_performance.csv: Shows the performance of each link under different scenarios, including the travel time, volume, and resource balance." << '\n';
+	g_DTA_log_file << "  route_assignment.csv: Shows the results of the assignment under different scenarios, including the volume, toll, travel time and distance of each path of each agent, as well as the link sequence and time sequence." << '\n';
+	g_DTA_log_file << "  od_performance.csv: Shows the performance of the OD pairs, including the o_zone_id, d_zone_id and volume." << '\n';
+	g_DTA_log_file << "  system_performance.csv: Shows the performance of the whole transportation system, including total travel time, average distance, and total distance." << '\n';
 	g_DTA_log_file << "  internal_zone_mapping.csv: Shows the subarea internal zones and impacted zones." << '\n';
 	g_DTA_log_file << "--------------------------" << '\n';
 

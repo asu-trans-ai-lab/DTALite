@@ -537,7 +537,7 @@ void g_fetch_link_volume_for_all_processors()
 
 // This function is used to calculate dynamic Volume-Delay Function (VDF) for traffic assignment
 
-void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode, int VDF_type_no)
+void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode)
 {
 
 	// Resetting real time (RT) waiting time at the beginning of each simulation iteration
@@ -551,7 +551,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 		// Looping over all mode types, starting with the base mode type
 		double link_volume_to_be_assigned = 0;
 		double mode_hourly_capacity = 0;
-		double mode_FFTT = 0;  // free-flow travel time
+		double mode_fftt = 0;  // free-flow travel time
 
 
 
@@ -582,7 +582,7 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 				// The base mode type index
 				int primary_mode_index = 0;
 
-				mode_FFTT = link_distance_VDF / max(0.0001, free_speed) * 60.0;
+				mode_fftt = link_distance_VDF / max(0.0001, free_speed) * 60.0;
 
 				// Adding preloaded volume to the converted PCE volume for this period and mode type
 
@@ -636,35 +636,16 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 		// Calculate travel time based on QVDF
 		int mode_type_index = 0;
 
-		if(vdf_type == q_vdf)
-		{ 
+
 		link_avg_travel_time[0] = calculate_travel_time_based_on_QVDF(
 			mode_type_index,
-			mode_FFTT,
+			mode_fftt,
 			link_volume_to_be_assigned,
 			mode_hourly_capacity,
-			Q_peak_load_factor,
+			peak_load_factor,
 			this->model_speed,
 			this->est_volume_per_hour_per_lane,
 			link_type);
-		}
-		else
-		{  // pure BPR mode
-			link_avg_travel_time[0] = calculate_travel_time_based_on_BPR(
-				mode_type_index,
-				mode_FFTT,
-				link_volume_to_be_assigned,
-				mode_hourly_capacity,
-				peak_load_factor,
-				this->model_speed,
-				this->est_volume_per_hour_per_lane,
-				link_type);
-		}
-		
-
-
-
-
 
 
 			avg_travel_time_0 = link_avg_travel_time[mode_type_index];
@@ -1641,12 +1622,7 @@ double network_assignment(int assignment_mode, int column_generation_iterations,
 	}
 	g_output_accessibility_result(assignment);
 
-	if (assignment.g_subarea_shape_points.size() >= 3) // if there is a subarea defined.
-	{
-		g_output_assignment_summary_result(assignment, 1);
-	}
-	
-		g_output_assignment_summary_result(assignment, 0);
+
 	
 //	g_output_2_way_assignment_summary_result(assignment, 0);
 	g_OutputSummaryFiles(assignment);
