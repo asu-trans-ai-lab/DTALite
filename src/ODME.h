@@ -51,7 +51,6 @@ struct SensorData {
 	std::string sensor_id;
 	int from_node_id;
 	int to_node_id;
-	std::string demand_period;
 	float count;
 	int scenario_index;
 	bool activate;
@@ -64,16 +63,16 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 	if (OD_updating_iterations >= 1)
 	{
 		for (int i = 0; i < g_link_vector.size(); i++)
-			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
+
 			{
-				if(g_link_vector[i].VDF_period[tau].ref_link_volume >=1)
+				if(g_link_vector[i].ref_link_volume >=1)
 				{ 
 					if (g_subarea_shape_points.size() >= 3 && g_link_vector[i].subarea_id <= 0)
 						continue; // skip the link outside the subarea
 					
 
-					g_link_vector[i].VDF_period[tau].obs_count = g_link_vector[i].VDF_period[tau].ref_link_volume;
-					g_link_vector[i].VDF_period[tau].upper_bound_flag = 0;
+					g_link_vector[i].obs_count = g_link_vector[i].ref_link_volume;
+					g_link_vector[i].upper_bound_flag = 0;
 					sensor_count++;
 				}
 
@@ -196,9 +195,9 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //at agent type
 					{
-						for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau, assginment period
+						
 						{
-							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+							p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
 							if (p_column_pool->od_volume > 0)
 							{
 								column_pool_counts++;
@@ -229,12 +228,12 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 										for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a along the path
 										{
 											link_seq_no = it->second.path_link_vector[nl];
-											path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
+											path_toll += g_link_vector[link_seq_no].toll[at];
 											path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-											double link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
+											double link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time[at];
 											path_travel_time += link_travel_time;
 
-											if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)  // added with mustafa 12/24/2022, verified
+											if (g_link_vector[link_seq_no].obs_count >= 1)  // added with mustafa 12/24/2022, verified
 											{
 												it->second.measurement_flag = 1;  // this path column has measurement
 												it->second.path_sensor_link_vector.push_back(link_seq_no);
@@ -288,18 +287,18 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 									{
 										// step 3.3 link flow gradient
 										link_seq_no = it->second.path_sensor_link_vector[nl];
-										if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1)
+										if (g_link_vector[link_seq_no].obs_count >= 1)
 										{
-											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 0)
+											if (g_link_vector[link_seq_no].upper_bound_flag == 0)
 											{
-												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
-												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
+												path_gradient_cost += g_link_vector[link_seq_no].est_count_dev;
+												est_count_dev += g_link_vector[link_seq_no].est_count_dev;
 											}
 
-											if (g_link_vector[link_seq_no].VDF_period[tau].upper_bound_flag == 1 && g_link_vector[link_seq_no].VDF_period[tau].est_count_dev > 0)
+											if (g_link_vector[link_seq_no].upper_bound_flag == 1 && g_link_vector[link_seq_no].est_count_dev > 0)
 											{// we only consider the over capaity value here to penalize the path flow
-												path_gradient_cost += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
-												est_count_dev += g_link_vector[link_seq_no].VDF_period[tau].est_count_dev;
+												path_gradient_cost += g_link_vector[link_seq_no].est_count_dev;
+												est_count_dev += g_link_vector[link_seq_no].est_count_dev;
 											}
 											p_column_pool->m_passing_sensor_flag += 1;
 											it->second.measurement_flag = 1;
@@ -345,7 +344,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 										dtalog.output() << "[DATA INFO] OD " << orig << "-> " << dest << " path id:" << i << ", prev_vol"
 											<< prev_path_volume << ", gradient_cost = " << it->second.path_gradient_cost
 											<< " UE gap," << it->second.UE_gap
-											<< " link," << g_link_vector[link_seq_no].VDF_period[tau].est_count_dev
+											<< " link," << g_link_vector[link_seq_no].est_count_dev
 											<< "proposed change = " << step_size * it->second.path_gradient_cost
 											<< "actual change = " << change
 											<< "new vol = " << it->second.path_volume << '\n';
@@ -353,7 +352,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 										g_DTA_log_file << "[DATA INFO] OD " << orig << "-> " << dest << " path id:" << i << ", prev_vol"
 											<< prev_path_volume << ", gradient_cost = " << it->second.path_gradient_cost
 											<< " UE gap," << it->second.UE_gap
-											<< " link," << g_link_vector[link_seq_no].VDF_period[tau].est_count_dev
+											<< " link," << g_link_vector[link_seq_no].est_count_dev
 											<< "proposed change = " << step_size * it->second.path_gradient_cost
 											<< "actual change = " << change
 											<< "new vol = " << it->second.path_volume << '\n';
@@ -415,7 +414,7 @@ void Assignment::Demand_ODME(int OD_updating_iterations)
 		// very import: noted by Peiheng and Xuesong on 01/30/2022
 		double system_gap = 0;
 		g_reset_and_update_link_volume_based_on_ODME_columns(g_link_vector.size(), OD_updating_iterations-1, OD_updating_iterations, system_gap, true);
-		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau]
+		// we now have a consistent link-to-path volumne in g_link_vector[link_seq_no].total_volume_for_all_mode_types
 	}
 
 

@@ -226,11 +226,12 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
         }
     }
 
-    for (int x = 0; x < nX; ++x)
-        for (int y = 0; y < nY; ++y)
-            for (int z = 0; z < nZ; ++z)
-                dynamicArray[x][y][z] = 0;
-
+    //for (int x = 0; x < nX; ++x)
+    //    for (int y = 0; y < nY; ++y)
+    //        for (int z = 0; z < nZ; ++z)
+    //        {
+    //            dynamicArray[x][y][z] = 0;
+    //        }
     return dynamicArray;
 }
 
