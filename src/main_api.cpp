@@ -625,8 +625,8 @@ void CLink::calculate_dynamic_VDFunction(int inner_iteration_number, bool conges
 
 		link_volume_to_be_assigned = total_volume_for_all_mode_types;
 
-
-		if (this->from_node_id == 2 && this->to_node_id == 6 && link_volume_to_be_assigned > 0)
+			
+		if (this->from_node_id == 23013 && this->to_node_id == 34001/* && link_volume_to_be_assigned > 0*/)
 		{
 			int idebug = 1;
 		}

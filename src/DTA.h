@@ -2,6 +2,7 @@
 #define GUARD_DTA_H
 
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
 
 // Peiheng, 02/21/22, a temporary fix (bad practice)
@@ -198,7 +199,7 @@ class CModeType_Summary
 {
 public:
     CModeType_Summary() : count{ 0 },
-        total_od_volume{ 0 }, total_agent_distance_km{ 0 }, total_agent_distance_mile{ 0 }, total_agent_travel_time{ 0 }, total_agent_co2{ 0 }, total_agent_nox{ 0 }, avg_travel_time{ 0 }, avg_travel_distance_km{ 0 }, avg_travel_distance_mile{ 0 }, avg_co2{ 0 }, avg_nox { 0} 
+        total_od_volume{ 0 }, total_agent_distance_km{ 0 }, total_agent_distance_mile{ 0 }, total_agent_travel_time{ 0 }, total_agent_co2{ 0 }, total_agent_nox{ 0 }, avg_travel_time{ 0 }, avg_travel_distance_km{ 0 }, avg_travel_distance_mile{ 0 }, avg_co2{ 0 }, avg_nox { 0}
     {}
 
     int count;
@@ -262,7 +263,7 @@ public:
         data_by_mode_type[at].total_agent_distance_km += element.total_agent_distance_km;
         data_by_mode_type[at].total_agent_distance_mile += element.total_agent_distance_mile;
         data_by_mode_type[at].total_agent_delay += element.total_agent_delay;
-        
+
         data_by_mode_type[at].total_agent_co2+= element.total_agent_co2;
         data_by_mode_type[at].total_agent_nox += element.total_agent_nox;
 
@@ -283,7 +284,7 @@ public:
     }
 
     CModeType_Summary data_by_mode_type[MAX_MODETYPES];
-}; 
+};
 
 class Cmode_type {
 public:
@@ -291,7 +292,7 @@ public:
         person_occupancy{ 1 }, desired_speed_ratio{ 1 }, number_of_allowed_links{ 0 }, eco_so_flag{ 0 }, eco_so_flow_switch_bound{ 0 }, pce{ 1 }
     {
     }
-   
+
     int mode_type_no;
     // dollar per hour
     float value_of_time;
@@ -326,15 +327,12 @@ public:
     {
         for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
-
             for (int value_index = 0; value_index < 4; value_index++)
             {
                 emissions_co2_matrix[at][value_index] = 0;
                 emissions_nox_matrix[at][value_index] = 0;
             }
-            
         }
-
     }
 
     int link_type;
@@ -347,9 +345,6 @@ public:
 
     double emissions_co2_matrix[MAX_MODETYPES][4];
     double emissions_nox_matrix[MAX_MODETYPES][4];
-
-
-
 };
 
 class CColumnPath {
@@ -526,13 +521,13 @@ public:
 };
 
 struct SChoiceAlt {
-public:
     int mode_no;
     int demand_peroid_no;
     int o_zone_no;
     int d_zone_no;
     float volume;
 };
+
 class CChoiceAlt {
 public:
     CChoiceAlt() : volume{ 0 } {}
@@ -573,10 +568,6 @@ public:
     float demand_volume;
     float avg_travel_time;
     float avg_travel_cost;
-
-public:
-
-
 };
 
 
@@ -635,7 +626,7 @@ public:
     double od_volume;
     double od_volume_from_route_file;
 
-    double least_travel_time; 
+    double least_travel_time;
 
     double OD_based_UE_relative_gap;
     std::map<int, double> od_volume_per_iteration_map;
@@ -661,11 +652,11 @@ public:
     int ModifyColumnPoolAfterLoadingRouteFile()
     {
         double ratio = od_volume / max(0.00001, od_volume_from_route_file);
-        
+
         if(fabs(ratio - 1.0f)>0.001)
         {
-        ColumnPoolDemandModification(ratio);
-        return 1; 
+            ColumnPoolDemandModification(ratio);
+            return 1;
         }
 
         return 0;
@@ -680,12 +671,9 @@ public:
         {
             it->second.path_volume *= ratio;
         }
-
-    
     }
+
     int OD_impact_flag;  // 0: no passing network design locations; //1: all paths passing through network deign locations: //2: there are alternative detours w.r.t. network design location
-
-
 };
 
 class CAgent_Column {
@@ -822,7 +810,7 @@ public:
     std::string scenario_name;
     std::string scenario_description;
     int activate;
-    int dtm_flag; 
+    int dtm_flag;
 };
 class Assignment {
 public:
@@ -834,7 +822,7 @@ public:
         trace_output{ 0 }, major_path_volume_threshold{ 0.1 }, trajectory_sampling_rate{ 1.0 }, td_link_performance_sampling_interval_in_min{ 1 }, dynamic_link_performance_sampling_interval_hd_in_min{ 15 }, trajectory_diversion_only{ 0 }, m_GridResolution{ 0.01 },
         shortest_path_log_zone_id{ 1 }, g_number_of_analysis_districts{ 1 },
          g_length_unit_flag{ 0 }, g_speed_unit_flag{ 0 }, active_dms_count{ 0 }, active_lane_closure_count{ 0 }, g_number_of_real_time_mode_types{ 0 }, g_number_of_DMS_mode_types{ 0 }, g_first_link_type{ -1 },
-        g_max_number_of_super_zones{ 100 }, b_forward_star_structure_log{ 0 }, b_sp_log{ 0 }, starting_time_slot_no{ 0 }, ending_time_slot_no{ 4 }
+        g_max_number_of_super_zones{ 100 }, b_forward_star_structure_log{ 0 }, b_sp_log{ 0 }, starting_time_slot_no{ 0 }, ending_time_slot_no{ 12 /* for 1 hour with every 5 min intervals*/}
 
     {
         m_LinkCumulativeArrivalVector  = NULL;
@@ -850,7 +838,7 @@ public:
        /* assignment_log_file << "iteration_no,link_id,from_node_id,to_node_id,volume,travel_time" << '\n';*/
 
    //     log_subarea_focusing_file.open("log_subarea_focusing.txt");
-        
+
 
 
         simu_log_file.open("log_simulation.txt");
@@ -879,14 +867,11 @@ public:
 
     void InitializeDemandMatrix(int number_of_signficant_zones, int number_of_zones, int number_of_mode_types)
     {
-
         g_number_of_zones = number_of_zones;
         g_number_of_mode_types = number_of_mode_types;
 
-
-            total_demand_volume = 0; 
-
-           g_column_pool = Allocate3DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_mode_types));
+        total_demand_volume = 0;
+        g_column_pool = Allocate3DDynamicArray<CColumnVector>(number_of_signficant_zones, g_related_zone_vector_size, max(1, number_of_mode_types));
 
         for (int i = 0; i < number_of_zones; ++i)
         {
@@ -899,7 +884,6 @@ public:
                 total_route_demand[i] = 0.0;
         }
 
-
         g_DemandGlobalMultiplier = 1.0f;
     }
 
@@ -908,11 +892,8 @@ public:
         return t % g_number_of_in_memory_simulation_intervals;
     }
 
-
     std::vector<DTAGDPoint> g_subarea_shape_points;
-    int g_max_number_of_super_zones; 
-
-
+    int g_max_number_of_super_zones;
 
     void STTrafficSimulation();
     void STMesoTrafficSimulation();
@@ -934,7 +915,7 @@ public:
     double m_GridResolution;
     e_assignment_mode assignment_mode;
 
-    int active_dms_count; 
+    int active_dms_count;
     int active_lane_closure_count;
     int g_number_of_cpu_processors;
     int g_visual_distance_in_cells;
@@ -978,7 +959,7 @@ public:
     int g_number_of_links;
     int g_number_of_timing_arcs;
     int g_number_of_nodes;
-    int b_forward_star_structure_log; 
+    int b_forward_star_structure_log;
     int b_sp_log;
     int g_number_of_zones;
     int g_number_of_mode_types;
@@ -1031,10 +1012,9 @@ public:
 
     int g_number_of_analysis_districts;
     std::map<int, CLinkType> g_LinkTypeMap;
-    int g_first_link_type; 
+    int g_first_link_type;
 
     std::map<std::string, int> mode_type_2_seqno_mapping;
-
 
     std::map<int, double> o_district_id_factor_map;
     std::map<int, double> d_district_id_factor_map;
@@ -1044,8 +1024,6 @@ public:
     std::map<int, double> SA_d_district_id_factor_map;
     std::map<int, double> SA_od_district_id_factor_map;
 
-
-
     float total_demand[MAX_MODETYPES];
     float total_route_demand[MAX_MODETYPES];
     float g_DemandGlobalMultiplier;
@@ -1053,7 +1031,6 @@ public:
     // used in ST Simulation
     float** m_LinkOutFlowCapacity;  // per second interval for simplicity
     int** m_LinkOutFlowState;  // per second interval for simplicity
-
 
     // in min
     float** m_link_TD_waiting_time;
@@ -1094,7 +1071,7 @@ public:
 
 extern Assignment assignment;
 
-# include "VDF.h"
+#include "VDF.h"
 
 class CLink
 {
@@ -1106,7 +1083,7 @@ public:
         free_flow_travel_time_in_min{ 0.01 }, link_spatial_capacity{ 100 },
         timing_arc_flag{ false }, traffic_flow_code{ 0 }, spatial_capacity_in_vehicles{ 999999 }, subarea_id{ -1 }, RT_flow_volume{ 0 },
         cell_type{ -1 }, saturation_flow_rate{ 1800 }, dynamic_link_event_start_time_in_min{ 99999 }, b_automated_generated_flag{ false }, time_to_be_released{ -1 },
-        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 }, 
+        RT_waiting_time{ 0 }, FT{ 1 }, AT{ 1 }, s3_m{ 4 }, tmc_road_order{ 0 }, tmc_road_sequence{ -1 },
         tmc_corridor_id{ -1 }, from_node_id{ -1 }, to_node_id{ -1 }, kjam{ 300 }, link_distance_km{ 0 }, link_distance_mile{ 0 }, meso_link_id{ -1 }, total_simulated_delay_in_min{ 0 },
         total_simulated_meso_link_incoming_volume{ 0 }, global_minute_capacity_reduction_start{ -1 }, global_minute_capacity_reduction_end{ -1 },
          AB_flag{ 1 }, BA_link_no{ -1 }, cost{ 0 }, win_count{ 0 }, lose_count{ 0 },
@@ -1124,21 +1101,15 @@ public:
     {
         for (int at = 0; at < g_number_of_active_mode_types; at++)
         {
-
             {
                 toll[at] = 0;
             }
 
-
             {
                 allowed_uses = "";
             }
-
-
         }
-
     }
-
 
     float PerformSignalVDF(float hourly_per_lane_volume, float red, float cycle_length)
     {
@@ -1175,7 +1146,6 @@ public:
             speed = 0;
 
         return speed;
-
     }
 
     double get_volume_from_speed(float speed, float vf, float k_critical, float s3_m)
@@ -1199,16 +1169,14 @@ public:
         double volume = speed * k_critical * pow(ratio_difference_final, 1 / s3_m);  // volume per hour per lane
 
         return volume;
-
     }
 
     double calculate_travel_time_based_on_QVDF(int at, double fftt, double volume, double mode_hourly_capacity, double peak_load_factor,
-
         float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay],
         CLinkType link_type/*, double link_avg_co2_emit_per_mode[MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_MODETYPES]*/
     )
     {
-        // step 0: setup P' initial value and time_period_in_hour, obtain Q_peak_load_factor, 
+        // step 0: setup P' initial value and time_period_in_hour, obtain Q_peak_load_factor,
         P = -0.5;
 
         double time_period_in_min = max(0.1, (ending_time_in_hour - starting_time_in_hour) * 60);
@@ -1233,8 +1201,8 @@ public:
 
         }
 
-        //if (DOC > 9.99)  //regulation 
-        //    DOC = 9.99; 
+        //if (DOC > 9.99)  //regulation
+        //    DOC = 9.99;
 
         if (volume > 1)
             int iii_debug = 1;
@@ -1253,7 +1221,7 @@ public:
         RTT = link_length_in_1km / v_VDF_congestion_cutoff;
         double Q_n_current_value = Q_n;
         link_DOC = DOC;
-        // will revisit again 
+        // will revisit again
         if (DOC < dc_transition_ratio)  // free flow regime
         {
 
@@ -1269,8 +1237,6 @@ public:
             RTT = link_length_in_1km / max(0.01, vf);  // in hour
         }
 
-
-
         // BPR
              // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity,
              // uncongested states D <C
@@ -1285,7 +1251,7 @@ public:
         //avg_travel_time = fftt * (1+ alpha * pow(DOC, beta)); // Mark: fftt should be vctt
 
 
-        avg_travel_time = fftt * vf / max(0.1, avg_queue_speed); // 
+        avg_travel_time = fftt * vf / max(0.1, avg_queue_speed); //
 
 
         avg_waiting_time = avg_travel_time - fftt;
@@ -1367,7 +1333,6 @@ public:
 
             if (td_speed < vf * 0.5)
                 Severe_Congestion_P += 5.0 / 60;  // 5 min interval
-
         }
 
 
@@ -1414,13 +1379,13 @@ public:
         //}
 
 
-        ////final stage: compute avg emission in peak period 
+        ////final stage: compute avg emission in peak period
         // vq: speed in miles per hour, converted from km per hour
 
-        // apply final travel time range constraints 
+        // apply final travel time range constraints
 
 
-        if (avg_travel_time > max(15.0, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound 
+        if (avg_travel_time > max(15.0, time_period_in_min * 1.5))  // use 1.5 times to consider the some wide range bound
             avg_travel_time = max(15.0, time_period_in_min * 1.5);
 
         double vf_mph = vf / 1.609;
@@ -1457,7 +1422,7 @@ public:
         link_avg_co2_emit_per_mode[at] = emission_rate / 1000.0;  // convert to kg
 
 
-        //nox emissions 
+        //nox emissions
 
         // compute the NOx emission rate using a similar process to that of CO2 emissions
         lambda_emission = v * v * link_type.emissions_nox_matrix[at][1] + v * link_type.emissions_nox_matrix[at][2] + link_type.emissions_nox_matrix[at][3];
@@ -1474,7 +1439,7 @@ public:
         link_avg_nox_emit_per_mode[at] = emission_rate / 1000.0;  // convert to kg;
 
 
-        // to do for Mohammad 
+        // to do for Mohammad
         //for (int t_in_min = starting_time_in_hour * 60; t_in_min <= ending_time_in_hour * 60; t_in_min += 5)
         //{
         //    double t = t_in_min / 60.0;  // t in hour
@@ -1482,7 +1447,7 @@ public:
 
         //    double v = model_speed[t_interval] / 1.609;  // convert kmph to mph internally
         //    double lambda_emission = v * v * link_type.emissions_co2_matrix[at][1] + v * link_type.emissions_co2_matrix[at][2] + link_type.emissions_co2_matrix[at][3];
-        //    double waiting_time_w  = 
+        //    double waiting_time_w  =
         //    double vf_minus_vq = vf-v;
 
         //    double emission_rate = link_type.emissions_co2_matrix[at][0] * (fftt, + );
@@ -1496,12 +1461,10 @@ public:
     }
 
     double calculate_travel_time_based_on_BPR(int at, double fftt, double volume, double mode_hourly_capacity, double peak_load_factor,
-
         float model_speed[MAX_TIMEINTERVAL_PerDay], float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay],
         CLinkType link_type/*, double link_avg_co2_emit_per_mode[MAX_MODETYPES], double link_avg_nox_emit_per_mode[MAX_MODETYPES]*/
     )
     {
-
         double time_period_in_min = max(0.1, (ending_time_in_hour - starting_time_in_hour) * 60);
         double time_period_in_hour = max(0.1, (ending_time_in_hour - starting_time_in_hour));
 
@@ -1521,7 +1484,6 @@ public:
         {
             lane_based_D = max(0.0, volume) / time_period_in_hour / peak_load_factor;
             DOC = lane_based_D / max(0.00001, mode_hourly_capacity * number_of_lanes);
-
         }
 
         if (volume > 1)
@@ -1539,8 +1501,6 @@ public:
         //step 3.2 calculate speed from VDF based on D/C ratio
         avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
         avg_travel_time = fftt * (1 + alpha * pow(DOC, beta)); // Mark: fftt should be vctt
-
-
 
         //if (cycle_length >= 1)  // signal delay
         //{
@@ -1586,7 +1546,6 @@ public:
     int upper_bound_flag;
     double est_count_dev;
 
-
     string dtm_scenario_code;
     double volume_before_dtm;
     double speed_before_dtm;
@@ -1598,19 +1557,16 @@ public:
     double DoC_after_dtm;
     double P_after_dtm;
 
-
     double starting_time_in_hour;
     double ending_time_in_hour;
     double t2;
     double k_critical;
-
 
     double v_VDF_congestion_cutoff;
     double vf;
 
     double sa_volume;
     double lane_closure_final_lanes;
-
 
     int dynamic_traffic_management_flag; // 0: normal: 1: adding lanes, -1: capacity reduction: 2: VMS: -2: induced delay
     double preload;
@@ -1622,7 +1578,6 @@ public:
     double dsr[MAX_MODETYPES]; // desired speed ratio with respect to free-speed
     double penalty;
     double RT_route_regeneration_penalty;
-
 
     string allowed_uses;
 
@@ -1653,8 +1608,7 @@ public:
     double L;
     double lane_based_D;
     double lane_based_Vph;
-    double link_DOC; 
-
+    double link_DOC;
 
     double avg_speed_BPR;  // normal BPR
     double avg_queue_speed;  // queue VDF speed
@@ -1673,35 +1627,28 @@ public:
     float avg_waiting_time;
     float travel_time;
 
-    
     void allocate_memory()
     {
+        link_type = 0;
+        number_of_lanes = 1;  // default all open
+        free_speed = 100;
+        capacity = 2000;
 
-            link_type = 0;
-            number_of_lanes = 1;  // default all open
-            free_speed = 100;
-            capacity = 2000;
- 
+        total_volume_for_all_mode_types = 0;
+        total_person_volume_for_all_mode_types = 0;
+        queue_link_distance_VDF_perslot = 0;
+        //cost_perhour = 0;
+        for (int at = 0; at < g_number_of_active_mode_types; ++at)
+        {
+            volume_per_mode_type[at] = 0;
+            converted_PCE_volume_per_at[at] = 0;
+            link_avg_travel_time[at] = 0;
 
-
-            total_volume_for_all_mode_types = 0;
-            total_person_volume_for_all_mode_types = 0;
-            queue_link_distance_VDF_perslot = 0;
-            //cost_perhour = 0;
-            for (int at = 0; at < g_number_of_active_mode_types; ++at)
-            {
-                volume_per_mode_type[at] = 0;
-                converted_PCE_volume_per_at[at] = 0;
-                link_avg_travel_time[at] = 0;
-
-                link_avg_co2_emit_per_mode[at] = 0;
-                link_avg_nox_emit_per_mode[at] = 0;
-
-            }
-
+            link_avg_co2_emit_per_mode[at] = 0;
+            link_avg_nox_emit_per_mode[at] = 0;
+        }
     }
 
-    
     ~CLink()
     {
         //In our open source package, we dynamically allocate instances of CLinkand store their pointers in g_link_vector for later use.Considering the fact that these instances are still being used via the pointers in g_link_vector, we don't explicitly free memory in ~CLink().
@@ -1719,28 +1666,20 @@ public:
         //In this design, the CLink objects will be properly deallocated in the following function free_memory() when the Network object is destroyed.We are always mindful to remove any CLink objects from g_link_vector before we delete them elsewhere in our code to prevent dangling pointers.
     }
 
-
-
     void calculate_dynamic_VDFunction(int inner_iteration_number, bool congestion_bottleneck_sensitivity_analysis_mode);
-
-
 
     double get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type( int mode_type_no)
     {
         // *60 as 60 min per hour
         double generalized_cost = link_avg_travel_time[mode_type_no] + penalty + toll[mode_type_no] / assignment.g_ModeTypeVector[mode_type_no].value_of_time * 60;
 
-
-        if (assignment.g_ModeTypeVector[mode_type_no].eco_so_flag == 1)  // eo so users; 
+        if (assignment.g_ModeTypeVector[mode_type_no].eco_so_flag == 1)  // eo so users;
         {
-        
-        double speed_mph = this->link_distance_VDF / 1.6 / (max(0.001, link_avg_travel_time[mode_type_no] / 60));
-        
-        generalized_cost = link_avg_travel_time[mode_type_no];
-
+            double speed_mph = this->link_distance_VDF / 1.6 / (max(0.001, link_avg_travel_time[mode_type_no] / 60));
+            generalized_cost = link_avg_travel_time[mode_type_no];
         }
         //double emission_marginal = function(link_avg_travel_time[mode_type_no], this->link_distance_VDF);
-      
+
         // system optimal mode or exterior panalty mode
         //if (assignment.assignment_mode == 4)
         //    generalized_cost += travel_marginal_cost[mode_type_no];
@@ -1750,22 +1689,17 @@ public:
 
     int main_node_id;
 
-
     int BWTT_in_simulation_interval;
     int zone_seq_no_for_outgoing_connector;
 
     //double number_of_lanes;
 
-
-
     double lane_capacity;
-
 
     std::map <int, int> m_link_pedefined_capacity_map_in_sec;  // per sec
     std::map <int, float> m_link_pedefined_information_response_map;  // per min, absolute time
 
     float model_speed[MAX_TIMEINTERVAL_PerDay];
-
 
     float est_volume_per_hour_per_lane[MAX_TIMEINTERVAL_PerDay];
 
@@ -1802,7 +1736,6 @@ public:
 
         return total_speed_value / max(1, total_speed_count);
     }
-
 
     float get_model_hourly_speed(int time_in_min)
     {
@@ -1848,8 +1781,6 @@ public:
         return total_volume_value / max(1, total_volume_count);
     }
 
-
-
     int dynamic_link_event_start_time_in_min;
     std::map <int, bool> dynamic_link_closure_map;
     std::map <int, std::string> dynamic_link_closure_type_map;
@@ -1875,9 +1806,8 @@ public:
 
     int link_seq_no;
 
-
     std::map<int, int> capacity_reduction_map;
-    
+
     int global_minute_capacity_reduction_start;
     int global_minute_capacity_reduction_end;
 
@@ -1952,12 +1882,8 @@ public:
             {
                 return false;
             }
-
-
         }
     }
-
-
 
     int from_node_seq_no;
     int to_node_seq_no;
@@ -1978,11 +1904,7 @@ public:
     std::string tmc_corridor_name;
     std::string link_type_name;
 
-
     float kjam;
-
-
-
     int type;
 
     //static
@@ -1999,7 +1921,6 @@ public:
 
     double  volume_per_mode_type[MAX_MODETYPES];
     double  converted_PCE_volume_per_at[MAX_MODETYPES];
-
 
     double  recorded_volume_per_at[MAX_MODETYPES];
     //double **recorded_lanes_per_at;
@@ -2030,7 +1951,6 @@ public:
     std::string tmc_road, tmc_direction, tmc_intersection;
     float tmc_reference_speed;
     float tmc_mean_speed;
-
 
     float tmc_volume;
     DTAGDPoint TMC_from, TMC_to;
@@ -2136,7 +2056,6 @@ public:
 
     std::map<std::string, int> pred_RT_map;
     std::map<std::string, float> label_cost_RT_map;
-
 };
 
 class CInfoCell {
@@ -2213,9 +2132,7 @@ public:
     int link_count;
 
     std::map<int, int> road_sequence_map;
-
 };
-
 
 
 class CODMatrix
@@ -2224,8 +2141,8 @@ public:
     std::map <int, float> value_map;
     std::map <int, float> distance_map;
     std::map <int, double> disutility_map;
-
 };
+
 class COZone
 {
 public:
@@ -2323,7 +2240,6 @@ public:
     int subarea_inside_flag_orig;
     int subarea_inside_flag_dest;
 
-
     void setup_input(int o, int d,  int a, int subarea_inside_flag_o, int subarea_inside_flag_d)
     {
         orig = o;
@@ -2338,7 +2254,6 @@ public:
         value = val;
     }
 
-
     bool operator<(const CODState& other) const
     {
         return value > other.value;
@@ -2349,7 +2264,6 @@ public:
 extern std::vector<CNode> g_node_vector;
 extern std::vector<CLink> g_link_vector;
 //extern std::map<std::string, CVDF_Type> g_vdf_type_map;
-
 
 extern std::map<int, DTAVehListPerTimeInterval> g_AgentTDListMap;
 extern vector<CAgent_Simu*> g_agent_simu_vector;
@@ -2363,4 +2277,5 @@ extern void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int 
 extern double g_Find_PPP_RelativeAngle(const DTAGDPoint* p1, const DTAGDPoint* p2, const DTAGDPoint* p3, const DTAGDPoint* p4);
 extern double g_GetPoint2LineDistance(const DTAGDPoint* pt, const DTAGDPoint* FromPt, const DTAGDPoint* ToPt);
 extern double g_GetPoint2Point_Distance(const DTAGDPoint* p1, const DTAGDPoint* p2);
+
 #endif

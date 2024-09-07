@@ -2266,7 +2266,10 @@ void g_read_input_data(Assignment& assignment)
 	g_DTA_log_file << "[PROCESS INFO] Step 1.1: Reading section  demand_period..." << '\n';
 	assignment.summary_file << "[PROCESS INFO] Step 1.1: Reading section demand_period ..." << '\n';
 
+
+	try {
 	const auto& demand_periods = settings["demand_period"];
+	
 	try
 	{
 		for (const YAML::Node& demand_period_node : demand_periods)
@@ -2329,7 +2332,11 @@ void g_read_input_data(Assignment& assignment)
 		std::cerr << "Exception occurred: " << e.what() << std::endl;
 	}
 
-
+	}
+	catch (const YAML::ParserException& e) {
+		dtalog.output() << "Error parsing the section demand_period in settings.yml: " << e.what() << std::endl;
+		return;
+	}
 	
 
 //step 1:read demand type file

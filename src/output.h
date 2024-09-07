@@ -1092,7 +1092,7 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 
 		fprintf(g_pFileLinkMOE, "link_seq_id,link_id,from_node_id,to_node_id,lanes,distance_km,distance_mile,fftt,meso_link_id,meso_link_incoming_volume,tmc,tmc_corridor_name,tmc_corridor_id,tmc_road_order,tmc_road_sequence,subarea_id,link_type,link_type_code,vdf_code,vehicle_volume,person_volume,ref_volume,ref_diff,restricted_turn_nodes,auto_turn_volume,ODME_volume_before,ODME_volume_after,ODME_volume_diff,ODME_obs_count,ODME_upperbound_capacity_type,ODME_obs_count_dev,");
 
-		fprintf(g_pFileLinkMOE, "preload_volume,travel_time,speed_kmph,speed_mph,speed_ratio,DOC,lane_capacity,link_capacity,queue,total_simu_waiting_time_in_min,avg_simu_waiting_time_in_min,plf,lanes,D_per_lane,mu_per_lane,VDF_cd,VDF_n,P,severe_congestion_duration_in_h,vf_mph,v_congestion_cutoff_mph,vf_kmph,v_congestion_cutoff_kmph,VDF_cp,VDF_s,VDF_v_mph,VDF_v_kmph,vt2_mph,vt2_kmph,VMT,VKMT,VHT,PMT,PKMT,PHT,PDT_vf,PDT_vc,geometry,");
+		fprintf(g_pFileLinkMOE, "preload_volume,travel_time,speed_kmph,speed_mph,speed_ratio,DOC,lane_capacity,link_capacity,queue,total_simu_waiting_time_in_min,avg_simu_waiting_time_in_min,plf,lanes,starting_time_in_hour,ending_time_in_hour,D_per_lane,mu_per_lane,VDF_cd,VDF_n,P,severe_congestion_duration_in_h,vf_mph,v_congestion_cutoff_mph,vf_kmph,v_congestion_cutoff_kmph,VDF_cp,VDF_s,VDF_v_mph,VDF_v_kmph,vt2_mph,vt2_kmph,VMT,VKMT,VHT,PMT,PKMT,PHT,PDT_vf,PDT_vc,geometry,");
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			fprintf(g_pFileLinkMOE, "vehicle_vol_%s,", assignment.g_ModeTypeVector[at].mode_type.c_str());
@@ -1276,11 +1276,13 @@ void g_output_assignment_result(Assignment& assignment, int subarea_id)
 					max(0.0, g_link_vector[i].total_simulated_delay_in_min));
 
 
-				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
+				fprintf(g_pFileLinkMOE, "%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,",
 
 					max(0.0, g_link_vector[i].total_simulated_delay_in_min) / max(1.0f, vehicle_volume),
 					g_link_vector[i].peak_load_factor,
 					g_link_vector[i].number_of_lanes,
+					g_link_vector[i].starting_time_in_hour,
+					g_link_vector[i].ending_time_in_hour, 
 					g_link_vector[i].lane_based_D,
 					g_link_vector[i].Q_mu,
 					g_link_vector[i].Q_cd,
