@@ -2,7 +2,6 @@
 #include "DTA_geometry.h"
 
 #include <sstream>
-
 using std::istringstream;
 using std::string;
 
@@ -149,21 +148,21 @@ CDTAGeometry::CDTAGeometry(string s)
 	}
 }
 
-CDTAGeometry::~CDTAGeometry()
+CDTAGeometry::~CDTAGeometry(void)
 {
 }
 
-CDTAGeometry::GeometryType CDTAGeometry::GetGeometryType()
+CDTAGeometry::GeometryType CDTAGeometry::GetGeometryType(void)
 {
 	return m_Type;
 }
 
-int CDTAGeometry::GetNumberOfCoordinates()
+int CDTAGeometry::GetNumberOfCoordinates(void)
 {
 	return m_NumOfCoordinates;
 }
 
-std::vector<CCoordinate> CDTAGeometry::GetCoordinateList()
+std::vector<CCoordinate> CDTAGeometry::GetCoordinateList(void)
 {
 	return v_Coordinates;
 }

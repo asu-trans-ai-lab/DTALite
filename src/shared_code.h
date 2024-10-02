@@ -46,6 +46,7 @@ int g_ParserIntSequence(std::string str, std::vector<int>& vect)
 {
     std::stringstream ss(str);
     int i;
+
     while (ss >> i)
     {
         vect.push_back(i);
@@ -70,8 +71,7 @@ int g_ParserDoubleSequence(std::string str, std::vector<double>& vect)
 
     return vect.size();
 }
-
-int g_ParserStringSequence(std::string str_input, std::vector<std::string>& vect)
+int g_ParserStringSequence(std::string str_input, vector<string>& vect)
 {
 
     std::istringstream ss(str_input);
@@ -84,9 +84,10 @@ int g_ParserStringSequence(std::string str_input, std::vector<std::string>& vect
     return vect.size();
 }
 
-std::vector<float> g_time_parser(std::string str)
+
+vector<float> g_time_parser(string str)
 {
-    std::vector<float> output_global_minute;
+    vector<float> output_global_minute;
 
     int string_lenghth = str.length();
 
@@ -209,7 +210,7 @@ std::vector<float> g_time_parser(std::string str)
     return output_global_minute;
 }
 
-std::string g_time_coding(float time_stamp)
+string g_time_coding(float time_stamp)
 {
     int hour = static_cast<int>(time_stamp / 60);
     int minute = static_cast<int>(time_stamp - hour * 60);
@@ -218,7 +219,7 @@ std::string g_time_coding(float time_stamp)
     int sss = ((time_stamp - hour * 60 - minute) * 60 - second)*1000;
 
     //mm:ss.sss
-    std::ostringstream strm;
+    ostringstream strm;
     strm.fill('0');
     strm << std::setw(2) << hour << std::setw(2) << minute << ":" << std::setw(2) << second << "." << std::setw(3) << sss;
 

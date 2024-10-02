@@ -73,20 +73,22 @@ void g_add_new_access_link(int internal_from_node_seq_no, int internal_to_node_s
 	link.link_distance_VDF = link_distance_VDF;
 	link.free_speed = assignment.g_ModeTypeVector[mode_type_no].access_speed;
 
-
+	for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+	{
 		//setup default values
-		link.lane_based_ultimate_hourly_capacity = 99999;
+		link.VDF_period[tau].lane_based_ultimate_hourly_capacity = 99999;
 		// 60.0 for 60 min per hour
 		link.free_flow_travel_time_in_min = link_distance_VDF / max(0.001, link.free_speed) * 60;
-		link.penalty = 99;
-		link.alpha = 0;
-		link.beta = 0;
+		link.VDF_period[tau].penalty = 99;
+		link.VDF_period[tau].alpha = 0;
+		link.VDF_period[tau].beta = 0;
 
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 		{
-		link.link_avg_travel_time[at] = link.free_flow_travel_time_in_min;
+		link.link_avg_travel_time_per_period[tau][at] = link.free_flow_travel_time_in_min;
+		link.VDF_period[tau].FFTT_at[at] = link.free_flow_travel_time_in_min;
 		}
-
+	}
 
 	// add this link to the corresponding node as part of outgoing node/link
 	g_node_vector[internal_from_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link.link_seq_no);

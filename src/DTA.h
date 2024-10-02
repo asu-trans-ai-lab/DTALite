@@ -1201,8 +1201,12 @@ public:
 
         }
 
-        //if (DOC > 9.99)  //regulation
-        //    DOC = 9.99;
+
+        double congestion_ref_speed = v_VDF_congestion_cutoff;
+        if (DOC < 1)
+            congestion_ref_speed = (1 - DOC) * this->free_speed +  DOC * this->v_VDF_congestion_cutoff;
+
+
 
         if (volume > 1)
             int iii_debug = 1;
@@ -1212,7 +1216,7 @@ public:
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
         //step 3.2 calculate speed from VDF based on D/C ratio
-        avg_queue_speed = v_VDF_congestion_cutoff / (1.0 + alpha * pow(DOC, beta));
+        avg_queue_speed = congestion_ref_speed / (1.0 + alpha * pow(DOC, beta));
         // step 3.3 taking the minimum of BPR- v and Q VDF v based on log sum function
 
        // let us use link_length_in_km = 1 for the following calculation
@@ -1221,33 +1225,34 @@ public:
         RTT = link_length_in_1km / v_VDF_congestion_cutoff;
         double Q_n_current_value = Q_n;
         link_DOC = DOC;
-        // will revisit again
-        if (DOC < dc_transition_ratio)  // free flow regime
-        {
+        //// will revisit again
+        //if (DOC < dc_transition_ratio)  // free flow regime
+        //{
 
-            double vf_alpha = (1.0 + alpha) * vf / max(0.0001, v_VDF_congestion_cutoff) - 1.0;
-            // fixed to pass through vcutoff point vf/ (1+vf_alpha) = vc / (1+ VDF_alpha) ->
-            // 1+vf_alpha = vf/vc *(1+VDF_alpha)
-            // vf_qlpha =  vf/vc *(1+VDF_alpha) - 1
-            // revised BPR DC
-            double vf_beta = beta; // to be calibrated
-            double vf_avg_speed = vf / (1.0 + vf_alpha * pow(DOC, vf_beta));
-            avg_queue_speed = vf_avg_speed; // rewrite with vf based speed
-            Q_n_current_value = beta;
-            RTT = link_length_in_1km / max(0.01, vf);  // in hour
-        }
+        //    double vf_alpha = (1.0 + alpha) * vf / max(0.0001, v_VDF_congestion_cutoff) - 1.0;
+        //    // fixed to pass through vcutoff point vf/ (1+vf_alpha) = vc / (1+ VDF_alpha) ->
+        //    // 1+vf_alpha = vf/vc *(1+VDF_alpha)
+        //    // vf_qlpha =  vf/vc *(1+VDF_alpha) - 1
+        //    // revised BPR DC
+        //    double vf_beta = beta; // to be calibrated
+        //    double vf_avg_speed = vf / (1.0 + vf_alpha * pow(DOC, vf_beta));
+        //    avg_queue_speed = vf_avg_speed; // rewrite with vf based speed
+        //    Q_n_current_value = beta;
+        //    RTT = link_length_in_1km / max(0.01, vf);  // in hour
+        //}
 
         // BPR
              // step 2: D_ C ratio based on lane-based D and lane-based ultimate hourly capacity,
              // uncongested states D <C
              // congested states D > C, leading to P > 1
 
+
         //step 3.1 fetch vf and v_congestion_cutoff based on fftt, VCTT (to be compartible with transit data, such as waiting time )
         // we could have a period based fftt, so we need to convert fftt to vfree
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
         //step 3.2 calculate speed from VDF based on D/C ratio
-        avg_speed_BPR = vf / (1.0 + alpha * pow(DOC, beta));
+        avg_speed_BPR = free_speed / (1.0 + alpha * pow(DOC, beta));
         //avg_travel_time = fftt * (1+ alpha * pow(DOC, beta)); // Mark: fftt should be vctt
 
 
@@ -1974,32 +1979,6 @@ public:
     int win_count;
     int lose_count;
 };
-
-//
-//class CVDF_Type
-//{
-//public:
-//    CVDF_Type() {}
-//
-//    void record_VDF_data(CPeriod_VDF element)
-//    {
-//        if (tau >= MAX_TIMEPERIODS)
-//            return;
-//
-//            VDF_period_sum.Q_alpha = element.Q_alpha;
-//            VDF_period_sum.Q_beta = element.Q_beta;
-//            VDF_period_sum.Q_cp = element.Q_cp;
-//            VDF_period_sum.Q_n = element.Q_n;
-//            VDF_period_sum.Q_s = element.Q_s;
-//            VDF_period_sum.Q_cd = element.Q_cd;
-//
-//        VDF_period_sum.vdf_data_count++;
-//    }
-//
-//
-//    std::string vdf_code;
-//    CPeriod_VDF VDF_period_sum;
-//};
 
 
 

@@ -21,11 +21,6 @@
 #include "pch.h"
 #endif
 
-#ifdef _WIN32
-#define YAML_CPP_STATIC_DEFINE
-#endif
-#include <yaml-cpp/yaml.h>
-
 #include "config.h"
 #include "utils.h"
 #include "DTA.h"
@@ -70,27 +65,25 @@ bool isGlobalPolygon(std::string polygon) {
 
 bool g_read_subarea_CSV_file(Assignment& assignment)
 {
+	CDTACSVParser parser;
+	if (parser.OpenCSVFile("subarea.csv", false))
+	{
+		while (parser.ReadRecord())
+		{
+			string geo_string;
+			if (parser.GetValueByFieldName("geometry", geo_string))
+			{
 
-	YAML::Node config = YAML::LoadFile("settings.yml");
 
-	// Create a vector to hold all the demand file configurations
-	// Check if 'demand_files' is a sequence and iterate over it
-	if (config["subarea_analysis"].IsSequence()) {
-		for (const YAML::Node& node : config["subarea_analysis"]) {
-
-		int activate  = node["activate"].as<int>(0);
-		if (activate == 0)
-			return false;
-
-			std::string geo_string = node["subarea_geometry"].as<std::string>();
-			
 				if (isGlobalPolygon(geo_string) == true && g_zone_vector.size() > 1000)
 				{
-					dtalog.output() << "[PROCESS INFO] The section subarea_geometry currently contains the default global coordinate system, bypassing the need for subarea processing, for a system with more than 1,000 zones." << '\n';
-					g_DTA_log_file << "[PROCESS INFO] The section subarea_geometry currently contains the default global coordinate system, bypassing the need for subarea processing, for a system with more than 1,000 zones." << '\n';
+					dtalog.output() << "[PROCESS INFO] The file 'subarea.csv' currently contains the default global coordinate system, bypassing the need for subarea processing, for a system with more than 1,000 zones." << '\n';
 					break;
 				}
-	
+					
+
+
+
 				// overwrite when the field "geometry" exists
 				CDTAGeometry geometry(geo_string);
 
@@ -108,20 +101,14 @@ bool g_read_subarea_CSV_file(Assignment& assignment)
 					}
 				}
 
-				dtalog.output() << "[PROCESS INFO] Validated subarea_geometry. It contains " << assignment.g_subarea_shape_points.size() << " geometric points. Proceeding to FOCUSING analysis step." << '\n';
-				g_DTA_log_file << "[PROCESS INFO] Validated subarea_geometry. It contains " << assignment.g_subarea_shape_points.size() << " geometric points. Proceeding to FOCUSING analysis step." << '\n';
-
-
-				// the start interation of generating signals, if there is no signals set this number larger than the itertion number
-				assignment.g_max_number_of_super_zones =  node["max_number_of_super_zones"].as<int>(100);
-
+				dtalog.output() << "[PROCESS INFO] Validated subarea.csv. It contains " << assignment.g_subarea_shape_points.size() << " geometric points. Proceeding to FOCUSING analysis step." << '\n';
 
 				break;
 			}
 
 		}
-		
-	
+		parser.CloseCSVFile();
+	}
 
 
 	return true;
@@ -130,81 +117,84 @@ bool g_read_subarea_CSV_file(Assignment& assignment)
 
 void g_read_departure_time_profile(Assignment& assignment)
 {
+	CDTACSVParser parser;
+	
+	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading file departure_time_profile.csv" << '\n';
 
-	dtalog.output() << "[PROCESS INFO] Step 2.0: Reading section departure_time_profile" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 2.0: Reading section departure_time_profile" << '\n';
 
-	YAML::Node config = YAML::LoadFile("settings.yml");
+	if (parser.OpenCSVFile("departure_time_profile.csv", false))
+	{
+		while (parser.ReadRecord())
+		{
+			int departure_time_profile_no = 0;
+			string time_period;
 
-	if (config["departure_time_profile"].IsSequence()) {
-		for (const YAML::Node& node : config["departure_time_profile"]) {
+			CDeparture_time_Profile dep_time;
+
+			if (!parser.GetValueByFieldName("departure_time_profile_no", departure_time_profile_no))
+				break;
+
+			dep_time.departure_time_profile_no = departure_time_profile_no;
+			if (departure_time_profile_no != assignment.g_DepartureTimeProfileVector.size())
 			{
-				int departure_time_profile_no = 0;
-				string time_period;
-
-				CDeparture_time_Profile dep_time;
-				departure_time_profile_no = node["departure_time_profile_no"].as<int>(1);
-
-				dep_time.departure_time_profile_no = departure_time_profile_no;
-				if (departure_time_profile_no != assignment.g_DepartureTimeProfileVector.size())
-				{
-					dtalog.output() << "[ERROR] Field departure_time_profile_no in field departure_time_profile should be sequential as a value of ." << assignment.g_DepartureTimeProfileVector.size() << '\n';
-					g_DTA_log_file << "[ERROR] Field departure_time_profile_no in field departure_time_profile should be sequential as a value of ." << assignment.g_DepartureTimeProfileVector.size() << '\n';
-					departure_time_profile_no = assignment.g_DepartureTimeProfileVector.size();
-
-				}
-
-				vector<float> global_minute_vector;
-
-				time_period = node["time_period"].as<std::string>("0700-0800");
-
-				//input_string includes the start and end time of a time period with hhmm format
-				global_minute_vector = g_time_parser(time_period); //global_minute_vector incldue the starting and ending time
-
-				if (global_minute_vector.size() == 2)
-				{
-					dep_time.starting_time_slot_no = global_minute_vector[0] / MIN_PER_TIMESLOT;  // read the data
-					dep_time.ending_time_slot_no = global_minute_vector[1] / MIN_PER_TIMESLOT;    // read the data from settings.csv
-
-				}
-				else
-				{
-				}
-
-				char time_interval_field_name[20];
-				char time_interval_field_name2[20];
-
-
-				for (int s = dep_time.starting_time_slot_no; s <= dep_time.ending_time_slot_no; s += 1)
-				{
-					int hour = s / 12;
-					int minute = (int)((s / 12.0 - hour) * 60 + 0.5);
-
-					double value = 0;
-
-
-					sprintf(time_interval_field_name, "T%02d%02d", hour, minute);
-
-					dep_time.departure_time_ratio[s]  = node[time_interval_field_name].as<float>(1);
-
-
-					if (s == dep_time.starting_time_slot_no || s == dep_time.ending_time_slot_no)
-					{
-
-						dtalog.output() << "[DATA INFO] At time " << hour << ":" << minute << " (" << time_interval_field_name << ") , the demand ratio is " << value << "." << '\n';
-						g_DTA_log_file << "[DATA INFO] At time " << hour << ":" << minute << " (" << time_interval_field_name << ") , the demand ratio is " << value << "." << '\n';
-
-					}
-
-				}
-
-				dep_time.compute_cumulative_profile(dep_time.starting_time_slot_no, dep_time.ending_time_slot_no, true);
-				assignment.g_DepartureTimeProfileVector.push_back(dep_time);
-
+				dtalog.output() << "[ERROR] Field departure_time_profile_no in field departure_time_profile should be sequential as a value of ." << assignment.g_DepartureTimeProfileVector.size() << '\n';
+				g_program_stop();
 
 			}
 
+			vector<float> global_minute_vector;
+
+			if (!parser.GetValueByFieldName("time_period", time_period))
+			{
+				dtalog.output() << "[ERROR] Field time_period in field departure_time_profile cannot be read." << '\n';
+				g_program_stop();
+			}
+
+
+			//input_string includes the start and end time of a time period with hhmm format
+			global_minute_vector = g_time_parser(time_period); //global_minute_vector incldue the starting and ending time
+
+			if (global_minute_vector.size() == 2)
+			{
+				dep_time.starting_time_slot_no = global_minute_vector[0] / MIN_PER_TIMESLOT;  // read the data
+				dep_time.ending_time_slot_no = global_minute_vector[1] / MIN_PER_TIMESLOT;    // read the data from settings.csv
+
+			}
+
+			char time_interval_field_name[20];
+			char time_interval_field_name2[20];
+
+
+			for (int s = dep_time.starting_time_slot_no; s <= dep_time.ending_time_slot_no; s += 1)
+			{
+				int hour = s / 12;
+				int minute = (int)((s / 12.0 - hour) * 60 + 0.5);
+
+				double value = 0;
+
+
+				sprintf(time_interval_field_name, "T%02d%02d", hour, minute);
+
+				if (parser.GetValueByFieldName(time_interval_field_name, value, false) == true)
+				{
+					dep_time.departure_time_ratio[s] = value;
+				}
+
+				if (s == dep_time.starting_time_slot_no || s == dep_time.ending_time_slot_no)
+				{
+
+					dtalog.output() << "[DATA INFO] At time " << hour << ":" << minute << " (" << time_interval_field_name <<") , the demand ratio is " << value << "." << '\n';
+
+				}
+
+			}
+
+			dep_time.compute_cumulative_profile(dep_time.starting_time_slot_no, dep_time.ending_time_slot_no, true);
+			assignment.g_DepartureTimeProfileVector.push_back(dep_time);
+
+
 		}
+
 	}
 }
 
@@ -215,39 +205,49 @@ double g_pre_read_demand_file(Assignment& assignment)
 
 	CDTACSVParser parser;
 	
-	// Define a struct to hold the demand file information
-	struct DemandFile {
-		std::string file_name;
-		std::string demand_period;
-		std::string format_type;
-	};
 
-	assignment.summary_file << "pre-read demand_file_list section." << '\n';
+	assignment.summary_file << "pre-read demand_file_list.csv." << '\n';
 
 	//The aim of preloading the demand matrix under the subarea scenario is to gain insights into the structure of the Origin - Destination(OD) demand
 	//	across the entire network.By doing so, we can identify critical OD pairsand zones based on their relevanceand importance.This understanding aids in the subsequent loading 
 	//	of the demand matrix, enabling a more focusedand efficient approach.Consequently, this process allows for a significant reduction in the number of zones, 
 	//	enhancing the efficiencyand performance of our traffic assignment tasks*/
 
-	YAML::Node config = YAML::LoadFile("settings.yml");
 
-	// Create a vector to hold all the demand file configurations
-	std::vector<DemandFile> demandFiles;
+	if (parser.OpenCSVFile("demand_file_list.csv", false))
+	{
+		while (parser.ReadRecord())
+		{
+			int this_departure_time_profile_no = 0;
 
-	// Check if 'demand_files' is a sequence and iterate over it
-	if (config["demand_files"].IsSequence()) {
-		for (const YAML::Node& node : config["demand_files"]) {
+			int file_sequence_no = 1;
+
+			string format_type = "null";
+
+			int demand_format_flag = 0;
+
+			if (!parser.GetValueByFieldName("file_sequence_no", file_sequence_no))
+				break;
+
+			// skip negative sequence no
+			if (file_sequence_no <= -1)
+				continue;
 
 			double loading_scale_factor = 1.0;
-			string demand_period_str, mode_type;
+			string file_name, demand_period_str, mode_type;
+			parser.GetValueByFieldName("file_name", file_name);
+			parser.GetValueByFieldName("demand_period", demand_period_str);
+			parser.GetValueByFieldName("format_type", format_type);
 
-			DemandFile df;
-			df.file_name = node["file_name"].as<std::string>("demand.csv");
-			df.format_type = node["format_type"].as<std::string>("column");
 
-			demandFiles.push_back(df);
+			if (format_type.find("null") != string::npos)  // skip negative sequence no
+			{
+				dtalog.output() << "[ERROR] Please provide format_type in section [demand_file_list.]" << '\n';
+				g_program_stop();
+			}
 
-			if (df.format_type.find("column") != string::npos || df.format_type.find("bin") != string::npos)  // or muliti-column
+
+			if (format_type.find("column") != string::npos || format_type.find("bin") != string::npos)  // or muliti-column
 			{
 
 				// try to detect if we have a route.csv as preload file, if yes, we skip the following reading .
@@ -273,16 +273,14 @@ double g_pre_read_demand_file(Assignment& assignment)
 				{
 					file_format = 2;
 					dtalog.output() << "[STATUS INFO] pre-reading demand.bin in fast binary file reading mode." << '\n';
-					g_DTA_log_file << "[STATUS INFO] pre-reading demand.bin in fast binary file reading mode." << '\n';
 				}
 
 
-				if (file_format == 0 && df.format_type.find("column") != string::npos)
+				if (file_format == 0 && format_type.find("column") != string::npos)
 				{
-					if (parser.OpenCSVFile(df.file_name, false) == false)
+					if (parser.OpenCSVFile(file_name, false) == false)
 					{
-						dtalog.output() << "[ERROR] column file " << df.file_name.c_str() << " does not exist." << '\n';
-						g_DTA_log_file << "[ERROR] column file " << df.file_name.c_str() << " does not exist." << '\n';
+						dtalog.output() << "[ERROR] column file " << file_name.c_str() << " does not exist." << '\n';
 						break;
 
 					}
@@ -356,7 +354,6 @@ double g_pre_read_demand_file(Assignment& assignment)
 					{
 						int line_no_output = line_no / 1000000;
 						dtalog.output() << "[STATUS INFO] Pre-Reading demand file line no =  " << line_no_output << " million lines" << '\n';
-						g_DTA_log_file << "[STATUS INFO] Pre-Reading demand file line no =  " << line_no_output << " million lines" << '\n';
 					}
 				}  // scan lines
 
@@ -413,41 +410,27 @@ int g_load_demand_from_route_file_in_settings()
 void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 {
 	// Set the column widths and precision for formatting
-	const int fieldWidth = 12;
+	const int fieldWidth = 15;
 	dtalog.output() << "[PROCESS INFO]"; 
-	g_DTA_log_file << "[PROCESS INFO]"; 
 	dtalog.output() << '\n';
-	g_DTA_log_file << '\n';
 
 	dtalog.output() << "";
-	g_DTA_log_file << "";
 	dtalog.output() << std::setw(fieldWidth) << "demand_period and mode_type";
-	g_DTA_log_file << std::setw(fieldWidth) << "demand_period and mode_type";
 	dtalog.output() << std::setw(fieldWidth) << "total_demand";
-	g_DTA_log_file << std::setw(fieldWidth) << "total_demand";
 	dtalog.output() << std::setw(fieldWidth) << "#_of_links";
-	g_DTA_log_file << std::setw(fieldWidth) << "#_of_links";
 	dtalog.output() << std::setw(fieldWidth) << "speed_mph";
-	g_DTA_log_file << std::setw(fieldWidth) << "speed_mph";
 	dtalog.output() << std::setw(fieldWidth) << "speed_kmph";
-	g_DTA_log_file << std::setw(fieldWidth) << "speed_kmph";
-	dtalog.output() << std::setw(fieldWidth) << "length_km";
-	g_DTA_log_file << std::setw(fieldWidth) << "length_km";
+	dtalog.output() << std::setw(fieldWidth) << "length km";
 	dtalog.output() << std::setw(fieldWidth) << "avg_lane_cap";
-	g_DTA_log_file << std::setw(fieldWidth) << "avg_lane_cap";
 	dtalog.output() << std::setw(fieldWidth) << "avg_length_m";
-	g_DTA_log_file << std::setw(fieldWidth) << "avg_length_m";
 	dtalog.output() << '\n';
-	g_DTA_log_file << '\n';
 
 	for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
 	{
 		for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 		{
 			dtalog.output() << std::setw(fieldWidth) << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << "," << assignment.g_ModeTypeVector[at].mode_type.c_str();
-			g_DTA_log_file << std::setw(fieldWidth) << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << "," << assignment.g_ModeTypeVector[at].mode_type.c_str();
 			dtalog.output() << std::setw(fieldWidth) << assignment.total_demand[at][tau] << "";
-			g_DTA_log_file << std::setw(fieldWidth) << assignment.total_demand[at][tau] << "";
 		
 
 			int link_count = 0;
@@ -458,13 +441,13 @@ void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 
 			for (int i = 0; i < g_link_vector.size(); i++)
 			{
-				if (g_link_vector[i].link_type >= 0 && g_link_vector[i].AllowModeType(assignment.g_ModeTypeVector[at].mode_type, tau))
+				if (g_link_vector[i].link_type_si[0] >= 0 && g_link_vector[i].AllowModeType(assignment.g_ModeTypeVector[at].mode_type, tau, assignment.active_scenario_index))
 				{
 					link_count++;
 					total_speed += g_link_vector[i].free_speed;
-					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes;
+					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 					total_lane_capacity += g_link_vector[i].lane_capacity;
-					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes;
+					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 				}
 			}
 
@@ -472,24 +455,16 @@ void g_check_demand_volume_with_mode_type_log(Assignment& assignment)
 			const int precision = 2;
 
 			dtalog.output() << std::setw(fieldWidth) << link_count;
-			g_DTA_log_file << std::setw(fieldWidth) << link_count;
 			dtalog.output() << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_speed / max(1, link_count));
-			g_DTA_log_file << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_speed / max(1, link_count));
 			dtalog.output() << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_speed / max(1, link_count) * 1.60934);
-			g_DTA_log_file << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_speed / max(1, link_count) * 1.60934);
 			dtalog.output() << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_length / 1000.0);
-			g_DTA_log_file << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_length / 1000.0);
 			dtalog.output() << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_lane_capacity / max(1, link_count));
-			g_DTA_log_file << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_lane_capacity / max(1, link_count));
 			dtalog.output() << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_length / max(1, link_count)) << '\n';
-			g_DTA_log_file << std::setw(fieldWidth) << std::fixed << std::setprecision(precision) << (total_length / max(1, link_count)) << '\n';
 
 			if (assignment.total_demand[at][tau] > 0 && link_count == 0)
 			{
 				dtalog.output() << "[ERROR] Demand period = " << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ", mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has a total demand of " << assignment.total_demand[at][tau] << ", but this mode type is not allowed on any link in the network." << '\n';
-				g_DTA_log_file << "[ERROR] Demand period = " << assignment.g_DemandPeriodVector[tau].demand_period.c_str() << ", mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has a total demand of " << assignment.total_demand[at][tau] << ", but this mode type is not allowed on any link in the network." << '\n';
- 				dtalog.output() << "Please check the section link_type file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
-				g_DTA_log_file << "Please check the section link_type file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
+				dtalog.output() << "Please check the link_type.csv file to see if the 'allowed_uses_p1' field allows this type of travel demand for major facilities, such as real-time information or HOV for highway facilities." << '\n';
 
 				g_program_stop();
 			}
@@ -516,13 +491,13 @@ void g_check_demand_volume_with_mode_type(Assignment& assignment)
 
 			for (int i = 0; i < g_link_vector.size(); i++)
 			{
-				if (g_link_vector[i].link_type >= 0 && g_link_vector[i].AllowModeType(assignment.g_ModeTypeVector[at].mode_type, tau))
+				if (g_link_vector[i].link_type_si[0] >= 0 && g_link_vector[i].AllowModeType(assignment.g_ModeTypeVector[at].mode_type, tau, assignment.active_scenario_index))
 				{
 					link_count++;
 					total_speed += g_link_vector[i].free_speed;
-					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes;
-					total_lane_capacity += g_link_vector[i].capacity;
-					total_link_capacity += g_link_vector[i].capacity * g_link_vector[i].number_of_lanes;
+					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
+					total_lane_capacity += g_link_vector[i].lane_capacity;
+					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 				}
 			}
 			assignment.summary_file << link_count << "," <<
@@ -538,7 +513,7 @@ void g_check_demand_volume_with_mode_type(Assignment& assignment)
 }
 
 
-void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
+void g_create_subarea_related_zone_structure()
 {
 
 	//The code is analyzing various zones for demand, determining which zones are "inside" or "outside" a certain area, and then adjusting the zone list based on certain criteria.
@@ -604,16 +579,13 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 	// pre read demand
 
 	dtalog.output() << "[PROCESS INFO] Step 1.8: Preloading Origin-Destination (OD) demand data as part of the focusing approach. " <<  '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.8: Preloading Origin-Destination (OD) demand data as part of the focusing approach. " <<  '\n';
 
 	double total_preload_demand = g_pre_read_demand_file(assignment);
 
 
-
+	dtalog.output() << "[DATA INFO] total pre-load demand = " << total_preload_demand << '\n';
 	if (total_preload_demand <= 0.001)
 	{
-		dtalog.output() << "[ERROR] demand is missing " <<'\n';
-		g_DTA_log_file << "[ERROR] demand is missing " <<'\n';
 		g_program_stop();
 	}
 	else
@@ -621,11 +593,11 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 		// first stage: scan all origin zones
 		// output: g_zone_vector[orig].subarea_significance_flag: true for inside zone, and related zone
 		// total_related_demand: inside to all, outside passing to all
-		//assignment.log_subarea_focusing_file << "[PROCESS INFO] Starting 0 stage: Scanning all origin zones, determine the cut off for the zones inside...\n";
+		assignment.log_subarea_focusing_file << "[PROCESS INFO] Starting 0 stage: Scanning all origin zones, determine the cut off for the zones inside...\n";
 
 		std::vector <float> significant_subarea_inside_origin_zone_volumes;
 
-		//// Loop through all origin zones
+		// Loop through all origin zones
 
 
 		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
@@ -650,7 +622,7 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 			// Sort the vector in ascending order, this is a simple bubble sorting method 
 			std::sort(significant_subarea_inside_origin_zone_volumes.begin(), significant_subarea_inside_origin_zone_volumes.end());
 
-			int subarea_cutoff_zone_size = 1000;
+			int subarea_cutoff_zone_size = 10; 
 			// Determine the cut-off index for the inside zones 
 			int cut_off_subarea_inside_zone_index = (significant_subarea_inside_origin_zone_volumes.size() - subarea_cutoff_zone_size <= 0) ? 0 : significant_subarea_inside_origin_zone_volumes.size() - subarea_cutoff_zone_size;
 			// Get the volume at the cut-off index
@@ -772,27 +744,30 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 		assignment.summary_file << ",# related_external_zone_count_with_significant_volume = " << related_external_zone_count_with_significant_volume << '\n';
 
 		dtalog.output() << "[DATA INFO] Initiating the first stage of the subarea scanning process, where we determine cut-off zones.\n";
-		g_DTA_log_file << "[DATA INFO] Initiating the first stage of the subarea scanning process, where we determine cut-off zones.\n";
 
 		// Information about the number of inside zones and total related demand.
 		dtalog.output() << "[DATA INFO] Total demand related to these zones : " << total_related_demand << ".\n";
-		g_DTA_log_file << "[DATA INFO] Total demand related to these zones : " << total_related_demand << ".\n";
+		float total_zone_count = inside_significant_zone_count + inside_insignificant_zone_count + related_external_zone_count;
+		float ratio_total_demand_to_zones = total_related_demand / max(total_zone_count, 1);
+
+		dtalog.output() << "[DATA INFO] Ratio of total demand to number of zones: " << ratio_total_demand_to_zones << ".\n";
 
 		dtalog.output() << "[DATA INFO] Number of significant zones inside the subarea: " << inside_significant_zone_count << ". Total related demand inside significant zones: " << total_related_demand_inside_signifant << ".\n";
-		g_DTA_log_file << "[DATA INFO] Number of significant zones inside the subarea: " << inside_significant_zone_count << ". Total related demand inside significant zones: " << total_related_demand_inside_signifant << ".\n";
-		float ratio_significant = inside_significant_zone_count / max(1, inside_significant_zone_count + inside_insignificant_zone_count); 
-		dtalog.output() << "[DATA INFO] Number of insignificant zones inside the subarea: " << inside_insignificant_zone_count << ". Total related demand inside insignificant zones: " << total_related_demand_inside_insignifant << ".\n";
-		g_DTA_log_file << "[DATA INFO] Number of insignificant zones inside the subarea: " << inside_insignificant_zone_count << ". Total related demand inside insignificant zones: " << total_related_demand_inside_insignifant << ".\n";
-		dtalog.output() << "[DATA INFO] Ratio of total significant zone to  zones inside the subarea: " << ratio_significant << ".\n";
-		g_DTA_log_file << "[DATA INFO] Ratio of total significant zone to  zones inside the subarea: " << ratio_significant << ".\n";
+		float ratio_significant = (inside_significant_zone_count > 0) ? total_related_demand_inside_signifant / inside_significant_zone_count : 0;
+		dtalog.output() << "[DATA INFO] Ratio of total demand to significant zones inside the subarea: " << ratio_significant << ".\n";
+
 		// Information about the number of inside zones and total related demand from internal zones.
+		dtalog.output() << "[DATA INFO] Number of insignificant zones inside the subarea: " << inside_insignificant_zone_count << ". Total related demand inside insignificant zones: " << total_related_demand_inside_insignifant << ".\n";
+		float ratio_insignificant = (inside_insignificant_zone_count > 0) ? total_related_demand_inside_insignifant / inside_insignificant_zone_count : 0;
+		dtalog.output() << "[DATA INFO] Ratio of total demand to insignificant zones inside the subarea: " << ratio_insignificant << ".\n";
+
 		// Information about the number of external zones related to the subarea and total related demand from external zones.
 		dtalog.output() << "[DATA INFO] Number of external zones related to the subarea: " << related_external_zone_count << ". Total demand related to the subarea from these external zones: " << total_related_demand_from_external << ".\n";
-		g_DTA_log_file << "[DATA INFO] Number of external zones related to the subarea: " << related_external_zone_count << ". Total demand related to the subarea from these external zones: " << total_related_demand_from_external << ".\n";
+		float ratio_external = (related_external_zone_count > 0) ? total_related_demand_from_external / related_external_zone_count : 0;
+		dtalog.output() << "[DATA INFO] Ratio of total demand to external zones related to the subarea: " << ratio_external << ".\n";
 
 		// Information about the number of external zones related to the subarea with significant volume.
 		dtalog.output() << "[DATA INFO] Number of external zones related to the subarea with significant volume: " << related_external_zone_count_with_significant_volume << ".\n";
-		g_DTA_log_file << "[DATA INFO] Number of external zones related to the subarea with significant volume: " << related_external_zone_count_with_significant_volume << ".\n";
 
 		// use the following rule to determine how many zones to keep as origin zones, we still keep all destination zones
 		int cutoff_zone_size = min(g_zone_vector.size(), static_cast<size_t>(max(related_external_zone_count_with_significant_volume * 0.25, 100.0)));
@@ -801,7 +776,6 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 		if ((cutoff_zone_size + inside_significant_zone_count) < g_zone_vector.size()) {
 
 			dtalog.output() << "[PROCESS INFO] Handling additional zones...\n";
-			g_DTA_log_file << "[PROCESS INFO] Handling additional zones...\n";
 
 			// Vector to hold the volume of significant origin zones
 			std::vector <float> significant_origin_zone_volumes;
@@ -818,7 +792,6 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 			// Check if the vector has elements
 			if (significant_origin_zone_volumes.size() > 0) {
 				dtalog.output() << "[PROCESS INFO] Sorting zone volumes...\n";
-				g_DTA_log_file << "[PROCESS INFO] Sorting zone volumes...\n";
 
 				// Sort the vector in ascending order
 				std::sort(significant_origin_zone_volumes.begin(), significant_origin_zone_volumes.end());
@@ -838,7 +811,6 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 						// If the volume of the zone is less than the cut-off value, set the zone to non-significant
 						if (g_zone_vector[orig].origin_zone_impact_volume < volume_cut_off_value && log_non_significant_count <3) {
 							dtalog.output() << "[PROCESS INFO] Zone " << orig << " is non-significant.\n";
-							g_DTA_log_file << "[PROCESS INFO] Zone " << orig << " is non-significant.\n";
 							log_non_significant_count++;
 							g_zone_vector[orig].subarea_significance_flag = false;
 							g_zone_vector[orig].subarea_inside_flag = 1;  // zone is set to boundary
@@ -847,7 +819,6 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 							if(log_significantly_related_count<3)
 							{
 							dtalog.output() << "[PROCESS INFO] Zone " << orig << " is significantly related.\n";
-							g_DTA_log_file << "[PROCESS INFO] Zone " << orig << " is significantly related.\n";
 							log_significantly_related_count++; 
 							}
 
@@ -871,14 +842,10 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 
 
 		dtalog.output() << "[DATA INFO]" << " During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones " << '\n';
-		g_DTA_log_file << "[DATA INFO]" << " During the second stage of cut off, the cut off zone includes all inside zones along with significant external related zones " << '\n';
 		dtalog.output() << "[DATA INFO]" << " # cut-off zone size = " << cutoff_zone_size << ",  total related demand from external cut-off  = " << total_related_demand_from_external_cutoff << '\n';
-		g_DTA_log_file << "[DATA INFO]" << " # cut-off zone size = " << cutoff_zone_size << ",  total related demand from external cut-off  = " << total_related_demand_from_external_cutoff << '\n';
 		dtalog.output() << "[DATA INFO]" << " Cut-off volume threshold to determine significance = " << volume_cut_off_value << ". External origin zones with a volume larger than this threshold will be retained." << '\n';
-		g_DTA_log_file << "[DATA INFO]" << " Cut-off volume threshold to determine significance = " << volume_cut_off_value << ". External origin zones with a volume larger than this threshold will be retained." << '\n';
 		cut_off_demand_ratio = total_related_demand_from_external_cutoff / max(0.001, total_related_demand_from_external);
 		dtalog.output() << "[DATA INFO]" << " Remaining external related demand percentage after the cut-off:  = " << cut_off_demand_ratio * 100 << " %" << '\n';
-		g_DTA_log_file << "[DATA INFO]" << " Remaining external related demand percentage after the cut-off:  = " << cut_off_demand_ratio * 100 << " %" << '\n';
 
 	}
 
@@ -991,12 +958,12 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 		// end of generating analaysis district
 
 
-		if (g_related_zone_vector_size >= max_number_of_super_zones)  // 
+		if (g_related_zone_vector_size >= 30000)  // do not use this function for now.
 		{
 			// k mean method
 			//random select 300 zones then find the closest zone to aggregate
 
-			double super_zone_ratio = max_number_of_super_zones *1.0 / g_related_zone_vector_size;
+			double super_zone_ratio = 300.0 / g_related_zone_vector_size;
 
 			int super_zone_index = assignment.g_number_of_analysis_districts + 1;  // automated district  id start from the externally given district id
 
@@ -1004,21 +971,6 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 			{
 				if (g_zone_vector[orig].sindex >= 0)  // no significant: skip
 				{
-					double selection_ratio = 1; 
-
-					if (g_zone_vector[orig].subarea_inside_flag == 3) //inside 
-					{
-						selection_ratio = super_zone_ratio * 2;
-					}
-					if (g_zone_vector[orig].subarea_inside_flag == 2) //significant outside 
-					{
-						selection_ratio = super_zone_ratio * 0.7;
-					}
-					if (g_zone_vector[orig].subarea_inside_flag == 1) //less significant outside 
-					{
-						selection_ratio = super_zone_ratio * 0.2;
-					}
-
 					if (g_get_random_ratio() < super_zone_ratio)
 					{
 						g_zone_vector[orig].superzone_index = super_zone_index;
@@ -1090,9 +1042,7 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 	
 	double non_related_zone_ratio = non_impact_zone_count * 1.0 / g_zone_vector.size();
 	dtalog.output() <<"[DATA INFO] "<< non_impact_zone_count << " zones are not significantly related to the subarea, accounting for " << non_related_zone_ratio * 100 << " % of the total." << '\n';
-	g_DTA_log_file <<"[DATA INFO] "<< non_impact_zone_count << " zones are not significantly related to the subarea, accounting for " << non_related_zone_ratio * 100 << " % of the total." << '\n';
 	dtalog.output() << "[DATA INFO] "<<inside_significant_zone_count << " zones are inside the subarea. " << '\n';
-	g_DTA_log_file << "[DATA INFO] "<<inside_significant_zone_count << " zones are inside the subarea. " << '\n';
 
 
 
@@ -1100,10 +1050,7 @@ void g_create_subarea_related_zone_structure(int max_number_of_super_zones)
 	dtalog.output() << "[DATA INFO] Total demand = " << total_demand << ". Subarea-related demand = " << total_related_demand << " ("
 		<< related_ratio * 100 << "%), accounting for " << (related_ratio) * 100 << "% inside the subarea, i.e. " << (1-related_ratio) * 100 << " % outside the subarea." << '\n';
 
-	g_DTA_log_file << "[DATA INFO] Total demand = " << total_demand << ". Subarea-related demand = " << total_related_demand << " ("
-		<< related_ratio * 100 << "%), accounting for " << (related_ratio) * 100 << "% inside the subarea, i.e. " << (1 - related_ratio) * 100 << " % outside the subarea." << '\n';
-
-		//assignment.summary_file << ",# of subarea related zones =," << g_related_zone_vector_size << '\n';
+	//assignment.summary_file << ",# of subarea related zones =," << g_related_zone_vector_size << '\n';
 	//assignment.summary_file << "," <<" # of inside zones = " << inside_significant_zone_count <<  '\n';
 	//assignment.summary_file << "," << " # of related outside zones = " << related_external_zone_count << '\n';
 }
@@ -1131,8 +1078,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 	// subarea handling step 1: reading
 
-	dtalog.output() << "[PROCESS INFO] Step 1.7: reading section subarea" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.7: reading section subarea" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.7: reading input subarea.csv" << '\n';
 	g_read_subarea_CSV_file(assignment);
 	// subarea handling step 2:
 	// for each OD
@@ -1142,7 +1088,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 		for (int orig = 0; orig < g_zone_vector.size(); orig++)  // o
 		{
-			g_zone_vector[orig].subarea_inside_flag = 0;  //reset the subarea inside flag to 0 once there is a subarea
+			g_zone_vector[orig].subarea_inside_flag = 0;  //reset the subarea inside flag to 0 once there is a subarea.csv
 		}
 
 
@@ -1172,7 +1118,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 		// create subarea_related_zone information
 
 
-			g_create_subarea_related_zone_structure(assignment.g_max_number_of_super_zones);
+			g_create_subarea_related_zone_structure();
 
 	}
 
@@ -1187,80 +1133,89 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 	CDTACSVParser parser;
 	
-	dtalog.output() << "[PROCESS INFO] Step 2.1: Reading file demand_file_list section..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 2.1: Reading file demand_file_list section..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 2.1: Reading file demand_file_list.csv..." << '\n';
 
-
-	// Define a struct to hold the demand file information
-	struct DemandFile {
-		int file_sequence_no;
-		std::string file_name;
-		std::string demand_period;
-		std::string mode_type;
-		std::string format_type;
-		float scale_factor;
-		int departure_time_profile_no;
-	};
-
-	assignment.summary_file << "[PROCESS INFO] Step 2.1: read demand, defined in demand_files section." << '\n';
+	assignment.summary_file << "[PROCESS INFO] Step 2.1: read demand, defined in demand_file_list.csv." << '\n';
 	int scenario_index_vector_error_count = 0; 
 	int reading_demand_file_log_count = 0;
 
 	int count = 0; 
-	YAML::Node config = YAML::LoadFile("settings.yml");
 
-	// Create a vector to hold all the demand file configurations
-	std::vector<DemandFile> demandFiles;
+	if (parser.OpenCSVFile("demand_file_list.csv", false))
+	{
+		while (parser.ReadRecord())
+		{
+			int this_departure_time_profile_no = 0;
 
-	// Check if 'demand_files' is a sequence and iterate over it
-	if (config["demand_files"].IsSequence()) {
-		for (const YAML::Node& node : config["demand_files"]) {
+			int file_sequence_no = 1;
+
+			string format_type = "null";
+
+			int demand_format_flag = 0;
+
+			if (!parser.GetValueByFieldName("file_sequence_no", file_sequence_no))
+				break;
+
+			// skip negative sequence no
+			if (file_sequence_no <= -1)
+				continue;
 
 			double loading_scale_factor = 1.0;
-			string file_name, demand_period_str, mode_type, format_type;
-			
-			DemandFile df;
-			df.file_sequence_no = node["file_sequence_no"].as<int>(1);
+			string file_name, demand_period_str, mode_type;
+			parser.GetValueByFieldName("file_name", file_name);
+			parser.GetValueByFieldName("demand_period", demand_period_str);
+			parser.GetValueByFieldName("format_type", format_type);
+			parser.GetValueByFieldName("scale_factor", loading_scale_factor, false);
+			parser.GetValueByFieldName("departure_time_profile_no", this_departure_time_profile_no, false);
 
-			df.file_name = node["file_name"].as<std::string>("demand.csv");
-			df.demand_period = node["demand_period"].as<std::string>("am");
-			df.mode_type = node["mode_type"].as<std::string>("auto");
-			df.format_type = node["format_type"].as<std::string>("column");
-			df.scale_factor = node["scale_factor"].as<float>(1);
-			df.departure_time_profile_no = node["departure_time_profile_no"].as<int>(1);
+			string scenario_index_vector_str;
+			if (parser.GetValueByFieldName("scenario_index_vector", scenario_index_vector_str, false, false) == false && count ==0);
+			{
+				dtalog.output() << "[WARNING] Field scenario_index_vector is missing in file demand_file_list.csv." << '\n';
 
-			demandFiles.push_back(df);
-		
-			int file_sequence_no = df.file_sequence_no;
-			file_name = df.file_name;
-			demand_period_str = df.demand_period;
-			mode_type = df.mode_type;
-			format_type = df.format_type;
-			loading_scale_factor = df.scale_factor;
-			int this_departure_time_profile_no = df.departure_time_profile_no;
+			}
+			std::vector<int> scenario_index_vector;
 
+			if (scenario_index_vector_str.size() == 0)  // default for scenario 0
+				scenario_index_vector_str = "0";
 
+			g_ParserIntSequence(scenario_index_vector_str, scenario_index_vector);
+
+			for (int scenario_index_i = 0; scenario_index_i < scenario_index_vector.size(); scenario_index_i++)
+			{
 
 				if(reading_demand_file_log_count <5)
 				{
-				dtalog.output() << "[STATUS INFO] reading demand file " << file_name.c_str () << '\n';
-				g_DTA_log_file << "[STATUS INFO] reading demand file " << file_name.c_str () << '\n';
+				dtalog.output() << "[STATUS INFO] reading demand file " << file_name.c_str () << " for scenario index = " << scenario_index_i << '\n';
 				reading_demand_file_log_count++; 
 				}
 
 
+				assignment.summary_file << "[STATUS INFO] reading demand file for scenario index = " << scenario_index_i << '\n';
 				if (loading_scale_factor < 0.0001)
 					continue;
 
+				int si = scenario_index_vector[scenario_index_i];
+				if (assignment.g_active_DTAscenario_map.find(si) == assignment.g_active_DTAscenario_map.end())
+				{
+					if(scenario_index_vector_error_count <3)
+					{
+					dtalog.output() << "[WARNING] scenario_index = " << si << " in  the field of scenario_index_vector in file demand_file_list.csv  has not been defined in file scenario_file_list.csv." << '\n';
+					scenario_index_vector_error_count++; 
+					}
+					continue;
+				}
 
 
 				if (this_departure_time_profile_no >= assignment.g_DepartureTimeProfileVector.size())
 				{
-					dtalog.output() << "[ERROR] departure_time_profile_no = " << this_departure_time_profile_no << " in  demand_files section has not been defined in section departure_time_profile." << '\n';
-					g_DTA_log_file << "[ERROR] departure_time_profile_no = " << this_departure_time_profile_no << " in  demand_files section has not been defined in section departure_time_profile." << '\n';
-					this_departure_time_profile_no = 0;
+					dtalog.output() << "[ERROR] departure_time_profile_no = " << this_departure_time_profile_no << " in  file demand_file_list.csv  has not been defined in file departure_time_profile.csv." << '\n';
+					g_program_stop();
 
 				}
+
+				if (parser.GetValueByFieldName("mode_type", mode_type, false, false) == false)
+					mode_type = assignment.g_ModeTypeVector[0].mode_type; 
 
 				int mode_type_no = 0;
 				int demand_period_no = 0;
@@ -1279,16 +1234,13 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					if (demand_period_str.size() == 0)
 					{
 						dtalog.output() << "[WARNING] file_sequence_no =" << file_sequence_no << " demand period = is empty in demand_file_list.csv.  " << '\n';
-						g_DTA_log_file << "[WARNING] file_sequence_no =" << file_sequence_no << " demand period = is empty in demand_file_list.csv.  " << '\n';
 						demand_period_no = 0; 
 					}
 					else
 					{
-						dtalog.output() << "[ERROR]  demand_period= " << demand_period_str.c_str() << " in  demand_file_list.csv has not been defined in demand_period.csv." << '\n';
-						g_DTA_log_file << "[ERROR]  demand_period= " << demand_period_str.c_str() << " in  demand_file_list.csv has not been defined in demand_period.csv." << '\n';
-						continue; 
+						dtalog.output() << "[ERROR]  file_sequence_no =" << file_sequence_no << " demand_period= " << demand_period_str.c_str() << " in  demand_file_list.csv has not been defined." << '\n';
 					}
-
+					g_program_stop();
 				}
 
 				//char time_interval_field_name[20];
@@ -1310,8 +1262,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 				if (format_type.find("null") != string::npos)  // skip negative sequence no
 				{
 					dtalog.output() << "[ERROR] Please provide format_type in file demand_file_list." << '\n';
-					g_DTA_log_file << "[ERROR] Please provide format_type in file demand_file_list." << '\n';
-					format_type = "cvs";
+					g_program_stop();
 				}
 
 
@@ -1320,16 +1271,14 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 						mode_type_no = assignment.mode_type_2_seqno_mapping[mode_type];
 					else
 					{
-						dtalog.output() << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files section is not defined in the section mode_type yet." << '\n';
-						g_DTA_log_file << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of demand_files section is not defined in the section mode_type yet." << '\n';
-						mode_type = "auto";
+						dtalog.output() << "[ERROR] mode_type = " << mode_type.c_str() << " in field mode_type of file demand_file_list.csv is not defined in the file mode_type.csv yet." << '\n';
+						g_program_stop();
 					}
 
 				if (demand_period_no > MAX_TIMEPERIODS)
 				{
 					dtalog.output() << "[ERROR] demand_period_no should be less than settings in demand_period section. Please change the parameter settings in the source code." << '\n';
-					g_DTA_log_file << "[ERROR] demand_period_no should be less than settings in demand_period section. Please change the parameter settings in the source code." << '\n';
-					demand_period_no = 0;
+					g_program_stop();
 				}
 
 
@@ -1359,7 +1308,6 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					{
 						// a route file exists
 						dtalog.output() << "[STATUS INFO] route.csv exists as preload file so we skip the reading for the column based demand file." << '\n';
-						g_DTA_log_file << "[STATUS INFO] route.csv exists as preload file so we skip the reading for the column based demand file." << '\n';
 					}
 					else
 					{
@@ -1368,7 +1316,6 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 						{
 							file_format = 2;
 							dtalog.output() << "[STATUS INFO] reading demand.bin in fast binary file reading mode." << '\n';
-							g_DTA_log_file << "[STATUS INFO] reading demand.bin in fast binary file reading mode." << '\n';
 						}
 
 
@@ -1377,9 +1324,8 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							if (parser.OpenCSVFile(file_name, false) == false)
 							{
 								dtalog.output() << "[ERROR] column file " << file_name.c_str() << ".csv does not exist." << '\n';
-								g_DTA_log_file << "[ERROR] column file " << file_name.c_str() << ".csv does not exist." << '\n';
 								assignment.summary_file << "[ERROR] File Missing!,file_sequence_no=," << file_sequence_no << ",file_name =, " << file_name.c_str() << '\n';
-								continue; 
+								g_program_stop();
 
 							}
 							file_format = 1;
@@ -1435,7 +1381,6 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							if (error_count < 10 && missing_zone_map.find(o_zone_id)== missing_zone_map.end())
 							{
 								dtalog.output() << '\n' << "[WARNING] origin zone " << o_zone_id << "  has no activity nodes defined in node.csv or zone.csv." << '\n';
-								g_DTA_log_file << '\n' << "[WARNING] origin zone " << o_zone_id << "  has no activity nodes defined in node.csv or zone.csv." << '\n';
 								missing_zone_map[o_zone_id] = 1;
 							} 
 
@@ -1449,7 +1394,6 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							if (error_count < 10 && missing_zone_map.find(d_zone_id) == missing_zone_map.end())
 							{
 								dtalog.output() << '\n' << "[WARNING] destination zone " << d_zone_id << "  has no activity nodes defined in node.csv or zone.csv." << '\n';
-								g_DTA_log_file << '\n' << "[WARNING] destination zone " << d_zone_id << "  has no activity nodes defined in node.csv or zone.csv." << '\n';
 								missing_zone_map[d_zone_id] = 1;
 							}
 
@@ -1563,18 +1507,17 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							critical_OD_volume += demand_value;
 							critical_OD_count += 1;
 							//dtalog.output() << origin_zone << "," << destination_zone << "," << demand_value << "," << "\"LINESTRING( " <<
-							//g_DTA_log_file << origin_zone << "," << destination_zone << "," << demand_value << "," << "\"LINESTRING( " <<
 							//    assignment.zone_id_X_mapping[origin_zone] << " " << assignment.zone_id_Y_mapping[origin_zone] << "," <<
 							//    assignment.zone_id_X_mapping[destination_zone] << " " << assignment.zone_id_Y_mapping[destination_zone] << ")\" " << '\n';
 
 						}
 
-						g_scenario_summary.record_mode_volume(demand_period_no,mode_type_no, demand_value);
+						g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, demand_value);
 
 						assignment.total_demand[mode_type_no][demand_period_no] += demand_value;
-						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].od_volume += demand_value;
+						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].od_volume[si] += demand_value;
 						assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].departure_time_profile_no = this_departure_time_profile_no;
-						assignment.total_demand_volume += demand_value;
+						assignment.total_demand_volume[si] += demand_value;
 
 						if(assignment.g_ModeTypeVector[mode_type_no].real_time_information_type>=1)
 						{
@@ -1587,22 +1530,17 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 
 
 						// we generate vehicles here for each OD data line
-						if (line_no <= 1 && demand_value >= 0.001)
-						{// read only one line, but has not reached the end of the line
+						if (line_no <= 1 && demand_value >=0.001)  // read only one line, but has not reached the end of the line
 							dtalog.output() << "[DATA INFO] o_zone_id:" << o_zone_id << ", d_zone_id: " << d_zone_id << ", value = " << demand_value << '\n';
-							g_DTA_log_file << "[DATA INFO] o_zone_id:" << o_zone_id << ", d_zone_id: " << d_zone_id << ", value = " << demand_value << '\n';
-						}
+
 						line_no++;
 
 					}
 
-					dtalog.output() << "[DATA INFO] reading file " << file_name.c_str() << ", cumulative total demand volume is " << assignment.total_demand_volume << '\n';
-					g_DTA_log_file << "[DATA INFO] reading file " << file_name.c_str() << ", cumulative total demand volume is " << assignment.total_demand_volume << '\n';
+					dtalog.output() << "[DATA INFO] scenario no: " << si << ", cumulative total demand volume is " << assignment.total_demand_volume[si] << '\n';
 					//dtalog.output() << "crtical demand volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << '\n';
-					//g_DTA_log_file << "crtical demand volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << '\n';
 
 					//dtalog.output() << "crtical OD zones volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << '\n';
-					//g_DTA_log_file << "crtical OD zones volume has " << critical_OD_count << " OD pairs in size," << critical_OD_volume << ", " << ", account for " << critical_OD_volume / max(0.1f, assignment.total_demand_volume) * 100 << "%%" << '\n';
 
 				}
 				else if (format_type.compare("route") == 0)
@@ -1626,7 +1564,6 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							total_path_in_demand_file++;
 							if (total_path_in_demand_file % 1000 == 0)
 								dtalog.output() << "[DATA INFO] total_path_in_demand_file is " << total_path_in_demand_file << '\n';
-								g_DTA_log_file << "[DATA INFO] total_path_in_demand_file is " << total_path_in_demand_file << '\n';
 
 							parser.GetValueByFieldName("o_zone_id", o_zone_id);
 							parser.GetValueByFieldName("d_zone_id", d_zone_id);
@@ -1656,12 +1593,12 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							sum_of_path_volume += agent_path_element.volume;
 
 							assignment.total_demand[mode_type_no][demand_period_no] += agent_path_element.volume;
-							assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].od_volume += agent_path_element.volume;
+							assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].od_volume[si] += agent_path_element.volume;
 							assignment.g_column_pool[from_zone_sindex][to_zone_sindex][mode_type_no][demand_period_no].departure_time_profile_no = this_departure_time_profile_no;
-							assignment.total_demand_volume += agent_path_element.volume;
+							assignment.total_demand_volume[si] += agent_path_element.volume;
 							assignment.g_origin_demand_array[from_zone_seq_no] += agent_path_element.volume;
 
-							g_scenario_summary.record_mode_volume(demand_period_no,mode_type_no, agent_path_element.volume);
+							g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, agent_path_element.volume);
 							//apply for both agent csv and routing policy
 							assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][mode_type_no][demand_period_no].bfixed_route = true;
 
@@ -1739,15 +1676,13 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							}
 						}
 						dtalog.output() << "[DATA INFO] total_demand_volume loaded from path file is " << sum_of_path_volume << " with " << path_counts << "paths." << '\n';
-						g_DTA_log_file << "[DATA INFO] total_demand_volume loaded from path file is " << sum_of_path_volume << " with " << path_counts << "paths." << '\n';
 
 					}
 					else
 					{
 						//open file
 						dtalog.output() << "[ERROR] File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
-						g_DTA_log_file << "[ERROR] File " << file_name << " cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
-						continue; 
+						g_program_stop();
 					}
 				}
 				else if (format_type.compare("activity_chain") == 0)
@@ -1755,11 +1690,10 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					////////////////////////
 	// Step 1.3: Reading choice_set.csv...
 					dtalog.output() << "[PROCESS INFO] Step 1.3: Reading choice_set.csv..." << '\n';
-					g_DTA_log_file << "[PROCESS INFO] Step 1.3: Reading choice_set.csv..." << '\n';
 					assignment.summary_file << "[PROCESS INFO] Step 1.3: Reading choice_set.csv..." << '\n';
 
 					CDTACSVParser parser_choice_set;
-					int Field_volume_log_count = 0; 
+
 					if (parser_choice_set.OpenCSVFile("choice_set.csv", false))
 					{
 						while (parser_choice_set.ReadRecord())
@@ -1778,8 +1712,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							if (!parser_choice_set.GetValueByFieldName("multi_dim_choice_id", multi_id))
 							{
 								dtalog.output() << "[ERROR] Field multi_dim_choice_id in file choice_set.csv cannot be read." << '\n';
-								g_DTA_log_file << "[ERROR] Field multi_dim_choice_id in file choice_set.csv cannot be read." << '\n';
-								continue; 
+								g_program_stop();
 							}
 
 							std::string mode_tag, demand_period_tag, spatial_tag, travel_purpose_tag, data_tag;
@@ -1789,6 +1722,8 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							parser_choice_set.GetValueByFieldName("spatial_tag", spatial_tag);
 							parser_choice_set.GetValueByFieldName("travel_purpose_tag", travel_purpose_tag);
 							parser_choice_set.GetValueByFieldName("data_tag", data_tag);
+
+							assignment.g_ChoiceSetMap[multi_id].active_scenario_index = si;
 							assignment.g_ChoiceSetMap[multi_id].multi_dim_choice_id = multi_id;
 							assignment.g_ChoiceSetMap[multi_id].choice_set_index = index;
 
@@ -1811,24 +1746,21 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 							if (!parser_choice_set.GetValueByFieldName("choice_alternative_id", choice_alt.choice_alternative_id))
 							{
 								dtalog.output() << "[ERROR] Field choice_alternative_id in file choice_set.csv cannot be read." << '\n';
-								g_DTA_log_file << "[ERROR] Field choice_alternative_id in file choice_set.csv cannot be read." << '\n';
-								continue; 
+								g_program_stop();
 							}
 
 							std::string activity_travel_pattern_id;
 							if (!parser_choice_set.GetValueByFieldName("activity_travel_pattern_id", activity_travel_pattern_id))
 							{
 								dtalog.output() << "[ERROR] Field activity_travel_pattern_id in file choice_set.csv cannot be read." << '\n';
-								g_DTA_log_file << "[ERROR] Field activity_travel_pattern_id in file choice_set.csv cannot be read." << '\n';
-								continue;
+								g_program_stop();
 							}
 
 							std::string activity_zone_vector_str;
 							if (!parser_choice_set.GetValueByFieldName("zone_chain", activity_zone_vector_str))
 							{
 								dtalog.output() << "[ERROR] Field zone_chain in file activity_travel_pattern.csv cannot be read." << '\n';
-								g_DTA_log_file << "[ERROR] Field zone_chain in file activity_travel_pattern.csv cannot be read." << '\n';
-								continue;
+								g_program_stop();
 							}
 
 							choice_alt.activity_zone_chain_str = activity_zone_vector_str;
@@ -1840,19 +1772,16 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 								if (number_of_odpairs != assignment.g_ActivityTravelPatternMap[activity_travel_pattern_id].number_of_trips + 1)
 								{
 									dtalog.output() << "[ERROR] number_of_trips != assignment.g_ActivityTravelPatternMap[activity_travel_pattern_id].number_of_trips in file activity_travel_pattern.csv and choice_set.csv." << '\n';
-									g_DTA_log_file << "[ERROR] number_of_trips != assignment.g_ActivityTravelPatternMap[activity_travel_pattern_id].number_of_trips in file activity_travel_pattern.csv and choice_set.csv." << '\n';
-									continue; 
+									g_program_stop();
 								}
 							}
 
 
 							float volume = 0;
-							if (!parser_choice_set.GetValueByFieldName("volume", volume) && Field_volume_log_count<=2)
+							if (!parser_choice_set.GetValueByFieldName("volume", volume))
 							{
 								dtalog.output() << "[ERROR] Field volume in file activity_travel_pattern.csv cannot be read." << '\n';
-								g_DTA_log_file << "[ERROR] Field volume in file activity_travel_pattern.csv cannot be read." << '\n';
-								Field_volume_log_count++; 
-								continue; 
+								g_program_stop();
 							}
 
 							choice_alt.multi_dim_choice_id = multi_id;
@@ -1914,10 +1843,10 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 									choice_alt.activity_chain.push_back(s_alt);
 
 									assignment.total_demand[mode_type_no][demand_period_no] += volume;
-									assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][mode_type_no][demand_period_no].od_volume += volume;
-									assignment.total_demand_volume += volume;
+									assignment.g_column_pool[from_zone_seq_no][to_zone_seq_no][mode_type_no][demand_period_no].od_volume[si] += volume;
+									assignment.total_demand_volume[si] += volume;
 									assignment.g_origin_demand_array[from_zone_seq_no] += volume;
-									g_scenario_summary.record_mode_volume(demand_period_no,mode_type_no, volume);
+									g_scenario_summary_map[si].record_mode_volume(demand_period_no,mode_type_no, volume);
 								}
 								//end of trip leg loop
 
@@ -1929,8 +1858,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 								if (assignment.g_ChoiceSetMap.size() == 0)
 								{
 									dtalog.output() << "[ERROR] file choice_set has no information." << '\n';
-									g_DTA_log_file << "[ERROR] file choice_set has no information." << '\n';
-									continue; 
+									g_program_stop();
 								}
 							}
 						}
@@ -1939,13 +1867,12 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 					else
 					{
 						dtalog.output() << "[ERROR] File choice_set.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
-						g_DTA_log_file << "[ERROR] File choice_set.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
-						continue; 
+						g_program_stop();
 					}
 
 
 				}
-		
+			}
 		}
 	}
 	/////
@@ -1957,7 +1884,7 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 	///  subarea
 	/// </summary>
 	/// <param name="assignment"></param>
-	/*assignment.summary_file << ",total demand =, " << assignment.total_demand_volume << '\n';*/
+	/*assignment.summary_file << ",total demand =, " << assignment.total_demand_volume[si] << '\n';*/
 
 	g_check_demand_volume_with_mode_type(assignment);
 
@@ -1985,12 +1912,12 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)  //tau
 				{
 					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
-					if (p_column_pool->od_volume > 0)
+					if (p_column_pool->od_volume[assignment.active_scenario_index] > 0)
 					{
 						CODState ods;
 						ods.setup_input(orig, dest, at, tau, inside_flag_from, inside_flag_to);
 
-						float passing_demand = p_column_pool->od_volume;
+						float passing_demand = p_column_pool->od_volume[assignment.active_scenario_index];
 						if (g_zone_vector[orig].impact_passing_ODdemand.find(dest) != g_zone_vector[orig].impact_passing_ODdemand.end())
 						{
 							passing_demand = g_zone_vector[orig].impact_passing_ODdemand[dest];
@@ -2024,12 +1951,10 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 	}
 
 
+	std::sort(ODStateVector.begin(), ODStateVector.end());
 
 	if(ODStateVector.size()>0)
 	{ 
-
-		std::sort(ODStateVector.begin(), ODStateVector.end());
-
 	assignment.summary_file << "FOCUSING internal step 2: Origin-based flow extraction,top 10 OD,rank,o,d,inside_flag_o,inside_flag_d,mode_type,departure_time,volume" << '\n';
 
 	for (int k = 0; k < min(size_t(100), ODStateVector.size()); k++)
@@ -2045,13 +1970,12 @@ void g_ReadDemandFileBasedOnDemandFileList(Assignment& assignment)
 			<< "," << ODStateVector[k].value << '\n';
 	}
 
-	}
+
 }
 
 void g_ReadOutputFileConfiguration(Assignment& assignment)
 {
 	dtalog.output() << "[PROCESS INFO] Step 1.9: Reading file section [output_file_configuration] in settings.csv..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.9: Reading file section [output_file_configuration] in settings.csv..." << '\n';
 
 	CDTACSVParser parser;
 	if (parser.OpenCSVFile("settings.csv", false))
@@ -2070,9 +1994,7 @@ void g_ReadOutputFileConfiguration(Assignment& assignment)
 
 
 			dtalog.output() << "[DATA INFO] dynamic_link_performance_sampling_interval_in_min = " << assignment.td_link_performance_sampling_interval_in_min << " min" << '\n';
-			g_DTA_log_file << "[DATA INFO] dynamic_link_performance_sampling_interval_in_min = " << assignment.td_link_performance_sampling_interval_in_min << " min" << '\n';
 			dtalog.output() << "[DATA INFO] dynamic_link_performance_sampling_interval_hd_in_min = " << assignment.dynamic_link_performance_sampling_interval_hd_in_min << " min" << '\n';
-			g_DTA_log_file << "[DATA INFO] dynamic_link_performance_sampling_interval_hd_in_min = " << assignment.dynamic_link_performance_sampling_interval_hd_in_min << " min" << '\n';
 
 		}
 
@@ -2083,10 +2005,8 @@ void g_ReadOutputFileConfiguration(Assignment& assignment)
 void g_ReadInformationConfiguration(Assignment& assignment)
 {
 	dtalog.output() << ",Reading file section [real_time_info] in settings.csv..." << '\n';
-	g_DTA_log_file << ",Reading file section [real_time_info] in settings.csv..." << '\n';
 
 	dtalog.output() << "[STATUS INFO] Reading file section [real_time_info] in settings.csv..." << '\n';
-	g_DTA_log_file << "[STATUS INFO] Reading file section [real_time_info] in settings.csv..." << '\n';
 
 	CDTACSVParser parser;
 	if (parser.OpenCSVFile("settings.csv", false))
@@ -2101,7 +2021,6 @@ void g_ReadInformationConfiguration(Assignment& assignment)
 			{
 				parser.GetValueByFieldName("value", assignment.g_info_updating_freq_in_min, false, false);
 				dtalog.output() << "[DATA INFO] info_updating_freq_in_min = " << assignment.g_info_updating_freq_in_min << " min" << '\n';
-				g_DTA_log_file << "[DATA INFO] info_updating_freq_in_min = " << assignment.g_info_updating_freq_in_min << " min" << '\n';
 
 			}
 
@@ -2109,7 +2028,6 @@ void g_ReadInformationConfiguration(Assignment& assignment)
 			{
 				parser.GetValueByFieldName("value", assignment.g_visual_distance_in_cells, false, false);
 				dtalog.output() << "[DATA INFO] visual_distance_in_cells = " << assignment.g_visual_distance_in_cells << " cells" << '\n';
-				g_DTA_log_file << "[DATA INFO] visual_distance_in_cells = " << assignment.g_visual_distance_in_cells << " cells" << '\n';
 			}
 
 		}
@@ -2124,8 +2042,8 @@ void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int interna
 {
 	// create a link object
 	CLink link;
-	link.allocate_memory();
 	link.link_id = "connector";
+	link.link_type_code = "connector";
 
 	link.from_node_seq_no = internal_from_node_seq_no;
 	link.to_node_seq_no = internal_to_node_seq_no;
@@ -2133,12 +2051,10 @@ void g_add_new_virtual_connector_link(int internal_from_node_seq_no, int interna
 	link.to_node_seq_no = internal_to_node_seq_no;
 	//virtual connector
 
-	for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+	for (int si = 0; si < g_number_of_active_scenarios; si++)
 	{
-		link.link_type = -1;
-		link.free_speed = 100;
-		link.capacity = 2000;
-		link.number_of_lanes = 20;  // default all open
+		link.link_type_si[si] = -1;
+		link.number_of_lanes_si[si] = 20;  // default all open
 	}
 	//only for outgoing connectors
 	link.zone_seq_no_for_outgoing_connector = zone_seq_no;
@@ -2289,8 +2205,7 @@ int g_detect_if_demand_data_provided(Assignment& assignment)
 
 	CDTACSVParser parser;
 	
-	dtalog.output() << "[STATUS INFO] Reading demand_files section..." << '\n';
-	g_DTA_log_file << "[STATUS INFO] Reading demand_files section..." << '\n';
+	dtalog.output() << "[STATUS INFO] Reading file demand_file_list.csv..." << '\n';
 	if (parser.OpenCSVFile("demand_file_list.csv", false))
 	{
 		while (parser.ReadRecord())
@@ -2325,8 +2240,8 @@ int g_detect_if_demand_data_provided(Assignment& assignment)
 					else
 					{
 						dtalog.output() << "[ERROR INFO] demand file " << file_name << " does not exist. Users are expected to handle this e.g., by checking if the file names are provided correctly in the demand_file_list.csv field.." << '\n';
-						g_DTA_log_file << "[ERROR INFO] demand file " << file_name << " does not exist. Users are expected to handle this e.g., by checking if the file names are provided correctly in the demand_file_list.csv field.." << '\n';
-						continue; 
+						g_program_stop();
+						return 1; // No demand files found and a different filename (e.g., "demand_ee") is in use. No demand generation is required, as users are expected to handle this.
 					}
 				}
 				else
@@ -2431,7 +2346,6 @@ int g_detect_if_zones_defined_in_node_csv(Assignment& assignment)
 	else
 	{
 		dtalog.output() << "[ERROR] The critical input GMNS file 'node.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
-		g_DTA_log_file << "[ERROR] The critical input GMNS file 'node.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
 		g_program_stop();
 	}
 
@@ -2442,32 +2356,11 @@ int g_detect_if_zones_defined_in_node_csv(Assignment& assignment)
 void g_read_link_qvdf_data(Assignment& assignment)
 {
 	CDTACSVParser parser;
-	int record = 0;
-
-	std::map<std::string, int > vdf_type_map;
 
 	if (parser.OpenCSVFile("link_qvdf.csv", true))
 	{
 		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
 		{
-			record++;
-			string data_type;
-			parser.GetValueByFieldName("data_type", data_type);
-
-			if (data_type == "vdf_code")
-			{
-				string vdf_code;
-				parser.GetValueByFieldName("vdf_code", vdf_code); 
-				vdf_type_map[vdf_code] = 1;
-			}
-		}
-		parser.CloseCSVFile();
-	}
-	if (parser.OpenCSVFile("link_qvdf.csv", true))
-	{
-		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
-		{
-			record++;
 			string data_type;
 			parser.GetValueByFieldName("data_type", data_type);
 
@@ -2481,11 +2374,10 @@ void g_read_link_qvdf_data(Assignment& assignment)
 				{
 					int demand_period_id = assignment.g_DemandPeriodVector[tau].demand_period_id;
 					CLink this_link;
-					this_link.allocate_memory();
 					char CSV_field_name[50];
 					bool VDF_required_field_flag = true;
-					sprintf(CSV_field_name, "QVDF_plf%d", demand_period_id);
-					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_peak_load_factor, VDF_required_field_flag, false);
+					//					sprintf(CSV_field_name, "QVDF_plf%d", demand_period_id);
+					//					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].peak_load_factor, VDF_required_field_flag, false);
 					sprintf(CSV_field_name, "QVDF_alpha%d", demand_period_id);
 					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_alpha, VDF_required_field_flag, false);
 					sprintf(CSV_field_name, "QVDF_beta%d", demand_period_id);
@@ -2499,21 +2391,6 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					sprintf(CSV_field_name, "QVDF_s%d", demand_period_id);
 					parser.GetValueByFieldName(CSV_field_name, this_link.VDF_period[tau].Q_s, VDF_required_field_flag, false);
 					g_vdf_type_map[vdf_code].record_qvdf_data(this_link.VDF_period[tau], tau);
-
-					for (int i = 0; i < g_link_vector.size(); i++)
-					{
-						if (g_link_vector[i].vdf_code == vdf_code || (vdf_type_map.find(g_link_vector[i].vdf_code)== vdf_type_map.end()  && vdf_code == "all"))
-						{
-							g_link_vector[i].VDF_period[tau].Q_peak_load_factor = this_link.VDF_period[tau].Q_peak_load_factor;
-							g_link_vector[i].VDF_period[tau].Q_alpha = this_link.VDF_period[tau].Q_alpha;
-							g_link_vector[i].VDF_period[tau].Q_beta = this_link.VDF_period[tau].Q_beta;
-							g_link_vector[i].VDF_period[tau].Q_cd = this_link.VDF_period[tau].Q_cd;
-							g_link_vector[i].VDF_period[tau].Q_cp = this_link.VDF_period[tau].Q_cp;
-							g_link_vector[i].VDF_period[tau].Q_n = this_link.VDF_period[tau].Q_n;
-							g_link_vector[i].VDF_period[tau].Q_s = this_link.VDF_period[tau].Q_s;
-
-						}
-					}
 				}
 
 			}
@@ -2532,18 +2409,15 @@ void g_read_link_qvdf_data(Assignment& assignment)
 				if (assignment.g_node_id_to_seq_no_map.find(from_node_id) == assignment.g_node_id_to_seq_no_map.end())
 				{
 					dtalog.output() << "[WARNING] from_node_id " << from_node_id << " in file link_qvdf.csv is not defined in node.csv." << '\n';
-					g_DTA_log_file << "[WARNING] from_node_id " << from_node_id << " in file link_qvdf.csv is not defined in node.csv." << '\n';
 					//has not been defined
 					continue;
 				}
 				if (assignment.g_node_id_to_seq_no_map.find(to_node_id) == assignment.g_node_id_to_seq_no_map.end())
 				{
 					dtalog.output() << "[WARNING] to_node_id " << to_node_id << " in file link_qvdf.csv is not defined in node.csv." << '\n';
-					g_DTA_log_file << "[WARNING] to_node_id " << to_node_id << " in file link_qvdf.csv is not defined in node.csv." << '\n';
 					//has not been defined
 					continue;
 				}
-
 
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 				{
@@ -2555,7 +2429,7 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					if (g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.find(internal_to_node_seq_no) != g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map.end())
 					{
 						int link_seq_no = g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[internal_to_node_seq_no];
-						if (link_seq_no >= 0)  // data exist
+						if (link_seq_no >= 0 && g_link_vector[link_seq_no].vdf_type == q_vdf  /*QVDF*/)  // data exist
 						{
 							CLink* p_link = &(g_link_vector[link_seq_no]);
 							char CSV_field_name[50];
@@ -2579,14 +2453,9 @@ void g_read_link_qvdf_data(Assignment& assignment)
 					}
 				}
 			}
-		
-
 		}
 		parser.CloseCSVFile();
 	}
-
-	dtalog.output() << "[INFO] There are " << g_vdf_type_map.size() << " records in file link_qvdf.csv" << '\n';
-	g_DTA_log_file << "[INFO] There are " << g_vdf_type_map.size() << " records in file link_qvdf.csv" << '\n';
 
 }
 
@@ -2597,13 +2466,21 @@ void g_detector_file_open_status(Assignment& assignment)
 {
 	FILE* g_pFilePathMOE = nullptr;
 
-	
+	fopen_ss(&g_pFilePathMOE, "final_summary.csv", "w");
+	if (!g_pFilePathMOE)
+	{
+		dtalog.output() << "[ERROR] File final_summary.csv cannot be opened." << '\n';
+		g_program_stop();
+	}
+	else
+	{
+		fclose(g_pFilePathMOE);
+	}
 	fopen_ss(&g_pFilePathMOE, "od_performance_summary.csv", "w");
 	if (!g_pFilePathMOE)
 	{
 		dtalog.output() << "[ERROR] File od_performance_summary.csv cannot be opened." << '\n';
-		g_DTA_log_file << "[ERROR] File od_performance_summary.csv cannot be opened." << '\n';
-		return; 
+		g_program_stop();
 	}
 	else
 	{
@@ -2617,8 +2494,7 @@ void g_detector_file_open_status(Assignment& assignment)
 		if (!g_pFilePathMOE)
 		{
 			dtalog.output() << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
-			g_DTA_log_file << "[ERROR] File subarea_link_performance.csv cannot be opened." << '\n';
-			return; 
+			g_program_stop();
 		}
 		else
 		{
@@ -2633,8 +2509,7 @@ void g_detector_file_open_status(Assignment& assignment)
 		if (!g_pFilePathMOE)
 		{
 			dtalog.output() << "[ERROR] File agent.csv cannot be opened." << '\n';
-			g_DTA_log_file << "[ERROR] File agent.csv cannot be opened." << '\n';
-			return; 
+			g_program_stop();
 		}
 		else
 		{
@@ -2645,8 +2520,7 @@ void g_detector_file_open_status(Assignment& assignment)
 		if (!g_pFilePathMOE)
 		{
 			dtalog.output() << "[ERROR] File td_link_performance.csv cannot be opened." << '\n';
-			g_DTA_log_file << "[ERROR] File td_link_performance.csv cannot be opened." << '\n';
-			return;
+			g_program_stop();
 		}
 		else
 		{
@@ -2658,19 +2532,6 @@ void g_detector_file_open_status(Assignment& assignment)
 
 
 }
-
-template<typename T>
-bool ReadValueFromNode(const YAML::Node& node, const std::string& key, T& value, bool required) {
-	if (node[key]) {
-		value = node[key].as<T>();
-		return true;
-	}
-	else if (required) {
-		throw std::runtime_error("Required field '" + key + "' is missing.");
-	}
-	return false;
-}
-
 void g_read_input_data(Assignment& assignment)
 {
 	g_detector_file_open_status(assignment);
@@ -2688,51 +2549,40 @@ void g_read_input_data(Assignment& assignment)
 	assignment.g_LoadingEndTimeInMin = 0;
 
 	//step 0:read demand period file
+	CDTACSVParser parser_demand_period;
 
-	std::string fileName = "settings.yml";
-	std::ifstream inFile(fileName.c_str());
-	YAML::Node settings;
-	if (!inFile.is_open()) {
-		dtalog.output() << "Error opening file: " << fileName << std::endl;
-		return;
-	}
-
-	try {
-		settings = YAML::Load(inFile);
-		// Now you can work with the 'settings' as a YAML::Node object
-	}
-	catch (const YAML::ParserException& e) {
-		dtalog.output() << "Error parsing the file: " << e.what() << std::endl;
-		return;
-	}
 	dtalog.output() << "[PROCESS INFO] Step 1: Reading input data" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1: Reading input data" << '\n';
-	dtalog.output() << "[PROCESS INFO] Step 1.1: Reading section demand_period ..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.1: Reading section  demand_period..." << '\n';
-	assignment.summary_file << "[PROCESS INFO] Step 1.1: Reading section demand_period ..." << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.1: Reading demand_period.csv..." << '\n';
+	assignment.summary_file << "[PROCESS INFO] Step 1.1: Reading demand_period.csv..." << '\n';
 
-	const auto& demand_periods = settings["demand_periods"];
-	try
+
+	if (parser_demand_period.OpenCSVFile("demand_period.csv", false))
 	{
-		for (const YAML::Node& demand_period_node : demand_periods)
+		while (parser_demand_period.ReadRecord())
 		{
-
 			CDemand_Period demand_period;
-			std::string str; 
 
-				demand_period.demand_period_id = demand_period_node["demand_period_id"].as<unsigned short>(1);
-				str = demand_period_node["period"].as<std::string>("am");
+			if (!parser_demand_period.GetValueByFieldName("demand_period_id", demand_period.demand_period_id))
+				break;
 
-				std::transform(str.begin(), str.end(), str.begin(),
-					[](unsigned char c) { return std::tolower(c); });
-				demand_period.demand_period = str; 
+			if (!parser_demand_period.GetValueByFieldName("demand_period", demand_period.demand_period))
+			{
+				dtalog.output() << "[ERROR] Field demand_period in file demand_period cannot be read." << '\n';
+				g_program_stop();
+			}
 
-				demand_period.time_period = demand_period_node["time_period"].as<std::string>("0700-0800");
+			vector<float> global_minute_vector;
 
-				vector<float> global_minute_vector;
+			if (!parser_demand_period.GetValueByFieldName("time_period", demand_period.time_period))
+			{
+				dtalog.output() << "[ERROR] Field time_period in file demand_period cannot be read." << '\n';
+				g_program_stop();
+			}
 
-				//input_string includes the start and end time of a time period with hhmm format
-				global_minute_vector = g_time_parser(demand_period.time_period); //global_minute_vector incldue the starting and ending time
+
+
+			//input_string includes the start and end time of a time period with hhmm format
+			global_minute_vector = g_time_parser(demand_period.time_period); //global_minute_vector incldue the starting and ending time
 
 			if (global_minute_vector.size() == 2)
 			{
@@ -2745,10 +2595,12 @@ void g_read_input_data(Assignment& assignment)
 				//g_fout << global_minute_vector[1] << '\n';
 
 
-			//	string peak_time_str = demand_period_node["peak_time"].as<std::string>("0000");
+				string peak_time_str;
+				if (parser_demand_period.GetValueByFieldName("peak_time", peak_time_str, false))
+				{
+					demand_period.t2_peak_in_hour = g_timestamp_parser(peak_time_str) / 60.0;
 
-			//	demand_period.t2_peak_in_hour = g_timestamp_parser(peak_time_str) / 60.0;
-
+				}
 
 			}
 
@@ -2764,8 +2616,7 @@ void g_read_input_data(Assignment& assignment)
 				dep_time.departure_time_ratio[s] = 1.0 / 300.0;
 			}
 
-			//			dtalog.output() << "[DATA INFO] A default flat departure time profile is used..." << '\n';
-			//			g_DTA_log_file << "[DATA INFO] A default flat departure time profile is used..." << '\n';
+//			dtalog.output() << "[DATA INFO] A default flat departure time profile is used..." << '\n';
 			dep_time.compute_cumulative_profile(demand_period.starting_time_slot_no, demand_period.ending_time_slot_no, false);
 
 			if (assignment.g_DepartureTimeProfileVector.size() == 0)
@@ -2775,28 +2626,25 @@ void g_read_input_data(Assignment& assignment)
 			}
 
 			assignment.summary_file << ",demand_period= " << demand_period.demand_period_id <<
-				", " << demand_period.demand_period.c_str() << ",time_period=" << demand_period.time_period.c_str() << ", "
-				<< global_minute_vector[0] << "-> " << global_minute_vector[1] << '\n';
+				", " << demand_period.demand_period.c_str() << ",time_period=" << demand_period.time_period.c_str() << '\n';
 
 		}
-	}
 
-	catch (const std::exception& e)
-	{
-		std::cerr << "Exception occurred: " << e.what() << std::endl;
-	}
+		parser_demand_period.CloseCSVFile();
 
 		if (assignment.g_DemandPeriodVector.size() == 0)
 		{
-			dtalog.output() << "[ERROR] Section demand_period has no information." << '\n';
-			g_DTA_log_file << "[ERROR] Section demand_period has no information." << '\n';
-			return; 
+			dtalog.output() << "[ERROR] File demand_period has no information." << '\n';
+			g_program_stop();
 		}
-	
-	
+	}
+	else
+	{
+		dtalog.output() << "[ERROR] File demand_period.csv cannot be opened.\n It might be currently used and locked by EXCEL." << '\n';
+		g_program_stop();
+	}
 
 	dtalog.output() << "[DATA INFO] number of demand periods = " << assignment.g_DemandPeriodVector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] number of demand periods = " << assignment.g_DemandPeriodVector.size() << '\n';
 
 	assignment.g_number_of_demand_periods = assignment.g_DemandPeriodVector.size();
 	g_number_of_active_demand_perioids = assignment.g_DemandPeriodVector.size();;
@@ -2804,81 +2652,90 @@ void g_read_input_data(Assignment& assignment)
 	if (assignment.g_number_of_demand_periods > MAX_TIMEPERIODS)
 	{
 		dtalog.output() << "[ERROR] the number of demand periods in settings.csv os greater than the internal size of MAX_TIMEPERIODS.\nPlease contact developers" << '\n';
-		g_DTA_log_file << "[ERROR] the number of demand periods in settings.csv os greater than the internal size of MAX_TIMEPERIODS.\nPlease contact developers" << '\n';
 		g_program_stop();
 	}
 	//step 1:read demand type file
 
-	dtalog.output() << "[PROCESS INFO] Step 1.2: Reading section mode_type..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.2: Reading section mode_type..." << '\n';
-	assignment.summary_file << "[PROCESS INFO] Step 1.2: Reading section mode_type..." << '\n';
+	CDTACSVParser parser_mode_type;
+	dtalog.output() << "[PROCESS INFO] Step 1.2: Reading mode_type.csv..." << '\n';
+	assignment.summary_file << "[PROCESS INFO] Step 1.2: Reading file mode_type.csv..." << '\n';
+	if (parser_mode_type.OpenCSVFile("mode_type.csv", false))
+	{
 
-
-	unsigned short i = 0;
-	const auto& mode_types = settings["mode_types"];
-
-	assignment.g_ModeTypeVector.clear();
-
-
-		try
+		assignment.g_ModeTypeVector.clear();
+		while (parser_mode_type.ReadRecord())
 		{
-			for (const YAML::Node& mode_node : mode_types)
-			{
 			Cmode_type mode_type;
 
-			// auto type_ = a["type"];
-			auto mode_type_name = mode_node["mode_type"].as<std::string>("auto");
-			////if (contains_agent_name(name))
-			//{
-			//	std::cerr << "duplicate agent type found: " << name << '\n';
-			//	continue;
-			//}
-			mode_type.mode_type = mode_type_name;
+			if (!parser_mode_type.GetValueByFieldName("mode_type", mode_type.mode_type))
+				break;
+
+			int activate_flag = 1;
+			parser_mode_type.GetValueByFieldName("activate", activate_flag,false,false);
+
+			if (activate_flag == 0)
+				continue;
+
 			mode_type.mode_type_no = assignment.g_ModeTypeVector.size() + 1;
 
-			auto mode_type_index = mode_node["mode_type_index"].as<unsigned short>(1);
+			int mode_specific_assignment_flag = 1;
+			if (parser_mode_type.GetValueByFieldName("multimodal_dedicated_assignment_flag", mode_specific_assignment_flag, false, false) == false)
+			{
+				dtalog.output() << "[WARNING] Field multimodal_dedicated_assignment_flag is missing from mode_type.csv, a default value of 1 is used.  Please add flags to clearly identify assignment cost structures." << '\n';
 
-			mode_type.value_of_time = mode_node["vot"].as<float>(20);
-/*			mode_type.eco_so_flag = a["eco_so_flag"].as<float>(20)*/;
+			}
 
-
-
-		// Assuming the YAML content is under a node called 'sensor_data'
-
-			mode_type.meu = mode_node["pce"].as<int>(1);
-
-			mode_type.person_occupancy = mode_node["person_occupancy"].as<float>(1.0);
-			mode_type.desired_speed_ratio = mode_node["desired_speed_ratio"].as<float>(1.0);
-			mode_type.time_headway_in_sec = mode_node["time_headway_in_sec"].as<float>(1);
-			mode_type.display_code = mode_node["display_code"].as<int>(1);
-			mode_type.real_time_information_type = mode_node["DTM_real_time_info_type"].as<float>(0);
-
-			assignment.mode_type_2_seqno_mapping[mode_type.mode_type] = assignment.g_ModeTypeVector.size();
-
-			assignment.g_ModeTypeVector.push_back(mode_type);
-			assignment.summary_file << "mode_type =, " << mode_type.mode_type.c_str() << ", real time info flag = " << mode_type.real_time_information_type << '\n';
 
 
 			//substring overlapping checking
 
-			//{
-			//	for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-			//	{
-			//		if (assignment.g_ModeTypeVector[at].mode_type.find(mode_type.mode_type) != string::npos)
-			//		{
-			//			dtalog.output() << "[ERROR] Error substring duplication checking : mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
-			//				" in section mode_type is overlapping with " << mode_type.mode_type.c_str() << ". Please add flags such as to avoid overlapping in the use of allowe_uses field.";
-			//	
-			//			g_DTA_log_file << "[ERROR] Error substring duplication checking : mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
-			//				" in section mode_type is overlapping with " << mode_type.mode_type.c_str() << ". Please add flags such as to avoid overlapping in the use of allowe_uses field.";
+			{
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+				{
+					if (assignment.g_ModeTypeVector[at].mode_type.find(mode_type.mode_type) != string::npos)
+					{
+						dtalog.output() << "[ERROR] Error substring duplication checking : mode_type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
+							" in section mode_type is overlapping with " << mode_type.mode_type.c_str() << ". Please add flags such as to avoid overlapping in the use of allowe_uses field.";
+						g_program_stop();
 
-			//		}
+					}
 
-			//	}
+				}
 
-			//}
+			}
 
+			parser_mode_type.GetValueByFieldName("vot", mode_type.value_of_time, false, false);
 
+			// scan through the map with different node sum for different paths
+
+			parser_mode_type.GetValueByFieldName("person_occupancy", mode_type.OCC,false,false);
+			parser_mode_type.GetValueByFieldName("desired_speed_ratio", mode_type.DSR, false, false);
+
+			parser_mode_type.GetValueByFieldName("headway_in_sec", mode_type.time_headway_in_sec, false, false);
+			parser_mode_type.GetValueByFieldName("display_code", mode_type.display_code, false);
+			parser_mode_type.GetValueByFieldName("DTM_real_time_info_type", mode_type.real_time_information_type, false,false);
+
+			if (mode_type.real_time_information_type == 1  && mode_specific_assignment_flag ==1)
+			{
+					dtalog.output() << "[WARNING] The mode type '"
+					<< mode_type.mode_type.c_str()
+					<< "' specified in the 'mode_type.csv' file is not intended to have a dedicated travel time function,  because 'DTM_real_time_info_type' is set to '1' in 'link_type.csv'. The 'multimodal_dedicated_assignment_flag' has been reset to '0'.";
+					mode_specific_assignment_flag = 0;
+			}
+				
+
+			if (mode_specific_assignment_flag == 1 || assignment.g_ModeTypeVector.size() == 0)
+			{
+				mode_type.mode_specific_assignment_flag= mode_specific_assignment_flag;
+
+				if(mode_type.real_time_information_type!=0)
+				{	
+					dtalog.output() << "[DATA INFO] The mode type "
+						<< mode_type.mode_type.c_str()
+						<< " defined in the mode_type.csv file will utilize dedicated multimodal assignment features, complete with its own capacity and free_speed parameters in link_type.csv";
+				}
+
+			}
 
 			if (mode_type.real_time_information_type == 1)  // real time info
 			{
@@ -2888,43 +2745,54 @@ void g_read_input_data(Assignment& assignment)
 			if (mode_type.real_time_information_type == 2)  //dms
 			{
 				assignment.g_number_of_DMS_mode_types++;
+			}	
+			
+			parser_mode_type.GetValueByFieldName("access_node_type", mode_type.access_node_type, false);
+
+			if (mode_type.access_node_type.size() > 0)
+			{
+				parser_mode_type.GetValueByFieldName("access_speed", mode_type.access_speed);
+				parser_mode_type.GetValueByFieldName("access_distance_lb", mode_type.access_distance_lb);
+				parser_mode_type.GetValueByFieldName("access_distance_ub", mode_type.access_distance_ub);
+
+				if (mode_type.access_distance_ub < 100)
+				{
+					dtalog.output() << "[ERROR] access_distance_ub = " << mode_type.access_distance_ub << "< 100. Please ensure the unit is meter." << '\n';
+					g_program_stop();
+				}
+				parser_mode_type.GetValueByFieldName("acecss_link_k", mode_type.acecss_link_k);
 			}
 
+			assignment.mode_type_2_seqno_mapping[mode_type.mode_type] = assignment.g_ModeTypeVector.size();
+
+			assignment.g_ModeTypeVector.push_back(mode_type);
+			assignment.summary_file << "mode_type =, " << mode_type.mode_type.c_str() << ", real time info flag = " << mode_type.real_time_information_type << '\n';
 
 		}
-	
 
-		}
-		catch (const std::exception& e)
-		{
-			std::cerr << "Exception occurred: " << e.what() << std::endl;
-		}
 		assignment.g_number_of_mode_types = assignment.g_ModeTypeVector.size();
 		g_number_of_active_mode_types = assignment.g_ModeTypeVector.size();
 
-
+		parser_mode_type.CloseCSVFile();
+	}
 
 	if (assignment.g_ModeTypeVector.size() == 0)
 	{
-		dtalog.output() << "[ERROR] File mode_type does not have information." << '\n';
-		g_DTA_log_file << "[ERROR] File mode_type does not have information." << '\n';
+		dtalog.output() << "[ERROR] File mode_type does not exist." << '\n';
 		g_program_stop();
 	}
 
 	if (assignment.g_ModeTypeVector.size() >= MAX_MODETYPES)
 	{
-		dtalog.output() << "[ERROR] mode_type = " << assignment.g_ModeTypeVector.size() << " in section mode_types is too large. " << '\n' << "MAX_MODETYPES = " << MAX_MODETYPES << "Please contact program developers!";
-		g_DTA_log_file << "[ERROR] mode_type = " << assignment.g_ModeTypeVector.size() << " in section mode_types is too large. " << '\n' << "MAX_MODETYPES = " << MAX_MODETYPES << "Please contact program developers!";
+		dtalog.output() << "[ERROR] mode_type = " << assignment.g_ModeTypeVector.size() << " in section mode_type is too large. " << '\n' << "MAX_MODETYPES = " << MAX_MODETYPES << "Please contact program developers!";
 		g_program_stop();
 	}
 
 	dtalog.output() << "[DATA INFO] number of mode types = " << assignment.g_ModeTypeVector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] number of mode types = " << assignment.g_ModeTypeVector.size() << '\n';
 
 
 	////// Step 1.2: Reading activity_travel_pattern.csv...
 	////dtalog.output() << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
-	////g_DTA_log_file << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
 	////assignment.summary_file << "[PROCESS INFO] Step 1.25: Reading optional activity_travel_pattern.csv..." << '\n';
 
 	//CDTACSVParser parser_activity_travel_pattern;
@@ -2941,14 +2809,12 @@ void g_read_input_data(Assignment& assignment)
 	//		if (!parser_activity_travel_pattern.GetValueByFieldName("activity_travel_pattern_id", travel_pattern.activity_travel_pattern_id))
 	//		{
 	//			dtalog.output() << "[ERROR] Field activity_travel_pattern_id in file activity_travel_pattern.csv cannot be read." << '\n';
-	//			g_DTA_log_file << "[ERROR] Field activity_travel_pattern_id in file activity_travel_pattern.csv cannot be read." << '\n';
 	//			g_program_stop();
 	//		}
 
 	//		if (assignment.g_ActivityTravelPatternMap.find(travel_pattern.activity_travel_pattern_id) != assignment.g_ActivityTravelPatternMap.end())
 	//		{
 	//			dtalog.output() << "[ERROR] Field activity_travel_pattern_id = " << travel_pattern.activity_travel_pattern_id.c_str() << " has been defined twice in file activity_travel_pattern.csv." << '\n';
-	//			g_DTA_log_file << "[ERROR] Field activity_travel_pattern_id = " << travel_pattern.activity_travel_pattern_id.c_str() << " has been defined twice in file activity_travel_pattern.csv." << '\n';
 	//			g_program_stop();
 	//		}
 
@@ -2956,7 +2822,6 @@ void g_read_input_data(Assignment& assignment)
 	//		if (!parser_activity_travel_pattern.GetValueByFieldName("number_of_trips", travel_pattern.number_of_trips))
 	//		{
 	//			dtalog.output() << "[ERROR] Field number_of_trips in file activity_travel_pattern.csv cannot be read." << '\n';
-	//			g_DTA_log_file << "[ERROR] Field number_of_trips in file activity_travel_pattern.csv cannot be read." << '\n';
 	//			g_program_stop();
 	//		}
 
@@ -2964,7 +2829,6 @@ void g_read_input_data(Assignment& assignment)
 	//		if (!parser_activity_travel_pattern.GetValueByFieldName("demand_period_chain", demand_period_vector_str))
 	//		{
 	//			dtalog.output() << "[ERROR] Field demand_period_vector in file activity_travel_pattern.csv cannot be read." << '\n';
-	//			g_DTA_log_file << "[ERROR] Field demand_period_vector in file activity_travel_pattern.csv cannot be read." << '\n';
 	//			g_program_stop();
 	//		}
 
@@ -2972,7 +2836,6 @@ void g_read_input_data(Assignment& assignment)
 	//		if (!parser_activity_travel_pattern.GetValueByFieldName("mode_chain", mode_vector_str))
 	//		{
 	//			dtalog.output() << "[ERROR] Field mode_chain in file activity_travel_pattern.csv cannot be read." << '\n';
-	//			g_DTA_log_file << "[ERROR] Field mode_chain in file activity_travel_pattern.csv cannot be read." << '\n';
 	//			g_program_stop();
 	//		}
 
@@ -2988,14 +2851,12 @@ void g_read_input_data(Assignment& assignment)
 	//		if (demand_period_size != travel_pattern.number_of_trips)
 	//		{
 	//			dtalog.output() << "[ERROR] demand_period_size != number_of_trips in file activity_travel_pattern.csv." << '\n';
-	//			g_DTA_log_file << "[ERROR] demand_period_size != number_of_trips in file activity_travel_pattern.csv." << '\n';
 	//			g_program_stop();
 	//		}
 
 	//		if (mode_size != travel_pattern.number_of_trips)
 	//		{
 	//			dtalog.output() << "[ERROR] mode_size != number_of_trips in file activity_travel_pattern.csv. for index = " <<
-	//			g_DTA_log_file << "[ERROR] mode_size != number_of_trips in file activity_travel_pattern.csv. for index = " <<
 	//				travel_pattern.activity_travel_pattern_index << " id = " << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
 	//			g_program_stop();
 	//		}
@@ -3011,8 +2872,7 @@ void g_read_input_data(Assignment& assignment)
 	//			}
 	//			else
 	//			{
-	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type.c_str() << "not defined yet in section mode_type." << '\n';
-	//				g_DTA_log_file << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type.c_str() << "not defined yet in section mode_type." << '\n';
+	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type.c_str() << "not defined yet in mode_type.csv." << '\n';
 	//				g_program_stop();
 	//			}
 
@@ -3025,8 +2885,7 @@ void g_read_input_data(Assignment& assignment)
 	//			}
 	//			else
 	//			{
-	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type << "not defined yet in section mode_type." << '\n';
-	//				g_DTA_log_file << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type << "not defined yet in section mode_type." << '\n';
+	//				dtalog.output() << "[ERROR] Field mode_chain  in file activity_travel_pattern.csv has a value " << mode_type << "not defined yet in mode_type.csv." << '\n';
 	//				g_program_stop();
 	//			}
 
@@ -3037,14 +2896,12 @@ void g_read_input_data(Assignment& assignment)
 	//		if (mode_size != travel_pattern.number_of_trips)
 	//		{
 	//			dtalog.output() << "[ERROR] mode_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
-	//			g_DTA_log_file << "[ERROR] mode_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
 	//			g_program_stop();
 	//		}
 
 	//		if (demand_period_size != travel_pattern.number_of_trips)
 	//		{
 	//			dtalog.output() << "[ERROR] demand_period_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
-	//			g_DTA_log_file << "[ERROR] demand_period_size != travel_pattern.number_of_trips in file activity_travel_pattern.csv for record" << travel_pattern.activity_travel_pattern_id.c_str() << '\n';
 	//			g_program_stop();
 	//		}
 
@@ -3062,36 +2919,27 @@ void g_read_input_data(Assignment& assignment)
 	//	if (assignment.g_ActivityTravelPatternMap.size() == 0)
 	//	{
 	//		dtalog.output() << "[ERROR] File activity_travel_pattern has no information." << '\n';
-	//		g_DTA_log_file << "[ERROR] File activity_travel_pattern has no information." << '\n';
 	//		//			g_program_stop();
 	//	}
 	//}
 	//else
 	//{
 	//	//dtalog.output() << "[WARNING] File activity_travel_pattern.csv cannot be opened. Note that, file activity_travel_pattern.csv is optional." << '\n';
-	//	//g_DTA_log_file << "[WARNING] File activity_travel_pattern.csv cannot be opened. Note that, file activity_travel_pattern.csv is optional." << '\n';
 	//	//	g_program_stop();
 	//}
 
 
 
-	dtalog.output() << "[PROCESS INFO] Step 1.3: Reading section link_type" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.3: Reading section link_type" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1.3: Reading link_type.csv" << '\n';
 
-
+	CDTACSVParser parser_link_type;
 
 	int emission_log_count = 0; 
 	int meu_log_count = 0; 
 	int peak_load_factor_log_count = 0; 
 	int allowed_use_log_count = 0; 
-	
-	// Create a vector to hold all the scenario configurations
-
-
-	// Check if 'scenarios' is a sequence and iterate over it
-	if (settings["link_types"].IsSequence())
+	if (parser_link_type.OpenCSVFile("link_type.csv", false))
 	{
-
 		// create a special link type as virtual connector
 		CLinkType element_vc;
 		// -1 is for virutal connector
@@ -3100,14 +2948,29 @@ void g_read_input_data(Assignment& assignment)
 		element_vc.traffic_flow_code = spatial_queue;
 		assignment.g_LinkTypeMap[element_vc.link_type] = element_vc;
 		//end of create special link type for virtual connectors
+
 		int line_no = 0;
 
-		std::vector <int> overlapping_link_type_vector;
-		for (const YAML::Node& node : settings["link_types"]) {
+		std::vector <int> overlapping_link_type_vector; 
+		while (parser_link_type.ReadRecord())
+		{
 			CLinkType element;
 
-			element.link_type = node["link_type"].as<int>(1);
-			element.link_type_name = node["link_type_name"].as<std::string>("auto");
+			if (!parser_link_type.GetValueByFieldName("link_type", element.link_type))
+			{
+				if (line_no == 0)
+				{
+					dtalog.output() << "[ERROR] link_type cannot be found in file link_type section." << '\n';
+					g_program_stop();
+				}
+				else
+				{
+					// read empty line
+					break;
+				}
+			}
+
+			parser_link_type.GetValueByFieldName("link_type_name", element.link_type_name);
 
 			if (assignment.g_LinkTypeMap.find(element.link_type) != assignment.g_LinkTypeMap.end())
 			{
@@ -3119,163 +2982,275 @@ void g_read_input_data(Assignment& assignment)
 			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 				char CSV_field_name[50];
-				sprintf(CSV_field_name, "allowed_uses_p%d", assignment.g_DemandPeriodVector[tau].demand_period_id);
-				try {
-					element.allow_uses_period[tau] = node[CSV_field_name].as<std::string>("");
-				}
-				catch (const YAML::ParserException& e) {
-					allowed_use_log_count++;
+				sprintf(CSV_field_name, "allowed_uses_p%d", tau + 1);
+				
+				if (parser_link_type.GetValueByFieldName(CSV_field_name, element.allow_uses_period[tau], false, false))
+				{
 					if (line_no == 0 && allowed_use_log_count < 2) {
 						allowed_use_log_count++;
-						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. All modes will be allowed for link type:" << element.link_type_name << ". Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. All modes will be allowed for link type:" << element.link_type_name << ". Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
+						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. All modes will be allowed for link type:" << element.link_type_name << ". Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
 
 					}
+
 				}
-
-
-				////=----
-				//for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
-				//{
-				//	char CSV_field_name[50];
-
-				//	
-				//	sprintf(CSV_field_name, "meu_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-				//	double meu_value = node[CSV_field_name].as<float>(1);
-				//	meu_log_count++;
-
-				//	dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The PCE = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-				//	g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The PCE = 0.0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-
-				//}
-
-
-
-				string traffic_flow_code_str;
-				element.type_code = node["type_code"].as<std::string>("a");
-
-
-
-				element.traffic_flow_code = spatial_queue;
-
-				traffic_flow_code_str = node["traffic_flow_model"].as<std::string>("spatial_queue");
-				element.k_jam = node["k_jam_km"].as<float>(200);
-
-				// by default bpr
-
-
-				if (traffic_flow_code_str == "point_queue")
-					element.traffic_flow_code = point_queue;
-
-				if (traffic_flow_code_str == "spatial_queue")
-					element.traffic_flow_code = spatial_queue;
-
-				if (traffic_flow_code_str == "kw")
-					element.traffic_flow_code = kinemative_wave;
-
-				//				dtalog.output() << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
-				//				g_DTA_log_file << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
-
-				assignment.summary_file << "link_type =, " << element.link_type << ", link_type_name = " << element.link_type_name.c_str() << '\n';
-
-
-				// Loop over all mode types (e.g. auto, bike, bus, etc.)
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 				{
-					// Generate the field name in the CSV file for CO2 emissions for this mode type
-					char CSV_field_name[50];
-					sprintf(CSV_field_name, "emissions_%s_co2", assignment.g_ModeTypeVector[at].mode_type.c_str());
-
-					string emissions_co2_str;
-
-					// Check if the field could not be found in the CSV file
-
-
-					try {
-						emissions_co2_str = node[CSV_field_name].as<std::string>("");
-
-					}
-					catch (const YAML::ParserException& e) {
-					
-						// If the field cannot be found, output a warning and use a default value of 0.0
-						if (line_no == 0 && emission_log_count < 4) {
-							emission_log_count++;
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-						}
-					}
-
-					// Convert the string containing CO2 emissions coefficients into a vector of doubles
-					std::vector<double> emissions_co2_coeff_vector;
-					g_ParserDoubleSequence(emissions_co2_str, emissions_co2_coeff_vector);
-
-					// Store up to the first 4 emissions coefficients in the element's matrix
-					for (int i = 0; i < min(static_cast<size_t>(4), emissions_co2_coeff_vector.size()); i++)
+					sprintf(CSV_field_name, "peak_load_factor_p%d_%s", tau + 1, assignment.g_ModeTypeVector[at].mode_type.c_str());
+					if (parser_link_type.GetValueByFieldName(CSV_field_name, element.peak_load_factor_period_at[tau][at], false) == false)
 					{
-						element.emissions_co2_matrix[at][i] = emissions_co2_coeff_vector[i];
-					}
+						if (line_no == 0 && peak_load_factor_log_count < 2) {
+							peak_load_factor_log_count++;
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default peak load factor 1.0 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
 
-					// Repeat the same process for NOx emissions:
-					sprintf(CSV_field_name, "emissions_%s_nox", assignment.g_ModeTypeVector[at].mode_type.c_str());
-
-					string emissions_nox_str;
-
-					try {
-						emissions_nox_str = node[CSV_field_name].as<std::string>("");
-					}
-					catch (const YAML::ParserException& e) 	{
-						if (line_no == 0 && emission_log_count < 4) {
-							emission_log_count++;
-							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
-							g_DTA_log_file << "[WARNING] Field '" << CSV_field_name << "' not found in section link_type. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the section link_type for more accurate results." << '\n';
 						}
-					}
 
-					std::vector<double> emissions_nox_coeff_vector;
-					g_ParserDoubleSequence(emissions_nox_str, emissions_nox_coeff_vector);
-
-					for (int i = 0; i < min(static_cast<size_t>(4), emissions_nox_coeff_vector.size()); i++)
-					{
-						element.emissions_nox_matrix[at][i] = emissions_nox_coeff_vector[i];
 					}
 				}
-
-
-
-				if (assignment.g_first_link_type < 0)
-					assignment.g_first_link_type = element.link_type;
-
-				assignment.g_LinkTypeMap[element.link_type] = element;
-				line_no++;
 			}
+			//=----
 
-			if (overlapping_link_type_vector.size() > 0)
+			char CSV_field_name[50];
+			int at_base = 0;
+			double lanes_mode_type = -1; // default
+			sprintf(CSV_field_name, "lanes_%s", assignment.g_ModeTypeVector[at_base].mode_type.c_str());
+			if (parser_link_type.GetValueByFieldName(CSV_field_name, lanes_mode_type, false, false) == true)
 			{
-				dtalog.output() << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
-				g_DTA_log_file << "[WARNING] the following link type(s) have been defined more than once in file section link_type:  ";
 
-				for (int i = 0; i < overlapping_link_type_vector.size(); i++)
-				{
-					dtalog.output() << overlapping_link_type_vector[i] << ", ";
-					g_DTA_log_file << overlapping_link_type_vector[i] << ", ";
-				}
-
+				dtalog.output() << "[ERROR] Field '" << CSV_field_name << "' is found in 'link_type.csv'. ";
+					dtalog.output() << " To ensure data consistency, we advise users to specify the number of lanes for the main base mode " << assignment.g_ModeTypeVector[at_base].mode_type.c_str() << " in both the 'lanes' and 'lanes_s0' fields in the master 'link.csv' file. To avoid confusion, please remove this field from the 'link_type.csv'." << '\n';
+				g_program_stop();
 
 			}
 
 
 
+			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+			{
+				char CSV_field_name[50];
+
+				if (assignment.g_ModeTypeVector[at].mode_specific_assignment_flag == 1)
+				{
+					double capacity_at = 2000; // default
+					sprintf(CSV_field_name, "capacity_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+					if (parser_link_type.GetValueByFieldName(CSV_field_name, capacity_at,false,false)==false)
+					{
+						if(line_no == 0){
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default capacity of 2000 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+							
+						}
+						capacity_at = 2000;
+					}
 
 
+					if (capacity_at > 0.1)  // log
+					{
+						element.capacity_at[at] = capacity_at;
+					}
+				}
+				//----
+
+				double free_speed_at = -1; // default
+
+				sprintf(CSV_field_name, "free_speed_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+				if (parser_link_type.GetValueByFieldName(CSV_field_name, free_speed_at, false, false) == false)
+				{
+					if (line_no == 0) {
+						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default free speed 60 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+					}
+					free_speed_at = 60;
+				}
+
+
+				if (free_speed_at > 0.1)  // log
+				{
+					element.free_speed_at[at] = free_speed_at;
+				}
+
+
+				if (at >= 1 && assignment.g_ModeTypeVector[at].mode_specific_assignment_flag == 1)
+				{
+
+					if (assignment.g_speed_unit_flag == 1)  // mph;
+						free_speed_at = free_speed_at / 1.609; // convert from mile per hour to km per hour
+
+
+					double lanes_mode_type = -1; // default
+
+					sprintf(CSV_field_name, "lanes_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+					if (parser_link_type.GetValueByFieldName(CSV_field_name, lanes_mode_type, false, false) == false)
+					{
+						if (line_no == 0) {
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default number of lanes 0 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+						}
+						lanes_mode_type = 0;
+					}
+
+					element.lanes_mode_type[at] = lanes_mode_type;
+				}
+
+				//				element.lanes_mode_type[at] = lanes_mode_type;
+
+				for (int at2 = 0; at2 < assignment.g_ModeTypeVector.size(); at2++)
+				{
+					double meu_value = 0.0;
+
+					if (at2 != at)  // let us use the MEU as 0 for simplicity 
+						meu_value = 0.0;
+
+					if (at2 == at)
+					{
+						element.meu_matrix[at][at2] = 1.0;
+						continue; 
+					}
+
+					sprintf(CSV_field_name, "meu_%s_%s", assignment.g_ModeTypeVector[at].mode_type.c_str(), assignment.g_ModeTypeVector[at].mode_type.c_str());
+					if(parser_link_type.GetValueByFieldName(CSV_field_name, meu_value, false, false)== false)
+					{
+						if (line_no == 0 && meu_log_count < 3) {
+							meu_log_count++; 
+
+							dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The MEU = 0.0 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+
+						}
+						element.meu_matrix[at][at2] = meu_value;
+
+					}
+				}
+
+			}
+
+
+
+			string traffic_flow_code_str;
+			parser_link_type.GetValueByFieldName("type_code", element.type_code, true);
+
+			string vdf_type_str;
+
+			element.vdf_type = bpr_vdf;
+			parser_link_type.GetValueByFieldName("vdf_type", vdf_type_str, false);
+
+
+			if (vdf_type_str == "bpr")
+				element.vdf_type = bpr_vdf;
+			if (vdf_type_str == "qvdf")
+				element.vdf_type = q_vdf;
+
+
+			element.traffic_flow_code = spatial_queue;
+
+			parser_link_type.GetValueByFieldName("traffic_flow_model", traffic_flow_code_str, false);
+			parser_link_type.GetValueByFieldName("k_jam_km", element.k_jam, false);
+
+			// by default bpr
+
+
+			if (traffic_flow_code_str == "point_queue")
+				element.traffic_flow_code = point_queue;
+
+			if (traffic_flow_code_str == "spatial_queue")
+				element.traffic_flow_code = spatial_queue;
+
+			if (traffic_flow_code_str == "kw")
+				element.traffic_flow_code = kinemative_wave;
+
+			//				dtalog.output() << "important: traffic_flow_code on link type " << element.link_type << " is " << element.traffic_flow_code << '\n';
+
+			assignment.summary_file << "link_type =, " << element.link_type << ", link_type_name = " << element.link_type_name.c_str() << '\n';
+
+			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+			{
+				assignment.summary_file << ",mode_type= " << assignment.g_ModeTypeVector[at].mode_type.c_str() <<
+					",cap= " << element.capacity_at[at] << ",free_speed=" << element.free_speed_at[at] << '\n';
+				//",lanes = " << element.lanes_mode_type[at] << '\n';
+			}
+
+
+			// Loop over all mode types (e.g. auto, bike, bus, etc.)
+			for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+			{
+				// Generate the field name in the CSV file for CO2 emissions for this mode type
+				char CSV_field_name[50];
+				sprintf(CSV_field_name, "emissions_%s_co2", assignment.g_ModeTypeVector[at].mode_type.c_str());
+
+				string emissions_co2_str;
+
+				// Check if the field could not be found in the CSV file
+				if (parser_link_type.GetValueByFieldName(CSV_field_name, emissions_co2_str, false, false) == false)
+				{
+					// If the field cannot be found, output a warning and use a default value of 0.0
+					if (line_no == 0 && emission_log_count < 4) {
+						emission_log_count++;
+						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+					}
+				}
+
+				// Convert the string containing CO2 emissions coefficients into a vector of doubles
+				std::vector<double> emissions_co2_coeff_vector;
+				g_ParserDoubleSequence(emissions_co2_str, emissions_co2_coeff_vector);
+
+				// Store up to the first 4 emissions coefficients in the element's matrix
+				for (int i = 0; i < min(4, emissions_co2_coeff_vector.size()); i++)
+				{
+					element.emissions_co2_matrix[at][i] = emissions_co2_coeff_vector[i];
+				}
+
+				// Repeat the same process for NOx emissions:
+				sprintf(CSV_field_name, "emissions_%s_nox", assignment.g_ModeTypeVector[at].mode_type.c_str());
+
+				string emissions_nox_str;
+				if (parser_link_type.GetValueByFieldName(CSV_field_name, emissions_nox_str, false, false) == false)
+				{
+					if (line_no == 0 && emission_log_count < 4) {
+						emission_log_count++; 
+						dtalog.output() << "[WARNING] Field '" << CSV_field_name << "' not found in 'link_type.csv'. The default value of 0 was used. Consider adding '" << CSV_field_name << "' to the 'link_type.csv' for more accurate results." << '\n';
+					}
+				}
+
+				std::vector<double> emissions_nox_coeff_vector;
+				g_ParserDoubleSequence(emissions_nox_str, emissions_nox_coeff_vector);
+
+				for (int i = 0; i < min(4, emissions_nox_coeff_vector.size()); i++)
+				{
+					element.emissions_nox_matrix[at][i] = emissions_nox_coeff_vector[i];
+				}
+			}
+
+
+			
+			if (assignment.g_first_link_type < 0)
+				assignment.g_first_link_type = element.link_type;
+
+			assignment.g_LinkTypeMap[element.link_type] = element;
+			line_no++;
 		}
 
+		if (overlapping_link_type_vector.size() > 0)
+		{
+			dtalog.output() << "[WARNING] the following link type(s) have been defined more than once in file link_type.csv:  ";
+
+			for (int i = 0; i < overlapping_link_type_vector.size(); i++)
+			{
+				dtalog.output() << overlapping_link_type_vector[i] << ", "; 
+			}
+
+			
+		}
+
+
+		
+
+		parser_link_type.CloseCSVFile();
+	}
+	else
+	{
+		dtalog.output() << "[ERROR] File link_type.csv" << '\n';
+		g_program_stop();
 	}
 
 
 
 
 	dtalog.output() << "[DATA INFO] number of link types = " << assignment.g_LinkTypeMap.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] number of link types = " << assignment.g_LinkTypeMap.size() << '\n';
 
 
 
@@ -3290,7 +3265,24 @@ void g_read_input_data(Assignment& assignment)
 
 
 
-	
+	if (number_of_zones <= 1)
+	{
+		CDTACSVParser parser_z;
+		if (parser_z.OpenCSVFile("zone.csv", true))
+		{
+			parser_z.CloseCSVFile();
+		}
+		else
+		{   // without zone.csv file
+
+			if (g_TAZ_2_GMNS_zone_generation(assignment) == false)
+			{
+				g_grid_zone_generation(assignment);
+			}
+
+		}
+
+	}
 
 	int internal_node_seq_no = 0;
 	// step 3: read node file
@@ -3309,9 +3301,54 @@ void g_read_input_data(Assignment& assignment)
 
 	int multmodal_activity_node_count = 0;
 
+	dtalog.output() << "[PROCESS INFO] Step 1.35: Reading optional zone data in zone.csv..." << '\n';
+
+
+	if (parser.OpenCSVFile("zone.csv", true))
+	{
+		while (parser.ReadRecord())  // if this line contains [] mark, then we will also read field headers.
+		{
+			int zone_id = 0;
+			if (!parser.GetValueByFieldName("zone_id", zone_id))
+				continue;
+
+			if (zone_id <= 0)
+			{
+				continue;
+			}
+
+			string access_node_vector_str;
+			parser.GetValueByFieldName("access_node_vector", access_node_vector_str,false,false);
+
+			std::vector<int> access_node_vector;
+
+			g_ParserIntSequence(access_node_vector_str, access_node_vector);
+
+			for (int i = 0; i < access_node_vector.size(); i++)
+			{
+				assignment.access_node_id_to_zone_id_map[access_node_vector[i]] = zone_id;
+				zone_id_mapping[zone_id] = access_node_vector[i];
+
+			}
+
+			float production = 0;
+			float attraction = 0;
+			parser.GetValueByFieldName("production", production, false);
+			parser.GetValueByFieldName("attraction", attraction, false);
+
+
+			zone_id_production[zone_id] = production;
+			zone_id_attraction[zone_id] = attraction;
+			// push it to the global node vector
+		}
+
+		dtalog.output() << "[STATUS INFO] reading " << assignment.access_node_id_to_zone_id_map.size() << " access nodes from zone.csv.. " << '\n';
+		parser.CloseCSVFile();
+	}
+
+
 
 	dtalog.output() << "[PROCESS INFO] Step 1.4: Reading node data in node.csv..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.4: Reading node data in node.csv..." << '\n';
 	std::map<int, int> zone_id_to_analysis_district_id_mapping;
 
 	// MRM: stage 1: filtering, output: gate nodes, bridge nodes for micro and macro networks
@@ -3325,7 +3362,6 @@ void g_read_input_data(Assignment& assignment)
 	for (int layer_no = 0; layer_no <= max_layer_flag; layer_no++)
 	{
 		dtalog.output() << "[STATUS INFO] Reading node data " << '\n';
-		g_DTA_log_file << "[STATUS INFO] Reading node data " << '\n';
 
 		// master file: reading nodes
 
@@ -3433,7 +3469,6 @@ void g_read_input_data(Assignment& assignment)
 				if (analysis_district_id >= MAX_ORIGIN_DISTRICTS)
 				{
 				dtalog.output() << "[ERROR] district_id in node.csv is larger than predefined value of "  << MAX_ORIGIN_DISTRICTS  << "." << '\n';
-				g_DTA_log_file << "[ERROR] district_id in node.csv is larger than predefined value of "  << MAX_ORIGIN_DISTRICTS  << "." << '\n';
 				g_program_stop();
 				}
 
@@ -3500,20 +3535,14 @@ void g_read_input_data(Assignment& assignment)
 				assignment.g_number_of_nodes++;
 
 				if (assignment.g_number_of_nodes % 5000 == 0)
-				{
 					dtalog.output() << "[STATUS INFO] reading " << assignment.g_number_of_nodes << " nodes.. " << '\n';
-					g_DTA_log_file << "[STATUS INFO] reading " << assignment.g_number_of_nodes << " nodes.. " << '\n';
-				}
 			}
 
 
 
 			dtalog.output() << "[DATA INFO] number of nodes = " << assignment.g_number_of_nodes << '\n';
-			g_DTA_log_file << "[DATA INFO] number of nodes = " << assignment.g_number_of_nodes << '\n';
 			//dtalog.output() << "[DATA INFO] number of multimodal activity nodes = " << multmodal_activity_node_count << '\n';
-			//g_DTA_log_file << "[DATA INFO] number of multimodal activity nodes = " << multmodal_activity_node_count << '\n';
 			//dtalog.output() << "[NOTE] One can add mode_type in node.csv to denote transit stations as part of efforts for modeling multmodal activities" << '\n';
-			//g_DTA_log_file << "[NOTE] One can add mode_type in node.csv to denote transit stations as part of efforts for modeling multmodal activities" << '\n';
 
 
 			// fprintf(g_pFileOutputLog, "number of nodes =,%d\n", assignment.g_number_of_nodes);
@@ -3539,7 +3568,6 @@ void g_read_input_data(Assignment& assignment)
 			{
 
 				dtalog.output() << "[DATA INFO] multimodal access link generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
-				g_DTA_log_file << "[DATA INFO] multimodal access link generation condition 1: agent type " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has access node type" << assignment.g_ModeTypeVector[at].access_node_type.size() << '\n';
 				// zone without multimodal access
 				debug_line_count++;
 			}
@@ -3556,7 +3584,6 @@ void g_read_input_data(Assignment& assignment)
 					{
 
 						dtalog.output() << "[DATA INFO] multimodal access link generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
-						g_DTA_log_file << "[DATA INFO] multimodal access link generation condition 2: agent type no = " << at << " for node no. " << a_k << "as activity node with zone_id >=1" << '\n';
 						// zone without multimodal access
 						debug_line_count++;
 					}
@@ -3647,7 +3674,6 @@ void g_read_input_data(Assignment& assignment)
 					else {
 
 						//                        dtalog.output() << " zone" << g_node_vector[a_k].zone_org_id << " with agent type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has no access to stop or station" << '\n';
-						//                        g_DTA_log_file << " zone" << g_node_vector[a_k].zone_org_id << " with agent type = " << assignment.g_ModeTypeVector[at].mode_type.c_str() << " has no access to stop or station" << '\n';
 												// zone without multimodal access
 					}
 
@@ -3661,7 +3687,6 @@ void g_read_input_data(Assignment& assignment)
 
 	// initialize zone vector
 	dtalog.output() << "[PROCESS INFO] Step 1.5: Initializing O-D zone vector..." << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.5: Initializing O-D zone vector..." << '\n';
 
 	int connector_link_warning_log_count = 0; 
 	std::map<int, int>::iterator it;
@@ -3732,7 +3757,6 @@ void g_read_input_data(Assignment& assignment)
 
 
 	dtalog.output() << "[DATA INFO] number of zones = " << g_zone_vector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] number of zones = " << g_zone_vector.size() << '\n';
 
 	g_zone_to_access(assignment);  // only under zone2connector mode
 //	g_OutputModelFiles(3);  // node
@@ -3744,7 +3768,6 @@ void g_read_input_data(Assignment& assignment)
 	if (demand_data_mode == 0)  // if the demand files are not provided
 	{
 		dtalog.output() << "[PROCESS INFO] The demand files are not provided, proceeds to trip generation mode." << '\n';
-		g_DTA_log_file << "[PROCESS INFO] The demand files are not provided, proceeds to trip generation mode." << '\n';
 
 		g_demand_file_generation(assignment);
 	}
@@ -3758,12 +3781,8 @@ void g_read_input_data(Assignment& assignment)
 	int link_type_warning_count = 0;
 	int link_penalty_info_count = 0;
 
-	int length_missing_error = 0; 
-	int free_speed_missing_error = 0;
-	int capacity_missing_error = 0; 
 	bool length_in_km_waring = false;
 	dtalog.output() << "[PROCESS INFO] Step 1.6: Reading link data in link.csv... " << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1.6: Reading link data in link.csv... " << '\n';
 
 	int toll_message_count = 0;
 	std::map<int, int> missing_link_type_mapping;
@@ -3771,7 +3790,6 @@ void g_read_input_data(Assignment& assignment)
 	for (int layer_no = 0; layer_no <= max_layer_flag; layer_no++)
 	{
 //		dtalog.output() << "link layer= " << layer_no << '\n';
-//		g_DTA_log_file << "link layer= " << layer_no << '\n';
 
 
 		string file_name = "link.csv";
@@ -3787,7 +3805,6 @@ void g_read_input_data(Assignment& assignment)
 
 				// create a link object  // this should be place inside
 				CLink link;
-				link.allocate_memory();
 
 				string link_type_name_str;
 				parser_link.GetValueByFieldName("link_type_name", link_type_name_str, false);
@@ -3799,9 +3816,6 @@ void g_read_input_data(Assignment& assignment)
 				long to_node_id = -1;
 				if (!parser_link.GetValueByFieldName("to_node_id", to_node_id))
 					continue;
-
-				link.from_node_id = from_node_id;
-				link.to_node_id = to_node_id;
 
 				string linkID;
 				parser_link.GetValueByFieldName("link_id", linkID, false);
@@ -3837,9 +3851,7 @@ void g_read_input_data(Assignment& assignment)
 					int MRM_subarea_mapping_flag_to = assignment.g_node_id_to_MRM_subarea_mapping[to_node_id];
 
 					dtalog.output() << "[ERROR] from_node_id " << from_node_id << " in file link.csv is not defined in node.csv." << '\n';
-					g_DTA_log_file << "[ERROR] from_node_id " << from_node_id << " in file link.csv is not defined in node.csv." << '\n';
 					dtalog.output() << "   from_node_id mapping =" << MRM_subarea_mapping_flag << '\n';
-					g_DTA_log_file << "   from_node_id mapping =" << MRM_subarea_mapping_flag << '\n';
 					continue; //has not been defined
 				}
 
@@ -3850,13 +3862,11 @@ void g_read_input_data(Assignment& assignment)
 					int MRM_subarea_mapping_flag_to = assignment.g_node_id_to_MRM_subarea_mapping[to_node_id];
 
 					dtalog.output() << "[ERROR] to_node_id " << to_node_id << " in file link.csv is not defined in node.csv." << '\n';
-					g_DTA_log_file << "[ERROR] to_node_id " << to_node_id << " in file link.csv is not defined in node.csv." << '\n';
 					continue; //has not been defined
 				}
 
 				//if (assignment.g_link_id_map.find(linkID) != assignment.g_link_id_map.end())
 				//    dtalog.output() << "Error: link_id " << linkID.c_str() << " has been defined more than once. Please check link.csv." << '\n';
-				//    g_DTA_log_file << "Error: link_id " << linkID.c_str() << " has been defined more than once. Please check link.csv." << '\n';
 
 				int internal_from_node_seq_no = assignment.g_node_id_to_seq_no_map[from_node_id];  // map external node number to internal node seq no.
 				int internal_to_node_seq_no = assignment.g_node_id_to_seq_no_map[to_node_id];
@@ -3892,32 +3902,13 @@ void g_read_input_data(Assignment& assignment)
 
 				parser_link.GetValueByFieldName("geometry", link.geometry, false);
 
-				if (link.geometry.size() == 0)
-				{
-					std::ostringstream out;
-
-					out << "LINESTRING (";
-
-					out << g_node_vector[link.from_node_seq_no].x  << " " << g_node_vector[link.from_node_seq_no].y  << ", ";
-					out << g_node_vector[link.to_node_seq_no].x << " " << g_node_vector[link.to_node_seq_no].y;
-
-
-					out << ")";
-
-					link.geometry = out.str();
-				}
-
-				if (parser_link.GetValueByFieldName("link_special_flag", link.link_specifical_flag_str, false) && link.link_specifical_flag_str.size() > 0)
-				{
-					dtalog.output() << "[INFO] link_special_flag =  " << link.link_specifical_flag_str.c_str() << " is defined for link " << from_node_id << "->" << to_node_id << " in link.csv." << '\n';
-					g_DTA_log_file << "[INFO] link_special_flag =  " << link.link_specifical_flag_str.c_str() << " is defined for link " << from_node_id << "->" << to_node_id << " in link.csv." << '\n';
-
-				}
+				parser_link.GetValueByFieldName("link_special_flag", link.link_specifical_flag_str, false);
 
 				link.tmc_corridor_name = "network_wide";
 				parser_link.GetValueByFieldName("tmc_corridor_name", link.tmc_corridor_name, false);
 				parser_link.GetValueByFieldName("link_type_name", link.link_type_name, false);
 
+				parser_link.GetValueByFieldName("link_type_code", link.link_type_code, false);
 
 				// and valid
 				if (movement_str.size() > 0)
@@ -3929,29 +3920,38 @@ void g_read_input_data(Assignment& assignment)
 					link.main_node_id = main_node_id;
 				}
 
-
-				int default_link_type = assignment.g_first_link_type;
+				// Peiheng, 05/13/21, if settings.csv does not have corresponding link type or the whole section is missing, set it as 2 (i.e., Major arterial)
+				int default_link_type = 2;
 				char link_type_field_name[50];
 
-					link.link_type = default_link_type;
-					parser_link.GetValueByFieldName("link_type", link.link_type);
-					
+				parser_link.GetValueByFieldName("link_type", default_link_type, false);
+				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
+				{
+					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
+					sprintf(link_type_field_name, "link_type_s%d", scenario_index);
 
-					if (assignment.g_LinkTypeMap.find(link.link_type) == assignment.g_LinkTypeMap.end())
+					link.link_type_si[scenario_index] = default_link_type;
+					if (parser_link.GetValueByFieldName(link_type_field_name, link.link_type_si[scenario_index], false) == false && line_no ==0)
 					{
-						missing_link_type_mapping[link.link_type] = 1;
-
-						link.link_type = assignment.g_first_link_type;
-						dtalog.output() << "[WARNING] Field " << link.link_type << "  in link.csv is not defined. The default value in the field link_type in link.csv is used." << '\n';
-						g_DTA_log_file << "[WARNING] Field " << link.link_type << "  in link.csv is not defined. The default value in the field link_type in link.csv is used." << '\n';
-						line_no++;
+						dtalog.output() << "[WARNING] Field " << link_type_field_name << "  in link.csv is not defined. The default value in the field link_type in link.csv is used." << '\n';
 						continue;
+
+					}
+
+					if (assignment.g_LinkTypeMap.find(link.link_type_si[scenario_index]) == assignment.g_LinkTypeMap.end())
+					{
+						missing_link_type_mapping[link.link_type_si[scenario_index]] = 1;
+
+						link.link_type_si[scenario_index] = assignment.g_first_link_type;
 					}
 
 
+				}
 
 
-				if (assignment.g_LinkTypeMap[link.link_type].type_code == "c")  // suggestion: we can move "c" as "connector" in allowed_uses
+
+
+				if (assignment.g_LinkTypeMap[link.link_type_si[0]].type_code == "c")  // suggestion: we can move "c" as "connector" in allowed_uses
 				{
 					if (g_node_vector[internal_from_node_seq_no].zone_org_id >= 1)
 					{
@@ -3961,58 +3961,56 @@ void g_read_input_data(Assignment& assignment)
 					}
 					else
 					{
-						if (g_node_vector[internal_to_node_seq_no].zone_org_id < 0 && connector_link_warning_log_count < 2) // this connector's upstream and downstream nodes are not associated with any zone id
+						if (g_node_vector[internal_to_node_seq_no].zone_org_id < 0  && connector_link_warning_log_count < 2) // this connector's upstream and downstream nodes are not associated with any zone id
 						{
 							//						link.zone_seq_no_for_outgoing_connector = 999999; // only for the purpose of being skipped in the routing
 							dtalog.output() << "[WARNING] The upstream node of the connector link from node " << from_node_id << "to node " << to_node_id << " in link.csv does not have a defined zone ID. Please ensure that the zone ID is defined for the upstream node in order to accurately assign the traffic from the respective zone through this connector link." << '\n';
-							g_DTA_log_file << "[WARNING] The upstream node of the connector link from node " << from_node_id << "to node " << to_node_id << " in link.csv does not have a defined zone ID. Please ensure that the zone ID is defined for the upstream node in order to accurately assign the traffic from the respective zone through this connector link." << '\n';
-							connector_link_warning_log_count++;
+							connector_link_warning_log_count++; 
 						}
 					}
 
 				}
 
 				char lanes_scenario_field_name[50];
-				char free_speed_scenario_field_name[50];
-				char capacity_scenario_field_name[50];
 
 				int default_number_of_lanes = 1;
 				parser_link.GetValueByFieldName("lanes", default_number_of_lanes, false);
-				link.number_of_lanes = default_number_of_lanes;
+				link.number_of_lanes_si[0] = default_number_of_lanes;
 
-				
-	
-				double length_in_meter = 1000.0; // km or mile
-				double free_speed_original = 100.0;
-				double free_speed = 60.0;
-
-				double lane_capacity = 2000;
-				// first step, get the initial value based on link type for speed and capacity
-
-
-				double cutoff_speed = 1.0;
-				double k_jam = assignment.g_LinkTypeMap[link.link_type].k_jam;
-				double bwtt_speed = 12;  //miles per hour
-
-				double length_original_input = 0; 
-
-				if (parser_link.GetValueByFieldName("length", length_original_input, false, false) == false)
+				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
 				{
-					if(length_missing_error==0)
-					{
-					dtalog.output() << "[ERORR] Field length in link.csv is missing." << '\n';
-					g_DTA_log_file << "[ERORR] Field length in link.csv is missing." << '\n';
-					length_in_meter = 999.0;
-					length_missing_error++; 
-					}
+					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
+					sprintf(lanes_scenario_field_name, "lanes_s%d", scenario_index);
+					double number_of_lanes_value = default_number_of_lanes;  // default value
+					parser_link.GetValueByFieldName(lanes_scenario_field_name, number_of_lanes_value,false);
+
+					link.number_of_lanes_si[scenario_index] = number_of_lanes_value;
 				}
 
+				double length_in_meter = 1.0; // km or mile
+				double free_speed = 60.0;
+				double lane_capacity = 1800;
+				// first step, get the initial value based on link type for speed and capacity
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+				{
+					for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+					{
+						link.VDF_period[tau].capacity_at[at] = assignment.g_LinkTypeMap[link.link_type_si[0]].capacity_at[at];
+						link.VDF_period[tau].free_speed_at[at] = assignment.g_LinkTypeMap[link.link_type_si[0]].free_speed_at[at];
+						link.VDF_period[tau].lanes_mode_type[at] = link.number_of_lanes_si[0];
+					}
+
+				}
+
+				double cutoff_speed = 1.0;
+				double k_jam = assignment.g_LinkTypeMap[link.link_type_si[0]].k_jam;
+				double bwtt_speed = 12;  //miles per hour
+
+
+				parser_link.GetValueByFieldName("length", length_in_meter);  // in meter
+
 				if (assignment.g_length_unit_flag == 1)  // mile;
-					length_in_meter = length_original_input * 1609.0; // convert from mile to meter
-				if (assignment.g_length_unit_flag == 2)  // km;
-					length_in_meter = length_original_input *1000.0; // convert from km to meter
-				if (assignment.g_length_unit_flag == 0)  // meter;
-					length_in_meter = length_original_input; // no conversion
+					length_in_meter = length_in_meter * 1609; // convert from mile to meter
 
 				parser_link.GetValueByFieldName("FT", link.FT, false, true);
 				parser_link.GetValueByFieldName("AT", link.AT, false, true);
@@ -4021,7 +4019,6 @@ void g_read_input_data(Assignment& assignment)
 				if (length_in_km_waring == false && length_in_meter < 0.1)
 				{
 					dtalog.output() << "[WARNING] link link_length =" << length_in_meter << " in link.csv for link " << from_node_id << "->" << to_node_id << ". Please ensure the unit of the link link_distance_VDF is meter." << '\n';
-					g_DTA_log_file << "[WARNING] link link_length =" << length_in_meter << " in link.csv for link " << from_node_id << "->" << to_node_id << ". Please ensure the unit of the link link_distance_VDF is meter." << '\n';
 					// link.link_type has been taken care by its default constructor
 					length_in_km_waring = true;
 				}
@@ -4030,78 +4027,27 @@ void g_read_input_data(Assignment& assignment)
 				{
 					length_in_meter = 1;  // minimum link_distance_VDF
 				}
-				//-----------------
-				// second step, we read the link-specific value (only for based mode)
-				if (parser_link.GetValueByFieldName("free_speed", free_speed_original, false, false) == false)
-				{
 
-					if (free_speed_missing_error == 0)
-					{
-						dtalog.output() << "[ERORR] Field free_speed in link.csv is missing." << '\n';
-						g_DTA_log_file << "[ERORR] Field free_speed in link.csv is missing." << '\n';
-						free_speed_original = 100;
-						free_speed_missing_error++; 
-					}
-				}
+				// second step, we read the link-specific value (only for based mode)
+				parser_link.GetValueByFieldName("free_speed", free_speed);  // free speed as km
 				if (assignment.g_speed_unit_flag == 1)  // mph;
-					free_speed = free_speed_original * 1.609; // convert from mile per hour to km per hour ( by multipling the original speed values by 1.609)
+					free_speed = free_speed / 1.609; // convert from mile per hour to km per hour
 
-				double default_free_speed = free_speed; 
-				
-				{
-					
-					sprintf(free_speed_scenario_field_name, "free_speed");
-
-					if (parser_link.GetValueByFieldName(free_speed_scenario_field_name, free_speed_original, false))
-					{
-						if (assignment.g_speed_unit_flag == 1)  // mph;
-							free_speed = free_speed_original * 1.609; // convert from mile per hour to km per hour ( by multipling the original speed values by 1.609)
-						
-						link.free_speed = free_speed;
-					}
-					else
-					{
-						link.free_speed = default_free_speed;  // use default value
-					}
-
-				}
-
-				//-----------------
-
-				// second step, we read the link-specific value (only for based mode)
-				if (parser_link.GetValueByFieldName("capacity", lane_capacity, false, false) == true)
-				{
-					
-					{
-						
-
-						link.capacity = lane_capacity;
-					}
-	
-				}
-
+				parser_link.GetValueByFieldName("capacity", lane_capacity, false);  // optional for capacity
 
 				double free_speed_value;
 				//speed_unit: km/ph us_customary  si1
 				// mile per h our ->
 
-				if (link.link_id == "5")
-					int iiidebug = 1;
 
-				cutoff_speed = free_speed * 0.85; //default;
-
-				//cutoff_speed = free_speed * 1.0; //default;
-
-				if(parser_link.GetValueByFieldName("cutoff_speed", cutoff_speed, false) == true)  //read data 
+				if (link.link_id == "201065AB")
 				{
-				
-				if (assignment.g_speed_unit_flag == 1)  // mph;
-					cutoff_speed = cutoff_speed * 1.609; // convert from mile per hour to km per hour ( by multipling the original speed values by 1.609)
-
+					int idebug = 1;
 				}
 
+				cutoff_speed = free_speed * 0.85; //default;
+				parser_link.GetValueByFieldName("cutoff_speed", cutoff_speed, false);
 
-				link.v_congestion_cutoff = cutoff_speed;;
 
 				free_speed = max(0.1, free_speed);
 
@@ -4116,6 +4062,7 @@ void g_read_input_data(Assignment& assignment)
 					link.VDF_period[tau].free_speed_at[at_base] = free_speed;
 				}
 
+				link.v_congestion_cutoff = cutoff_speed;
 
 
 
@@ -4135,34 +4082,45 @@ void g_read_input_data(Assignment& assignment)
 				link.link_distance_km = length_in_meter / 1000.0;
 				link.link_distance_mile = length_in_meter / 1609.0;
 
-				link.traffic_flow_code = assignment.g_LinkTypeMap[link.link_type].traffic_flow_code;
+				link.traffic_flow_code = assignment.g_LinkTypeMap[link.link_type_si[0]].traffic_flow_code;
 
 				//spatial queue and kinematic wave
-				link.spatial_capacity_in_vehicles = max(1.0, link.link_distance_VDF * link.number_of_lanes * k_jam);
+				link.spatial_capacity_in_vehicles = max(1.0, link.link_distance_VDF * link.number_of_lanes_si[0] * k_jam);
 
 				// kinematic wave
 				if (link.traffic_flow_code == 3)
 					link.BWTT_in_simulation_interval = link.link_distance_VDF / bwtt_speed * 3600 / number_of_seconds_per_interval;
 
-				link.kjam = assignment.g_LinkTypeMap[link.link_type].k_jam;
+				link.vdf_type = assignment.g_LinkTypeMap[link.link_type_si[0]].vdf_type;
+				link.kjam = assignment.g_LinkTypeMap[link.link_type_si[0]].k_jam;
 				char CSV_field_name[50];
 
+				// based on link type
+				for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
+				{
+					for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
+					{
+						link.VDF_period[tau].capacity_at[at] = assignment.g_LinkTypeMap[link.link_type_si[0]].capacity_at[at];  
+						link.VDF_period[tau].free_speed_at[at] = assignment.g_LinkTypeMap[link.link_type_si[0]].free_speed_at[at];
+						link.VDF_period[tau].FFTT_at[at] = link.link_distance_VDF / max(0.0001, link.VDF_period[tau].free_speed_at[at]) * 60.0;  // 60.0 for 60 min per hour
+					}
+
+				}
 
 				// if we have link_specific values in the master link.csv, we will use it as the final value for the driving mode 
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 				{
-
-					if (lane_capacity > 0)
+					if(lane_capacity>0)
 					{
-						link.VDF_period[tau].capacity_diff_link_specific = lane_capacity - link.VDF_period[tau].capacity_at[at_base];
-						link.VDF_period[tau].capacity_at[at_base] = lane_capacity;
+					link.VDF_period[tau].capacity_diff_link_specific = lane_capacity - link.VDF_period[tau].capacity_at[at_base];
+					link.VDF_period[tau].capacity_at[at_base] = lane_capacity ;
 					}
 
-					if (free_speed > 0)
+					if(free_speed>0)
 					{
 						link.VDF_period[tau].free_speed_diff_link_specific = free_speed - link.VDF_period[tau].free_speed_at[at_base];
 						link.VDF_period[tau].free_speed_at[at_base] = free_speed;
-						link.VDF_period[tau].FFTT_at[at_base] = link.link_distance_VDF / max(0.0001, free_speed) * 60.0;  // 60.0 for 60 min per hour
+					link.VDF_period[tau].FFTT_at[at_base] = link.link_distance_VDF / max(0.0001, free_speed) * 60.0;  // 60.0 for 60 min per hour
 
 					}
 				}
@@ -4186,45 +4144,30 @@ void g_read_input_data(Assignment& assignment)
 				for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 				{
 					//setup default values
+					link.VDF_period[tau].vdf_type = assignment.g_LinkTypeMap[link.link_type_si[0]].vdf_type;
 					link.VDF_period[tau].lane_based_ultimate_hourly_capacity = lane_capacity;
-					link.VDF_period[tau].nlanes = link.number_of_lanes;
+					link.VDF_period[tau].nlanes = link.number_of_lanes_si[0];
 
 					int at_base = 0;
 					link.VDF_period[tau].vf = link.free_speed;
-					link.VDF_period[tau].v_VDF_congestion_cutoff = link.v_congestion_cutoff;   // mwe need to assign the value to the VDF data type
+					link.VDF_period[tau].v_congestion_cutoff = link.v_congestion_cutoff;
 					link.VDF_period[tau].alpha = 0.15;
 					link.VDF_period[tau].beta = 4;
 					link.VDF_period[tau].preload = 0;
 					parser_link.GetValueByFieldName("VDF_alpha", link.VDF_period[tau].alpha, false);
 					parser_link.GetValueByFieldName("VDF_beta", link.VDF_period[tau].beta, false);
-					parser_link.GetValueByFieldName("VDF_plf", link.VDF_period[tau].peak_load_factor, false);
-					if (link.VDF_period[tau].peak_load_factor < 0.1)
-						link.VDF_period[tau].peak_load_factor = 1;
 
-					if (link.VDF_period[tau].peak_load_factor > 1)
-						link.VDF_period[tau].peak_load_factor = 1;
 
-					double VDF_FFTT = 0; 
-					if (parser_link.GetValueByFieldName("VDF_fftt", VDF_FFTT, false, false) == true)
-					{
-						link.VDF_period[tau].user_given_FFTT_flag = true;
-						link.VDF_period[tau].FFTT_at[0] = VDF_FFTT;
-						link.free_flow_travel_time_in_min = VDF_FFTT;
-					}
-
-					parser_link.GetValueByFieldName("lanes", link.VDF_period[tau].nlanes, false);
-
-					
 
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
-						link.VDF_period[tau].toll[at] = 0;
+						link.VDF_period[tau].toll[at][assignment.active_scenario_index] = 0;
 						link.VDF_period[tau].LR_price[at] = 0;
 						link.VDF_period[tau].LR_RT_price[at] = 0;
 
-						for (int si = 0; si < g_number_of_max_scenarios_index; si++)
+						for (int si = 0; si < g_number_of_active_scenarios; si++)
 						{
-							link.VDF_period[tau].allowed_uses = assignment.g_LinkTypeMap[link.link_type].allow_uses_period[tau];
+							link.VDF_period[tau].allowed_uses[si] = assignment.g_LinkTypeMap[link.link_type_si[si]].allow_uses_period[tau];
 						}
 					}
 
@@ -4233,57 +4176,28 @@ void g_read_input_data(Assignment& assignment)
 					link.VDF_period[tau].L = assignment.g_DemandPeriodVector[tau].time_period_in_hour;
 					link.VDF_period[tau].t2 = assignment.g_DemandPeriodVector[tau].t2_peak_in_hour;
 
-					string restricted_turn_nodes_str;
-					parser_link.GetValueByFieldName("restricted_turn_nodes", restricted_turn_nodes_str, false);
+					double value_ref = -1; 
+					sprintf(CSV_field_name, "ref_volume_p%d", tau+1);
+					parser_link.GetValueByFieldName(CSV_field_name, value_ref, false, false);
+					if(value_ref>1)
+					link.VDF_period[tau].ref_link_volume = value_ref; 
 
-					//"restricted_turn_nodes: This field represents the nodes within the network where left turns and possible U-turns are prevented, to facilitate better traffic flow and manage congestion."
-					std::vector<int> restricted_turn_nodes;
-
-					if (restricted_turn_nodes_str.size() > 0)
-					{
-						g_ParserIntSequence(restricted_turn_nodes_str, restricted_turn_nodes);
-
-						for (int node_i = 0; node_i < restricted_turn_nodes.size(); node_i++)
-						{
-
-							if (assignment.g_node_id_to_seq_no_map.find(restricted_turn_nodes[node_i]) == assignment.g_node_id_to_seq_no_map.end())
-							{
-
-								dtalog.output() << "[ERROR] restricted_turn_nodes: " << restricted_turn_nodes[node_i] << " is not defined in node.csv, for link from node " << from_node_id << " to node " << to_node_id << " in the 'link.csv' file " << ".\n";
-								g_DTA_log_file << "[ERROR] restricted_turn_nodes: " << restricted_turn_nodes[node_i] << " is not defined in node.csv, for link from node " << from_node_id << " to node " << to_node_id << " in the 'link.csv' file " << ".\n";
-								continue; 
-							}
-							int node_no = assignment.g_node_id_to_seq_no_map[restricted_turn_nodes[node_i]];
-							g_node_vector[link.to_node_seq_no].prohibited_movement_size++;  // we consider the movement mark as link.to_node_seq_no 
-							link.VDF_period[tau].restricted_turn_nodes_str = restricted_turn_nodes_str;
-							link.VDF_period[tau].restricted_turn_nodes_map[node_no] = 1;
-
-						}
-
-
-					}
-
-					double value_ref = -1;
-					parser_link.GetValueByFieldName("ref_volume", value_ref, false, false);
-					if (value_ref > 1)
-						link.VDF_period[tau].ref_link_volume = value_ref;
-
-					parser_link.GetValueByFieldName("VDF_preload", link.VDF_period[tau].preload, false, false);
+					sprintf(CSV_field_name, "VDF_preload_p%d", tau+1);
+					parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].preload, false, false);
 
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
 
-						sprintf(CSV_field_name, "toll_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
-						parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].toll[at], false, false);
+						//sprintf(CSV_field_name, "VDF_toll%s%d", assignment.g_ModeTypeVector[at].mode_type.c_str(), tau);
+						//parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].toll[at], false, false);
 
-						if (link.VDF_period[tau].toll[at] > 0.001 && toll_message_count < 10)
-						{
-							dtalog.output() << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at] << " for agent type " << '\n';
-							g_DTA_log_file << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at] << " for agent type " << 
-								assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << at << '\n';
-							toll_message_count++;
-						}
-						//sprintf(CSV_field_name, "VDF_penalty_p%d", at);
+						//if (link.VDF_period[tau].toll[at] > 0.001 && toll_message_count < 10)
+						//{
+						//	dtalog.output() << "[DATA INFO] link " << from_node_id << "->" << to_node_id << " has a toll of " << link.VDF_period[tau].toll[at] << " for agent type "
+						//		<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << at << '\n';
+						//	toll_message_count++;
+						//}
+						//sprintf(CSV_field_name, "VDF_penalty%d", at);
 						/*					parser_link.GetValueByFieldName(CSV_field_name, link.VDF_period[tau].penalty, false, false);*/
 
 					}
@@ -4329,7 +4243,7 @@ void g_read_input_data(Assignment& assignment)
 				//link.m_OutflowNumLanes = number_of_lanes;//visum lane_cap is actually link_cap
 
 				link.update_kc(free_speed);
-				link.link_spatial_capacity = k_jam * link.number_of_lanes * link.link_distance_VDF;
+				link.link_spatial_capacity = k_jam * link.number_of_lanes_si[0] * link.link_distance_VDF;
 				// min // calculate link cost based link_distance_VDF and speed limit // later we should also read link_capacity, calculate delay
 
 								//// TMC reading
@@ -4345,21 +4259,19 @@ void g_read_input_data(Assignment& assignment)
 				}
 
 
-				
-
 				//int sequential_copying = 0;
 				//
 				//parser_link.GetValueByFieldName("sequential_copying", sequential_copying);
 
 					// read optional penalty term
-				
+				for (int sii = 0; sii < assignment.g_DTA_scenario_vector.size(); sii++)
 				{
-					
-					
+					int scenario_index = assignment.g_DTA_scenario_vector[sii].scenario_index;
+
 					for (int at = 0; at < assignment.g_ModeTypeVector.size(); at++)
 					{
 						char penalty_field_name[50];
-						sprintf(penalty_field_name, "penalty_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
+						sprintf(penalty_field_name, "penalty_%s_s%d", assignment.g_ModeTypeVector[at].mode_type.c_str(), scenario_index);
 						double penalty = 0;
 						parser_link.GetValueByFieldName(penalty_field_name, penalty, false);
 
@@ -4369,7 +4281,6 @@ void g_read_input_data(Assignment& assignment)
 							if(link_penalty_info_count<3)
 							{
 								dtalog.output() << "[DATA INFO] Link penalty detected! For the link from node " << from_node_id << " to node " << to_node_id << " in the 'link.csv' file, the penalty field named '" << penalty_field_name << "' has a value of " << penalty << ".\n";
-								g_DTA_log_file << "[DATA INFO] Link penalty detected! For the link from node " << from_node_id << " to node " << to_node_id << " in the 'link.csv' file, the penalty field named '" << penalty_field_name << "' has a value of " << penalty << ".\n";
 								link_penalty_info_count++;
 							}
 							assignment.summary_file << "[DATA INFO] link penalty detected! ! link  " << from_node_id << " ->" << to_node_id << "  in link.csv has penalty_field_name = " << penalty_field_name << "of " << penalty << '\n';
@@ -4379,7 +4290,7 @@ void g_read_input_data(Assignment& assignment)
 							for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 							{
 
-								link.penalty_si_at[tau][at] = penalty;
+								link.penalty_si_at[scenario_index][at][tau] = penalty;
 							}
 
 
@@ -4423,101 +4334,55 @@ void g_read_input_data(Assignment& assignment)
 						link_seq_no = link.link_seq_no;
 						link.AB_flag = 1;
 
-						if (dir_flag == 0 || dir_flag == 2)//
+						if (dir_flag == 0 || dir_flag == 2)
 						{
 							link.BA_link_no = link.link_seq_no + 1;
 						}
 						else
 							link.BA_link_no = -1;
 
-						g_node_vector[internal_from_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-						g_node_vector[internal_to_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-
-						g_node_vector[internal_from_node_seq_no].m_to_node_seq_no_vector.push_back(link.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-						g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[link.to_node_seq_no] = link.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
-						g_link_vector.push_back(link);  // copy the memory to the global vector 
-											
-						assignment.g_number_of_links++;
-
-
-
 
 					}
 					else //link_code_start ==2
 					{
-						CLink link2; 
-						link2 = link;  // first copy the content from link to link 2
+						// switch the node sequence no
+						int temp_node_no = internal_to_node_seq_no;
+						internal_to_node_seq_no = internal_from_node_seq_no;
+						internal_from_node_seq_no = temp_node_no;
 
-						link2.allocate_memory();  // then allocate memory 
-
-						// the following copy the content for fixed and dynamic array
-
-						for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
-						{
-							
-							{
-								link2.VDF_period[tau].allowed_uses = link.VDF_period[tau].allowed_uses;
-							}
+						int temp_node_id = link.to_node_id;
+						link.to_node_id = link.from_node_id;
+						link.from_node_id = temp_node_id;
 
 
-						}
-
-							for (int si = 0; si < g_number_of_max_scenarios_index; si++)
-							{
-								link2.link_type = link.link_type;
-								link2.number_of_lanes = link.number_of_lanes;  
-								link2.free_speed = link.free_speed;
-								link2.capacity = link.capacity;
-							}
-							//
-							
-							{
-								for (int tau = 0; tau < g_number_of_active_demand_perioids; ++tau)
-									for (int at = 0; at < g_number_of_active_mode_types; ++at)
-									{
-
-										link2.penalty_si_at[tau][at] = link.penalty_si_at[tau][at];
-										link2.recorded_lanes_per_period_per_at[tau][at] = link.recorded_lanes_per_period_per_at[tau][at];
-									}
-
-							}
+						link.AB_flag = -1;
+						link.BA_link_no = -1;
 
 
-
-						link2.to_node_id = link.from_node_id;
-						link2.from_node_id = link.to_node_id;
-
-
-						link2.AB_flag = -1;
-						link2.BA_link_no = -1;
+						link.link_seq_no += 1;  // update link seq no by + 1 for BA link
+						link_seq_no = link.link_seq_no;
 
 
-						link2.link_seq_no = link.link_seq_no + 1;  // update link seq no by + 1 for BA link
-						link_seq_no = link2.link_seq_no;
+						link.from_node_seq_no = internal_from_node_seq_no;
+						link.to_node_seq_no = internal_to_node_seq_no;
 
-
-						link2.from_node_seq_no = internal_to_node_seq_no;
-						link2.to_node_seq_no = internal_from_node_seq_no;
-
-						g_node_vector[internal_to_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-						g_node_vector[internal_from_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-
-						g_node_vector[internal_to_node_seq_no].m_to_node_seq_no_vector.push_back(link2.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
-						g_node_vector[internal_to_node_seq_no].m_to_node_2_link_seq_no_map[link2.to_node_seq_no] = link2.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
-						g_link_vector.push_back(link2);  // copy the memory to the global vector 
-
-
-						assignment.g_number_of_links++;
 
 					}
 
+					g_node_vector[internal_from_node_seq_no].m_outgoing_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+					g_node_vector[internal_to_node_seq_no].m_incoming_link_seq_no_vector.push_back(link_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+
+					g_node_vector[internal_from_node_seq_no].m_to_node_seq_no_vector.push_back(link.to_node_seq_no);  // add this link to the corresponding node as part of outgoing node/link
+					g_node_vector[internal_from_node_seq_no].m_to_node_2_link_seq_no_map[link.to_node_seq_no] = link.link_seq_no;  // add this link to the corresponding node as part of outgoing node/link
+					g_link_vector.push_back(link);
+
+
+					assignment.g_number_of_links++;
 				}
 
 				if (assignment.g_number_of_links % 10000 == 0)
-				{
 					dtalog.output() << "[STATUS INFO] reading " << assignment.g_number_of_links << " links.. " << '\n';
-					g_DTA_log_file << "[STATUS INFO] reading " << assignment.g_number_of_links << " links.. " << '\n';
-				}
+
 				line_no++;
 			}
 			parser_link.CloseCSVFile();
@@ -4526,7 +4391,6 @@ void g_read_input_data(Assignment& assignment)
 		else
 		{
 		dtalog.output() << "[ERROR] The critical input GMNS file 'link.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
-		g_DTA_log_file << "[ERROR] The critical input GMNS file 'link.csv' is missing. Please make sure the file is included in the appropriate directory." << '\n';
 		g_program_stop();
 		}
 
@@ -4537,37 +4401,29 @@ void g_read_input_data(Assignment& assignment)
 
 	if (missing_link_type_mapping.size() > 0)
 	{
-		dtalog.output() << "[WARNING] The following link types in link.csv are not defined in section link_type. ";
-		g_DTA_log_file << "[WARNING] The following link types in link.csv are not defined in section link_type. ";
+		dtalog.output() << "[WARNING] The following link types in link.csv are not defined in link_type.csv. ";
 			// Iterate over the map and print all values
 			for (const auto& pair : missing_link_type_mapping) 
 			{
 				int value = pair.first;
 				dtalog.output() << value << "; ";
-				g_DTA_log_file << value << "; ";
 			}
 
 			dtalog.output() <<  '\n';
-			g_DTA_log_file <<  '\n';
 			dtalog.output() << "The default value of link type = " << assignment.g_first_link_type << " is used." << '\n';
-			g_DTA_log_file << "The default value of link type = " << assignment.g_first_link_type << " is used." << '\n';
 	}
 
 
 
-	assignment.summary_file << "[PROCESS INFO] Step 1: read network node.csv, link.csv " << '\n';
+	assignment.summary_file << "[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv " << '\n';
 	assignment.summary_file << ",# of nodes = ," << g_node_vector.size() << '\n';
 	assignment.summary_file << ",# of links =," << g_link_vector.size() << '\n';
 	assignment.summary_file << ",# of zones =," << g_zone_vector.size() << '\n';
 	const int fieldWidth = 12;
-	dtalog.output() << "[PROCESS INFO] Step 1: read network node.csv, link.csv" << '\n';
-	g_DTA_log_file << "[PROCESS INFO] Step 1: read network node.csv, link.csv" << '\n';
+	dtalog.output() << "[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv " << '\n';
 	dtalog.output() << "[DATA INFO] " << std::setw(fieldWidth) << "# of nodes = " << g_node_vector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] " << std::setw(fieldWidth) << "# of nodes = " << g_node_vector.size() << '\n';
 	dtalog.output() << "[DATA INFO] " << std::setw(fieldWidth) << "# of links = " << g_link_vector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] " << std::setw(fieldWidth) << "# of links = " << g_link_vector.size() << '\n';
 	dtalog.output() << "[DATA INFO] " << std::setw(fieldWidth) << "# of zones = " << g_zone_vector.size() << '\n';
-	g_DTA_log_file << "[DATA INFO] " << std::setw(fieldWidth) << "# of zones = " << g_zone_vector.size() << '\n';
 
 	assignment.summary_file << "[PROCESS INFO] Step 1: read network node.csv, link.csv, zone.csv " << '\n';
 	assignment.summary_file << ",# of nodes = ," << g_node_vector.size() << '\n';
@@ -4596,13 +4452,13 @@ void g_read_input_data(Assignment& assignment)
 
 		for (int i = 0; i < g_link_vector.size(); i++)
 		{
-			if (g_link_vector[i].link_type >= 0 && g_link_vector[i].link_type == it_link_type->first)
+			if (g_link_vector[i].link_type_si[assignment.active_scenario_index] >= 0 && g_link_vector[i].link_type_si[assignment.active_scenario_index] == it_link_type->first)
 			{
 				link_count++;
 				total_speed += g_link_vector[i].free_speed;
-				total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes;
+				total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 				total_lane_capacity += g_link_vector[i].lane_capacity;
-				total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes;
+				total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 			}
 		}
 		assignment.summary_file << link_count << "," <<
@@ -4617,28 +4473,18 @@ void g_read_input_data(Assignment& assignment)
 
 	{
 	
-		const int fieldWidth = 10;
+		const int fieldWidth = 12;
 
 		dtalog.output() << "[PROCESS INFO] ";
-		g_DTA_log_file << "[PROCESS INFO] ";
 		dtalog.output() << std::setw(fieldWidth) << "link_type,";
-		g_DTA_log_file << std::setw(fieldWidth) << "link_type,";
 		dtalog.output() << std::setw(fieldWidth) << "link_name,";
-		g_DTA_log_file << std::setw(fieldWidth) << "link_name,";
 		dtalog.output() << std::setw(fieldWidth) << "# links,";
-		g_DTA_log_file << std::setw(fieldWidth) << "# links,";
 		dtalog.output() << std::setw(fieldWidth) << "avg_mph,";
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_mph,";
 		dtalog.output() << std::setw(fieldWidth) << "avg_kmph,";
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_kmph,";
 		dtalog.output() << std::setw(fieldWidth) << "total_len_km,";
-		g_DTA_log_file << std::setw(fieldWidth) << "total_len_km,";
 		dtalog.output() << std::setw(fieldWidth) << "total_cap,";
-		g_DTA_log_file << std::setw(fieldWidth) << "total_cap,";
-		dtalog.output() << std::setw(fieldWidth) << "avg_lane_cap,";
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_lane_cap,";
-		dtalog.output() << std::setw(fieldWidth) << "avg_len_meter," << '\n';
-		g_DTA_log_file << std::setw(fieldWidth) << "avg_len_meter," << '\n';
+		dtalog.output() << std::setw(fieldWidth) << "avg_lane,";
+		dtalog.output() << std::setw(fieldWidth) << "avg_len," << '\n';
 
 		std::map<int, CLinkType>::iterator it_link_type;
 		int count_zone_demand = 0;
@@ -4655,40 +4501,30 @@ void g_read_input_data(Assignment& assignment)
 
 			for (int i = 0; i < g_link_vector.size(); i++)
 			{
-				if (g_link_vector[i].link_type >= 0 && g_link_vector[i].link_type == it_link_type->first)
+				if (g_link_vector[i].link_type_si[assignment.active_scenario_index] >= 0 && g_link_vector[i].link_type_si[assignment.active_scenario_index] == it_link_type->first)
 				{
 					link_count++;
 					total_speed += g_link_vector[i].free_speed;
-					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes;
+					total_length += g_link_vector[i].length_in_meter * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 					total_lane_capacity += g_link_vector[i].lane_capacity;
-					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes;
+					total_link_capacity += g_link_vector[i].lane_capacity * g_link_vector[i].number_of_lanes_si[assignment.active_scenario_index];
 				}
 			}
 
 			if (link_count > 0)
 			{
 				dtalog.output() << "[PROCESS INFO]";
-				g_DTA_log_file << "[PROCESS INFO]";
 
 				dtalog.output() << std::setw(fieldWidth) << it_link_type->first;
-				g_DTA_log_file << std::setw(fieldWidth) << it_link_type->first;
 				dtalog.output() << std::setw(fieldWidth) << it_link_type->second.link_type_name.c_str();
-				g_DTA_log_file << std::setw(fieldWidth) << it_link_type->second.link_type_name.c_str();
 				dtalog.output() << std::setw(fieldWidth) << link_count;
-				g_DTA_log_file << std::setw(fieldWidth) << link_count;
 
 				dtalog.output() << std::setw(fieldWidth) << (total_speed / max(1, link_count));
-				g_DTA_log_file << std::setw(fieldWidth) << (total_speed / max(1, link_count));
 				dtalog.output() << std::setw(fieldWidth) << (total_speed / max(1, link_count) * 1.60934);
-				g_DTA_log_file << std::setw(fieldWidth) << (total_speed / max(1, link_count) * 1.60934);
 				dtalog.output() << std::setw(fieldWidth) << (total_length / 1000.0);
-				g_DTA_log_file << std::setw(fieldWidth) << (total_length / 1000.0);
 				dtalog.output() << std::setw(fieldWidth) << total_link_capacity;
-				g_DTA_log_file << std::setw(fieldWidth) << total_link_capacity;
 				dtalog.output() << std::setw(fieldWidth) << (total_lane_capacity / max(1, link_count));
-				g_DTA_log_file << std::setw(fieldWidth) << (total_lane_capacity / max(1, link_count));
 				dtalog.output() << std::setw(fieldWidth) << (total_length / max(1, link_count)) << '\n';
-				g_DTA_log_file << std::setw(fieldWidth) << (total_length / max(1, link_count)) << '\n';
 			}
 		}
 	}
@@ -4703,15 +4539,10 @@ void g_read_input_data(Assignment& assignment)
 				// we need to make sure we only create two way connectors between nodes and zones
 				dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
 					<< g_node_vector[i].m_outgoing_link_seq_no_vector.size() << " outgoing links." << '\n';
-
-				g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with zone id " << g_node_vector[i].zone_org_id << "and "
-					<< g_node_vector[i].m_outgoing_link_seq_no_vector.size() << " outgoing links." << '\n';
-
 				for (int j = 0; j < g_node_vector[i].m_outgoing_link_seq_no_vector.size(); ++j)
 				{
 					int link_seq_no = g_node_vector[i].m_outgoing_link_seq_no_vector[j];
 					dtalog.output() << "[DATA INFO] outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
-					g_DTA_log_file << "[DATA INFO] outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 				}
 			}
 			else
@@ -4719,25 +4550,70 @@ void g_read_input_data(Assignment& assignment)
 				if (dtalog.debug_level() == 3)
 				{
 					dtalog.output() << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with " << g_node_vector[i].m_outgoing_link_seq_no_vector.size() << " outgoing links." << '\n';
-					g_DTA_log_file << "[DATA INFO] node id= " << g_node_vector[i].node_id << " with " << g_node_vector[i].m_outgoing_link_seq_no_vector.size() << " outgoing links." << '\n';
 					for (int j = 0; j < g_node_vector[i].m_outgoing_link_seq_no_vector.size(); ++j)
 					{
 						int link_seq_no = g_node_vector[i].m_outgoing_link_seq_no_vector[j];
 						dtalog.output() << "[DATA INFO] outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
-						g_DTA_log_file << "[DATA INFO] outgoing node = " << g_node_vector[g_link_vector[link_seq_no].to_node_seq_no].node_id << '\n';
 					}
 				}
 			}
 		}
 	}
-	
-	g_read_link_qvdf_data(assignment);
-
-
+	//if (assignment.assignment_mode != 11)   // not tmc mode
+	//	g_read_link_qvdf_data(assignment);
 }
 
 
+//CDTACSVParser parser_movement;
+//int prohibited_count = 0;
 
+//if (parser_movement.OpenCSVFile("movement.csv", false))  // not required
+//{
+//    while (parser_movement.ReadRecord())
+//    {
+//        string ib_link_id;
+//        int node_id = 0;
+//        string ob_link_id;
+//        int prohibited_flag = 0;
+
+//        if (!parser_movement.GetValueByFieldName("node_id", node_id))
+//            break;
+
+//        if (assignment.g_node_id_to_seq_no_map.find(node_id) == assignment.g_node_id_to_seq_no_map.end())
+//        {
+//            dtalog.output() << "Error: node_id " << node_id << " in file movement.csv is not defined in node.csv." << '\n';
+//            //has not been defined
+//            continue;
+//        }
+
+//        parser_movement.GetValueByFieldName("ib_link_id", ib_link_id);
+//        parser_movement.GetValueByFieldName("ob_link_id", ob_link_id);
+
+//        if (assignment.g_link_id_map.find(ib_link_id) != assignment.g_link_id_map.end())
+//            dtalog.output() << "Error: ib_link_id " << ib_link_id.c_str() << " has not been defined in movement.csv. Please check link.csv." << '\n';
+
+//        if (assignment.g_link_id_map.find(ob_link_id) != assignment.g_link_id_map.end())
+//            dtalog.output() << "Error: ob_link_id " << ob_link_id.c_str() << " has not been defined in movement.csv. Please check link.csv." << '\n';
+
+//        float penalty = 0;
+//        parser_movement.GetValueByFieldName("penalty", penalty);
+
+//        if (penalty >= 99)
+//        {
+//            string	movement_string;
+//            movement_string = ib_link_id + "->" + ob_link_id;
+
+//            int node_no = assignment.g_node_id_to_seq_no_map[node_id];
+//            g_node_vector[node_no].prohibited_movement_size++;
+//            g_node_vector[node_no].m_prohibited_movement_string_map[movement_string] = 1;
+
+//            prohibited_count++;
+//        }
+//    }
+
+//    dtalog.output() << "Step XX: Reading movement.csv data with " << prohibited_count << " prohibited records." << '\n';
+//    parser_movement.CloseCSVFile();
+//}
 
 
 
@@ -4746,7 +4622,6 @@ void g_read_input_data(Assignment& assignment)
 //void g_reload_timing_arc_data(Assignment& assignment)
 //{
 //    dtalog.output() << "Step 1.7: Reading service arc in timing.csv..." << '\n';
-//    g_DTA_log_file << "Step 1.7: Reading service arc in timing.csv..." << '\n';
 //
 //    CDTACSVParser parser_timing_arc;
 //    if (parser_timing_arc.OpenCSVFile("timing.csv", false))
@@ -4757,7 +4632,6 @@ void g_read_input_data(Assignment& assignment)
 //            if (!parser_timing_arc.GetValueByFieldName("mvmt_key", mvmt_key))
 //            {
 //                dtalog.output() << "Error: mvmt_key in file timing.csv is not defined." << '\n';
-//                g_DTA_log_file << "Error: mvmt_key in file timing.csv is not defined." << '\n';
 //                continue;
 //            }
 //            // create a link object
@@ -4766,7 +4640,6 @@ void g_read_input_data(Assignment& assignment)
 //            if (assignment.g_mvmt_key_to_link_no_map.find(mvmt_key) == assignment.g_mvmt_key_to_link_no_map.end())
 //            {
 //                dtalog.output() << "Error: mvmt_key " << mvmt_key << " in file timing.csv is not defined in link.csv." << '\n';
-//                g_DTA_log_file << "Error: mvmt_key " << mvmt_key << " in file timing.csv is not defined in link.csv." << '\n';
 //                //has not been defined
 //                continue;
 //            }
@@ -4780,7 +4653,6 @@ void g_read_input_data(Assignment& assignment)
 //            if (!parser_timing_arc.GetValueByFieldName("time_window", time_period))
 //            {
 //                dtalog.output() << "Error: Field time_window in file timing.csv cannot be read." << '\n';
-//                g_DTA_log_file << "Error: Field time_window in file timing.csv cannot be read." << '\n';
 //                g_program_stop();
 //                break;
 //            }
@@ -4839,7 +4711,6 @@ void g_read_input_data(Assignment& assignment)
 //
 //            if (assignment.g_number_of_timing_arcs % 10000 == 0)
 //                dtalog.output() << "reading " << assignment.g_number_of_timing_arcs << " timing_arcs.. " << '\n';
-//                g_DTA_log_file << "reading " << assignment.g_number_of_timing_arcs << " timing_arcs.. " << '\n';
 //        }
 //
 //        parser_timing_arc.CloseCSVFile();
@@ -4847,38 +4718,9 @@ void g_read_input_data(Assignment& assignment)
 //
 //    
 //    dtalog.output() << "Step 1.8: Reading file section [demand_file_list] in settings.csv..." << '\n';
-//    g_DTA_log_file << "Step 1.8: Reading file section [demand_file_list] in settings.csv..." << '\n';
 //    // we now know the number of links
 //    dtalog.output() << "number of timing records = " << assignment.g_number_of_timing_arcs << '\n' << '\n';
-//    g_DTA_log_file << "number of timing records = " << assignment.g_number_of_timing_arcs << '\n' << '\n';
 //}
 //
-
-//// new Yaml file input
-
-//////////////////////////////////////////
-void read_settings_yml(const std::string& file_path)
-{
-
-
-	//// it is possible that no AgentType is set up
-	//if (this->ats.empty())
-	//	this->ats.push_back(new AgentType());
-
-	
-}
-
-void read_settings(const std::string& dir)
-{
-
-	read_settings_yml("settings.yml");
-
-	//path file_path = dir + '/' + "settings.yml";
-	//if (exists(file_path))
-	//	read_settings_yml(file_path.string());
-	//else
-	//	auto_setup();
-}
-
 
 

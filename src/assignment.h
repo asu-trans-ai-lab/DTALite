@@ -8,6 +8,15 @@
  * http://www.gnu.org/licenses/gpl-howto.html
  */
 
+ // Peiheng, 02/03/21, remove them later after adopting better casting
+#pragma warning(disable : 4305 4267 4018)
+// stop warning: "conversion from 'int' to 'float', possible loss of data"
+#pragma warning(disable: 4244)
+
+#ifdef _WIN32
+#include "pch.h"
+#endif
+
 #include "config.h"
 #include "utils.h"
 #include "DTA.h"
@@ -45,15 +54,16 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 	// reset the link volume
 	for (int i = 0; i < number_of_links; ++i)
 	{
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 			// used in travel time calculation
-			g_link_vector[i].total_volume_for_all_mode_types = 0;
-			g_link_vector[i].total_person_volume_for_all_mode_types = 0;
+			g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
+			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 			{
-				g_link_vector[i].volume_per_mode_type[at] = 0; 
-				g_link_vector[i].converted_PCE_volume_per_at[at] = 0;
+				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+				g_link_vector[i].converted_PCE_volume_per_period_per_at[tau][at] = 0;
 			}
 		}
 
@@ -68,6 +78,7 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 
 			std::map<int, CColumnPath>::iterator it;
 			int zone_size = g_zone_vector.size();
+			int tau_size = assignment.g_DemandPeriodVector.size();
 
 			float link_volume_contributed_by_path_volume;
 
@@ -97,8 +108,9 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 					if (to_zone_sindex == -1)
 						continue;
 
+					for (int tau = 0; tau < tau_size; ++tau)  //tau
 					{
-						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 						if (p_column_pool->od_volume > 0)
 						{
 							total_least_system_travel_time += p_column_pool->od_volume * p_column_pool->least_travel_time;
@@ -123,9 +135,9 @@ double g_reset_and_update_link_volume_based_on_columns(int number_of_links, int 
 									person_occupancy = assignment.g_ModeTypeVector[at].person_occupancy;  // updated on 08/16/2021 for link dependent and agent type dependent pce factor mainly for trucks
 #pragma omp critical
 									{
-										g_link_vector[link_seq_no].total_volume_for_all_mode_types += link_volume_contributed_by_path_volume ;
-										g_link_vector[link_seq_no].total_person_volume_for_all_mode_types += link_volume_contributed_by_path_volume * person_occupancy;
-										g_link_vector[link_seq_no].volume_per_mode_type[at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+										g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume ;
+										g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * person_occupancy;
+										g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 
 									}
@@ -194,9 +206,10 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 		//	waiting_time_count += assignment.m_link_TD_waiting_time[l][tt/number_of_simu_intervals_in_min];   // tally total waiting cou
 		//}
 
+		//for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); tau++)
 		//{
 		//	float travel_time = g_link_vector[l].free_flow_travel_time_in_min  + waiting_time_count* number_of_seconds_per_interval / max(1, volume) / 60;
-		//	g_link_vector[l].link_avg_travel_time = travel_time;
+		//	g_link_vector[l].link_avg_travel_time_per_period[tau] = travel_time;
 
 		//}
 	}
@@ -205,10 +218,21 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 	for (int i = 0; i < g_link_vector.size(); ++i)
 	{
 		// step 1: travel time based on VDF
-		g_link_vector[i].calculate_dynamic_VDFunction(inner_iteration_number, false);
+		g_link_vector[i].calculate_dynamic_VDFunction(inner_iteration_number, false, g_link_vector[i].vdf_type);
 
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
+		{
+			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+			{
+				float PCE_mode_type = 1;
 
+				int tau = 0;
+				int mode_type_index = 0;
 
+				// step 2: marginal cost for SO
+				g_link_vector[i].calculate_marginal_cost_for_mode_type(tau, at, PCE_mode_type);
+			}
+		}
 	}
 
 
@@ -219,17 +243,18 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 	{
 		//if (assignment.g_LinkTypeMap[g_link_vector[i].link_type].type_code != "c")  // suggestion: we can move "c" as "connector" in allowed_uses
 		{
+			for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)
 			{
 
 					double link_volume_to_be_assigned = 0;
 
 					for (int at_k = 0; at_k < assignment.g_ModeTypeVector.size(); at_k++)  // the other at mode
 					{
-						//if (g_link_vector[i].volume_per_mode_type[at_k] > 0)
+						//if (g_link_vector[i].volume_per_mode_type_per_period[tau][at_k] > 0)
 						{
-							total_network_travel_time += g_link_vector[i].link_avg_travel_time[at_k] * g_link_vector[i].volume_per_mode_type[at_k];
+							total_network_travel_time += g_link_vector[i].link_avg_travel_time_per_period[tau][at_k] * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
 
-							total_distance += g_link_vector[i].length_in_meter * g_link_vector[i].volume_per_mode_type[at_k];
+							total_distance += g_link_vector[i].length_in_meter * g_link_vector[i].volume_per_mode_type_per_period[tau][at_k];
 
 							//g_DTA_log_file << "inner_iteration_number = " << inner_iteration_number << "," << 
 							//	
@@ -237,11 +262,11 @@ double update_link_travel_time_and_cost(int inner_iteration_number, double& tota
 							//	 << "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id 
 							//	<< ", demand period no = " << tau  
 							//	<< ", at_k = " << at_k 
-							//	<< ": with volume = " << g_link_vector[i].total_volume_for_all_mode_types <<
-							//	" per_mode volume = " << g_link_vector[i].volume_per_mode_type[at_k] << 
-							//	" travel time = " << g_link_vector[i].link_avg_travel_time[at_k] <<
+							//	<< ": with volume = " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] <<
+							//	" per_mode volume = " << g_link_vector[i].volume_per_mode_type_per_period[tau][at_k] << 
+							//	" travel time = " << g_link_vector[i].link_avg_travel_time_per_period[tau][at_k] <<
 							//	" total_network_travel_time = " << total_network_travel_time <<
-							//	" incoming demand D = " << g_link_vector[i].lane_based_D << '\n';
+							//	" incoming demand D = " << g_link_vector[i].VDF_period[tau].lane_based_D << '\n';
 
 						}
 					}
@@ -271,218 +296,225 @@ double g_reset_and_update_link_volume_based_on_ODME_columns(int number_of_links,
 	// reset the link volume
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		// used in travel time calculation
-		g_link_vector[i].total_volume_for_all_mode_types = 0;
-		g_link_vector[i].total_person_volume_for_all_mode_types = 0;
-
-		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
-			g_link_vector[i].volume_per_mode_type[at] = 0;
-			g_link_vector[i].converted_PCE_volume_per_at[at] = 0;
+			// used in travel time calculation
+			g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
+			g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
+
+			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
+			{
+				g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+				g_link_vector[i].converted_PCE_volume_per_period_per_at[tau][at] = 0;
+			}
 		}
 
+	}
 
 
-		for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
-		{
+	for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
+	{
 
-			int zone_size = g_zone_vector.size();
-			float person_occupancy = assignment.g_ModeTypeVector[at].person_occupancy;
+		int zone_size = g_zone_vector.size();
+		int tau_size = assignment.g_DemandPeriodVector.size();
+		float person_occupancy = assignment.g_ModeTypeVector[at].person_occupancy;
 
 
 #pragma omp parallel for
-			for (int orig = 0; orig < zone_size; ++orig)  // o
+		for (int orig = 0; orig < zone_size; ++orig)  // o
+		{
+			int from_zone_sindex = g_zone_vector[orig].sindex;
+			if (from_zone_sindex == -1)
+				continue;
+
+
+			std::map<int, CColumnPath>::iterator it;
+			float link_volume_contributed_by_path_volume;
+			int nl;
+
+			std::map<int, CColumnPath>::iterator it_begin;
+			std::map<int, CColumnPath>::iterator it_end;
+
+			int column_vector_size;
+			CColumnVector* p_column_pool;
+			for (int dest = 0; dest < zone_size; ++dest) //d
 			{
-				int from_zone_sindex = g_zone_vector[orig].sindex;
-				if (from_zone_sindex == -1)
+				int to_zone_sindex = g_zone_vector[dest].sindex;
+
+				if (to_zone_sindex == -1)
 					continue;
 
-
-				std::map<int, CColumnPath>::iterator it;
-				float link_volume_contributed_by_path_volume;
-				int nl;
-
-				std::map<int, CColumnPath>::iterator it_begin;
-				std::map<int, CColumnPath>::iterator it_end;
-
-				int column_vector_size;
-				CColumnVector* p_column_pool;
-				for (int dest = 0; dest < zone_size; ++dest) //d
+				for (int tau = 0; tau < tau_size; ++tau)  //tau
 				{
-					int to_zone_sindex = g_zone_vector[dest].sindex;
-
-					if (to_zone_sindex == -1)
-						continue;
-
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+					if (p_column_pool->od_volume > 0)
 					{
-						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
-						if (p_column_pool->od_volume > 0)
+
+
+						// continuous: type 0
+						column_vector_size = p_column_pool->path_node_sequence_map.size();
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+
+						double least_cost = 999999;
+						int least_cost_path_seq_no = -1;
+						int least_cost_path_node_sum_index = -1;
+						int path_seq_count = 0;
+
+						double path_toll = 0;
+						double path_gradient_cost = 0;
+						double path_distance = 0;
+						double path_travel_time = 0;
+						int link_seq_no;
+
+						double link_travel_time;
+						double total_switched_out_path_volume = 0;
+
+						double step_size = 0;
+						double previous_path_volume = 0;
+
+						least_cost = 999999;
+						path_seq_count = 0;
+
+						it_begin = p_column_pool->path_node_sequence_map.begin();
+						it_end = p_column_pool->path_node_sequence_map.end();
+						for (it = it_begin; it != it_end; ++it)
 						{
+							total_system_demand += it->second.path_volume;
+							path_toll = 0;
+							path_gradient_cost = 0;
+							path_distance = 0;
+							path_travel_time = 0;
 
-
-							// continuous: type 0
-							column_vector_size = p_column_pool->path_node_sequence_map.size();
-
-							it_begin = p_column_pool->path_node_sequence_map.begin();
-							it_end = p_column_pool->path_node_sequence_map.end();
-
-							double least_cost = 999999;
-							int least_cost_path_seq_no = -1;
-							int least_cost_path_node_sum_index = -1;
-							int path_seq_count = 0;
-
-							double path_toll = 0;
-							double path_gradient_cost = 0;
-							double path_distance = 0;
-							double path_travel_time = 0;
-							int link_seq_no;
-
-							double link_travel_time;
-							double total_switched_out_path_volume = 0;
-
-							double step_size = 0;
-							double previous_path_volume = 0;
-
-							least_cost = 999999;
-							path_seq_count = 0;
-
-							it_begin = p_column_pool->path_node_sequence_map.begin();
-							it_end = p_column_pool->path_node_sequence_map.end();
-							for (it = it_begin; it != it_end; ++it)
+							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
-								total_system_demand += it->second.path_volume;
-								path_toll = 0;
-								path_gradient_cost = 0;
-								path_distance = 0;
-								path_travel_time = 0;
-
-								for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
-								{
-									link_seq_no = it->second.path_link_vector[nl];
-									link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time[at];
-									path_travel_time += link_travel_time;
-
-								}
-
-								it->second.path_toll = path_toll;
-								it->second.path_travel_time = path_travel_time;
-								total_system_travel_time += (it->second.path_travel_time * it->second.path_volume);
-
-								if (column_vector_size == 1)  // only one path
-								{
-
-									break;
-								}
-
-								if (path_travel_time < least_cost)
-								{
-									least_cost = path_travel_time;
-									least_cost_path_seq_no = it->second.path_seq_no;
-									least_cost_path_node_sum_index = it->first;
-								}
-#pragma omp critical
-								{
-									total_system_travel_cost += (it->second.path_travel_time * it->second.path_volume);
-								}
-							} // end for each path
-
-
-
-							if (column_vector_size >= 2)
-							{
-								// step 2: calculate gradient cost difference for each column path
-								total_switched_out_path_volume = 0;
-								for (it = it_begin; it != it_end; ++it)
-								{
-									if (it->second.path_seq_no != least_cost_path_seq_no)  //for non-least cost path
-									{
-										it->second.UE_gap = it->second.path_travel_time - least_cost;
-										it->second.UE_relative_gap = (it->second.path_travel_time - least_cost) / max(0.0001, least_cost);
-
-#pragma omp critical
-										{
-											total_system_UE_gap += (it->second.UE_gap * it->second.path_volume);
-										}
-
-
-
-
-									}
-								}
-
-							}  // end for each path
-
-
-							for (it = it_begin; it != it_end; ++it)  // path k
-							{
-								link_volume_contributed_by_path_volume = it->second.path_volume;  // assign all OD flow to this first path
-
-								// add path volume to link volume
-								for (nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
-								{
-									link_seq_no = it->second.path_link_vector[nl];
-
-
-									if (g_link_vector[link_seq_no].obs_count >= 1 || update_link_volume_per_mode_flag == true)
-										// only record the link volume for links with sensor data
-									{
-										// MSA updating for the existing column pools
-									// if iteration_index = 0; then update no flow discount is used (for the column pool case)
-#pragma omp critical
-										{
-											g_link_vector[link_seq_no].total_volume_for_all_mode_types += link_volume_contributed_by_path_volume;
-											g_link_vector[link_seq_no].total_person_volume_for_all_mode_types += link_volume_contributed_by_path_volume * person_occupancy;
-											g_link_vector[link_seq_no].volume_per_mode_type[at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
-
-										}
-									}
-								}
+								link_seq_no = it->second.path_link_vector[nl];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
+								path_travel_time += link_travel_time;
 
 							}
+
+							it->second.path_toll = path_toll;
+							it->second.path_travel_time = path_travel_time;
+							total_system_travel_time += (it->second.path_travel_time * it->second.path_volume);
+
+							if (column_vector_size == 1)  // only one path
+							{
+
+								break;
+							}
+
+							if (path_travel_time < least_cost)
+							{
+								least_cost = path_travel_time;
+								least_cost_path_seq_no = it->second.path_seq_no;
+								least_cost_path_node_sum_index = it->first;
+							}
+#pragma omp critical
+							{
+								total_system_travel_cost += (it->second.path_travel_time * it->second.path_volume);
+							}
+						} // end for each path
+
+
+
+						if (column_vector_size >= 2)
+						{
+							// step 2: calculate gradient cost difference for each column path
+							total_switched_out_path_volume = 0;
+							for (it = it_begin; it != it_end; ++it)
+							{
+								if (it->second.path_seq_no != least_cost_path_seq_no)  //for non-least cost path
+								{
+									it->second.UE_gap = it->second.path_travel_time - least_cost;
+									it->second.UE_relative_gap = (it->second.path_travel_time - least_cost) / max(0.0001, least_cost);
+
+#pragma omp critical
+									{
+										total_system_UE_gap += (it->second.UE_gap * it->second.path_volume);
+									}
+
+
+
+
+								}
+							}
+
+						}  // end for each path
+
+
+						for (it = it_begin; it != it_end; ++it)  // path k
+						{
+							link_volume_contributed_by_path_volume = it->second.path_volume;  // assign all OD flow to this first path
+
+							// add path volume to link volume
+							for (nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
+							{
+								link_seq_no = it->second.path_link_vector[nl];
+
+
+								if (g_link_vector[link_seq_no].VDF_period[tau].obs_count >= 1 || update_link_volume_per_mode_flag == true)
+									// only record the link volume for links with sensor data
+								{
+									// MSA updating for the existing column pools
+								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
+#pragma omp critical
+									{
+										g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
+										g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * person_occupancy;
+										g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+
+									}
+								}
+								}
+
 						}
 					}
 				}
 			}
 		}
 	}
+
 	int total_link_count = 0;
 
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
-
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 		{
-
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0  || g_link_vector[i].link_type == -1)
+				continue;
 			
-			if (g_link_vector[i].obs_count >= 1)  // with data
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].est_count_dev = g_link_vector[i].volume_per_mode_type[0] + g_link_vector[i].preload - g_link_vector[i].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].volume_per_mode_type_per_period[0][tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 				}
-				if (g_link_vector[i].upper_bound_flag == 0)
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
-					total_gap += abs(g_link_vector[i].est_count_dev);
-					sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-					sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
 				{  // upper bound constraints
-					if (g_link_vector[i].est_count_dev > 0)
+					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
-						total_gap += abs(g_link_vector[i].est_count_dev);
-						sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-						sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+						sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+						sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 					}
 				}
 				total_link_count += 1;
@@ -586,19 +618,19 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 	// reset the link volume
 	for (int i = 0; i < number_of_links; ++i)
 	{
-	
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 
-			if (g_link_vector[i].obs_count >= 1)
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
 			{
 				// used in travel time calculation
-				g_link_vector[i].total_volume_for_all_mode_types = 0;
-				g_link_vector[i].total_person_volume_for_all_mode_types = 0;
+				g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
+				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
-					g_link_vector[i].volume_per_mode_type[at] = 0; 
-					g_link_vector[i].converted_PCE_volume_per_at[at] = 0;
+					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0; 
+					g_link_vector[i].converted_PCE_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
 
@@ -611,6 +643,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 	{
 
 		int zone_size = g_zone_vector.size();
+		int tau_size = assignment.g_DemandPeriodVector.size();
 		float person_occupancy = assignment.g_ModeTypeVector[at].person_occupancy;
 
 
@@ -638,7 +671,9 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 				if (to_zone_sindex == -1)
 					continue;
 
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+				for (int tau = 0; tau < tau_size; ++tau)  //tau
+				{
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 
@@ -685,15 +720,15 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 								// MSA updating for the existing column pools
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
-									g_link_vector[link_seq_no].total_volume_for_all_mode_types += link_volume_contributed_by_path_volume;
-									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types += link_volume_contributed_by_path_volume * person_occupancy;
-									g_link_vector[link_seq_no].volume_per_mode_type[at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+									g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
+									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * person_occupancy;
+									g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 								}
 							}
 						}
 					}
-				
+				}
 			}
 		}
 	}
@@ -703,38 +738,40 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns(int number_of
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 		{
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
+				continue;
 
-
-			if (g_link_vector[i].obs_count >= 1)  // with data
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types + g_link_vector[i].preload - g_link_vector[i].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 				}
-				if (g_link_vector[i].upper_bound_flag == 0)
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
-					total_gap += abs(g_link_vector[i].est_count_dev);
-					sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-					sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
 				{  // upper bound constraints
-					if (g_link_vector[i].est_count_dev > 0)
+					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
-						total_gap += abs(g_link_vector[i].est_count_dev);
-						sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-						sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+						sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+						sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 					}
 				}
 				total_link_count += 1;
@@ -799,19 +836,19 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	// reset the link volume
 	for (int i = 0; i < number_of_links; ++i)
 	{
-
+		for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 		{
 
-			if (g_link_vector[i].obs_count >= 1)
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)
 			{
 				// used in travel time calculation
-				g_link_vector[i].total_volume_for_all_mode_types = 0;
-				g_link_vector[i].total_person_volume_for_all_mode_types = 0;
+				g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] = 0;
+				g_link_vector[i].total_person_volume_for_all_mode_types_per_period[tau] = 0;
 
 				for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)
 				{
-					g_link_vector[i].volume_per_mode_type[at] = 0;
-					g_link_vector[i].converted_PCE_volume_per_at[at] = 0;
+					g_link_vector[i].volume_per_mode_type_per_period[tau][at] = 0;
+					g_link_vector[i].converted_PCE_volume_per_period_per_at[tau][at] = 0;
 				}
 			}
 
@@ -825,6 +862,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	{
 
 		int zone_size = g_zone_vector.size();
+		int tau_size = assignment.g_DemandPeriodVector.size();
 		float person_occupancy = assignment.g_ModeTypeVector[at].person_occupancy;
 
 
@@ -852,8 +890,9 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 				if (to_zone_sindex == -1)
 					continue;
 
+				for (int tau = 0; tau < tau_size; ++tau)  //tau
 				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 
@@ -896,7 +935,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time[at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -938,9 +977,9 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 								// MSA updating for the existing column pools
 								// if iteration_index = 0; then update no flow discount is used (for the column pool case)
 								{
-									g_link_vector[link_seq_no].total_volume_for_all_mode_types += link_volume_contributed_by_path_volume;
-									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types += link_volume_contributed_by_path_volume * person_occupancy;
-									g_link_vector[link_seq_no].volume_per_mode_type[at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
+									g_link_vector[link_seq_no].total_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume;
+									g_link_vector[link_seq_no].total_person_volume_for_all_mode_types_per_period[tau] += link_volume_contributed_by_path_volume * person_occupancy;
+									g_link_vector[link_seq_no].volume_per_mode_type_per_period[tau][at] += link_volume_contributed_by_path_volume;  // pure volume, not consider PCE
 
 								}
 							}
@@ -956,40 +995,42 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 	// calcualte deviation for each measurement type
 	for (int i = 0; i < number_of_links; ++i)
 	{
-		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false);
+		g_link_vector[i].calculate_dynamic_VDFunction(iteration_no, false, g_link_vector[i].vdf_type);
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 		{
+			if (assignment.g_DemandPeriodVector[tau].number_of_demand_files == 0)
+				continue;
 
-
-			if (g_link_vector[i].obs_count >= 1)  // with data
+			if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 			{
-				g_link_vector[i].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types + g_link_vector[i].preload - g_link_vector[i].obs_count;
+				g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 
 				if (dtalog.debug_level() == 2)
 				{
 					dtalog.output() << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 
 					g_DTA_log_file << "[DATA INFO] link " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id
 						<< "->" << g_node_vector[g_link_vector[i].to_node_seq_no].node_id
-						<< "obs:, " << g_link_vector[i].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types
-						<< "dev:," << g_link_vector[i].est_count_dev << '\n';
+						<< "obs:, " << g_link_vector[i].VDF_period[tau].obs_count << "est:, " << g_link_vector[i].total_volume_for_all_mode_types_per_period[tau]
+						<< "dev:," << g_link_vector[i].VDF_period[tau].est_count_dev << '\n';
 
 				}
-				if (g_link_vector[i].upper_bound_flag == 0)
+				if (g_link_vector[i].VDF_period[tau].upper_bound_flag == 0)
 				{
-					total_gap += abs(g_link_vector[i].est_count_dev);
-					sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-					sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+					total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+					sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+					sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 				}
 				else
 				{  // upper bound constraints
-					if (g_link_vector[i].est_count_dev > 0)
+					if (g_link_vector[i].VDF_period[tau].est_count_dev > 0)
 					{
-						total_gap += abs(g_link_vector[i].est_count_dev);
-						sub_total_gap_link_count += fabs(g_link_vector[i].est_count_dev / g_link_vector[i].obs_count);
-						sub_total_system_gap_count += g_link_vector[i].est_count_dev / g_link_vector[i].obs_count;
+						total_gap += abs(g_link_vector[i].VDF_period[tau].est_count_dev);
+						sub_total_gap_link_count += fabs(g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count);
+						sub_total_system_gap_count += g_link_vector[i].VDF_period[tau].est_count_dev / g_link_vector[i].VDF_period[tau].obs_count;
 					}
 				}
 				total_link_count += 1;
@@ -1061,7 +1102,7 @@ double g_reset_and_update_sensor_link_volume_based_on_ODME_columns_complete_impl
 
 	return gap;
 }
-double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, int column_updating_iterations, bool b_sensitivity_analysis_flag)
+double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assignment, int inner_iteration_number, bool b_sensitivity_analysis_flag)
 {
 	double total_system_cost_gap = 0;
 	float total_relative_gap = 0;
@@ -1078,11 +1119,12 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 	{
 		for (int i = 0; i < g_link_vector.size(); ++i)
 		{
+			for (int tau = 0; tau < assignment.g_number_of_demand_periods; ++tau)
 			{
 
-				if (g_link_vector[i].obs_count >= 1)  // with data
+				if (g_link_vector[i].VDF_period[tau].obs_count >= 1)  // with data
 				{
-					g_link_vector[i].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types + g_link_vector[i].preload - g_link_vector[i].obs_count;
+					g_link_vector[i].VDF_period[tau].est_count_dev = g_link_vector[i].total_volume_for_all_mode_types_per_period[tau] + g_link_vector[i].VDF_period[tau].preload - g_link_vector[i].VDF_period[tau].obs_count;
 				}
 			}
 		}
@@ -1134,8 +1176,9 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 						double total_OD_gap = 0;
@@ -1205,7 +1248,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time[at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 							}
@@ -1255,7 +1298,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 									// step 3.3 link flow gradient
 									link_seq_no = it->second.path_link_vector[nl];
 
-									if (g_link_vector[link_seq_no].dynamic_traffic_management_flag == -1)  // affected by capacity reduction dynamic traffic managementscenario
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1)  // affected by capacity reduction dynamic traffic managementscenario
 									{
 
 										p_column_pool->OD_impact_flag = 1;
@@ -1277,14 +1320,14 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 							for (int nl = 0; nl < it->second.m_link_size; ++nl)  // arc a
 							{
 								link_seq_no = it->second.path_link_vector[nl];
-								path_toll += g_link_vector[link_seq_no].toll[at];
+								path_toll += g_link_vector[link_seq_no].VDF_period[tau].toll[at];
 								path_distance += g_link_vector[link_seq_no].link_distance_VDF;
-								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time[at];
+								link_travel_time = g_link_vector[link_seq_no].link_avg_travel_time_per_period[tau][at];
 								path_travel_time += link_travel_time;
 
 								if (b_sensitivity_analysis_flag && inner_iteration_number == 0)  // peiheng and entai, 02/28/2023
 								{
-									if (g_link_vector[link_seq_no].dynamic_traffic_management_flag!=0)
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag!=0)
 									{
 
 										it->second.path_SA_link_vector.push_back(link_seq_no);
@@ -1292,7 +1335,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 
 								}
 
-								path_gradient_cost += g_link_vector[link_seq_no].get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(at);
+								path_gradient_cost += g_link_vector[link_seq_no].get_generalized_first_order_gradient_cost_of_second_order_loss_for_mode_type(tau, at);
 							}
 
 							it->second.path_toll = path_toll;
@@ -1402,11 +1445,7 @@ double g_update_gradient_cost_and_assigned_flow_in_column_pool(Assignment& assig
 									}
 									else
 									{  // column updating step size
-
-										if (column_updating_iterations < 10)
-											step_size = 0.05;
-										else
-											step_size = 1.0 / (inner_iteration_number + 2) ; // MSA 
+										step_size = 1.0 / (inner_iteration_number + 2) ;
 									}
 
 
@@ -1566,9 +1605,10 @@ void g_reset_RT_link_penalty_in_column_pool(Assignment& assignment)  // after
 {
 	for (int li = 0; li < g_link_vector.size(); ++li)
 	{
-
-			g_link_vector[li].RT_route_regeneration_penalty = 0;
-
+		for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
+		{
+			g_link_vector[li].VDF_period[tau].RT_route_regeneration_penalty = 0;
+		}
 	}
 }
 void g_update_sa_volume_in_column_pool(Assignment& assignment, int before_and_after_flag = 0)
@@ -1604,8 +1644,9 @@ void g_update_sa_volume_in_column_pool(Assignment& assignment, int before_and_af
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 
@@ -1676,8 +1717,9 @@ void g_update_odme_volume_in_column_pool(Assignment& assignment, int before_and_
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 
@@ -1743,9 +1785,10 @@ void g_classification_in_column_pool(Assignment& assignment)
 				//if (assignment.g_ModeTypeVector[at].real_time_information_type != 0)  // users with information, continue;
 				//	continue;
 
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
 
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 
 					if (p_column_pool->od_volume > 0)
 					{
@@ -1770,7 +1813,7 @@ void g_classification_in_column_pool(Assignment& assignment)
 							{
 								link_seq_no = it->second.path_link_vector[nl];
 
-								if (g_link_vector[link_seq_no].dynamic_traffic_management_flag == -1 /* sa impacted, but not DMS location*/)  // screening condition 1: passing through the network design location
+								if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1 /* sa impacted, but not DMS location*/)  // screening condition 1: passing through the network design location
 								{
 									it->second.impacted_path_flag = 1;
 
@@ -1856,7 +1899,7 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 
 	for (int n = 0; n < column_updating_iterations; ++n)
 	{
-		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, column_updating_iterations, dynamic_traffic_management_flag);
+		double relative_percentative_gap = 	g_update_gradient_cost_and_assigned_flow_in_column_pool(assignment, n, dynamic_traffic_management_flag);
 
 		if(relative_percentative_gap < UE_convergence_percentage )
 		{
@@ -1871,10 +1914,10 @@ void g_column_pool_optimization(Assignment& assignment, int column_updating_iter
 			{
 				dtalog.output() << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types << '\n';
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
 				g_DTA_log_file << "[DATA INFO] link: " << g_node_vector[g_link_vector[i].from_node_seq_no].node_id << "-->"
 					<< g_node_vector[g_link_vector[i].to_node_seq_no].node_id << ", "
-					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types << '\n';
+					<< "flow count:" << g_link_vector[i].total_volume_for_all_mode_types_per_period[0] << '\n';
 			}
 		}
 	}
@@ -1921,9 +1964,9 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 			{
 				if (assignment.g_ModeTypeVector[at].real_time_information_type == 2)   // case of DMS
 				{
-	
+					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 					{
-						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 						if (p_column_pool->od_volume > 0)
 						{
 							column_vector_size = p_column_pool->path_node_sequence_map.size();
@@ -1956,7 +1999,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 									CLink* p_current_link = &(g_link_vector[link_seq_no]);
 
 									if (b_passing_information_zone == false &&
-										p_current_link->dynamic_traffic_management_flag == 2 /*DMS link*/ &&
+										p_current_link->VDF_period[tau].dynamic_traffic_management_flag == 2 /*DMS link*/ &&
 										assignment.node_seq_no_2_zone_id_mapping.find(p_current_link->to_node_seq_no) != assignment.node_seq_no_2_zone_id_mapping.end())
 										// this node been defined as zone
 									{
@@ -1985,7 +2028,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										}
 									}
 
-									if (g_link_vector[link_seq_no].dynamic_traffic_management_flag == -1)  // affected by capacity reduction
+									if (g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag == -1)  // affected by capacity reduction
 									{
 										b_passing_capacity_impact_area = true;
 										it->second.impacted_path_flag = 1; // impacted
@@ -2012,7 +2055,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										continue;
 
 									//step 2: fetch the related column pool from the information node/zone
-									p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
+									p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
 									//             scan through the map with different node sum for different continuous paths
 									// part C subpath
 
@@ -2039,7 +2082,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										for (int nl2 = 1; nl2 < it2->second.m_link_size; ++nl2)  // arc a // starting from 1 to exclude virtual link at the beginning
 										{
 											// compute it2->second.path_travel_time
-											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].link_avg_travel_time[at];
+											it2->second.path_travel_time += g_link_vector[it2->second.path_link_vector[nl2]].link_avg_travel_time_per_period[tau][at];
 
 										}
 
@@ -2048,7 +2091,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 
 
 										for (int nl2 = 1; nl2 < it2->second.m_link_size; ++nl2)  // arc a // starting from 1 to exclude virtual link at the beginning
-											if (g_link_vector[it2->second.path_link_vector[nl2]].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
+											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
 											{
 												b_diversion_flag = false;
 											}
@@ -2074,7 +2117,7 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 										{
 
 
-											if (g_link_vector[it2->second.path_link_vector[nl2]].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
+											if (g_link_vector[it2->second.path_link_vector[nl2]].VDF_period[tau].dynamic_traffic_management_flag <= -1)  // affected by capacity reduction
 											{
 												b_diversion_flag = false;
 											}
@@ -2155,14 +2198,14 @@ void g_column_pool_route_modification(Assignment& assignment, int inner_iteratio
 											for (int nl0 = 0; nl0 < it->second.m_link_size; ++nl0)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].link_avg_travel_time[at];
+												base_path_travel_time += g_link_vector[it->second.path_link_vector[nl0]].link_avg_travel_time_per_period[tau][at];
 
 											}
 											float alt_path_travel_time = 0;
 											for (int nl3 = 1; nl3 < link_seq_vector.size(); ++nl3)  // arc a // starting from 1 to exclude virtual link at the beginning
 											{
 												// compute it2->second.path_travel_time
-												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].link_avg_travel_time[at];
+												alt_path_travel_time += g_link_vector[link_seq_vector[nl3]].link_avg_travel_time_per_period[tau][at];
 
 											}
 
@@ -2233,9 +2276,9 @@ void g_column_pool_reset(Assignment& assignment)
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
-
+					for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 					{
-						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+						p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 						if (p_column_pool->path_node_sequence_map.size() > 0)
 						{
 							p_column_pool->reset_column_pool();
@@ -2266,7 +2309,7 @@ void g_rt_info_column_generation(Assignment* p_assignment, float current_time_in
 
 		NetworkForSP* pNetwork = g_NetworkForRTSP_vector[blk];
 
-		if (assignment.starting_time_slot_no * MIN_PER_TIMESLOT > current_time_in_min)  // RT network is for a later time interval
+		if (assignment.g_DemandPeriodVector[pNetwork->m_tau].starting_time_slot_no * MIN_PER_TIMESLOT > current_time_in_min)  // RT network is for a later time interval
 			continue;
 
 		pNetwork->optimal_backward_label_correcting_from_destination(blk, p_assignment, current_time_in_min, pNetwork->m_RT_dest_zone, pNetwork->m_RT_dest_node, -1, recording_flag);
@@ -2313,8 +2356,9 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 
 			for (int at = 0; at < assignment.g_ModeTypeVector.size(); ++at)  //m
 			{
+				for (int tau = 0; tau < assignment.g_DemandPeriodVector.size(); ++tau)  //tau
 				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
 					if (p_column_pool->od_volume > 0)
 					{
 						if (p_column_pool->activity_zone_no_vector.size())   // case of activity zones
@@ -2345,7 +2389,7 @@ void g_column_pool_activity_scheduling(Assignment& assignment, int inner_iterati
 									continue;
 
 								//step 2: fetch the related column pool from the information node/zone
-								p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][aat]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
+								p_2_stage_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][aat][tau]);  // we come from info_orig but going to  the same destination with same at, and assignment period tau
 								//             scan through the map with different node sum for different continuous paths
 
 								std::map<int, CColumnPath>::iterator it2, it_begin2, it_end2;
