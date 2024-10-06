@@ -1,9 +1,8 @@
 assignment:
-  number_of_iterations: 2
-  route_output: 1
+  number_of_iterations: 20
+  route_output: 0
   simulation_output: 0
   number_of_cpu_processors: 4
-
   UE_convergence_percentage: 0.001
   odme_activate: 0
 unit:
@@ -22,7 +21,7 @@ mode_types:
     vot: 10
     person_occupancy: 1
     pce: 2
-demand_periods:
+demand_period:
   - period: AM
     time_period: 0700_0800
 demand_files:
