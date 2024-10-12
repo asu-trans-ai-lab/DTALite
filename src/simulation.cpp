@@ -8,15 +8,6 @@
  * http://www.gnu.org/licenses/gpl-howto.html
  */
 
- // Peiheng, 02/03/21, remove them later after adopting better casting
-#pragma warning(disable : 4305 4267 4018)
-// stop warning: "conversion from 'int' to 'float', possible loss of data"
-#pragma warning(disable: 4244)
-
-#ifdef _WIN32
-#include "pch.h"
-#endif
-
 #include "config.h"
 #include "utils.h"
 #include "DTA.h"
@@ -200,11 +191,11 @@ void Assignment::AllocateLinkMemory4Simulation()
 				}
 			}
 
-			int number_of_cycles = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin) * 60 / max(1.0f, g_link_vector[l].VDF_period[0].cycle_length);  // unit: seconds;
+			int number_of_cycles = (g_LoadingEndTimeInMin - g_LoadingStartTimeInMin) * 60 / max(1.0f, g_link_vector[l].cycle_length);  // unit: seconds;
 
-			int cycle_length = g_link_vector[l].VDF_period[0].cycle_length;
-			int start_green_time = g_link_vector[l].VDF_period[0].start_green_time;
-			int end_green_time = g_link_vector[l].VDF_period[0].end_green_time;
+			int cycle_length = g_link_vector[l].cycle_length;
+			int start_green_time = g_link_vector[l].start_green_time;
+			int end_green_time = g_link_vector[l].end_green_time;
 
 			if (end_green_time < start_green_time)
 			{
@@ -314,7 +305,6 @@ void Assignment::STTrafficSimulation()
 
 	int mode_type_size = g_ModeTypeVector.size();
 	int zone_size = g_zone_vector.size();
-	int demand_period_size = g_DemandPeriodVector.size();
 	int system_information_activate_time_in_min = 999999;
 	int system_information_activate_time_in_simu_interval = 99999999;
 
@@ -325,22 +315,6 @@ void Assignment::STTrafficSimulation()
 		{
 
 			system_information_activate_time_in_min = min(g_link_vector[li].dynamic_link_event_start_time_in_min, system_information_activate_time_in_min);
-
-			for (int at = 0; at < mode_type_size; ++at)
-			{
-				for (int tau = 0; tau < demand_period_size; ++tau)
-				{
-					if (p_link->AllowModeType(g_ModeTypeVector[at].mode_type, tau) == false)
-					{
-						p_link->VDF_period[tau].RT_allowed_use[at] = false;  // follow the general rule of allow_uses, such HOV, special lanes
-					}
-					if (p_link->SA_AllowModeType(g_ModeTypeVector[at].mode_type, tau) == false)
-					{
-						p_link->VDF_period[tau].SA_allowed_use[at] = false;  // follow the general rule of allow_uses, such HOV, special lanes
-					}
-				}
-			}
-
 			p_link->EntranceQueue.clear();
 			p_link->ExitQueue.clear();
 		}
@@ -386,9 +360,7 @@ void Assignment::STTrafficSimulation()
 				int to_zone_sindex = g_zone_vector[dest].sindex;
 				if (to_zone_sindex == -1)
 					continue;
-				for (int tau = 0; tau < demand_period_size; ++tau)
-				{
-					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at][tau]);
+					p_column_pool = &(assignment.g_column_pool[from_zone_sindex][to_zone_sindex][at]);
 
 
 
@@ -478,12 +450,8 @@ void Assignment::STTrafficSimulation()
 								// for future use of column pool
 								p_agent->at = at;
 								p_agent->dest = dest;
-								p_agent->tau = tau;
 
-								if (assignment.g_rt_network_pool != NULL)
-								{
-									p_agent->p_RTNetwork = assignment.g_rt_network_pool[dest][at][tau];
-								}
+
 								p_agent->PCE_unit_size = 1; //  max(1, (int)(assignment.g_ModeTypeVector[at].PCE + 0.5));  // convert a possible floating point pce to an integer value for simulation
 								p_agent->desired_free_travel_time_ratio = max(1.0, 1.0 / max(0.01, assignment.g_ModeTypeVector[at].desired_speed_ratio));
 								p_agent->time_headway = (int)(assignment.g_ModeTypeVector[at].time_headway_in_sec / number_of_seconds_per_interval + 0.5);
@@ -544,7 +512,7 @@ void Assignment::STTrafficSimulation()
 				}
 			}
 		}
-	}
+
 
 	dtalog.output() << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
 	g_DTA_log_file << "[DATA INFO] number of simulation zones:" << zone_size << '\n';
@@ -1330,15 +1298,15 @@ void Assignment::STTrafficSimulation()
 						{
 							//simu_log_file << " start rerouting  at seq no" << p_agent->m_current_link_seq_no << " for agent" << p_agent->agent_id << '\n';
 
-							int impacted_flag_change = 0;
-							float timestamp_in_min = g_LoadingStartTimeInMin + t / number_of_simu_intervals_in_min;
-							if (update_real_time_info_path(p_agent, impacted_flag_change, timestamp_in_min) == 1)
-							{
-#pragma omp critical
-								{
-									TotalCumulative_rerouting_count++;
-								}
-							}
+//							int impacted_flag_change = 0;
+//							float timestamp_in_min = g_LoadingStartTimeInMin + t / number_of_simu_intervals_in_min;
+//							if (update_real_time_info_path(p_agent, impacted_flag_change, timestamp_in_min) == 1)
+//							{
+//#pragma omp critical
+//								{
+//									TotalCumulative_rerouting_count++;
+//								}
+//							}
 						}
 					}
 

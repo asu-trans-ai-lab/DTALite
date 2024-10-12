@@ -53,12 +53,6 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	g_DTA_log_file << "[PROCESS INFO] Step 4.1: Reading dynamic_traffic_management data..." << '\n';
 
 
-	// we setup the initial number of lanes per demand period, per mode and for each scenario, then we will load the dynamic_traffic_management file to overwrite the # of lanes for dynamic lane use in some special cases
-	for (int i = 0; i < g_link_vector.size(); ++i)
-	{
-		g_link_vector[i].setup_dynamic_number_of_lanes();
-	}
-
 
 
 	int capacity_count = 0;
@@ -76,7 +70,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		YAML::Node config = YAML::LoadFile("settings.yml");
 
 		if (!config["dynamic_traffic_management_data"]) {
-			std::cerr << "The key 'dynamic_traffic_management_data' is missing in the YAML file." << std::endl;
+			std::cerr << "The key 'dynamic_traffic_management_data' is missing in the YAML file.\n";
 			return;
 		}
 
@@ -150,12 +144,6 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 			vector<float> global_minute_vector;
 
-			int tau = 0;
-			if (assignment.demand_period_to_seqno_mapping.find(demand_period) != assignment.demand_period_to_seqno_mapping.end())
-			{
-				tau = assignment.demand_period_to_seqno_mapping[demand_period];
-			}
-
 
 
 			int mode_type_no = 0;
@@ -177,16 +165,15 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			g_ParserIntSequence(scenario_index_vector_str, scenario_index_vector);
 
 			g_link_vector[link_seq_no].link_specifical_flag_str.clear();
-			g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = 0;
-			g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = 0;  // apply the change
-			g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code.clear();
+			g_link_vector[link_seq_no].dynamic_traffic_management_flag = 0;
+			g_link_vector[link_seq_no].lane_closure_final_lanes = 0;  // apply the change
+			g_link_vector[link_seq_no].dtm_scenario_code.clear();
 
 
 			if (dtm_type == "dynamic_lane_use")
 			{
 				// capacity in the space time arcs
 				
-				g_link_vector[link_seq_no].recorded_lanes_per_period_per_at[tau][mode_type_no] = final_lanes;  // apply the change
 				dtm_dynamic_lane_use_count++;
 			}
 
@@ -196,7 +183,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 				float toll_amount = 0;
 				//parser.GetValueByFieldName("toll_amount", toll_amount);
 				
-				g_link_vector[link_seq_no].VDF_period[tau].toll[mode_type_no] = toll_amount;  // apply the change
+				g_link_vector[link_seq_no].toll[mode_type_no] = toll_amount;  // apply the change
 
 				dtm_dynamic_lane_use_count++;
 			}	
@@ -207,11 +194,11 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 	
 			//	mode_type_no = 0; //this lane_closure is only for driving mode, this should be commented out 
 				
-				g_link_vector[link_seq_no].VDF_period[tau].lane_closure_final_lanes = final_lanes;  // apply the change
-				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = -1;
+				g_link_vector[link_seq_no].lane_closure_final_lanes = final_lanes;  // apply the change
+				g_link_vector[link_seq_no].dynamic_traffic_management_flag = -1;
 				g_link_vector[link_seq_no].link_specifical_flag_str = "lane_closure";
 				//
-				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "lane_closure";
+				g_link_vector[link_seq_no].dtm_scenario_code = "lane_closure";
 				dtm_lane_closure_count++;
 				
 
@@ -226,8 +213,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 		}
 			else if (dtm_type == "dms")
 			{
-				g_link_vector[link_seq_no].VDF_period[tau].dynamic_traffic_management_flag = 2;
-				g_link_vector[link_seq_no].VDF_period[tau].dtm_scenario_code = "dms";
+				g_link_vector[link_seq_no].dynamic_traffic_management_flag = 2;
+				g_link_vector[link_seq_no].dtm_scenario_code = "dms";
 				g_link_vector[link_seq_no].link_specifical_flag_str = "dms";
 
 				if (assignment.node_seq_no_2_zone_id_mapping.find(g_link_vector[link_seq_no].to_node_seq_no) == assignment.node_seq_no_2_zone_id_mapping.end())
@@ -344,7 +331,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			////
 			//	if (capacity < g_link_vector[link_seq_no].lane_capacity * g_link_vector[link_seq_no].number_of_lanes * 0.8)
 			//	{
-			//		g_link_vector[link_seq_no].capacity_reduction_map[tau] = 1;
+			//		g_link_vector[link_seq_no].capacity_reduction_map = 1;
 			//		g_link_vector[link_seq_no].global_minute_capacity_reduction_start = global_minute_vector[0];
 			//		g_link_vector[link_seq_no].global_minute_capacity_reduction_end = global_minute_vector[1];
 			//	}
@@ -362,7 +349,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 			//		g_link_vector[link_seq_no].m_link_pedefined_information_response_map[t] = response_rate;
 			//	}
 
-			//	g_link_vector[link_seq_no].vms_map[tau] = 1;
+			//	g_link_vector[link_seq_no].vms_map = 1;
 			//	fprintf(g_pFileModel_LC, "dms,response_rate=%f,", response_rate);
 
 			//	dtm_dms_count++;
@@ -463,7 +450,7 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 	// we now know the number of links
 
-	assignment.summary_file << ",read dynamic traffic managementscenario" << '\n';
+	assignment.summary_file << ",read dynamic traffic management scenario" << '\n';
 	//assignment.summary_file << ", # of records in section dynamic_traffic_management=," << dtm_lane_closure_count + incident_count + dtm_dms_count << "," << '\n';
 	assignment.summary_file << ", # of lane closure records in section dynamic_traffic_management=," << dtm_lane_closure_count << "," << '\n';
 	//assignment.summary_file << ", # of incident records in section dynamic_traffic_management=," << incident_count << "," << '\n';
@@ -589,21 +576,21 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 //	sprintf(lr_price_field_name, "lr_price_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
 //	parser.GetValueByFieldName(lr_price_field_name, LR_ini_price, true, false);
-//	g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] = LR_ini_price;
+//	g_link_vector[link_seq_no].LR_price[at] = LR_ini_price;
 
 //	//if (capacity < 1)
-//	g_link_vector[link_seq_no].VDF_period[tau].RT_allowed_use[at] = false;
+//	g_link_vector[link_seq_no].RT_allowed_use[at] = false;
 
 //	if (assignment.g_ModeTypeVector[at].real_time_information_type >= 1)
 //	{
 //		sprintf(lr_price_field_name, "lr_rt_price_%s", assignment.g_ModeTypeVector[at].mode_type.c_str());
 //		parser.GetValueByFieldName(lr_price_field_name, LR_RT_price, true, false);
-//		g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] = LR_RT_price;
+//		g_link_vector[link_seq_no].LR_RT_price[at] = LR_RT_price;
 
 //		if (fabs(LR_RT_price) > 0.001)
 //		{
-//			dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
-//			g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_RT_price[at] << " for agent type "
+//			dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].LR_RT_price[at] << " for agent type "
+//			g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr RT price of " << g_link_vector[link_seq_no].LR_RT_price[at] << " for agent type "
 //				<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //		}
 
@@ -611,8 +598,8 @@ void g_load_dynamic_traffic_management_file(Assignment& assignment)
 
 //	if (fabs(LR_ini_price) > 0.001)
 //	{
-//		dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
-//		g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].VDF_period[tau].LR_price[at] << " for agent type "
+//		dtalog.output() << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].LR_price[at] << " for agent type "
+//		g_DTA_log_file << "link " << from_node_id << "->" << to_node_id << " has a lr price of " << g_link_vector[link_seq_no].LR_price[at] << " for agent type "
 //			<< assignment.g_ModeTypeVector[at].mode_type.c_str() << " at demand period " << demand_period.c_str() << '\n';
 //	}
 

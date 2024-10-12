@@ -10,13 +10,12 @@
 
 #ifndef GUARD_UTILS_H
 #define GUARD_UTILS_H
-#define BUILD_EXE //self-use
-// if you are using cmake, please #include <build_config.h>
+
 #ifndef _WIN32
-#include <build_config.h>
 using __int64 = long long;
 #endif
 
+#include <build_config.h>
 #include "teestream.h"
 
 #include <vector>
@@ -227,11 +226,12 @@ T*** Allocate3DDynamicArray(int nX, int nY, int nZ)
         }
     }
 
-    for (int x = 0; x < nX; ++x)
-        for (int y = 0; y < nY; ++y)
-            for (int z = 0; z < nZ; ++z)
-                dynamicArray[x][y][z] = 0;
-
+    //for (int x = 0; x < nX; ++x)
+    //    for (int y = 0; y < nY; ++y)
+    //        for (int z = 0; z < nZ; ++z)
+    //        {
+    //            dynamicArray[x][y][z] = 0;
+    //        }
     return dynamicArray;
 }
 
