@@ -1251,6 +1251,18 @@ public:
         // we could have a period based fftt, so we need to convert fftt to vfree
         // if we only have one period, then we can directly use vf and v_congestion_cutoff.
 
+        if (DOC > time_period_in_hour*1.5) // comment from Xuesong zhou and Mohammad , P > D/C if P is greatern 
+        {
+            DOC = time_period_in_hour * 1.5;
+
+            if (beta > 3)
+                { 
+                beta = 3; // reset to overcongestion mode based on ADOT  I-10 study 
+                Q_s = 2.10;
+                }
+        }
+
+
         //step 3.2 calculate speed from VDF based on D/C ratio
         avg_speed_BPR = free_speed / (1.0 + alpha * pow(DOC, beta));
         //avg_travel_time = fftt * (1+ alpha * pow(DOC, beta)); // Mark: fftt should be vctt
